@@ -1,0 +1,57 @@
+INFO:oda_api:created dispatcher: [ DispatcherAPI: https://www.astro.unige.ch/mmoda/dispatch-data ]
+WARNING:oda_api.advice:please beware that by default, in a typical setup, oda_api will not output much. To learn how to increase the verbosity, please refer to the documentation: https://oda-api.readthedocs.io/en/latest/user_guide/ScienceWindowList.html?highlight=logging#Let's-get-some-logging . 
+To disable this message you can pass `.get_product(..., silent=True)`
+INFO:oda_api.api.dispatcherapi.progress:- waiting for remote response (since 2023-02-10 09:32:26), please wait for https://www.astro.unige.ch/mmoda/dispatch-data/run_analysis
+INFO:oda_api.api:session: S8XMUU2WF5DXXUK7 job: 8fe4b35926a3c76f
+INFO:oda_api.api.dispatcherapi:
+... query status [35mprepared[0m => [35mdone[0m
+INFO:oda_api.api.dispatcherapi:... assigned job id: [33m8fe4b35926a3c76f[0m
+INFO:oda_api.api.dispatcherapi:[32mquery COMPLETED SUCCESSFULLY (state done)[0m
+INFO:oda_api.api.dispatcherapi:query complete: terminating
+INFO:oda_api:got product: [{'ID': 0, 'prod_name': 'spi_acs_lc_0_query', 'meta_data:': {'src_name': 'query', 'time_bin': 300.0, 'time': 'TIME', 'rate': 'RATE', 'rate_err': 'ERROR'}}]
+INFO:oda_api:> <oda_api.data_products.NumpyDataProduct object at 0x7f851f008dc0>
+INFO:oda_api:>> None
+INFO:oda_api:>> [(-3613.45229198, 116869.9       , 19.73743482)
+ (-3313.45210011, 116771.33333333, 19.72910991)
+ (-3013.45190839, 116813.72      , 19.7326903 )
+ (-2713.45171703, 116817.7       , 19.73302646)
+ (-2413.45152561, 116799.13333333, 19.73145824)
+ (-2113.45133442, 116827.63333333, 19.73386542)
+ (-1813.45114356, 116857.45333333, 19.73638377)
+ (-1513.45095295, 116844.81333333, 19.73531634)
+ (-1213.45076238, 117113.46666667, 19.75799135)
+ ( -913.45057168, 116894.54      , 19.73951536)
+ ( -613.45038112, 116873.68      , 19.73775401)
+ ( -313.45019082, 116931.22      , 19.74261212)
+ (  -13.45000028, 116969.96      , 19.74588227)
+ (  286.55018983, 117069.03333333, 19.75424286)
+ (  586.55037984, 117122.34      , 19.75873984)
+ (  886.55056967, 116999.49333333, 19.7483749 )
+ ( 1186.55075963, 116968.75333333, 19.74578042)
+ ( 1486.55094934, 116968.6       , 19.74576748)
+ ( 1786.55113908, 117014.74666667, 19.74966216)
+ ( 2086.551329  , 117009.45333333, 19.74921546)
+ ( 2386.55151877, 117029.61333333, 19.75091672)
+ ( 2686.55170845, 116959.53333333, 19.74500218)
+ ( 2986.55189797, 116937.97333333, 19.74318223)
+ ( 3286.55208754, 116911.72666667, 19.74096643)
+ ( 3586.55227685, 116979.00666667, 19.74664585)
+ ( 3750.00237962, 116969.73977695, 65.94177328)]
+INFO:oda_api:<oda_api.api.DataCollection object at 0x7f851f008d00> can be parsed as <class 'oda_api.plot_tools.OdaProduct'> => <oda_api.plot_tools.OdaProduct object at 0x7f851f008070>
+INFO:oda_api:failed to parse <oda_api.api.DataCollection object at 0x7f851f008d00> as OdaProduct (<class 'oda_api.plot_tools.OdaProduct'>), AttributeError("'OdaProduct' object has no attribute 'get_image_for_gallery'")
+INFO:oda_api:<oda_api.api.DataCollection object at 0x7f851f008d00> can be parsed as <class 'oda_api.plot_tools.OdaImage'> => <oda_api.plot_tools.OdaImage object at 0x7f851f0083d0>
+INFO:oda_api:failed to parse <oda_api.api.DataCollection object at 0x7f851f008d00> as OdaImage (<class 'oda_api.plot_tools.OdaImage'>), AttributeError("'DataCollection' object has no attribute 'mosaic_image_0_mosaic'")
+INFO:oda_api:<oda_api.api.DataCollection object at 0x7f851f008d00> can be parsed as <class 'oda_api.plot_tools.OdaLightCurve'> => <oda_api.plot_tools.OdaLightCurve object at 0x7f851f008070>
+INFO:oda_api.plot_tools.odalightcurve:Source query not found in the light curves
+INFO:oda_api:failed to parse <oda_api.api.DataCollection object at 0x7f851f008d00> as OdaLightCurve (<class 'oda_api.plot_tools.OdaLightCurve'>), TypeError("object of type 'NoneType' has no len()")
+INFO:oda_api:<oda_api.api.DataCollection object at 0x7f851f008d00> can be parsed as <class 'oda_api.plot_tools.OdaSpectrum'> => <oda_api.plot_tools.OdaSpectrum object at 0x7f851f0083d0>
+INFO:oda_api:failed to parse <oda_api.api.DataCollection object at 0x7f851f008d00> as OdaSpectrum (<class 'oda_api.plot_tools.OdaSpectrum'>), KeyError('product')
+INFO:oda_api:<oda_api.api.DataCollection object at 0x7f851f008d00> can be parsed as <class 'oda_api.plot_tools.OdaGWContours'> => <oda_api.plot_tools.OdaGWContours object at 0x7f851f008070>
+INFO:oda_api:failed to parse <oda_api.api.DataCollection object at 0x7f851f008d00> as OdaGWContours (<class 'oda_api.plot_tools.OdaGWContours'>), ValueError("Unknown projection 'astro hours mollweide'")
+------------------------------
+src_name : query
+time_bin : 300.0
+time : TIME
+rate : RATE
+rate_err : ERROR
+------------------------------

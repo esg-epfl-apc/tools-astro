@@ -1,0 +1,49 @@
+<tool id="odarequest" name="request ODA tool" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+    <requirements>
+        <requirement type="package" version="1.1.33">oda-api</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        oda-api get -i spi_acs -p spi_acs_lc -a time_bin=$time_bin -a T1=$T1 -a T2=$T2 > '$output1' 2>&1
+    ]]></command>
+    <inputs>
+        <param name="T1" type="string" label="T1" help="T1 in ISOT" />
+        <param name="T2" type="string" label="T2" help="T2 in ISOT" />
+        <param name="time_bin" type="float" label="time_bin" help="time_bin in seconds" />
+    </inputs>
+    <outputs>
+        <data name="output1" format="stdout" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="input1" value="inp"/>
+            <output name="output1" file="odaapi.stdout"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+        Usage: oda-api [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  -d, --debug
+  -u, --dispatcher-url TEXT
+  -t, --test-connection
+  -w, --wait / -nw, --no-wait
+  --help                       Show this message and exit.
+
+Commands:
+  get
+  inspect
+  token
+
+    ]]></help>
+    <citations>
+        <citation type="bibtex">
+@misc{githuboda_api,
+  author = {LastTODO, FirstTODO},
+  year = {TODO},
+  title = {oda_api},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = {https://github.com/oda-hub/oda_api},
+}</citation>
+    </citations>
+</tool>
