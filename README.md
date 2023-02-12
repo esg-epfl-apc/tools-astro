@@ -2,8 +2,11 @@
 
 ## Astropy tools
 
+TODO: since they are already available in conda and pip, it's easy
+
 ## HEASoft, OSA tool
 
+there are some conda builds
 
 ## ODA tool
 * TODO: tool for oda api request
