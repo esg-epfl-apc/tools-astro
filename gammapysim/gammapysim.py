@@ -1,7 +1,9 @@
-
 import matplotlib.pyplot as plt
 from pathlib import Path
+import click
+
 import numpy as np
+
 from astropy.coordinates import SkyCoord
 import astropy.units as u
 from astropy.io import fits
@@ -48,28 +50,33 @@ def save_events(events, dataset, number):
     hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
     hdu_all.writeto(f"./events_{number}.fits", overwrite=True)
 
-filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-IRFS = load_cta_irfs(filename)
 
 
 from gammapy.modeling.models import PowerLawSpectralModel
 from gammapy.modeling.models import GaussianSpatialModel
 
+def prepare():
+    filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+    IRFS = load_cta_irfs(filename)
 
-pwl = PowerLawSpectralModel(amplitude="2.7e-12 TeV-1 cm-2 s-1", index=2.2)
-gauss = GaussianSpatialModel(
-    lon_0="0 deg", lat_0="0 deg", sigma="0.2 deg", frame="galactic"
-)
 
-modelsky = SkyModel(spectral_model=pwl, spatial_model=gauss, name="my-source")
-print(modelsky)
+    pwl = PowerLawSpectralModel(amplitude="2.7e-12 TeV-1 cm-2 s-1", index=2.2)
+    gauss = GaussianSpatialModel(
+        lon_0="0 deg", lat_0="0 deg", sigma="0.2 deg", frame="galactic"
+    )
 
-bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
+    modelsky = [SkyModel(spectral_model=pwl, spatial_model=gauss, name="my-source")]
+    print(modelsky)
 
-# modelsky.append(bkg_model)
+    bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
+    modelsky.append(bkg_model)
 
+    return modelsky, IRFS
+    
    
 def synth_for_pointing(i, pointing):
+    modelsky, IRFS = prepare()
+
     print(f"Make the observation for pointing {i}...")
     observation = Observation.create(
                       obs_id="{:06d}".format(i), pointing=pointing, 
@@ -108,10 +115,11 @@ def synth_for_pointing(i, pointing):
     rad_size = 1
     region_sky = CircleSkyRegion(center=pointing, radius=rad_size * u.deg)
     mask_map = dataset.geoms["geom"].region_mask(region_sky)
-    mod = modelsky.select_mask(mask_map)
+    # mod = modelsky.select_mask(mask_map)
+    mod = modelsky    
 
-    bkg_idx = np.where(np.array(modelsky.names) == 'my-dataset-bkg')
-    mod.append(modelsky[int(bkg_idx[0][0])])
+    # bkg_idx = np.where(np.array(modelsky.names) == 'my-dataset-bkg')
+    # mod.append(modelsky[int(bkg_idx[0][0])])
 
     dataset.models = mod
 
@@ -126,7 +134,15 @@ def synth_for_pointing(i, pointing):
     print(f"Save events {i}...")
     save_events(events, dataset, "{:06d}".format(i))
 
-pointing = SkyCoord(0.0, 0.0, unit="deg", frame="galactic")
+@click.command()
+@click.option("--ra", default=0, type=float)
+@click.option("--dec", default=0, type=float)
+def main(ra, dec):
+    click.echo(f"generating pointing for RA, Dec = {ra}, {dec}")
+    pointing = SkyCoord(ra, dec, unit="deg", frame="galactic")
 
-synth_for_pointing(0, pointing)
+    synth_for_pointing(0, pointing)
 
+
+if __name__ == "__main__":
+    main()

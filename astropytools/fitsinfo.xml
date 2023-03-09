@@ -1,0 +1,48 @@
+<tool id="fitsinfo" name="Convert to FASTA (seqtk)" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+    <requirements>
+        <requirement type="package" version="5.1">astropy</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        fitsinfo '$input1' > '$output1'
+    ]]></command>
+    <inputs>
+        <param type="data" name="input1" format="fits" />
+    </inputs>
+    <outputs>
+        <data name="output1" format="out" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="input1" value="WFPC2u5780205r_c0fx.fits"/>
+            <output name="output1" file="fitsinfo.out"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+        usage: fitsinfo [-h] [--version] filename [filename ...]
+
+Print a summary of the HDUs in a FITS file(s).
+
+This script is part of the Astropy package. See
+https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo
+for further documentation.
+
+positional arguments:
+  filename    Path to one or more FITS files. Wildcards are supported.
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --version   show program's version number and exit
+
+    ]]></help>
+    <citations>
+        <citation type="bibtex">
+@misc{githubastropy,
+  author = {LastTODO, FirstTODO},
+  year = {TODO},
+  title = {astropy},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = {https://github.com/astropy/astropy},
+}</citation>
+    </citations>
+</tool>
