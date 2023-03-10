@@ -1,0 +1,51 @@
+general:
+    log: {level: info, filename: null, filemode: null, format: null, datefmt: null}
+    outdir: .
+    n_jobs: 1
+    datasets_file: null
+    models_file: null
+observations:
+    datastore: $GAMMAPY_DATA/hess-dl3-dr1
+    obs_ids: []
+    obs_file: null
+    obs_cone: {frame: null, lon: null, lat: null, radius: null}
+    obs_time: {start: null, stop: null}
+    required_irf: [aeff, edisp, psf, bkg]
+datasets:
+    type: 1d
+    stack: true
+    geom:
+        wcs:
+            skydir: {frame: null, lon: null, lat: null}
+            binsize: 0.02 deg
+            width: {width: 5.0 deg, height: 5.0 deg}
+            binsize_irf: 0.2 deg
+        selection: {offset_max: 2.5 deg}
+        axes:
+            energy: {min: 1.0 TeV, max: 10.0 TeV, nbins: 5}
+            energy_true: {min: 0.5 TeV, max: 20.0 TeV, nbins: 16}
+    map_selection: [counts, exposure, background, psf, edisp]
+    background:
+        method: null
+        exclusion: null
+        parameters: {}
+    safe_mask:
+        methods: [aeff-default]
+        parameters: {}
+    on_region: {frame: null, lon: null, lat: null, radius: null}
+    containment_correction: true
+fit:
+    fit_range: {min: null, max: null}
+flux_points:
+    energy: {min: null, max: null, nbins: null}
+    source: source
+    parameters: {selection_optional: all}
+excess_map:
+    correlation_radius: 0.1 deg
+    parameters: {}
+    energy_edges: {min: null, max: null, nbins: null}
+light_curve:
+    time_intervals: {start: null, stop: null}
+    energy_edges: {min: null, max: null, nbins: null}
+    source: source
+    parameters: {selection_optional: all}

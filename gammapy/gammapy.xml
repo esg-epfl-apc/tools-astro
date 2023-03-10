@@ -1,0 +1,42 @@
+<tool id="gammapy" name="gammapy" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+    <requirements>
+        <requirement type="package" version="1.0">gammapy</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        gammapy analysis config --filename '$output1' --overwrite
+    ]]></command>
+    <inputs>
+    </inputs>
+    <outputs>
+        <data name="output1" format="yaml" />
+    </outputs>
+    <tests>
+        <test>
+            <output name="output1" file="myconfig.yaml"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+        <frozen importlib._bootstrap>:228: RuntimeWarning: scipy._lib.messagestream.MessageStream size changed, may indicate binary incompatibility. Expected 56 from C header, got 64 from PyObject
+Usage: gammapy analysis config [OPTIONS]
+
+  Writes default configuration file.
+
+Options:
+  --filename TEXT  Filename to store the default configuration values.
+                   [default: config.yaml]
+  --overwrite      Overwrite existing file.
+  -h, --help       Show this message and exit.
+
+    ]]></help>
+    <citations>
+        <citation type="bibtex">
+@misc{githubgammapy,
+  author = {LastTODO, FirstTODO},
+  year = {TODO},
+  title = {gammapy},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  url = {https://github.com/gammapy/gammapy},
+}</citation>
+    </citations>
+</tool>
