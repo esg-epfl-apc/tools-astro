@@ -1,12 +1,6 @@
 # contributed-galaxy-workflows
 
-## Astropy tools
-
-TODO: since they are already available in conda and pip, it's easy
-
-## HEASoft, OSA tool
-
-there are some conda builds
+## may try workflow synthesis
 
 ## ODA tool
 * TODO: tool for oda api request
@@ -24,6 +18,33 @@ uses type interpretation to match to oda-api python classes types
   annotates semantically inputs (tag:parameters) and outputs (tag:outputs)
   uses type interpretation to match to oda-api python classes types
   
-* TODO: understand the condition for
 
 
+
+TODO: remote data, gammapy responses, astro archives
+TODO: complex operations to be expressed as tools? publish package every time?
+TODO: understand how to deal with containers
+TODO: add gammapy
+TODO: supporting generic notebooks
+
+https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/get-data/slides.html#4
+
+## Big data issue
+
+when we compute on data, compute should have access to it
+*deferred data* approach, oakridge group
+
+separate tool class for fetching data?
+
+*filesources* where we can search for folders
+
+*datasources* are directories
+
+puslar arc is doing job staging and data staging
+
+
+https://www.pyfilesystem.org/
+
+may need to have admin training features on datasources
+
+join WP4 for big data case, see chat
