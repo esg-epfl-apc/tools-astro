@@ -4,7 +4,7 @@
         <requirement type="package" version="3.7.2">matplotlib</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
-        fits2bitmap '$input_fits' --stretch '$stretch' --cmap '$cmap' -o '$output_png'.png; mv -fv '$output_png'.png '$output_png'
+        fits2bitmap '$input_fits' --stretch '$stretch' --cmap '$cmap' -o out.png; mv -fv out.png '$output_png'
     ]]></command>
     <inputs>
         <param type="data" name="input_fits" format="fits" />
