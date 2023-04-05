@@ -12,7 +12,7 @@
         <param type="text" name="cmap" />
     </inputs>
     <outputs>
-        <data name="output_png" format="out" />
+        <data name="output_png" format="png" />
     </outputs>
     <tests>
         <test>

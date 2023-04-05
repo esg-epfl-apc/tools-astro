@@ -1,0 +1,22 @@
+name: astropytools
+owner: volodymyrss
+type: unrestricted
+categories:
+# what is the list of categories? To add somewhere?
+- Astronomy
+description: Astropy library contains tools for elementary astrophysical operations 
+long_description: |
+  Astropy is a python library containing basic astrophysical tools and interfaces.
+  Thi package makes some of the operations available as galaxy tools 
+
+homepage_url: https://github.com/astropy/astropy
+
+#??
+remote_repository_url: https://github.com/galaxyproject/tools-astronomy/tree/master/tools/astropytools
+auto_tool_repositories:
+  name_template: "{{ tool_id }}"
+  description_template: "{{ tool_name }} (from the Arriba tool suite)"
+suite:
+  name: "astropytools"
+  description: "A suite of Galaxy tools to manipulate astrophysical data"
+  type: repository_suite_definition
