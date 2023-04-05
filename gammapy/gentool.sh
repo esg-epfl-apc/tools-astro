@@ -6,7 +6,7 @@ planemo tool_init --force \
                     --id 'gammapy' \
                     --name 'gammapy' \
                     --requirement gammapy@1.0 \
-                    --example_command 'gammapy analysis config --filename myconfig.yaml --overwrite' \
+                    --example_command 'gammapy analysis config --filename test-data/myconfig.yaml --overwrite' \
                     --example_output myconfig.yaml \
                     --test_case \
                     --cite_url 'https://github.com/gammapy/gammapy' \
