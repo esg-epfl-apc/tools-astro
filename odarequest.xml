@@ -36,14 +36,8 @@ Commands:
 
     ]]></help>
     <citations>
-        <citation type="bibtex">
-@misc{githuboda_api,
-  author = {LastTODO, FirstTODO},
-  year = {TODO},
-  title = {oda_api},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/oda-hub/oda_api},
-}</citation>
+        <citation type="doi">
+            10.1051/0004-6361/202037850
+        </citation>
     </citations>
 </tool>

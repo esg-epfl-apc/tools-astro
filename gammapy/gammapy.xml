@@ -29,14 +29,8 @@ Options:
 
     ]]></help>
     <citations>
-        <citation type="bibtex">
-@misc{githubgammapy,
-  author = {LastTODO, FirstTODO},
-  year = {TODO},
-  title = {gammapy},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  url = {https://github.com/gammapy/gammapy},
-}</citation>
+        <citation type="doi">
+            10.5281/zenodo.4701488
+        </citation>
     </citations>
 </tool>
