@@ -1,4 +1,4 @@
-<tool id="odarequest" name="request ODA tool" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+<tool id="odarequest" name="request ODA tool" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
         <requirement type="package" version="1.1.33">oda-api</requirement>
     </requirements>
