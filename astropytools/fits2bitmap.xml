@@ -1,0 +1,47 @@
+<tool id="fits2bitmap" name="astropy fits2bitmap" version="0.1.0+galaxy0" profile="21.05">
+    <requirements>
+        <requirement type="package" version="5.1">astropy</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        fits2bitmap '$input_fits' --stretch '$stretch' --cmap '$cmap' -o '$output1' 
+    ]]></command>
+    <inputs>
+        <param type="data" name="input_fits" format="fits" />
+    </inputs>
+    <inputs>
+        <param type="text" name="stretch" />
+    </inputs>
+    <inputs>
+        <param type="text" name="cmap" />
+    </inputs>
+    <outputs>
+        <data name="output_png" format="out" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="input_fits" value="legacysurvey_image.fits"/>
+            <param name="stretch" value="log"/>
+            <param name="cmap" value="jet"/>
+            <output name="output_png" file="legacysurvey_image.png"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+        usage: fits2bitmap [-h] [-e hdu] [-o filename] [--stretch STRETCH] [--power POWER] [--asinh_a ASINH_A] [--min_cut MIN_CUT] [--max_cut MAX_CUT] [--min_percent MIN_PERCENT] [--max_percent MAX_PERCENT]
+                   [--percent PERCENT] [--cmap colormap_name]
+                   filename [filename ...]
+
+Create a bitmap file from a FITS image.
+
+positional arguments:
+  filename              Path to one or more FITS files to convert
+  output filename       Filename for the output image (Default is a PNG file with the same name as the FITS file).
+
+  stretch STRETCH       Type of image stretching ("linear", "sqrt", "power", "log", or "asinh") (Default is "linear").
+  cmap colormap_name    matplotlib color map name (Default is "Greys_r").
+    ]]></help>
+    <citations>
+        <citation type="doi">
+            10.3847/1538-4357/ac7c74
+        </citation>
+    </citations>
+</tool>
