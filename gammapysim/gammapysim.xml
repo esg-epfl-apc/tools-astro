@@ -1,10 +1,10 @@
 <tool id="gammapysim" name="gammapysim" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
     </requirements>
-    <command detect_errors="exit_code"><![CDATA[
+    <command detect_errors="exit_code">python '$script_file'</command>
 
-python -c '
-
+<configfiles>
+    <configfile name="script_file">
 from dask import compute, delayed
 from dask.distributed import Client
 Client()
@@ -160,9 +160,10 @@ SkyCoord(0.0, 0.0, unit="deg", frame="galactic"),
 
 synth_for_pointing(0, pointing)
 
+    </configfile>
+</configfiles>
 
-#store_results(... metadata, created-by
-    ]]></command>
+
     <inputs>
     </inputs>
     <outputs>
