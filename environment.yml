@@ -1,0 +1,7 @@
+name: py310
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pip:
+      - planemo==0.75.7
