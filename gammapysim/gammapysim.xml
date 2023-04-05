@@ -1,7 +1,7 @@
 <tool id="gammapysim" name="gammapysim" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
     </requirements>
-    <command detect_errors="exit_code">python '$script_file'</command>
+    <command detect_errors="exit_code" interpreter="python">'$script_file'</command>
 
 <configfiles>
     <configfile name="script_file">

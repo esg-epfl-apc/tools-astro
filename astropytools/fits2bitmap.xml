@@ -1,11 +1,10 @@
 <tool id="fits2bitmap" name="astropy fits2bitmap" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
-        <requirement type="package" version="5.1">astropy</requirement>
-        <requirement type="package" version="3.6.0">matplotlib</requirement>
-        <requirement type="package" version="9.2.0">pillow</requirement>
+        <requirement type="package" version="5.2.2">astropy</requirement>
+        <requirement type="package" version="3.7.2">matplotlib</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
-        fits2bitmap '$input_fits' --stretch '$stretch' --cmap '$cmap' -o '$output_png' 
+        fits2bitmap '$input_fits' --stretch '$stretch' --cmap '$cmap' -o '$output_png'.png; mv -fv '$output_png'.png '$output_png'
     ]]></command>
     <inputs>
         <param type="data" name="input_fits" format="fits" />
