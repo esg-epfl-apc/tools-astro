@@ -1,6 +1,6 @@
 # 
 
-[![Galaxy Tool Linting and Tests for push and PR](https://github.com/esg-epfl-apc/tools-astro/actions/workflows/python-package-conda.yml/badge.svg?branch=main)](https://github.com/esg-epfl-apc/tools-astro/actions/workflows/python-package-conda.yml/badge.svg?branch=main)
+[![Galaxy Tool Linting and Tests for push and PR](https://github.com/esg-epfl-apc/tools-astro/actions/workflows/lint-and-test.yml/badge.svg?branch=main)](https://github.com/esg-epfl-apc/tools-astro/actions/workflows/lint-and-test.yml/badge.svg?branch=main)
 
 ## may try workflow synthesis
 
