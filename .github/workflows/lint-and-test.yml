@@ -24,7 +24,8 @@ jobs:
         pip install planemo
     - name: Lint with Planemo
       run: |
-        for tool in tools/astropytools/*; do
+        for tool in tools/astropytools/*xml; do
+          echo "linting $tool"
           planemo l $tool
         done
     - name: Test with Planemo
