@@ -30,7 +30,7 @@ jobs:
         done
     - name: Test with Planemo
       run: |
-        for tool in tools/astropytools/*; do
+        for tool in tools/astropytools/*xml; do
           echo "testing $tool"
           planemo t $tool
         done
