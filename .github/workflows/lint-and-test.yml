@@ -21,12 +21,15 @@ jobs:
     - name: Install dependencies
       run: |
         conda env update --file environment.yml --name base
+        pip install planemo
     - name: Lint with Planemo
       run: |
-        pip install planemo
-        planemo l astropytools/fitsinfo.xml
+        for tool in tools/astropytools/*; do
+          planemo l $tool
+        done
     - name: Test with Planemo
       run: |
-        pip install planemo
-        planemo t astropytools/fitsinfo.xml
+        for tool in tools/astropytools/*; do
+          planemo t $tool
+        done
 

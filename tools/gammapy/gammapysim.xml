@@ -5,11 +5,6 @@
 
 <configfiles>
     <configfile name="script_file">
-from dask import compute, delayed
-from dask.distributed import Client
-Client()
-
-
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
