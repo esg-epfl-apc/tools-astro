@@ -31,6 +31,7 @@ jobs:
     - name: Test with Planemo
       run: |
         for tool in tools/astropytools/*; do
+          echo "testing $tool"
           planemo t $tool
         done
 
