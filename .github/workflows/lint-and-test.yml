@@ -3,7 +3,7 @@ name: Lint and Test Galaxy Tools with Planemo
 on: [push]
 
 jobs:
-  build-linux:
+  lint-and-test:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 5
