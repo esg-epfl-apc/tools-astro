@@ -1,15 +1,15 @@
-<tool id="fitsinfo" name="astropy fitsinfo" version="0.1.0+galaxy0" profile="21.05">
+<tool id="astropy_fitsinfo" name="astropy fitsinfo" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
         <requirement type="package" version="5.1">astropy</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
-        fitsinfo '$input1' | grep -vi filename > '$output1' 
+        fitsinfo '$input' | grep -vi filename > '$output' 
     ]]></command>
     <inputs>
-        <param type="data" name="input1" format="fits" />
+        <param type="data" name="input" format="fits" />
     </inputs>
     <outputs>
-        <data name="output1" format="out" />
+        <data name="output" format="out" />
     </outputs>
     <tests>
         <test>
