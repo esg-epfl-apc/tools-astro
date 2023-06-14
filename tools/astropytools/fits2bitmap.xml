@@ -12,8 +12,14 @@
     ]]></command>
     <inputs>
         <param type="data" name="input_fits" format="fits" label="FITS file containing a sky image"/>
-        <param type="text" name="stretch" label="Stretch image" help='Type of image stretching ("linear", "sqrt", "power", "log", or "asinh")'/>
-        <param type="text" name="cmap" label="Color map"/ help='matplotlib color map name, e.g. "Greys_r")'>
+        <param type="select" name="stretch" label="Stretch image" help="Type of image scale stretching">
+            <option value="linear" selected="true">linear stretch</option>
+            <option value="sqrt">square root representation</option>
+            <option value="power">power law representation</option>
+            <option value="log">logarithmic representation</option>
+            <option value="asinh">asinh representation</option>
+        </param>
+        <param type="text" name="cmap" label="Color map" help="matplotlib color map name, e.g. Greys_r"/>
     </inputs>
     <outputs>
         <data name="output_png" format="png" from_work_dir="out.png" />
