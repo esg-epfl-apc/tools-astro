@@ -13,8 +13,8 @@
     </outputs>
     <tests>
         <test>
-            <param name="input1" value="WFPC2u5780205r_c0fx.fits"/>
-            <output name="output1" file="fitsinfo.out"/>
+            <param name="input" value="WFPC2u5780205r_c0fx.fits"/>
+            <output name="output" file="fitsinfo.out"/>
         </test>
     </tests>
     <help><![CDATA[
