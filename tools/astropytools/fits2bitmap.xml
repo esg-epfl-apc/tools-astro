@@ -11,9 +11,9 @@
         -o out.png
     ]]></command>
     <inputs>
-        <param type="data" name="input_fits" format="fits" />
-        <param type="text" name="stretch" />
-        <param type="text" name="cmap" />
+        <param type="data" name="input_fits" format="fits" label="FITS file containing a sky image"/>
+        <param type="text" name="stretch" label="Stretch image" help='Type of image stretching ("linear", "sqrt", "power", "log", or "asinh")'/>
+        <param type="text" name="cmap" label="Color map"/ help='matplotlib color map name, e.g. "Greys_r")'>
     </inputs>
     <outputs>
         <data name="output_png" format="png" from_work_dir="out.png" />
@@ -27,18 +27,23 @@
         </test>
     </tests>
     <help><![CDATA[
-        usage: fits2bitmap [-h] [-e hdu] [-o filename] [--stretch STRETCH] [--power POWER] [--asinh_a ASINH_A] [--min_cut MIN_CUT] [--max_cut MAX_CUT] [--min_percent MIN_PERCENT] [--max_percent MAX_PERCENT]
-                   [--percent PERCENT] [--cmap colormap_name]
-                   filename [filename ...]
+Creates a bitmap file from a FITS sky image. 
+The dynamic range of the FITS image is represented in the output bitmap image by applying "stretch" transformation.
+Matplotlib colormaps are used to represent resulting intensity.
 
-Create a bitmap file from a FITS image.
+---------
 
-positional arguments:
-  filename              Path to one or more FITS files to convert
-  output filename       Filename for the output image (Default is a PNG file with the same name as the FITS file).
+**Example:**
 
-  stretch STRETCH       Type of image stretching ("linear", "sqrt", "power", "log", or "asinh") (Default is "linear").
-  cmap colormap_name    matplotlib color map name (Default is "Greys_r").
+Here is an example of converting SDSS LegacySurvey image of NGC4388:
+
+.. image:: test-data/legacysurvey_image.png
+
+Note that you can also visualize FITS files directly in galaxy with interactive interface based on AladinLite.
+
+This tool represents a script which is part of the Astropy package. See
+https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo
+for further documentation.
     ]]></help>
     <citations>
         <citation type="doi">
