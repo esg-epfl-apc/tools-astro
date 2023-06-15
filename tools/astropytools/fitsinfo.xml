@@ -1,6 +1,6 @@
 <tool id="astropy_fitsinfo" name="astropy fitsinfo" version="0.1.0+galaxy0" profile="21.05">
     <requirements>
-        <requirement type="package" version="5.1">astropy</requirement>
+        <requirement type="package" version="5.2.2">astropy</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
         fitsinfo '$input' | grep -vi filename > '$output' 
@@ -26,9 +26,11 @@ Return a summary of the HDUs and their metadata (image dimensions and types, tab
 
 For example, here is the output for on of the sample fits files, https://fits.gsfc.nasa.gov/samples/WFPC2u5780205r_c0fx.fits
 
+```
 No.    Name      Ver    Type      Cards   Dimensions   Format
   0  PRIMARY       1 PrimaryHDU     262   (200, 200, 4)   float32   
   1  u5780205r_cvt.c0h.tab    1 TableHDU       353   4R x 49C   [D25.17, D25.17, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, A1, E15.7, I12, I12, D25.17, D25.17, A8, A8, I12, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, I12, I12, I12, I12, I12, I12, I12, I12, A48, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7]   
+```
 
 This tool represents a script which is part of the Astropy package. See
 https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo
