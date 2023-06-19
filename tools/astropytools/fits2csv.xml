@@ -1,0 +1,66 @@
+<tool id="astropy_fitsinfo" name="astropy fitsinfo" version="0.1.0+galaxy0" profile="21.05">
+    <requirements>
+        <requirement type="package" version="5.2.2">astropy</requirement>
+    </requirements>
+    <command detect_errors="exit_code"><![CDATA[
+        python '$py_script_file' 
+    ]]></command>
+
+    <configfiles>
+        <configfile name="py_script_file">
+            from astropy.io import fits
+            from astropy.table import Table
+
+            with fits.open("$input_fits", memmap=True):
+
+                # select the HDU you want
+                hdu = hdu_list[1]
+                
+                # read into an astropy Table object
+                table = Table(hdu.data)
+
+                # write to a CSV file
+                data.write('$output_csv', delimiter='\t', format='ascii')
+        </configfile>
+    </configfiles>
+
+    <inputs>
+        <param type="data" name="input_fits" format="fits" label="FITS file to dump"/>
+        <param type="integer" name="hdu" label="Selected input HDU"/>
+    </inputs>
+    <outputs>
+        <data name="output_csv" format="csv" />
+    </outputs>
+    <tests>
+        <test>
+            <param name="input_fits" value="WFPC2u5780205r_c0fx.fits"/>
+            <param name="hdu" value="1"/>
+            <output name="output_csv" file="fitsinfo.csv"/>
+        </test>
+    </tests>
+    <help><![CDATA[
+Return a summary of the HDUs and their metadata (image dimensions and types, table columns, etc) in a FITS file..
+
+---------
+
+**Example:**
+
+For example, here is the output for on of the sample fits files, https://fits.gsfc.nasa.gov/samples/WFPC2u5780205r_c0fx.fits
+
+
+.. code-block::
+
+    No.    Name      Ver    Type      Cards   Dimensions   Format
+    0  PRIMARY       1 PrimaryHDU     262   (200, 200, 4)   float32   
+    1  u5780205r_cvt.c0h.tab    1 TableHDU       353   4R x 49C   [D25.17, D25.17, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, A1, E15.7, I12, I12, D25.17, D25.17, A8, A8, I12, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, I12, I12, I12, I12, I12, I12, I12, I12, A48, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7, E15.7]   
+
+
+This tool represents a script which is part of the Astropy package. See `astropy help on fitsinfo <https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo>`_
+for further documentation.
+    ]]></help>
+    <citations>
+        <citation type="doi">
+            10.3847/1538-4357/ac7c74
+        </citation>
+    </citations>
+</tool>
