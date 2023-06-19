@@ -20,7 +20,7 @@ with fits.open("$input_fits", memmap=True) as hdu_list:
     table = Table(hdu.data)
 
     # write to a CSV file
-    table.write('$output_csv', delimiter='$output_delimiter', format='ascii', overwrite=True)
+    table.write('$output', delimiter='$output_delimiter', format='ascii', overwrite=True)
         </configfile>
     </configfiles>
 
@@ -28,23 +28,23 @@ with fits.open("$input_fits", memmap=True) as hdu_list:
         <param type="data" name="input_fits" format="fits" label="FITS file to dump"/>
         <param type="integer" name="hdu"  value="1" min="1" label="Select input HDU number"/>
         <param type="select" name="output_delimiter" value="," label="Output delimiter">
-            <option value="," selected="true">"," (coma)</option>
+            <option value="\t" selected="true">"\t" (tabular)</option>
+            <option value=",">"," (coma)</option>
             <option value=" ">" " (space)</option>
-            <option value="\t">"\t" (tab)</option>
         </param>
     </inputs>
     <outputs>
-        <data name="output_csv" format="csv"/>
+        <data name="output" format="csv,ssv,tabular"/>
     </outputs>
     <tests>
         <test>
             <param name="input_fits" value="WFPC2u5780205r_c0fx.fits"/>
             <param name="hdu" value="1"/>
-            <output name="output_csv" file="fitsinfo.csv"/>
+            <output name="output" file="fitsinfo.txt"/>
         </test>
     </tests>
     <help><![CDATA[
-Extract CSV table from FITS file HDU Table. Resulting CSV file can be used by many existing Galaxy tools and visualisation plugins.
+Extract a text table (CSV, SSV, or TSV) from FITS file HDU Table. Resulting CSV file can be used by many existing Galaxy tools and visualisation plugins.
 
 ---------
 
