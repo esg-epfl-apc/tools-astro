@@ -11,6 +11,13 @@
 from astropy.io import fits
 from astropy.table import Table
 
+if '$output_format' == 'csv':
+    output_separator = ','
+elif '$output_format' == 'tabular':
+    output_separator = '\t'
+else:
+    raise ValueError('Unknown output format: ' + '$output_format')
+
 with fits.open("$input_fits", memmap=True) as hdu_list:
 
     # select the HDU you want
@@ -20,27 +27,37 @@ with fits.open("$input_fits", memmap=True) as hdu_list:
     table = Table(hdu.data)
 
     # write to a CSV file
-    table.write('$output', delimiter='$output_delimiter', format='ascii', overwrite=True)
+    table.write('$output', delimiter=output_separator, format='ascii', overwrite=True)
         </configfile>
     </configfiles>
 
     <inputs>
         <param type="data" name="input_fits" format="fits" label="FITS file to dump"/>
         <param type="integer" name="hdu"  value="1" min="1" label="Select input HDU number"/>
-        <param type="select" name="output_delimiter" value="," label="Output delimiter">
-            <option value="\t" selected="true">"\t" (tabular)</option>
-            <option value=",">"," (coma)</option>
-            <option value=" ">" " (space)</option>
+        <param type="select" name="output_format" label="Output format">
+            <option value="tabular" selected="true">tabular, tab-separated values</option>
+            <option value="csv">CSV, coma-separated values</option>
         </param>
     </inputs>
     <outputs>
-        <data name="output" format="csv,ssv,tabular"/>
+        <data name="output" format="tabular">
+            <change_format>
+                <when input="output_separator" value="," format="csv" />
+            </change_format>
+        </data>
     </outputs>
     <tests>
         <test>
             <param name="input_fits" value="WFPC2u5780205r_c0fx.fits"/>
             <param name="hdu" value="1"/>
-            <output name="output" file="fitsinfo.txt"/>
+            <param name="output_format" value="csv"/>
+            <output name="output" file="fitstable.csv"/>
+        </test>
+        <test>
+            <param name="input_fits" value="WFPC2u5780205r_c0fx.fits"/>
+            <param name="hdu" value="1"/>
+            <param name="output_format" value="tabular"/>
+            <output name="output" file="fitstable.tsv"/>
         </test>
     </tests>
     <help><![CDATA[
@@ -62,7 +79,7 @@ For example, here is the output for on of the sample fits files, https://fits.gs
     182.650022355,39.38946044168,423.0,421.0,2.75358e-05,-2.50931e-06,-2.50689e-06,-2.75624e-05,-72.41166,3420.24,T,-174.798,0,0,51229.799079,51229.79924599999,RA---TAN,DEC--TAN,4,311.7072,311.7648,311.6496,-3.289304,3420.24,0.7084697,628289,0,1816,0,57,0,0,0,"WFPC2,4,A2D7,LRF#4877.0,,CAL",3.46466e-16,-21.1,4884.256,20.20999,-0.06813275,-0.03253493,0.9846212,-4.591252,0.1359666,0.04015671,0.1129934,1.897491,0.9687142,1.05377,0.3466465
 
 
-This tool is a simple script based on Astropy package. See `astropy help <https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo>`_
+This tool is a simple script based on Astropy package. See `astropy help <https://docs.astropy.org/en/latest/io/fits/>`_
 for further documentation. 
     ]]></help>
     <citations>
