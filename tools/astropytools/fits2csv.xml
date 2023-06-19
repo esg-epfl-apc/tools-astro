@@ -8,28 +8,33 @@
 
     <configfiles>
         <configfile name="py_script_file">
-            from astropy.io import fits
-            from astropy.table import Table
+from astropy.io import fits
+from astropy.table import Table
 
-            with fits.open("$input_fits", memmap=True):
+with fits.open("$input_fits", memmap=True) as hdu_list:
 
-                # select the HDU you want
-                hdu = hdu_list[1]
-                
-                # read into an astropy Table object
-                table = Table(hdu.data)
+    # select the HDU you want
+    hdu = hdu_list[$hdu]
+    
+    # read into an astropy Table object
+    table = Table(hdu.data)
 
-                # write to a CSV file
-                data.write('$output_csv', delimiter='\t', format='ascii')
+    # write to a CSV file
+    table.write('$output_csv', delimiter='$output_delimiter', format='ascii', overwrite=True)
         </configfile>
     </configfiles>
 
     <inputs>
         <param type="data" name="input_fits" format="fits" label="FITS file to dump"/>
-        <param type="integer" name="hdu" label="Selected input HDU"/>
+        <param type="integer" name="hdu"  value="1" min="1" label="Select input HDU number"/>
+        <param type="select" name="output_delimiter" value="," label="Output delimiter">
+            <option value="," selected="true">"," (coma)</option>
+            <option value=" ">" " (space)</option>
+            <option value="\t">"\t" (tab)</option>
+        </param>
     </inputs>
     <outputs>
-        <data name="output_csv" format="csv" />
+        <data name="output_csv" format="csv"/>
     </outputs>
     <tests>
         <test>
