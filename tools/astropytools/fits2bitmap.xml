@@ -4,29 +4,25 @@
         <requirement type="package" version="3.6.0">matplotlib</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
-        if [ '$reverse_cmap' = "true" ]; then
-            cmap='$cmap'_r
-        else
-            cmap='$cmap'
-        fi
-
-        fits2bitmap 
-        '$input_fits'
-        --stretch '$stretch'
-        --cmap $cmap
-        -o out.png
+        #if $reverse_cmap:
+            #set $cmap = $cmap + "_r"
+        #else:
+            #set $cmap = $cmap
+        #end if
+        fits2bitmap '$input_fits' --stretch '$stretch' --cmap $cmap -o out.png
     ]]></command>
     <inputs>
         <param type="data" name="input_fits" format="fits" label="FITS file containing a sky image"/>
         <param type="select" name="stretch" label="Stretch image scale" help="Type of image scale stretching">
-            <option value="linear" selected="true">linear</option>
+            <option value="linear">linear</option>
             <option value="sqrt">square root</option>
             <option value="power">power law</option>
-            <option value="log">logarithmic</option>
+            <option value="log" selected="true">logarithmic</option>
             <option value="asinh">asinh</option>
         </param>
         <param type="select" name="cmap" label="Color map" help="matplotlib color map">
-            <option value="Accent" selected="true">Accent</option>
+            <option value="jet" selected="true">jet</option>
+            <option value="Accent">Accent</option>
             <option value="Blues">Blues</option>
             <option value="BrBG">BrBG</option>
             <option value="BuGn">BuGn</option>
@@ -86,7 +82,6 @@
             <option value="gray">gray</option>
             <option value="hot">hot</option>
             <option value="hsv">hsv</option>
-            <option value="jet">jet</option>
             <option value="nipy_spectral">nipy_spectral</option>
             <option value="ocean">ocean</option>
             <option value="pink">pink</option>
@@ -126,7 +121,7 @@ Matplotlib colormaps are used to represent resulting intensity.
 
 Here is an example of converting SDSS LegacySurvey image of NGC4388:
 
-.. image:: $PATH_TO_IMAGES/legacysurvey_image.png
+.. image:: legacysurvey_image.png
    :width: 70 %
    :alt: legacysurvey_image.png
 
@@ -134,7 +129,7 @@ Here is an example of converting SDSS LegacySurvey image of NGC4388:
 Note that you can also visualize FITS files directly in galaxy with interactive interface based on AladinLite.
 
 This tool represents a script which is part of the Astropy package. See
-https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo
+`astropy help https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo`_
 for further documentation.
     ]]></help>
     <citations>
