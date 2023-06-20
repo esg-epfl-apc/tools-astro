@@ -129,7 +129,7 @@ Here is an example of converting SDSS LegacySurvey image of NGC4388:
 Note that you can also visualize FITS files directly in galaxy with interactive interface based on AladinLite.
 
 This tool represents a script which is part of the Astropy package. See
-`astropy help <https://docs.astropy.org/en/latest/io/fits/usage/scripts.html#module-astropy.io.fits.scripts.fitsinfo>`_
+`astropy help <https://docs.astropy.org/en/latest/visualization/index.html#scripts>`_
 for further documentation.
     ]]></help>
     <citations>
