@@ -3,7 +3,7 @@ owner: volodymyrss
 type: unrestricted
 categories: 
 - Astronomy
-description: AstropyTools library contains Galaxy tools for elementary astrophysical operations 
+description: AstropyTools library contains Galaxy tools for elementary Astrophysical operations 
 long_description: |
   Astropy is a python library containing basic astrophysical tools and interfaces.
   This package makes some of the operations available as Galaxy tools 
