@@ -12,10 +12,10 @@ long_description: |
 homepage_url: https://github.com/astropy/astropy
 
 #??
-remote_repository_url: https://github.com/galaxyproject/tools-astronomy/tree/master/tools/astropytools
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools/astropytools
 auto_tool_repositories:
   name_template: "{{ tool_id }}"
-  description_template: "{{ tool_name }} (from the Arriba tool suite)"
+  description_template: "{{ tool_name }} (from the astropy tool suite)"
 suite:
   name: "astropytools"
   description: "A suite of Galaxy tools to manipulate astrophysical data"
