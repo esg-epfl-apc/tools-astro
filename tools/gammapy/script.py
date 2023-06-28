@@ -1,16 +1,4 @@
-<tool id="gammapysim" name="gammapysim" version="0.1.0+galaxy0" profile="21.05">
-    <requirements>
-        <requirement type="package" version="5.2.2">astropy</requirement>
-        <requirement type="package" version="1.0.1">gammapy</requirement>
-        <requirement type="package" version="4.64.1">tqdm</requirement>
-    </requirements>
-    <command detect_errors="exit_code"><![CDATA[
-        gammapy download datasets;
-        mv gammapy-datasets/1.0.1 gammapy-data;
-        python '$script_file' 
-    ]]></command>
-<configfiles>
-    <configfile name="script_file">
+import os
 import matplotlib.pyplot as plt
 from pathlib import Path
 import numpy as np
@@ -26,7 +14,7 @@ from gammapy.datasets import MapDataset, MapDatasetEventSampler
 from gammapy.estimators import LightCurveEstimator
 from gammapy.maps import MapAxis, WcsGeom, Map, RegionGeom
 from gammapy.irf import load_cta_irfs
-from gammapy.makers import MapDatasetMaker
+from gammapy.makers import MapDatasetMaker, SafeMaskMaker
 from gammapy.modeling import Fit
 from gammapy.modeling.models import (
     Model,
@@ -60,7 +48,7 @@ def save_events(events, dataset, fn):
     hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
     hdu_all.writeto(fn, overwrite=True)
 
-filename = "gammapy-data/cta-caldb/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+filename = os.path.join(os.getenv("GAMMAPY_DATA"), "cta-caldb/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz")
 IRFS = load_cta_irfs(filename)
 
 # Define sky model to used simulate the data.
@@ -69,7 +57,7 @@ spatial_model = GaussianSpatialModel(
     lon_0="0.2 deg", lat_0="0.1 deg", sigma="0.3 deg", frame="galactic"
 )
 spectral_model = PowerLawSpectralModel(
-    index=3, amplitude="1e-11 cm-2 s-1 TeV-1", reference="1 TeV"
+    index=3, amplitude="1e-10 cm-2 s-1 TeV-1", reference="1 TeV"
 )
 model_simu = SkyModel(
     spatial_model=spatial_model,
@@ -83,11 +71,11 @@ models = Models([model_simu, bkg_model])
 print(models)
 
    
-def synth_for_pointing(i, pointing):
+def synth_for_pointing(i, pointing, livetime):
     print(f"Make the observation for pointing {i}...")
-    observation = Observation.create(
+    obs = Observation.create(
                       obs_id="{:06d}".format(i), pointing=pointing, 
-                      livetime="25 hr", 
+                      livetime=livetime, 
                       irfs=IRFS
                       )
 
@@ -99,7 +87,7 @@ def synth_for_pointing(i, pointing):
         "0.001 TeV", "300 TeV", nbin=20, per_decade=True, name="energy_true"
         )
     migra_axis = MapAxis.from_bounds(
-        0.5, 2, nbin=150, node_type="edges", name="migra"
+        0.5, 2, nbin=50, node_type="edges", name="migra"
         )
 
     geom = WcsGeom.create(
@@ -135,35 +123,18 @@ def synth_for_pointing(i, pointing):
     print(dataset)
 
     # To plot, eg, counts:
-    dataset.counts.smooth(0.05 * u.deg).plot_interactive(
-        add_cbar=True, stretch="linear"
-    )
+    # dataset.counts.smooth(0.05 * u.deg).plot(
+    #     add_cbar=True, stretch="linear"
+    # )
+
+    sampler = MapDatasetEventSampler(random_state=i)
+    events = sampler.run(dataset, obs)
 
     print(f"Save events {i}...")
     save_events(events, dataset, "$events")
 
 
-livetime = 2.0 * u.hr
+livetime = 1.0 * u.hr
 pointing = SkyCoord(0, 0, unit="deg", frame="galactic")
 
-synth_for_pointing(0, pointing)
-    </configfile>
-</configfiles>
-
-
-    <inputs>
-        <param type="integer" name="rad_size" label="rad_size" value="6"/>
-    </inputs>
-    <outputs>
-        <data name="events" format="fits"/>
-    </outputs>
-    <tests>
-        <test>
-            <param name="rad_size" value="6"/>
-            <output name="output" file="events.fits"/>
-        </test>
-    </tests>
-    <help><![CDATA[
-        TODO: Fill in help.
-    ]]></help>
-</tool>
+synth_for_pointing(0, pointing, livetime)
