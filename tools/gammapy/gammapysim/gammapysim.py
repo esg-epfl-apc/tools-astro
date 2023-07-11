@@ -103,7 +103,7 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
     print(f"Background events: {(events.table['MC_ID'] == 0).sum()}")
 
     events.peek()
-    plt.savefig(output_peek)
+    plt.savefig(output_peek_png)
     events.select_offset([0, 1] * u.deg).peek()
     # plt.savefig("peek-focus.png")
 
@@ -114,7 +114,7 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
 
 @click.command()
 @click.option("--obs_id", default=1, help="Observation ID")
-@click.option("--livetime-hr", default=1, help="Livetime (hours)")
+@click.option("--livetime-hr", default=1, type=float, help="Livetime (hours)")
 @click.option("--pointing-coord", default="0 0", help="Pointing coordinate (SkyCoord)")
 @click.option("--output-events", default="events.fits", help="Output events file")
 @click.option("--output-peek-png", default="peek.png", help="Output peek file")

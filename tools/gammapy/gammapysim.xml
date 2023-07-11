@@ -13,7 +13,7 @@
         python gammapysim.py --livetime-hr $livetime_hours --output-events $events --output-peek-png $peek_png;
     ]]></command>
 <configfiles>
-    <configfile name="gammapysim.py"><![CDATA[
+    <configfile name="gammapysim_py"><![CDATA[
 from pathlib import Path
 import click
 
