@@ -9,7 +9,7 @@
     <command detect_errors="exit_code"><![CDATA[
         python --version;
         gammapy download datasets;
-        mv -fv gammapy-datasets/* gammapy-data;
+        export GAMMAPY_DATA=\$PWD/gammapy-datasets/1.1;
         python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png $peek_png;
     ]]></command>
 <configfiles>
@@ -29,7 +29,7 @@ from gammapy.data import Observation, observatory_locations
 from gammapy.datasets import MapDataset, MapDatasetEventSampler
 from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker, SafeMaskMaker
-from gammapy.maps import MapAxis, WcsGeom
+from gammapy.maps import MapAxis, WcsGeom, Map
 from gammapy.modeling import Fit
 from gammapy.modeling.models import (
     FoVBackgroundModel,
@@ -40,7 +40,7 @@ from gammapy.modeling.models import (
 )
 
    
-def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
+def synth_for_pointing(livetime, pointing, output_events, output_peek_png, output_peek_fits):
     # Loading IRFs
     irfs = load_irf_dict_from_file(
         "\$GAMMAPY_DATA/cta-1dc/caldb/data/cta/1dc/bcf/South_z20_50h/irf_file.fits"
@@ -123,6 +123,12 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
     events.select_offset([0, 1] * u.deg).peek()
     # plt.savefig("peek-focus.png")
 
+    counts = Map.from_geom(geom)
+    counts.fill_events(events)
+    counts.sum_over_axes().plot(add_cbar=True)
+
+    counts.write(output_peek_fits)
+
     # To plot, eg, counts:
     # dataset.counts.smooth(0.05 * u.deg).plot_interactive(add_cbar=True, stretch="linear")
     # plt.savefig("counts.png")
@@ -134,11 +140,12 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
 @click.option("--pointing-coord", default="0 0", help="Pointing coordinate (SkyCoord)")
 @click.option("--output-events", default="events.fits", help="Output events file")
 @click.option("--output-peek-png", default="peek.png", help="Output peek file")
-def main(obs_id, livetime_hr, pointing_coord, output_events, output_peek_png):
+@click.option("--output-peek-fits", default="peek.fits")
+def main(obs_id, livetime_hr, pointing_coord, output_events, output_peek_png, output_peek_fits):
     livetime = livetime_hr * u.hr
     pointing = SkyCoord(pointing_coord, unit="deg", frame="galactic")
 
-    synth_for_pointing(livetime, pointing, output_events, output_peek_png)
+    synth_for_pointing(livetime, pointing, output_events, output_peek_png, output_peek_fits)
 
 if __name__ == "__main__":
     main()
