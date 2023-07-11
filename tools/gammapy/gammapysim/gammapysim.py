@@ -13,7 +13,7 @@ from gammapy.data import Observation, observatory_locations
 from gammapy.datasets import MapDataset, MapDatasetEventSampler
 from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker, SafeMaskMaker
-from gammapy.maps import MapAxis, WcsGeom
+from gammapy.maps import MapAxis, WcsGeom, Map
 from gammapy.modeling import Fit
 from gammapy.modeling.models import (
     FoVBackgroundModel,
@@ -106,6 +106,10 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
     plt.savefig(output_peek_png)
     events.select_offset([0, 1] * u.deg).peek()
     # plt.savefig("peek-focus.png")
+
+    counts = Map.from_geom(geom)
+    counts.fill_events(events)
+    counts.sum_over_axes().plot(add_cbar=True)
 
     # To plot, eg, counts:
     # dataset.counts.smooth(0.05 * u.deg).plot_interactive(add_cbar=True, stretch="linear")

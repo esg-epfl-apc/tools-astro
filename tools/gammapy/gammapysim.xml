@@ -10,7 +10,7 @@
         python --version;
         gammapy download datasets;
         mv -fv gammapy-datasets/* gammapy-data;
-        python gammapysim.py --livetime-hr $livetime_hours --output-events $events --output-peek-png $peek_png;
+        python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png $peek_png;
     ]]></command>
 <configfiles>
     <configfile name="gammapysim_py"><![CDATA[
