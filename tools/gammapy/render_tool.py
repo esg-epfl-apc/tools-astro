@@ -6,12 +6,11 @@ tool_code = open("gammapysim/gammapysim.py").read()
 tool_code = re.sub('\$', '\\$', tool_code, re.M)
 
 tool_xml_patched = re.sub(
-        r'configfile name="gammapysim_py"', 
-        # r'<configfile name="gammapysim_py">.*?', 
-        # '<configfile name="gammapysim_py"><![CDATA[\n' + tool_code + '\n]]></configfile>', 
-        '',
+        r'<configfile name="gammapysim_py">.*?</configfile>', 
+        '<configfile name="gammapysim_py"><![CDATA[\n' + tool_code + '\n]]></configfile>', 
         tool_xml, 
-        re.MULTILINE | re.DOTALL, 
+        0,
+        re.DOTALL, 
     )
 
 with open("gammapysim.xml.backup", "w") as f:
