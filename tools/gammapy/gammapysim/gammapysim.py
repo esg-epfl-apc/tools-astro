@@ -24,15 +24,11 @@ from gammapy.modeling.models import (
 )
 
    
-def synth_for_pointing():
+def synth_for_pointing(livetime, pointing, output_events, output_peek_png):
     # Loading IRFs
     irfs = load_irf_dict_from_file(
         "$GAMMAPY_DATA/cta-1dc/caldb/data/cta/1dc/bcf/South_z20_50h/irf_file.fits"
     )
-
-    # Define the observation parameters (typically the observation duration and the pointing position):
-    livetime = 2.0 * u.hr
-    pointing = SkyCoord(0, 0, unit="deg", frame="galactic")
 
     # Define map geometry for binned simulation
     energy_reco = MapAxis.from_edges(
@@ -92,8 +88,7 @@ def synth_for_pointing():
     dataset = maker_safe_mask.run(dataset, obs)
     print(dataset)
 
-    Path("event_sampling").mkdir(exist_ok=True)
-    dataset.write("./event_sampling/dataset.fits", overwrite=True)
+    dataset.write(output_events, overwrite=True)
 
     # Add the model on the dataset and Poisson fluctuate
     dataset.models = models
@@ -107,8 +102,10 @@ def synth_for_pointing():
     print(f"Source events: {(events.table['MC_ID'] == 1).sum()}")
     print(f"Background events: {(events.table['MC_ID'] == 0).sum()}")
 
+    events.peek()
+    plt.savefig(output_peek)
     events.select_offset([0, 1] * u.deg).peek()
-    plt.savefig("peek.png")
+    # plt.savefig("peek-focus.png")
 
     # To plot, eg, counts:
     # dataset.counts.smooth(0.05 * u.deg).plot_interactive(add_cbar=True, stretch="linear")
@@ -117,13 +114,15 @@ def synth_for_pointing():
 
 @click.command()
 @click.option("--obs_id", default=1, help="Observation ID")
-@click.option("--livetime-hr", default=0.01, help="Livetime (hours)")
+@click.option("--livetime-hr", default=1, help="Livetime (hours)")
 @click.option("--pointing-coord", default="0 0", help="Pointing coordinate (SkyCoord)")
-def main(obs_id, livetime_hr, pointing_coord):
+@click.option("--output-events", default="events.fits", help="Output events file")
+@click.option("--output-peek-png", default="peek.png", help="Output peek file")
+def main(obs_id, livetime_hr, pointing_coord, output_events, output_peek_png):
     livetime = livetime_hr * u.hr
     pointing = SkyCoord(pointing_coord, unit="deg", frame="galactic")
 
-    synth_for_pointing()
+    synth_for_pointing(livetime, pointing, output_events, output_peek_png)
 
 if __name__ == "__main__":
     main()

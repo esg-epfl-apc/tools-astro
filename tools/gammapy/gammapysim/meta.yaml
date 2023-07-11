@@ -1,0 +1,32 @@
+package:
+    name: gammapysim
+    version: "0.2.0"
+
+source:
+    path: ./
+
+build:
+  noarch: python
+  script: {{PYTHON}} -m pip install .
+
+
+requirements:
+  build:
+    - python
+    - pip
+    - poetry
+
+  host:
+    - python
+    - poetry
+
+  run:
+    - python
+    - poetry
+
+test:
+  imports:
+    -
+
+about:
+  home:

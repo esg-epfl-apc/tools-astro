@@ -1,1 +1,4 @@
 tool_test_output.*
+gammapy-data
+gammapy-datasets/
+__pycache__
