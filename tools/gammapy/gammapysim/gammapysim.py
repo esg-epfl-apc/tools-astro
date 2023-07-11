@@ -111,7 +111,7 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png, outpu
     counts.fill_events(events)
     counts.sum_over_axes().plot(add_cbar=True)
 
-    counts.write(output_peek_fits)
+    counts.sum_over_axes().write(output_peek_fits)
 
     # To plot, eg, counts:
     # dataset.counts.smooth(0.05 * u.deg).plot_interactive(add_cbar=True, stretch="linear")

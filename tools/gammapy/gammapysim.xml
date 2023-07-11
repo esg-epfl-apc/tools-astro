@@ -10,7 +10,8 @@
         python --version;
         gammapy download datasets;
         export GAMMAPY_DATA=\$PWD/gammapy-datasets/1.1;
-        python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png $peek_png;
+        python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png ${peek_png}.png --pointing-coord ${pointing_coord};
+        mv -fv ${peek_png}.png $peek_png
     ]]></command>
 <configfiles>
     <configfile name="gammapysim_py"><![CDATA[
@@ -127,7 +128,7 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png, outpu
     counts.fill_events(events)
     counts.sum_over_axes().plot(add_cbar=True)
 
-    counts.write(output_peek_fits)
+    counts.sum_over_axes().write(output_peek_fits)
 
     # To plot, eg, counts:
     # dataset.counts.smooth(0.05 * u.deg).plot_interactive(add_cbar=True, stretch="linear")
@@ -155,10 +156,12 @@ if __name__ == "__main__":
 
     <inputs>
         <param type="float" name="livetime_hours" label="Livetime, hours" value="1"/>
+        <param type="text" name="pointing_coord" label="Pointing coordinates" value="0 0"/>
     </inputs>
     <outputs>
         <data name="events" format="fits"/>
         <data name="peek_png" format="png" label="peek"/>
+        <data name="peek_fits" format="fits" label="peek fits"/>
     </outputs>
     <tests>
         <test>
