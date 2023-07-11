@@ -8,7 +8,7 @@ tool_code = re.sub('\$', '$$', tool_code, re.M)
 with open("gammapysim.xml", "w") as f:
     f.write(re.sub(
             r'<configfile name="gammapysim.py">.*?</configfile>', 
-            '<configfile name="gammapysim.py"><![CDATA[\n' + tool_code + '\n]]><', 
+            '<configfile name="gammapysim.py"><![CDATA[\n' + tool_code + '\n]]></configfile>', 
             tool_xml, 
             re.M | re.S
         )
