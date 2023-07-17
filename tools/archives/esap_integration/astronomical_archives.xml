@@ -1,0 +1,85 @@
+<tool id="astronomical_archives" name="Browse astronomical archives" version="1.0.0">
+    <description>queries astronomical archives</description>
+    <edam_operations>
+        <edam_operation>operation_0224</edam_operation>
+    </edam_operations>
+    <command>
+      <![CDATA[
+
+        #if $archiveselection.archive == 'astron' :
+
+          python '$__tool_directory__/astronomical_archives.py' '$output' '$archiveselection.archive' '$archiveselection.target' '$archiveselection.ra' '$archiveselection.dec' '$archiveselection.search_radius' '$archiveselection.astron_collections' '$file_type' '$number_of_files' '$output_url'
+
+          #set $file_name = "fitsfile"
+          '${output.dataset.dataset.id}:${output.files_path}:${file_name}'
+
+        #elif $archiveselection.archive == 'ivoa' :
+
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$archiveselection.archive' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$archiveselection.query' '$file_type' '$number_of_files' '$output_url'
+
+        #end if
+
+        python '$__tool_directory__/astronomical_archives.py' '$output'
+      ]]>
+    </command>
+    <inputs>
+        <param name="file_type" type="select" label="File type selection">
+          <option value="download" selected="true">Direct download</option>
+          <option value="urls">List of urls</option>
+        </param>
+        <param name="number_of_files" type="text" label="Number of files or urls to download" />
+        <conditional name="archiveselection">
+            <param name="archive" type="select" label="Archive Selection">
+              <option value="astron" selected="true">Astron archive</option>
+              <option value="ivoa">IVOA registry</option>
+              <option value="custom">Explore IVOA registry</option>
+            </param>
+            <when value="astron">
+              <param name="target" type="text" label="Target" />
+              <param name="ra" type="text" label="RA (degrees)" />
+              <param name="dec" type="text" label="Dec (degrees)" />
+              <param name="search_radius" type="text" label="Search radius (degrees)" />
+              <param name="astron_collections" type="select" label="Collections">
+                <option value="all" selected="true">All</option>
+                <option value="apertif-dr1">Apertif-dr1</option>
+                <option value="hetdex">Hetdex</option>
+                <option value="lotss-dr1">Lotss-dr1</option>
+                <option value="lotss-pdr">Lotss-pdr</option>
+                <option value="MSSSVerification">MSSSVerification</option>
+                <option value="sauron">Sauron</option>
+                <option value="tgssadr">Tgssadr</option>
+              </param>
+            </when>
+            <when value="ivoa">
+              <param name="keyword" type="text" label="Keyword" />
+              <param name="service_type" type="select" label="Service type">
+                <option value="tap" selected="true">TAP: Tables</option>
+                <option value="scs">SCS: Cone search</option>
+                <option value="ssa">SSA: Spectra</option>
+                <option value="sia">SIA: Images</option>
+              </param>
+              <param name="wavebands" type="select" label="Wavebands">
+                <option value="all" selected="true">All</option>
+                <option value="radio">Radio</option>
+                <option value="millimeter">Millimeter</option>
+                <option value="infrared">Infrared</option>
+                <option value="optical">Optical</option>
+                <option value="uv">UV</option>
+                <option value="euv">EUV</option>
+                <option value="x-ray">X-ray</option>
+                <option value="gamma-ray">Gamma-ray</option>
+              </param>
+              <param name="query" type="text" label="Query" value="SELECT TOP 100 * from ivoa.obscore" />
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="output" format="fits" />
+        <data name="output_url" format="tabular" />
+    </outputs>
+    <help><![CDATA[
+At the moment this tool allows the following simple searches:
+
+
+    ]]></help>
+</tool>

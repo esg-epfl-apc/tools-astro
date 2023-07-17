@@ -1,0 +1,55 @@
+<tool id="astronomical_archives" name="Browse astronomical archives" version="1.0.0">
+    <description>queries astronomical archives</description>
+    <requirements>
+        <requirement type="package" version="5.2.2">astropy</requirement>
+        <requirement type="package" version="1.4.1">pyvo</requirement>
+    </requirements>
+    <edam_operations>
+        <edam_operation>operation_0224</edam_operation>
+    </edam_operations>
+    <command>
+      <![CDATA[
+
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$keyword' '$wavebands' '$service_type' '$query' '$file_type' '$number_of_files' '$output_url'
+
+            #set $file_name = "fitsfile"
+            '${output.dataset.dataset.id}:${output.files_path}:${file_name}'
+
+      ]]>
+    </command>
+    <inputs>
+      <param name="file_type" type="select" label="File type selection">
+        <option value="download" selected="true">Direct download</option>
+        <option value="urls">List of urls</option>
+      </param>
+      <param name="number_of_files" type="text" label="Number of files or urls to download" />
+      <param name="keyword" type="text" label="Keyword" />
+      <param name="service_type" type="select" label="Service type">
+        <option value="tap" selected="true">TAP: Tables</option>
+        <option value="scs">SCS: Cone search</option>
+        <option value="ssa">SSA: Spectra</option>
+        <option value="sia">SIA: Images</option>
+      </param>
+      <param name="wavebands" type="select" label="Wavebands">
+        <option value="all" selected="true">All</option>
+        <option value="radio">Radio</option>
+        <option value="millimeter">Millimeter</option>
+        <option value="infrared">Infrared</option>
+        <option value="optical">Optical</option>
+        <option value="uv">UV</option>
+        <option value="euv">EUV</option>
+        <option value="x-ray">X-ray</option>
+        <option value="gamma-ray">Gamma-ray</option>
+      </param>
+      <param name="query" type="text" label="Query" value="SELECT TOP 100 * from ivoa.obscore" />
+    </inputs>
+    <outputs>
+        <data name="output" format="fits" />
+        <data name="output_url" format="tabular" />
+    </outputs>
+    <help><![CDATA[
+At the moment this tool allows the following simple searches:
+
+
+    ]]></help>
+</tool>
