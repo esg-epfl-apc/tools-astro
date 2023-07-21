@@ -1,4 +1,4 @@
-<tool id="astronomical_archives" name="Browse astronomical archives" version="1.0.0">
+<tool id="astronomical_archives" name="Astronomical archives" version="1.0.0">
     <description>queries astronomical archives</description>
     <requirements>
         <requirement type="package" version="5.2.2">astropy</requirement>

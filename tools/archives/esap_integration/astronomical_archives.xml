@@ -1,4 +1,4 @@
-<tool id="astronomical_archives" name="Browse astronomical archives" version="1.0.0">
+<tool id="astronomical_archives" name="Astronomical archives" version="1.0.0">
     <description>queries astronomical archives</description>
     <edam_operations>
         <edam_operation>operation_0224</edam_operation>
@@ -6,28 +6,34 @@
     <command>
       <![CDATA[
 
+        mkdir fits;
+
         #if $archiveselection.archive == 'astron' :
 
-          python '$__tool_directory__/astronomical_archives.py' '$output' '$archiveselection.archive' '$archiveselection.target' '$archiveselection.ra' '$archiveselection.dec' '$archiveselection.search_radius' '$archiveselection.astron_collections' '$file_type' '$number_of_files' '$output_url'
+          python '$__tool_directory__/archives.py' '$output' '$archiveselection.archive' '$archiveselection.target' '$archiveselection.ra' '$archiveselection.dec' '$archiveselection.search_radius' '$archiveselection.astron_collections' '$file_type' $number_of_files '$output.id'
 
           #set $file_name = "fitsfile"
           '${output.dataset.dataset.id}:${output.files_path}:${file_name}'
 
         #elif $archiveselection.archive == 'ivoa' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$archiveselection.archive' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$archiveselection.query' '$file_type' '$number_of_files' '$output_url'
+          #for $q in $archiveselection.parameters
+            #set $param = $q.parameter
+          #end for
+
+          python '$__tool_directory__/archives.py' '$output' '$archiveselection.archive' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$archiveselection.query' '$file_type' $number_of_files '$output.id'
 
         #end if
 
-        python '$__tool_directory__/astronomical_archives.py' '$output'
+        python '$__tool_directory__/archives.py' '$output'
       ]]>
     </command>
     <inputs>
         <param name="file_type" type="select" label="File type selection">
-          <option value="download" selected="true">Direct download</option>
-          <option value="urls">List of urls</option>
+          <option value="files" selected="true">Download urls + files</option>
+          <option value="urls">Download urls only</option>
         </param>
-        <param name="number_of_files" type="text" label="Number of files or urls to download" />
+        <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 10" />
         <conditional name="archiveselection">
             <param name="archive" type="select" label="Archive Selection">
               <option value="astron" selected="true">Astron archive</option>
@@ -69,13 +75,17 @@
                 <option value="x-ray">X-ray</option>
                 <option value="gamma-ray">Gamma-ray</option>
               </param>
-              <param name="query" type="text" label="Query" value="SELECT TOP 100 * from ivoa.obscore" />
+              <param name="query" type="text" label="Query" value="SELECT TOP 100 * from ivoa.obscore" help="Still has some bugs better leave as is or blank" />
+              <repeat name="parameters" title="Query Parameters" help="Not working">
+                <param name="parameter" type="text" label="Parameters"/>
+              </repeat>
             </when>
         </conditional>
     </inputs>
     <outputs>
-        <data name="output" format="fits" />
-        <data name="output_url" format="tabular" />
+        <data name="output" format="txt" label="${tool.name} -> ${archiveselection.archive}:" >
+          <discover_datasets pattern="__designation_and_ext__" directory="fits" visible="true" format="fits" />
+        </data>
     </outputs>
     <help><![CDATA[
 At the moment this tool allows the following simple searches:

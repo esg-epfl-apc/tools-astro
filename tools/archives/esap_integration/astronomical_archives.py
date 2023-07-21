@@ -271,6 +271,8 @@ class IVOAArchive(Archive):
     def check_adql_query(self):
         if self.registry_query_parameters['adql_query'] == '':
             self.registry_query_parameters['adql_query'] = "SELECT TOP 1 * from ivoa.obscore where dataproduct_type = 'image'"
+        elif "WHERE dataproduct_type = image" not in self.registry_query_parameters['adql_query']:
+            self.registry_query_parameters['adql_query'] = "SELECT TOP 1 * from ivoa.obscore where dataproduct_type = 'image'"
 
 
 class ADQLQueryValidator:
@@ -348,18 +350,78 @@ class FileHandler:
         return fits_file
 
     @staticmethod
-    def create_file_from_url_list(file_urls):
-        url_file = ''
-
-        for url in file_urls:
-            url_file + url + ' '
-
-        return url_file
+    def write_file_to_output(file, output):
+        with open(output, "w") as file_output:
+            file_output.write(file)
 
     @staticmethod
-    def write_file_to_output(file, output):
-        with open(output, "wb") as file_output:
+    def write_urls_to_output(urls: [], output):
+        with open(output, "w") as file_output:
+            for url in urls:
+                file_output.write(url + ',')
+
+    @staticmethod
+    def write_multiple_outputs(output_id):
+
+        out_files = {}
+
+        for i in range(1, 10):
+            out_files[i] = open(
+                os.path.join(database_tmp_dir, "primary_%s_%s_visible_interval_%s" % (output_id, i, i)), "w+"
+            )
+            out_files[i].write("fits")
+
+        for file_out in out_files.values():
+            file_out.close()
+
+    @staticmethod
+    def write_collection(output):
+        dir = os.getcwd()
+
+        dir += '/fits'
+
+        upload_dir = os.path.join(dir, 'file.fits')
+
+        with open(output, "w") as file_output:
+            file_output.write(upload_dir)
+
+    @staticmethod
+    def write_collection1(index):
+        dir = os.getcwd()
+
+        dir += '/fits'
+
+        upload_dir = os.path.join(dir, index + '.fits')
+
+        with open(upload_dir, "w") as file_output:
+            file_output.write(upload_dir)
+
+    @staticmethod
+    def write_file_to_subdir(file, index):
+        dir = os.getcwd()
+
+        dir += '/fits'
+
+        upload_dir = os.path.join(dir, str(index) + '.fits')
+
+        with open(upload_dir, "wb") as file_output:
             file_output.write(file)
+
+    @staticmethod
+    def get_file_name_from_url(url, index=None):
+        url_parts = url.split('/')
+
+        file_name = 'archive file '
+
+        try:
+            if (url_parts[-1]) != '':
+                file_name = url_parts[-1]
+            elif len(url_parts) > 1:
+                file_name = url_parts[-2]
+        except Exception:
+            pass
+
+        return file_name
 
 
 if __name__ == "__main__":
@@ -377,13 +439,12 @@ if __name__ == "__main__":
         search_radius = sys.argv[6]
         astron_collection = sys.argv[7]
 
-        file_type = sys.argv[8]
-        number_of_files = sys.argv[9]
-        tabular_output = sys.argv[10]
+        download_type = sys.argv[8]
+        number_of_files = int(sys.argv[9])
 
         astron_archive = AstronArchive()
 
-        file_url = astron_archive.query_archive(target, ra, dec, search_radius, astron_collection, 1)
+        file_url = astron_archive.query_archive(target, ra, dec, search_radius, astron_collection, number_of_files)
 
     elif archive_type == IVOAArchive.archive_type_name:
 
@@ -392,18 +453,24 @@ if __name__ == "__main__":
         service_type = sys.argv[5]
         adql_query = sys.argv[6]
 
-        file_type = sys.argv[7]
-        number_of_files = sys.argv[8]
-        tabular_output = sys.argv[9]
+        download_type = sys.argv[7]
+        number_of_files = int(sys.argv[8])
 
         ivoa_archive = IVOAArchive()
 
-        file_url = ivoa_archive.query_archive(keyword, waveband, service_type, adql_query, 1)
+        file_url = ivoa_archive.query_archive(keyword, waveband, service_type, adql_query, number_of_files)
 
-    if file_url:
-        fits_file = FileHandler.download_file_from_url(file_url[0])
+    if file_url and download_type == 'urls':
+
+        FileHandler.write_urls_to_output(file_url, output)
+
+    elif file_url and download_type == 'files':
+
+        FileHandler.write_urls_to_output(file_url, output)
+
+        for i, url in enumerate(file_url):
+            fits_file = FileHandler.download_file_from_url(url)
+            FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url))
+    else:
+        fits_file = 'No urls matching parameters'
         FileHandler.write_file_to_output(fits_file, output)
-
-        # if file_type == 'urls':
-        #     url_file = FileHandler.create_file_from_url_list(file_url)
-        #     FileHandler.write_file_to_output(url_file, tabular_output)
