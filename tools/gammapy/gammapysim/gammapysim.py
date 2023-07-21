@@ -18,13 +18,15 @@ from gammapy.modeling import Fit
 from gammapy.modeling.models import (
     FoVBackgroundModel,
     GaussianSpatialModel,
+    PointSpatialModel,
     Models,
     PowerLawSpectralModel,
     SkyModel,
 )
 
    
-def synth_for_pointing(livetime, pointing, output_events, output_peek_png, output_peek_fits):
+def synth_for_pointing(livetime, pointing, source, 
+                       output_events, output_peek_png, output_peek_fits):
     # Loading IRFs
     irfs = load_irf_dict_from_file(
         "$GAMMAPY_DATA/cta-1dc/caldb/data/cta/1dc/bcf/South_z20_50h/irf_file.fits"
@@ -35,7 +37,7 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png, outpu
         np.logspace(-1.0, 1.0, 10), unit="TeV", name="energy", interp="log"
     )
     geom = WcsGeom.create(
-        skydir=(0, 0),
+        skydir=pointing,
         binsz=0.02,
         width=(6, 6),
         frame="galactic",
@@ -52,9 +54,10 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png, outpu
 
     # Define sky model to used simulate the data.
     # Here we use a Gaussian spatial model and a Power Law spectral model.
-    spatial_model = GaussianSpatialModel(
-        lon_0="0.2 deg", lat_0="0.1 deg", sigma="0.3 deg", frame="galactic"
-    )
+    # spatial_model = GaussianSpatialModel(
+    #     lon_0="0.2 deg", lat_0="0.1 deg", sigma="0.3 deg", frame="galactic"
+    # )
+    spatial_model = PointSpatialModel(lon_0=source.galactic.l, lat_0=source.b, frame="galactic")
     spectral_model = PowerLawSpectralModel(
         index=3, amplitude="1e-11 cm-2 s-1 TeV-1", reference="1 TeV"
     )
@@ -119,17 +122,18 @@ def synth_for_pointing(livetime, pointing, output_events, output_peek_png, outpu
 
 
 @click.command()
-@click.option("--obs_id", default=1, help="Observation ID")
 @click.option("--livetime-hr", default=1, type=float, help="Livetime (hours)")
 @click.option("--pointing-coord", default="0 0", help="Pointing coordinate (SkyCoord)")
+@click.option("--source-coord", default="0 0", help="Source coordinate (SkyCoord)")
 @click.option("--output-events", default="events.fits", help="Output events file")
 @click.option("--output-peek-png", default="peek.png", help="Output peek file")
 @click.option("--output-peek-fits", default="peek.fits")
-def main(obs_id, livetime_hr, pointing_coord, output_events, output_peek_png, output_peek_fits):
+def main(livetime_hr, pointing_coord, source_coord, output_events, output_peek_png, output_peek_fits):
     livetime = livetime_hr * u.hr
     pointing = SkyCoord(pointing_coord, unit="deg", frame="galactic")
+    source = SkyCoord(source_coord, unit="deg", frame="galactic")
 
-    synth_for_pointing(livetime, pointing, output_events, output_peek_png, output_peek_fits)
+    synth_for_pointing(livetime, pointing, source, output_events, output_peek_png, output_peek_fits)
 
 if __name__ == "__main__":
     main()

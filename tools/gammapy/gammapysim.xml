@@ -10,7 +10,7 @@
         python --version;
         gammapy download datasets;
         export GAMMAPY_DATA=\$PWD/gammapy-datasets/1.1;
-        python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png ${peek_png}.png --pointing-coord ${pointing_coord};
+        python $gammapysim_py --livetime-hr $livetime_hours --output-events $events --output-peek-png ${peek_png}.png --output-peek-fits ${peek_fits} --pointing-coord "${pointing_coord}";
         mv -fv ${peek_png}.png $peek_png
     ]]></command>
 <configfiles>
@@ -156,18 +156,22 @@ if __name__ == "__main__":
 
     <inputs>
         <param type="float" name="livetime_hours" label="Livetime, hours" value="1"/>
-        <param type="text" name="pointing_coord" label="Pointing coordinates" value="0 0"/>
+        <param type="text" name="pointing_coord" label="Pointing coordinates (SkyCoord format)" value="0 0"/>
+        <param type="text" name="source_coord" label="Source coordinates (SkyCoord format)" value="0 0"/>
     </inputs>
     <outputs>
-        <data name="events" format="fits"/>
-        <data name="peek_png" format="png" label="peek"/>
-        <data name="peek_fits" format="fits" label="peek fits"/>
+        <data name="events" format="fits" label="events.fits"/>
+        <data name="peek_png" format="png" label="preview png of gammapy simulation"/>
+        <data name="peek_fits" format="fits" label="sky image of gammapy simulation"/>
     </outputs>
     <tests>
         <test>
             <param name="livetime_hours" value="1"/>
+            <param name="pointing_coord" value="0 0"/>
+            <param name="source_coord" value="0 0"/>
             <output name="events" file="events.fits"/>
             <output name="peek_png" file="peek.png"/>
+            <output name="peek_fits" file="peek.fits"/>
         </test>
     </tests>
     <help><![CDATA[
