@@ -10,45 +10,154 @@
     <command>
       <![CDATA[
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$keyword' '$wavebands' '$service_type' '$query' '$file_type' '$number_of_files' '$output_url'
+        mkdir fits;
 
-            #set $file_name = "fitsfile"
-            '${output.dataset.dataset.id}:${output.files_path}:${file_name}'
+        #if $query_section.query_selection.query_type == 'none':
 
+          #if $archiveselection.archive_type == 'registry' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type'
+
+          #elif $archiveselection.archive_type == 'archive' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type'
+
+          #end if
+
+        #elif $query_section.query_selection.query_type == 'obscore_query':
+
+          #if $archiveselection.archive_type == 'registry' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+
+          #elif $archiveselection.archive_type == 'archive' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+
+          #end if
+
+        #elif $query_section.query_selection.query_type == 'raw_query':
+
+          #if $archiveselection.archive_type == 'registry' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+
+          #elif $archiveselection.archive_type == 'archive' :
+
+            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+
+          #end if
+
+        #end if
+
+        python '$__tool_directory__/archives.py' '$output'
       ]]>
     </command>
     <inputs>
-      <param name="file_type" type="select" label="File type selection">
-        <option value="download" selected="true">Direct download</option>
-        <option value="urls">List of urls</option>
-      </param>
-      <param name="number_of_files" type="text" label="Number of files or urls to download" />
-      <param name="keyword" type="text" label="Keyword" />
-      <param name="service_type" type="select" label="Service type">
-        <option value="tap" selected="true">TAP: Tables</option>
-        <option value="scs">SCS: Cone search</option>
-        <option value="ssa">SSA: Spectra</option>
-        <option value="sia">SIA: Images</option>
-      </param>
-      <param name="wavebands" type="select" label="Wavebands">
-        <option value="all" selected="true">All</option>
-        <option value="radio">Radio</option>
-        <option value="millimeter">Millimeter</option>
-        <option value="infrared">Infrared</option>
-        <option value="optical">Optical</option>
-        <option value="uv">UV</option>
-        <option value="euv">EUV</option>
-        <option value="x-ray">X-ray</option>
-        <option value="gamma-ray">Gamma-ray</option>
-      </param>
-      <param name="query" type="text" label="Query" value="SELECT TOP 100 * from ivoa.obscore" />
+        <param name="file_type" type="select" label="File type selection">
+          <option value="files" selected="true">Download urls + files</option>
+          <option value="urls">Download urls only</option>
+        </param>
+        <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 10" />
+        <conditional name="archiveselection">
+            <param name="archive_type" type="select" label="Archive Selection">
+              <option value="registry">Query IVOA registry</option>
+              <option value="archive">Query specific IVOA archive</option>
+            </param>
+            <when value="registry">
+              <param name="keyword" type="text" label="Keyword" />
+              <param name="service_type" type="select" label="Service type">
+                <option value="TAP" selected="true">TAP: Tables</option>
+                <option value="SCS">SCS: Cone search</option>
+                <option value="SSA">SSA: Spectra</option>
+                <option value="SIA">SIA: Images</option>
+              </param>
+              <param name="wavebands" type="select" label="Wavebands">
+                <option value="all" selected="true">All</option>
+                <option value="radio">Radio</option>
+                <option value="millimeter">Millimeter</option>
+                <option value="infrared">Infrared</option>
+                <option value="optical">Optical</option>
+                <option value="uv">UV</option>
+                <option value="euv">EUV</option>
+                <option value="x-ray">X-ray</option>
+                <option value="gamma-ray">Gamma-ray</option>
+              </param>
+            </when>
+            <when value="archive">
+              <param name="archive" type="select" label="Archive">
+                <options from_file="astronomical_archives_gen.loc">
+                  <column name="value" index="2" />
+                  <column name="name" index="1" />
+                </options>
+              </param>
+            </when>
+        </conditional>
+        <section name="query_section" title="Query selection" expanded="false">
+          <conditional name="query_selection">
+            <param name="query_type" type="select" label="ADQL Query Selection">
+              <option value="none">No specific query (first n files from archive)</option>
+              <option value="obscore_query">IVOA obscore table query builder</option>
+              <option value="raw_query">Raw ADQL query builder</option>
+            </param>
+            <when value="obscore_query">
+              <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type (image etc.)" />
+              <param name="obs_collection" type="text" label="Collection" help="Name of the data collection" />
+              <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
+              <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
+              <param name="em_min" type="text" label="Spectral coordinates (start)" />
+              <param name="em_max" type="text" label="Spectral coordinates (end)" />
+              <param name="target_name" type="text" label="Target name" help="Name of the astronomical object observed" />
+              <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
+              <param name="s_fov" type="text" label="Bounds of the covered region" />
+              <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
+                <option value="none">None</option>
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </param>
+              <param name="order_by" type="select" label="Order by" help="Field to use for ordering the results">
+                <option value="none" selected="true">No specific order</option>
+                <option value="size" >Order by size</option>
+                <option value="collection" >Order by collection</option>
+                <option value="object" >Order by name</option>
+              </param>
+            </when>
+            <when value="raw_query">
+              <param name="table" type="text" label="Table name" help="Name of the table you want to query (FROM clause)" required="True" />
+              <section name="where_clause" title="WHERE clause (field = value)" expanded="false">
+                <param name="where_field" type="text" label="WHERE field" help="WHERE **field** = value" />
+                <param name="where_condition" type="text" label="WHERE value" help="WHERE field = **value**" />
+              </section>
+              <param name="url_field" type="text" label="Url field" help="Table field containing the url of the file to download" required="True" />
+            </when>
+          </conditional>
+        </section>
     </inputs>
     <outputs>
-        <data name="output" format="fits" />
-        <data name="output_url" format="tabular" />
+
+
+        <data name="output" format="txt" label="${tool.name} -> ${archiveselection.archive_type}:" >
+          <discover_datasets pattern="__designation_and_ext__" directory="fits" visible="true" format="fits" />
+        </data>
+
     </outputs>
     <help><![CDATA[
-At the moment this tool allows the following simple searches:
+Archives description :
+-------------------------
+AIP GAVO TAP
+http://gavo.aip.de/tap
+-------------------------
+The AIP DaCHS's TAP end point. The Table Access Protocol (TAP) lets you execute queries against our database tables, inspect various metadata, and upload your own data. It is thus the VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: dens256, fof, redshifts from the bolshoi schema, columns, services, tables from the glots schema, fof, fofmtree, fofparticles, particles85, redshifts, treesnapnums from the mdr1 schema, rave_dr4 from the ravedr4 schema, alt_identifier, authorities, capability, g_num_stat, interface, intf_param, registries, relationship, res_date, res_detail, res_role, res_schema, res_subject, res_table, resource, stc_spatial, stc_spectral, stc_temporal, subject_uat, table_column, tap_table, validation from the rr schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema.
+-------------------------
+STScI CAOMTAP
+https://vao.stsci.edu/CAOMTAP/TapService.aspx
+-------------------------
 
 
     ]]></help>
