@@ -16,11 +16,11 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type'
 
           #end if
 
@@ -28,11 +28,11 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
 
           #end if
 
@@ -40,17 +40,17 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/archivespyvo.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
 
           #end if
 
         #end if
 
-        python '$__tool_directory__/archives.py' '$output'
+        python '$__tool_directory__/astronomical_archives.py' '$output'
       ]]>
     </command>
     <inputs>
