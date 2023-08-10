@@ -8,9 +8,7 @@ import urllib
 from urllib import parse, request
 
 
-
 class Service:
-
     # https://pyvo.readthedocs.io/en/latest/api/pyvo.registry.Servicetype.html
 
     services = {
@@ -42,7 +40,6 @@ class Service:
 
 
 class Waveband:
-
     # https://pyvo.readthedocs.io/en/latest/api/pyvo.registry.Waveband.html
     # https://www.ivoa.net/rdf/messenger/2020-08-26/messenger.html
 
@@ -73,7 +70,6 @@ class Waveband:
 
 
 class TapArchive:
-
     # https://www.ivoa.net/documents/ObsCore/20170509/REC-ObsCore-v1.1-20170509
 
     service_type = Service.services['TAP']
@@ -89,6 +85,7 @@ class TapArchive:
 
     def get_resources(self, query, number_of_results, url_field='access_url'):
         resource_list = []
+        resource_list_hydrated = []
 
         if self.initialized:
 
@@ -97,11 +94,20 @@ class TapArchive:
 
                 for i, resource in enumerate(raw_resource_list):
                     if i < number_of_results:
-                        resource_list.append(resource[url_field])
+                        # resource_list.append(resource[url_field])
+                        resource_list_hydrated.append(self._get_resource_object(resource))
             except Exception as e:
                 pass
 
-        return resource_list
+        return resource_list_hydrated
+
+    def _get_resource_object(self, resource):
+        resource_hydrated = {}
+
+        for key, value in resource.items():
+            resource_hydrated[key] = value
+
+        return resource_hydrated
 
     def initialize(self):
         self._get_service()
@@ -270,7 +276,6 @@ class BaseADQLQuery:
 
 
 class ADQLObscoreQuery(BaseADQLQuery):
-
     order_by_field = {
         'size': 'access_estsize',
         'collection': 'obs_collection',
@@ -282,6 +287,8 @@ class ADQLObscoreQuery(BaseADQLQuery):
     def __init__(self,
                  dataproduct_type,
                  obs_collection,
+                 obs_title,
+                 obs_id,
                  facility_name,
                  instrument_name,
                  em_min,
@@ -290,6 +297,8 @@ class ADQLObscoreQuery(BaseADQLQuery):
                  obs_publisher_id,
                  s_fov,
                  calibration_level,
+                 t_min,
+                 t_max,
                  order_by):
 
         super().__init__()
@@ -303,6 +312,8 @@ class ADQLObscoreQuery(BaseADQLQuery):
         self.parameters = {
             'dataproduct_type': dataproduct_type,
             'obs_collection': obs_collection,
+            'obs_title': obs_title,
+            'obs_id': obs_id,
             'facility_name': facility_name,
             'instrument_name': instrument_name,
             'em_min': em_min,
@@ -310,7 +321,9 @@ class ADQLObscoreQuery(BaseADQLQuery):
             'target_name': target_name,
             'obs_publisher_id': obs_publisher_id,
             's_fov': s_fov,
-            'calibration_level': calibration_level
+            'calibration_level': calibration_level,
+            't_min': t_min,
+            't_max': t_max
         }
 
         self.order_by = order_by
@@ -338,7 +351,6 @@ class ADQLObscoreQuery(BaseADQLQuery):
 
 
 class ADQLTapQuery(BaseADQLQuery):
-
     base_query = 'SELECT TOP 100 * FROM '
 
     def __init__(self):
@@ -348,7 +360,171 @@ class ADQLTapQuery(BaseADQLQuery):
         return super().get_order_by_clause(order_type)
 
     def get_query(self, table, where_field, where_condition):
-        return ADQLTapQuery.base_query + str(table) + ' WHERE ' + str(where_field) + ' = ' + '\''+str(where_condition)+'\''
+        if where_field != '' and where_condition != '':
+            return ADQLTapQuery.base_query + str(table) + ' WHERE ' + str(where_field) + ' = ' + '\'' + str(
+                where_condition) + '\''
+        else:
+            return ADQLTapQuery.base_query + str(table)
+
+
+class HTMLReport:
+    _html_report_base_header = ''
+    _html_report_base_body = ''
+    _html_report_base_footer = ''
+    _html_report_base_script = ''
+
+    def __init__(self):
+        pass
+
+
+class OutputHandler:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def generateBasicUrlFile(urls_data):
+        FileHandler.write_urls_to_output(urls_data)
+
+    @staticmethod
+    def generateCSVOutput(urls_data):
+        csv_file = ''
+
+        for i, url in enumerate(urls_data):
+            csv_file += url['access_url']
+            csv_file += ','
+            csv_file += url['est_size']
+            csv_file += ','
+            csv_file += url['obs_collection']
+            csv_file += ','
+            csv_file += url['target_name']
+            csv_file += '\n'
+
+        return csv_file
+
+    @staticmethod
+    def generateHTMLOutput(urls_data, archive_name, adql_query):
+        html_file = ''
+
+        css = """ <head><style>
+
+            details {
+                padding: 10px;
+            }
+
+            .table-wrapper {
+                margin: 10px 70px 70px;
+                box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+            }
+
+            .fl-table {
+                border-radius: 5px;
+                font-size: 12px;
+                font-weight: normal;
+                border: none;
+                border-collapse: collapse;
+                width: 100%;
+                max-width: 100%;
+                white-space: nowrap;
+                background-color: white;
+            }
+
+            .fl-table td, .fl-table th {
+                text-align: center;
+                padding: 8px;
+            }
+
+            .fl-table td {
+                border: 1px solid #999999;
+                font-size: 15px;
+            }
+
+            .fl-table thead th {
+                color: #ffffff;
+                background: #4FC3A1;
+                border: 1px solid #999999;
+            }
+
+
+            .fl-table thead th:nth-child(odd) {
+                color: #ffffff;
+                background: #324960;
+            }
+
+            .fl-table tr:nth-child(even) {
+                background: #F8F8F8;
+            }
+
+            .five h2 {
+              text-align: center;
+              font-size: 22px;
+              font-weight: 700; color:#202020;
+              text-transform: uppercase;
+              word-spacing: 1px; letter-spacing:2px;
+              margin-bottom: 50px;
+            }
+
+            .five h2 span {
+              padding-top: 40px;
+              text-transform: none;
+              font-size:.80em;
+              font-weight: bold;
+              font-family: "Playfair Display","Bookman",serif;
+              color:#999; letter-spacing:-0.005em; word-spacing:1px;
+              letter-spacing:none;
+            }
+
+            .five h1:before {
+              background-color: #dfdfdf;
+            }
+
+        </style></head>"""
+
+        html_file += css
+
+        html_file += """<div class="five">
+                      <h2>Resources Preview from archive :
+                        <br />
+                        <br />
+                        <span> """ + str(archive_name) + """</span>
+                        <br />
+                        <br />
+                        <span> With ADQL query : """ + str(adql_query) + """</span>
+                      </h2>
+                    </div>"""
+
+        for resource in urls_data:
+
+            html_file += '<table class="fl-table"><thead><tr>'
+
+            for key in resource.keys():
+                html_file += '<th>' + str(key) + '</th>'
+
+            html_file += '</thead></tr>'
+            html_file += '<tbody><tr>'
+
+            for key, value in resource.items():
+                html_file += '<td>' + str(value) + '</td>'
+
+            html_file += '</tr></tbody>'
+            html_file += '</table>'
+
+            if 'preview' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['preview']) + '"/></details>'
+
+            if 'preview_url' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['preview_url']) + '"/></details>'
+
+            if 'postcard_url' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['postcard_url']) + '"/></details>'
+
+            html_file += '<br />'
+            html_file += '<br />'
+
+        return html_file
 
 
 class FileHandler:
@@ -369,10 +545,10 @@ class FileHandler:
             file_output.write(file)
 
     @staticmethod
-    def write_urls_to_output(urls: [], output):
+    def write_urls_to_output(urls: [], output, access_url="access_url"):
         with open(output, "w") as file_output:
             for url in urls:
-                file_output.write(url+',')
+                file_output.write(url[access_url] + ',')
 
     @staticmethod
     def write_multiple_outputs(output_id):
@@ -420,6 +596,7 @@ class FileHandler:
 
         with open(upload_dir, "wb") as file_output:
             file_output.write(file)
+
     @staticmethod
     def get_file_name_from_url(url, index=None):
         url_parts = url.split('/')
@@ -428,7 +605,7 @@ class FileHandler:
 
         try:
 
-            if(url_parts[-1]) != '':
+            if (url_parts[-1]) != '':
                 file_name = url_parts[-1]
             elif len(url_parts) > 1:
                 file_name = url_parts[-2]
@@ -445,7 +622,19 @@ if __name__ == "__main__":
     number_of_files = sys.argv[3]
     archive_type = sys.argv[4]
 
+    archive = ''
+
     file_url = []
+
+    outputHandler = OutputHandler()
+
+    if number_of_files is not None and number_of_files != '':
+        if int(number_of_files) < 1:
+            number_of_files = 1
+        elif int(number_of_files) > 10:
+            number_of_files = 10
+    else:
+        number_of_files = 1
 
     if archive_type == 'registry':
 
@@ -467,18 +656,26 @@ if __name__ == "__main__":
             s_fov = sys.argv[17]
             calibration_level = sys.argv[18]
             order_by = sys.argv[19]
+            obs_title = sys.argv[20]
+            obs_id = sys.argv[21]
+            t_min = sys.argv[22]
+            t_max = sys.argv[23]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
-                                                  obs_collection,
-                                                  facility_name,
-                                                  instrument_name,
-                                                  em_min,
-                                                  em_max,
-                                                  target_name,
-                                                  obs_publisher_id,
-                                                  s_fov,
-                                                  calibration_level,
-                                                  order_by)
+                                                    obs_collection,
+                                                    obs_title,
+                                                    obs_id,
+                                                    facility_name,
+                                                    instrument_name,
+                                                    em_min,
+                                                    em_max,
+                                                    target_name,
+                                                    obs_publisher_id,
+                                                    s_fov,
+                                                    calibration_level,
+                                                    t_min,
+                                                    t_max,
+                                                    order_by)
 
             adql_query = obscore_query_object.get_query()
 
@@ -497,12 +694,14 @@ if __name__ == "__main__":
 
         archive_list = Registry.search_registries(rsp, 1)
 
-        archive_list[0].initialize()
+        archive = archive_list[0]
+
+        archive.initialize()
 
         if query_type == 'raw_query':
-            file_url = archive_list[0].get_resources(adql_query, int(number_of_files), url_field)
+            file_url = archive.get_resources(adql_query, int(number_of_files), url_field)
         else:
-            file_url = archive_list[0].get_resources(adql_query, int(number_of_files))
+            file_url = archive.get_resources(adql_query, int(number_of_files))
 
     elif archive_type == 'archive':
 
@@ -523,18 +722,26 @@ if __name__ == "__main__":
             s_fov = sys.argv[15]
             calibration_level = sys.argv[16]
             order_by = sys.argv[17]
+            obs_title = sys.argv[18]
+            obs_id = sys.argv[19]
+            t_min = sys.argv[20]
+            t_max = sys.argv[21]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
-                                                  obs_collection,
-                                                  facility_name,
-                                                  instrument_name,
-                                                  em_min,
-                                                  em_max,
-                                                  target_name,
-                                                  obs_publisher_id,
-                                                  s_fov,
-                                                  calibration_level,
-                                                  order_by)
+                                                    obs_collection,
+                                                    obs_title,
+                                                    obs_id,
+                                                    facility_name,
+                                                    instrument_name,
+                                                    em_min,
+                                                    em_max,
+                                                    target_name,
+                                                    obs_publisher_id,
+                                                    s_fov,
+                                                    calibration_level,
+                                                    t_min,
+                                                    t_max,
+                                                    order_by)
 
             adql_query = obscore_query_object.get_query()
 
@@ -561,18 +768,42 @@ if __name__ == "__main__":
 
     if file_url and download_type == 'urls':
 
-        FileHandler.write_urls_to_output(file_url, output)
+        if query_type == 'raw_query':
+            FileHandler.write_urls_to_output(file_url, output, url_field)
+        else:
+            FileHandler.write_urls_to_output(file_url, output)
 
     elif file_url and download_type == 'files':
 
-        FileHandler.write_urls_to_output(file_url, output)
+        if query_type == 'raw_query':
+            FileHandler.write_urls_to_output(file_url, output, url_field)
+            access_url = url_field
+        else:
+            FileHandler.write_urls_to_output(file_url, output)
+            access_url = 'access_url'
 
         for i, url in enumerate(file_url):
             try:
-                fits_file = FileHandler.download_file_from_url(url.rstrip(','))
-                FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url.rstrip(',')))
+                fits_file = FileHandler.download_file_from_url(url[access_url])
+                FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url[access_url]))
             except Exception as e:
                 pass
+
+    elif file_url and download_type == 'html':
+
+        archive_name = ''
+
+        try:
+            if archive_type == 'registry':
+                archive_name = str(archive.title).strip("',()")
+            else:
+                archive_name = archive.access_url
+        except Exception as e:
+            archive_name = 'Unknown archive title'
+
+        html_file = OutputHandler.generateHTMLOutput(file_url, archive_name, adql_query)
+        FileHandler.write_file_to_output(html_file, output)
+
     else:
-        fits_file = 'No files matching parameters'
-        FileHandler.write_file_to_output(fits_file, output)
+        error_file = "No resources matching given parameters"
+        FileHandler.write_file_to_output(error_file, output)

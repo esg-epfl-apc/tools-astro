@@ -28,11 +28,11 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
 
           #end if
 
@@ -50,13 +50,15 @@
 
         #end if
 
-        python '$__tool_directory__/astronomical_archives.py' '$output'
+        python '$__tool_directory__/archives.py' '$output'
       ]]>
     </command>
     <inputs>
         <param name="file_type" type="select" label="File type selection">
           <option value="files" selected="true">Download urls + files</option>
           <option value="urls">Download urls only</option>
+          <option value="html">Download urls preview (html format)(Needs html rendering permission)</option>
+          <option value="csv">Download urls preview (basic html format)</option>
         </param>
         <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 10" />
         <conditional name="archiveselection">
@@ -103,6 +105,8 @@
             <when value="obscore_query">
               <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type (image etc.)" />
               <param name="obs_collection" type="text" label="Collection" help="Name of the data collection" />
+              <param name="obs_title" type="text" label="Title" help="Title" />
+              <param name="obs_id" type="text" label="Id" help="Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
               <param name="em_min" type="text" label="Spectral coordinates (start)" />
@@ -110,6 +114,8 @@
               <param name="target_name" type="text" label="Target name" help="Name of the astronomical object observed" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Bounds of the covered region" />
+              <param name="t_min" type="text" label="Start time in MJD" />
+              <param name="t_max" type="text" label="Stop time in MJD" />
               <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
                 <option value="none">None</option>
                 <option value="0">0</option>
@@ -121,7 +127,7 @@
               </param>
               <param name="order_by" type="select" label="Order by" help="Field to use for ordering the results">
                 <option value="none" selected="true">No specific order</option>
-                <option value="size" >Order by size</option>
+                <option value="size" >Order by size (Ko)</option>
                 <option value="collection" >Order by collection</option>
                 <option value="object" >Order by name</option>
               </param>
@@ -140,25 +146,809 @@
     <outputs>
 
 
-        <data name="output" format="txt" label="${tool.name} -> ${archiveselection.archive_type}:" >
+        <data name="output" format="html" label="${tool.name} -> ${archiveselection.archive_type}:" >
           <discover_datasets pattern="__designation_and_ext__" directory="fits" visible="true" format="fits" />
         </data>
 
     </outputs>
-    <help><![CDATA[
-Archives description :
--------------------------
-AIP GAVO TAP
-http://gavo.aip.de/tap
--------------------------
-The AIP DaCHS's TAP end point. The Table Access Protocol (TAP) lets you execute queries against our database tables, inspect various metadata, and upload your own data. It is thus the VO's premier way to access public data holdings.
+    <tests>
+        <test>
+            <param name="file_type" value="files"/>
+            <param name="number_of_files" value="1"/>
+            <conditional name="archiveselection">
+                <param name="archive_type" value="archive"/>
+                <param name="archive" value="https://vo.astron.nl/tap"/>
+            </conditional>
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+                <param name="dataproduct_type" value="image" />
+                <param name="obs_title" value="190807041_AP_B001"/>
+            </conditional>
+            <output name="output">
+              <assert_contents>
+                  <has_line line="SIMPLE =" />
+              </assert_contents>
+            </output>
+        </test>
+        <test>
+            <param name="file_type" value="files"/>
+            <param name="number_of_files" value="1"/>
+            <conditional name="archiveselection">
+                <param name="archive_type" value="archive"/>
+                <param name="archive" value="https://vo.astron.nl/tap"/>
+            </conditional>
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+                <param name="dataproduct_type" value="image" />
+                <param name="t_min" value="58703.1467199074"/>
+                <param name="t_max" value="58703.1467199074"/>
+            </conditional>
+            <output name="output">
+              <assert_contents>
+                  <has_line line="SIMPLE =" />
+              </assert_contents>
+            </output>
+        </test>
+        <test>
+            <param name="file_type" value="urls"/>
+            <param name="number_of_files" value="1"/>
+            <conditional name="archiveselection">
+                <param name="archive_type" value="registry"/>
+                <param name="keyword" value="apertif"/>
+            </conditional>
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+                <param name="dataproduct_type" value="image" />
+                <param name="obs_title" value="190807041_AP_B001"/>
+            </conditional>
+            <output name="output">
+              <assert_contents>
+                  <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807041_AP_B001/image_mf_02.fits," />
+              </assert_contents>
+            </output>
+        </test>
+        <test>
+            <param name="file_type" value="urls"/>
+            <param name="number_of_files" value="1"/>
+            <conditional name="archiveselection">
+                <param name="archive_type" value="registry"/>
+                <param name="keyword" value="apertif"/>
+            </conditional>
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+                <param name="dataproduct_type" value="image" />
+                <param name="obs_title" value="190807042_AP_B006"/>
+            </conditional>
+            <output name="output">
+              <assert_contents>
+                  <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807042_AP_B006/image_mf_04.fits," />
+              </assert_contents>
+            </output>
+        </test>
+    </tests>
+    <help>
+
+.. class:: infomark
+
+The help section contains general tips on how to use the tool as well as a list of some of the archives available through the tool with a description of their content
+
+.. class:: infomark
+
+For the non basic html report to be rendered correctly the tool needs to be allowed to render html in : Admin -> Tool Management -> Manage Allowlist
+
+**What it does**
+
+This tool lets you explore and query different archives available in the IVOA registry of registries.
+
+You can choose to download a list of files url matching your search parameters or directly download the files alongside the manifest containing the urls you can also choose to preview the matching urls values in an html report
+
+The html report will list all the fields of the queried table and let you preview the different files when a preview is available
+
+You have the choice between letting the tool select the archive matching your search criteria or you can directly choose the archive you want to query
+
+**How to use it**
+
+OUTPUT SELECTION
+
+The file type and number of files selection let you choose if you want to download the chosen files alongside the url manifest or if you want to preview the urls in an html report and how many of them will be listed and downloaded
+
+ARCHIVE SELECTION
+
+The archive selection lets you decide what archive will be queried :
+
+If you want the tool to select an archive for you : select "Query IVOA Registry" and enter a specific keyword describing the kind of archive you are looking for (for instance "hess" or "apertif")
+The tool will choose the first archive matching your criterias
+
+If you already know what archive you want to query : select "Query specific IVOA archive" and choose the corresponding archive
+
+QUERY SELECTION
+
+The query selection lets you decide what kind of ADQL query will be run against the chosen archive
+
+The two first choices ("No specific query" and "IVOA obscore table") assume that an obscore table (as specified in the IVOA guidelines) is present, if the service has not implemented an obscore table you will need to run a custom query against a specific exposed table
+
+If you don't want to run any specific query choose "No specific query", this choice will run a basic "SELECT" query and return the results
+
+If you want to run an ADQL query against the obscore table of the archive choose "IVOA obscore table", that will let you specify the value of some of the most used mandatory obscore field
+
+If the archive does not have an obscore table or if you want to run a very specific query choose "Raw ADQL query builder" for that to work you will need to know the name of the table you want to query and the field containing the access urls if you want to download the files
+
+**Example**
+
+Browsing a specific archive to find and download a specific file (LoLSS collection from Astron archive) :
+
+Choose "Download urls preview (html format)" from "File type selection" and put 10 in the number of files you want to preview
+
+In Archive Selection choose "Query specific IVOA archive" and then select "The VO @ Astron"
+
+In Query Selection choose "IVOA obscore query builder" and put "LoLSS" in the collection field
+
+Once run the tool should have created an html report containing a number of files from the LoLSS collection, explore the report by clicking the "Visualize" icon and copy the "obs_title" of one of the files
+
+Repeat the previous steps except that this time you will choose "Download urls + files" with 1 file to download and enter the obs_title in the obs_title field
+
+The tool should now be downloading this specific file alongside a csv file containing the download url
+
+**The tool doesn't find any files**
+
+There are several reason for the tool to output a file explaining that no files matching your criterias were found:
+
+
+Everything ran fine but no files were matching your criterias
+
+The archive does not have an obscore table (if you ran an obscore query)
+
+The files access urls are not working properly
+
+The table or field you choose in your raw ADQL query doesn't exist or does not contain a download url
+
+The selected archive is not available
+
+
+In most cases the best course of action is to try to download the urls only and if some are returned to preview them and to manually try their download urls
+
+Another possibility is to manually review the TAP schema of the archive to craft a custom ADQL query and preview the results
+
+-----
+
+**List of archives description**
+
+-----
+
+**AIP GAVO TAP** http://gavo.aip.de/tap AIP DaCHS TAP service
+
+-----
+
+The AIP DaCHS's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
 
 Tables exposed through this endpoint include: dens256, fof, redshifts from the bolshoi schema, columns, services, tables from the glots schema, fof, fofmtree, fofparticles, particles85, redshifts, treesnapnums from the mdr1 schema, rave_dr4 from the ravedr4 schema, alt_identifier, authorities, capability, g_num_stat, interface, intf_param, registries, relationship, res_date, res_detail, res_role, res_schema, res_subject, res_table, resource, stc_spatial, stc_spectral, stc_temporal, subject_uat, table_column, tap_table, validation from the rr schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema.
--------------------------
-STScI CAOMTAP
-https://vao.stsci.edu/CAOMTAP/TapService.aspx
--------------------------
 
+-----
 
-    ]]></help>
+**STScI CAOMTAP** https://vao.stsci.edu/CAOMTAP/TapService.aspx MAST STScI CAOM and ObsCore TAP service
+
+-----
+
+The MAST Archive at STScI TAP end point for observational data, saved in the Common Archive Data Model format and made available through the ObsCore limited view.
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+Missions and projects with data available through the CAOMTAP service include:
+BEFS, EUVE, FUSE, GALEX, HLA, HST, HUT, IUE, JWST, K2, KEPLER, PS1 (PanSTARRS 1) Data Release 2, SPITZER_SHA, SWIFT, TESS, TUES, WUPPE.
+
+High Level Science Products (HLSPs) available include:
+3D-DASH, 3DHST, CDIPS, CLASSY, DIAMANTE, ELEANOR, EVEREST, GSFC-ELEANOR-LITE, HALO, HFF-DEEPSPACE, hlsp_3cr, hlsp_acsggct, hlsp_andromeda, hlsp_angrrr, hlsp_angst, hlsp_appp, hlsp_borg, hlsp_candels, hlsp_carina, hlsp_clash, hlsp_coma, hlsp_cosmos, hlsp_frontier, hlsp_gems, hlsp_ghosts, hlsp_goods, hlsp_goodsnic, hlsp_heritage, hlsp_hippies, hlsp_hlastarclusters, hlsp_hudf09, hlsp_hudf12, hlsp_ison, hlsp_legus, hlsp_m82, hlsp_m83mos, hlsp_orion, hlsp_phat, hlsp_sgal, hlsp_sm4ero, hlsp_stages, hlsp_starcat, hlsp_udf, hlsp_uvudf, hlsp_wfc3ers, hlsp_wisp, hlsp_xdf, IRIS, K2SC, K2SFF, K2VARCAT, KBONUS-APEXBA, KEPSEISMIC, PATHOS, PSFK2, QLP, TASOC, TESS-SPOC, ULLYSES
+
+Tables exposed through this endpoint include the ObsCore (version 1.1) view of our CAOM (version 2.4) database, as well as all other CAOM tables
+
+-----
+
+**HSC TAP** https://mast.stsci.edu/vo-tap/api/v0.1/hsc/ MAST STScI Hubble Source Catalog Version 3 (HSCv3) TAP service
+
+-----
+
+The MAST Archive at STScI TAP end point for the Hubble Source Catalog, version 3.1. The Hubble Source Catalog (HSC) is designed to optimize science from the Hubble Space Telescope by combining the tens of thousands of visit-based source lists in the Hubble Legacy Archive (HLA) into a single master catalog. The Hubble Source Catalog version 3.1 also provides proper motions for over 400,00 stars in the augmented Sagittarius Window Eclipsing Extrasolar Planet Search (SWEEPS) HST field, and the Hubble Catalog of Variables (HCV).
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**HSCv3 TAP** https://mast.stsci.edu/vo-tap/api/v0.1/hsc/ MAST STScI Hubble Source Catalog Version 3 (HSCv3) TAP service
+
+-----
+
+The MAST Archive at STScI TAP end point for the Hubble Source Catalog, version 3.1. The Hubble Source Catalog (HSC) is designed to optimize science from the Hubble Space Telescope by combining the tens of thousands of visit-based source lists in the Hubble Legacy Archive (HLA) into a single master catalog. The Hubble Source Catalog version 3.1 also provides proper motions for over 400,00 stars in the augmented Sagittarius Window Eclipsing Extrasolar Planet Search (SWEEPS) HST field, and the Hubble Catalog of Variables (HCV).
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**MissionMAST TAP** https://vao.stsci.edu/MissionMAST/TapService.aspx MAST STScI MissionMAST TAP service for HST Science Data
+
+-----
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**PS1DR2 TAP** https://vao.stsci.edu/PS1DR2/TapService.aspx MAST STScI PanSTARRS 1 DR2 TAP service
+
+-----
+
+The Panoramic Survey Telescope and Rapid Response System (Pan-STARRS or PS1) is a wide-field imaging facility developed at the University of Hawaii's Institute for Astronomy for a variety of scientific studies from the nearby to the very distant Universe. The PS1 catalog includes measurements in five filters (grizy) covering 30,000 square degrees of the sky north of declination -30 degrees, with typically ~12 epochs for each filter. This interface allows searches for the mean measurements and the deeper stacked measurements from images combining all the epochs. The DR2 release also includes the detection catalog containing all the multi-epoch observations.
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**STScI RegTAP** https://vao.stsci.edu/RegTAP/TapService.aspx MAST STScI Registry TAP service
+
+-----
+
+The MAST Archive at STScI TAP end point for registry metadata.
+The Table Access Protocol (TAP) lets you execute queries against our database tables, inspect various metadata, and upload your own data.
+Tables exposed through this endpoint include are only for the Registry Relational database
+
+-----
+
+**HLSP CLASSY TAP** https://vao.stsci.edu/HLSP_CLASSY/TapService.aspx MAST STScI CLASSY HLSP TAP service
+
+-----
+
+The COS Legacy Archive Spectroscopic SurveY (CLASSY): A UV Treasury of Star-Forming Galaxies is a High Level Science Product hosted at the Mikulski Archive for Space Telescopes.
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**HLSP ULLYSES TAP** https://vao.stsci.edu/HLSP_ULLYSES/TapService.aspx MAST STScI ULLYSES HLSP TAP service
+
+-----
+
+The Hubble Space Telescope’s (HST) Ultraviolet Legacy Library of Young Stars as Essential Standards (ULLYSES) program is an ultraviolet spectroscopic library of young high- and low-mass stars in the local universe.
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**TIC TAP** https://mast.stsci.edu/vo-tap/api/v0.1/tic MAST STScI TESS Input Catalog TAP service
+
+-----
+
+The MAST Archive at STScI TAP end point for the TESS Input Catalog.  The TIC is used to help identify two-minute cadence target selection for the TESS mission, and to calculate physical and observational properties of planet candidates. It is for use by both the TESS science team and the public, and it is periodically updated – the current version is TIC-8. TIC-8 uses the GAIA DR2 catalog as a base and merges a large number of other photometric catalogs, including 2MASS, UCAC4, APASS, SDSS, WISE, etc. There are roughly 1.5 billion stellar and extended sources in TIC-8, containing compiled magnitudes including B, V, u, g, r, i, z, J, H, K, W1-W4, and G.
+The TIC can be directly accessed through the Mikulski Archive for Space Telescopes (MAST), using either queries or bulk download.
+
+The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
+
+-----
+
+**UCL Astro TAP** http://astroweb.projects.phys.ucl.ac.uk:8000/tap UCL DaCHS server TAP service
+
+-----
+
+The UCL DaCHS server's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, epn_core from the jasmin schema, emptyobscore, obscore from the ivoa schema, epn_core from the mdisc schema.
+
+-----
+
+**ASTRON VO TAP** https://vo.astron.nl/tap The VO @ ASTRON TAP service
+
+-----
+
+The The VO @ ASTRON's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: main from the lbcs schema, main, msssvf_img_main from the mvf schema, frb_det, frb_obs from the arts_dr1 schema, img_main, main from the lofartier1 schema, mosaic, source_catalog from the lolss schema, main from the svc schema, img_main, main from the tgssadr schema, main, mom0 from the sauron schema, images, source_catalog from the apertif_dr_bootes schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, hetdex_images, main, main_merged from the hetdex schema, img_main from the msss schema, obscore from the ivoa schema, beam_cubes, calibrated_visibilities, continuum_images, flux_cal_visibilities, pol_cal_visibilities, pol_cubes, raw_visibilities, spectral_cubes from the apertif_dr1 schema, main_gausses, main_sources, mosaics from the lotss_dr2 schema.
+
+-----
+
+**AIASCR TAP** http://vos2.asu.cas.cz/tap AIASCR VO Services TAP service
+
+-----
+
+The AIASCR VO Services's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: objcat, objects_observed, objobs_complete, objobs_lightcurves, observation_info from the bextract schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, observation, observation_objcat from the bextract_jan16 schema, reduced_images from the dk154_reduced schema, exposure, objcat, objobs_complete, objobs_lightcurves, observation from the bextract_jan15 schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, objobs_lightcurves_ssap, observation, observation_objcat from the bextract_apr18 schema, data from the ccd700 schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, observation, observation_objcat from the bextract_jan15_v2 schema, emptyobscore, obscore from the ivoa schema, data from the heros schema, reduced_images from the dk154_reduced_jan18 schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, observation, observation_objcat from the bextract_jul15 schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, objobs_lightcurves_ssap, observation, observation_objcat from the bextract_jul16 schema, data from the lamost_dr2 schema, data from the lamost_dr5 schema, data from the lamost_dr3 schema, data from the lamost schema, data from the lamost_dr1 schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, objobs_lightcurves_ssap, observation, observation_objcat from the bextract_jan18 schema, dim_exposure, dim_observation_objcat, exposure, objcat, objobs_complete, objobs_lightcurves, objobs_lightcurves_ssap, observation, observation_objcat from the bextract_dec17 schema, raw_images from the dk154_rawdata schema.
+
+-----
+
+**CSIRO ATOA TAP** https://atoavo.atnf.csiro.au/tap CSIRO Australia Telescope Online Archive TAP Service
+
+-----
+
+Table Access Protocol service for accessing Australia Telescope Online Archive
+
+-----
+
+**CSIRO ASKAP TAP** https://casda.csiro.au/casda_vo_tools/tap CSIRO ASKAP Science Data Archive TAP Service
+
+-----
+
+Table Access Protocol service for accessing catalogues from ASKAP radio astronomy observations
+
+-----
+
+**CSIRO Pulsar TAP** https://data.csiro.au/psrdavo/tap CSIRO Parkes Pulsar Data Archive
+
+-----
+
+Repository of pulsar observations made at the Parkes, Australia radio telescope
+
+-----
+
+**BIRA-IASB TAP** http://vespa-ae.oma.be/tap VESPA PA team server TAP service
+
+-----
+
+The VESPA PA team server's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: epn_core from the gem_mars schema, obscore from the ivoa schema, epn_core from the nomad schema, epn_core from the soir schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema.
+
+-----
+
+**ArVO Byu TAP** http://arvo-registry.sci.am/tap ArVO Byurakan TAP service
+
+-----
+
+The ArVO Byurakan's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, main from the dfbsplates schema, spectra, ssa from the dfbsspec schema, obscore from the ivoa schema.
+
+-----
+
+**CADC TAP** https://ws.cadc-ccda.hia-iha.nrc-cnrc.gc.ca/argus CADC Archive Query Service
+
+-----
+
+Query service for observation metadata for all CADC archival data holdings. This service
+                    provides Table Access Protocol (TAP) API access to observation metadata conforming to the
+                    Common Archive Observation Model (CAOM) and the IVOA ObsCore data model.
+
+                    The current dynamic collections (new data arriving) include: CFHT, CFHTMEGAPIPE, DAO, DRAO, GEMINI, HST,
+                    JCMT, NEOSSAT, OMM, TESS, VLASS.
+
+                    The current static collections include: APASS, BLAST, CFHTTERAPIX, CFHTWIRWOLF,
+                    CGPS, DAOPLATES, FUSE, HSTHLA, IRIS, MACHO, MOST, NGVS, UKIRT, VGPS.
+
+                    The curent external collections (metadata only, data served by original data centre) include:
+                    CHANDRA, NOAO, SDSS, SUBARU, XMM.
+
+-----
+
+**YouCat** https://ws-cadc.canfar.net/youcat CANFAR User Catalogue Query Service
+
+-----
+
+YouCat is a query service for catalogues hosted by CANFAR. This service
+                    provides Table Access Protocol (TAP) API access to catalogues created by
+                    project teams.
+
+                    YouCat also implements a prototype VOSI-tables extension that allows users
+                    to create, update table metadata add table content (rows), create indices,
+                    and delete tables in the database. Users can also control access to their
+                    own tables (public to allow anonymous querying, protected so only members
+                    of specified groups can query, and private where only the owner can query).
+
+                    Users who want to create tables must request an allocation (schema) by email
+                    to support@canfar.net.
+
+                    Currently available catalogues include: VLASS, CFHTLS, KiDS, PAndAS, RCSLens.
+
+-----
+
+**AMDA** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Planetary and heliophysics plasma data at CDPP/AMDA
+
+-----
+
+Planetary and heliophysics plasma data at CDPP/AMDA
+
+-----
+
+**ILLU67P** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Illumination maps of 67P
+
+-----
+
+Illumination by the Sun of each face of the comet 67P/Churyumov-Gerasimenko based on the shape model
+                CSHP_DV_130_01_LORES_OBJ.OBJ. The service provides the cosine between the normal of each face (in the same order as the faces defined in the shape model) and the Sun direction; both
+                numerical values and images of the illumination are available. Each map is defined for a given position of the Sun
+                in the frame of 67P (67P/C-G_CK). Longitude 0 is at the center of each map. The code is developed by A. Beth,
+                Imperial College London, UK and the service is provided by CDPP (http://cdpp.eu). Acknowlegment: The illumination models
+                have been developed at the Department of Physics at Imperial College London (UK) under the financial support of STFC
+                grant of UK ST/N000692/1 and ESA contract 4000119035/16/ES/JD (Rosetta RPC-PIU). We would also like to warmly
+                thank Bernhard Geiger (ESA) for his support in validating the 2D-illumination maps.
+
+-----
+
+**PSWS Transplanet** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Magnetosphere Ionosphere coupling simulation runs
+
+-----
+
+A Transplanet model of magnetosphere-ionosphere coupling  at Earth, Mars, and Jupiter
+
+-----
+
+**SIMBAD TAP** http://simbad.cds.unistra.fr/simbad/sim-tap SIMBAD TAP query engine
+
+-----
+
+This service provides TAP access to a simplified view of the SIMBAD database
+
+-----
+
+**VizieR ObsTAP** http://cdsarc.cds.unistra.fr/saadavizier.tap/tap TAP VizieR query engine
+
+-----
+
+This service provides ObsTAP access to VizieR spectra, time-series and images.
+
+-----
+
+**TAPVizieR** http://tapvizier.cds.unistra.fr/TAPVizieR/tap TAP VizieR query engine
+
+-----
+
+This service provides TAP access to a simplified view of the VizieR database
+
+-----
+
+**J-PLUS-DR1** https://archive.cefca.es/catalogues/jplus-dr1/tap_async.html J-PLUS DR1 Catalogue (July, 2018)
+
+-----
+
+J-PLUS DR1 Catalogue (July, 2018) is based on scientific images in 12 filters collected from November 2015 to January 2018 covering a total area of ~1020 square degrees. The Javalambre Photometric Local Universe Survey (J-PLUS) is an ongoing 12-band photometric optical survey, observing thousands of square degrees of the Northern Hemisphere from the dedicated JAST80 telescope at the Observatorio Astrofísico de Javalambre (OAJ, Teruel, Spain) . Please include the following in any published material that makes use of this data: "Based on observations made with the JAST80 telescope for the J-PLUS project at the Observatorio Astrofísico de Javalambre, in Teruel, owned, managed and operated by the Centro de Estudios de Física del Cosmos de Aragón."
+
+-----
+
+**J-PLUS-DR2** https://archive.cefca.es/catalogues/jplus-dr2/tap_async.html J-PLUS DR2 Catalogue (July, 2020)
+
+-----
+
+J-PLUS DR2 Catalogue (July, 2020) is based on scientific images in 12 filters collected from November 2015 to February 2020 covering a total area of ~2000 square degrees. The Javalambre Photometric Local Universe Survey (J-PLUS) is an ongoing 12-band photometric optical survey, observing thousands of square degrees of the Northern Hemisphere from the dedicated JAST80 telescope at the Observatorio Astrofísico de Javalambre (OAJ, Teruel, Spain) . Please include the following in any published material that makes use of this data: "Based on observations made with the JAST80 telescope for the J-PLUS project at the Observatorio Astrofísico de Javalambre, in Teruel, owned, managed and operated by the Centro de Estudios de Física del Cosmos de Aragón."
+
+-----
+
+**J-PLUS-DR3** https://archive.cefca.es/catalogues/jplus-dr3/tap_async.html J-PLUS DR3 Catalogue (July, 2022)
+
+-----
+
+J-PLUS DR3 Catalogue (July, 2022) is based on scientific images in 12 filters collected from November 2015 to February 2022 covering a total area of ~3000 square degrees. The Javalambre Photometric Local Universe Survey (J-PLUS) is an ongoing 12-band photometric optical survey, observing thousands of square degrees of the Northern Hemisphere from the dedicated JAST80 telescope at the Observatorio Astrofísico de Javalambre (OAJ, Teruel, Spain) . Please include the following in any published material that makes use of this data: "Based on observations made with the JAST80 telescope for the J-PLUS project at the Observatorio Astrofísico de Javalambre, in Teruel, owned, managed and operated by the Centro de Estudios de Física del Cosmos de Aragón."
+
+-----
+
+**MINJPASPDR201912** https://archive.cefca.es/catalogues/minijpas-pdr201912/tap_async.html MINIJ-PAS PDR201912 Catalogue (December, 2019)
+
+-----
+
+MINIJ-PAS PDR201912 Catalogue (December, 2019) is based on scientific images in 60 filters covering a total area of ~1 square degree. MiniJ-PAS is a 60-band photometric optical survey based on images collected by the JST250 telescope and the Pathfinder instrument at the Observatorio Astrofísico de Javalambre (OAJ, Teruel, Spain) . Please include the following in any published material that makes use of this data: "Based on observations made with the JST250 telescope and PathFinder camera for Mini J-PAS project at the Observatorio Astrofísico de Javalambre, in Teruel, owned, managed and operated by the Centro de Estudios de Física del Cosmos de Aragón."
+
+-----
+
+**ChiVO TAP** https://vo.chivo.cl/tap ChiVO TAP service
+
+-----
+
+The ChiVO's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: alma_fits from the alma_fits schema, m83_obs from the m83_test1 schema, m83_obs from the m83_data schema, hd163296band6 from the hd163296band6 schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, main from the arihip schema, main from the tgas schema, dr1 from the gaia schema, data from the openngc schema, emptyobscore, obscore from the ivoa schema.
+
+-----
+
+**CDA** https://cda.harvard.edu/cxctap Chandra X-ray Observatory Data Archive
+
+-----
+
+The Chandra X-ray Observatory is the U.S. follow-on to the Einstein
+Observatory. Chandra was formerly known as AXAF, the Advanced X-ray
+Astrophysics Facility, but renamed by NASA in December, 1998.
+Originally three instruments and a high-resolution mirror carried in
+one spacecraft, the project was reworked in 1992 and 1993. The Chandra
+spacecraft carries a high resolution mirror, two imaging detectors,
+and two sets of transmission gratings. Important Chandra features are:
+an order of magnitude improvement in spatial resolution, good
+sensitivity from 0.1 to 10 keV, and the capability for high spectral
+resolution observations over most of this range.
+
+-----
+
+**CSC** http://cda.cfa.harvard.edu/csctap Chandra Source Catalog
+
+-----
+
+The Chandra X-ray Observatory is the U.S. follow-on to the Einstein
+Observatory and one of NASA"s Great Observatories.
+Chandra was formerly known as AXAF, the Advanced X-ray
+Astrophysics Facility, but renamed by NASA in December, 1998.
+Originally three instruments and a high-resolution mirror carried in
+one spacecraft, the project was reworked in 1992 and 1993. The Chandra
+spacecraft carries a high resolution mirror, two imaging detectors,
+and two sets of transmission gratings. Important Chandra features are:
+an order of magnitude improvement in spatial resolution, good
+sensitivity from 0.1 to 10 keV, and the capability for high spectral
+resolution observations over most of this range.
+
+The Chandra Source Catalog (CSC) includes information about X-ray
+sources detected in observations obtained using the Chandra X-ray Observatory.
+Release 2.0 of the catalog includes 317,167 point, compact, and extended
+sources detected in ACIS and HRC-I imaging observations released
+publicly prior to the end of 2014.
+
+Observed source positions and multi-band count rates are reported, as
+well as numerous derived spatial, photometric, spectral, and temporal
+calibrated source properties that may be compared with data obtained
+by other telescopes. Each record includes the best estimates of the
+properties of a source based on data extracted from all observations
+in which the source was detected.
+
+The Chandra Source Catalog is extracted from the CXC"s Chandra Data
+Archive (CDA). The CXC should be acknowledged as the source of Chandra data.
+
+For detailed information on the Chandra Observatory and datasets see:
+
+http://cxc.harvard.edu/         for general Chandra information;
+
+http://cxc.harvard.edu/cda/     for the Chandra Data Archive;
+
+http://cxc.harvard.edu/csc/     for Chandra Source Catalog information.
+
+-----
+
+**CSCR1** http://cda.cfa.harvard.edu/csc1tap Chandra Source Catalog Release 1
+
+-----
+
+The Chandra X-ray Observatory is the U.S. follow-on to the Einstein
+Observatory and one of NASA"s Great Observatories.
+Chandra was formerly known as AXAF, the Advanced X-ray
+Astrophysics Facility, but renamed by NASA in December, 1998.
+Originally three instruments and a high-resolution mirror carried in
+one spacecraft, the project was reworked in 1992 and 1993. The Chandra
+spacecraft carries a high resolution mirror, two imaging detectors,
+and two sets of transmission gratings. Important Chandra features are:
+an order of magnitude improvement in spatial resolution, good
+sensitivity from 0.1 to 10 keV, and the capability for high spectral
+resolution observations over most of this range.
+
+The Chandra Source Catalog (CSC) includes information about X-ray
+sources detected in observations obtained using the Chandra X-ray
+Observatory.  Release 1.1 of the catalog includes about 138,000 point
+and compact sources with observed spatial extents less than ~30 arcsec
+detected in a subset of ACIS and HRC-I imaging observations released
+publicly prior to the end of 2009.
+
+Observed source positions and multi-band count rates are reported, as
+well as numerous derived spatial, photometric, spectral, and temporal
+calibrated source properties that may be compared with data obtained
+by other telescopes. Each record includes the best estimates of the
+properties of a source based on data extracted from all observations
+in which the source was detected.
+
+The Chandra Source Catalog is extracted from the CXC"s Chandra Data
+Archive (CDA). The CXC should be acknowledged as the source of Chandra data.
+
+For detailed information on the Chandra Observatory and datasets see:
+
+http://cxc.harvard.edu/         for general Chandra information;
+
+http://cxc.harvard.edu/cda/     for the Chandra Data Archive;
+
+http://cxc.harvard.edu/csc/     for Chandra Source Catalog information.
+
+-----
+
+**CSCR2** http://cda.cfa.harvard.edu/csc2tap Chandra Source Catalog Release 2
+
+-----
+
+The Chandra X-ray Observatory is the U.S. follow-on to the Einstein
+Observatory and one of NASA"s Great Observatories.
+Chandra was formerly known as AXAF, the Advanced X-ray
+Astrophysics Facility, but renamed by NASA in December, 1998.
+Originally three instruments and a high-resolution mirror carried in
+one spacecraft, the project was reworked in 1992 and 1993. The Chandra
+spacecraft carries a high resolution mirror, two imaging detectors,
+and two sets of transmission gratings. Important Chandra features are:
+an order of magnitude improvement in spatial resolution, good
+sensitivity from 0.1 to 10 keV, and the capability for high spectral
+resolution observations over most of this range.
+
+The Chandra Source Catalog (CSC) includes information about X-ray
+sources detected in observations obtained using the Chandra X-ray
+Observatory.  Release 2.0 of the catalog includes 317,167 point,
+compact, and extended sources detected in ACIS and HRC-I imaging
+observations released publicly prior to the end of 2014.
+
+Observed source positions and multi-band count rates are reported, as
+well as numerous derived spatial, photometric, spectral, and temporal
+calibrated source properties that may be compared with data obtained
+by other telescopes. Each record includes the best estimates of the
+properties of a source based on data extracted from all observations
+in which the source was detected.
+
+The Chandra Source Catalog is extracted from the CXC"s Chandra Data
+Archive (CDA). The CXC should be acknowledged as the source of Chandra data.
+
+For detailed information on the Chandra Observatory and datasets see:
+
+http://cxc.harvard.edu/         for general Chandra information;
+
+http://cxc.harvard.edu/cda/     for the Chandra Data Archive;
+
+http://cxc.harvard.edu/csc/     for Chandra Source Catalog information.
+
+-----
+
+**Hubble/TAP** https://hst.esac.esa.int/tap-server/tap European HST Archive TAP
+
+-----
+
+This service provides access to observations and catalogs from the ESA Hubble Space Observatory mission hosted at the ESAC Science Data Centre
+
+-----
+
+**ESASky** https://sky.esa.int/esasky-tap/tap ESASky TAP
+
+-----
+
+ESASky is a science-driven discovery portal providing full access to the entire sky as observed with all ESA Space astronomy missions. This service provides access to catalogues, observations, and spectra hosted at the ESAC Science Data Centre.
+
+-----
+
+**ESASky Legacy** https://esaskylegacy.esac.esa.int/esasky-legacy-sl-tap/tap ESASky Legacy TAP
+
+-----
+
+ESASky legacy is a TAP service to provide the community with complete, self-standing catalogues and data collections from ESA legacy astronomy missions, ensuring long-term preservation. This service provides a unified access to data products and their successors that can be exposed by ESASky.
+
+-----
+
+**GAIA** https://gea.esac.esa.int/tap-server/tap Gaia TAP
+
+-----
+
+This service provides access to catalogues generated by the ESA Gaia mission hosted at the ESAC Science Data Centre
+
+-----
+
+**HREDA** https://hreda.esac.esa.int/hreda-sl-tap/tap HREDA TAP
+
+-----
+
+This service provides access to investigation for the HREDA archive hosted at the ESAC Science Data Centre
+
+-----
+
+**Herschel** http://archives.esac.esa.int/hsa/whsa-tap-server/tap Herschel TAP
+
+-----
+
+This service provides access to observations and catalogs from the ESA Herschel Space Observatory mission hosted at the ESAC Science Data Centre
+
+-----
+
+**ISLA** https://isla.esac.esa.int/tap/tap Integral Science Archive TAP
+
+-----
+
+ObsLocTAP and Integral observation resources
+
+-----
+
+**ISO TAP** http://nida.esac.esa.int/nida-sl-tap/tap Infrared Space Observatory (ISO) TAP
+
+-----
+
+This service provides access to tables and catalogues of the ISO ESA mission.
+        				The Infrared Space Observatory (ISO) was the world's first true orbiting infrared observatory. Equipped with four highly-sophisticated and versatile scientific instruments, it was launched by Ariane in November 1995 and provided astronomers world-wide with a facility of unprecedented sensitivity and capabilities for a detailed exploration of the Universe at infrared wavelengths. The two spectrometers (SWS and LWS), a camera (ISOCAM) and an imaging photo-polarimeter (ISOPHOT) jointly covered wavelengths from 2.5 to around 240 microns with spatial resolutions ranging from 1.5 arcseconds (at the shortest wavelengths) to 90 arcseconds (at the longer wavelengths). Its 60 cm diameter telescope was cooled by superfluid liquid helium to temperatures of 2-4 K.
+
+-----
+
+**JWST** https://jwst.esac.esa.int/server/tap European JWST Archive TAP
+
+-----
+
+This service provides access to observations from the European JWST Science Archive hosted at the ESAC Science Data Centre.
+
+-----
+
+**PSA** https://archives.esac.esa.int/psa-tap/tap ESA PSA EPNTAP
+
+-----
+
+This service provides access to observations and catalogs from the ESA Planetary Science Archive hosted at the ESAC Science Data Centre
+
+-----
+
+**ESAVO TAP** https://registry.euro-vo.org/regtap/tap EURO-VO Registry TAP
+
+-----
+
+This is the TAP service for EuroVO Registry.
+
+-----
+
+**XMM** http://nxsa.esac.esa.int/tap-server/tap XMM-Newton data and catalogues
+
+-----
+
+This service provides access to XMM-Newton data and catalogues generated by the ESA XMM mission hosted at the ESAC Science Data Centre
+
+-----
+
+**ESO TAP_CAT** http://archive.eso.org/tap_cat ESO TAP_CAT: a TAP service to query the astronomical catalogs generated by ESO observers, including the catalogs of the ESO Public Surveys.
+
+-----
+
+TAP_CAT is the ESO Science Archive service that provides programmatic access onto the
+         astronomical catalogues produced by the principal investigators of ESO programmes.
+        The Table Access Protocol (TAP) lets you execute queries against our astronomical catalogues. The queries must adhere to the Astronomical Data Query Language (ADQL, IVOA standard).
+        Table Upload is not currently supported, though it is foreseen for a next release.
+        This service provides limited support for spatial queries; only CONTAINS and CIRCLE are supported, as in this example:
+         CONTAINS(point('', catalog_rightascension, catalog_declination), CIRCLE('', user_defined_rightascension, user_defined_declination, userdefined_radius))= 1.
+        Please note that CONTAINS(...)=0 is not supported.
+
+        A sister service (Catalog Facility: http://www.eso.org/qi) provides a web interface to the same collection of catalogues; the web interface implements a well-defined but limited query model, while instead TAP_CAT provides full ADQL support, allowing users to build their own query constraints using expressions, combining different columns, or using boolean operators (NOT, OR, etc.).
+
+        A sibling service (TAP_OBS, endpoint: http://archive.eso.org/tap_obs) exists and can be used to query the raw and reduced data, and the atmospheric measurements taken at the La Silla Paranal Observatory (including APEX).
+
+-----
+
+**ESO TAP_OBS** http://archive.eso.org/tap_obs ESO TAP_OBS: a TAP service to browse and access raw and reduced data, and to query the ambient measurements, of the La Silla Paranal Observatory.
+
+-----
+
+TAP_OBS is the ESO Science Archive TAP endpoint for observations (raw and reduced data) and ambient measurements (atmospheric seeing, turbulence, water vapour, relative humidity, air pressure, etc.) taken at the La Silla Paranal Observatory, including the Chajnantor (APEX) data.
+        The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata. Table Upload is not currently supported, though it is foreseen for a next release.
+        The IVOA ObsCore standard service is also provided (table name: ivoa.ObsCore), but currently only for reduced data.
+        Other tables exposed are the dbo.raw describing all the LPO observations, the ambient tables (in the asm schema), plus the provenance table to close the loop between the raw and the reduced data, but also to describe the relationships between reduced data (e.g. a source table originating from a reduced image, etc.).
+
+        A sibling service (TAP_CAT, endpoint: http://archive.eso.org/tap_cat) exists and can be used to query the astronomical catalogs produced by the principal investigators of ESO programmes (ESO public surveys included).
+
+-----
+
+**FAI NVO DC TAP** http://vo.fai.kz/tap FAI archives TAP service
+
+-----
+
+The FAI archives's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: main from the fai50mak schema, main from the fai_agn schema, main from the fai_schmidt_lc schema, main from the grb_photometry schema, obscore from the ivoa schema, columns, groups, key_columns, keys, schemas, tables from the tap_schema schema.
+
+-----
+
+**PRSFUB TAP** http://dachs.planet.fu-berlin.de/tap Planetary web services @ FUB TAP service
+
+-----
+
+The Planetary web services @ FUB's TAP end point. The Table Access
+Protocol (TAP) lets you execute queries against our database tables,
+inspect various metadata, and upload your own data. It is thus the
+VO's premier way to access public data holdings.
+
+Tables exposed through this endpoint include: columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, epn_core from the hrsc3nd schema, emptyobscore, obscore from the ivoa schema.
+
+    </help>
 </tool>
