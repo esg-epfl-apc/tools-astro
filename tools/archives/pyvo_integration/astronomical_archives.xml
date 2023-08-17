@@ -16,11 +16,11 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$output_csv' '$output_html'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$output_csv' '$output_html'
 
           #end if
 
@@ -28,11 +28,11 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max' '$query_section.query_selection.dataproduct_type_select' '$output_csv' '$output_html'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max' '$query_section.query_selection.dataproduct_type_select' '$output_csv' '$output_html'
 
           #end if
 
@@ -40,27 +40,20 @@
 
           #if $archiveselection.archive_type == 'registry' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field' '$output_csv' '$output_html'
 
           #elif $archiveselection.archive_type == 'archive' :
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$file_type' '$number_of_files' '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
+            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field' '$output_csv' '$output_html'
 
           #end if
 
         #end if
 
-        python '$__tool_directory__/archives.py' '$output'
+        python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error'
       ]]>
     </command>
     <inputs>
-        <param name="file_type" type="select" label="File type selection">
-          <option value="files" selected="true">Download urls + files</option>
-          <option value="urls">Download urls only</option>
-          <option value="html">Download urls preview (html format)(Needs html rendering permission)</option>
-          <option value="csv">Download urls preview (basic html format)</option>
-        </param>
-        <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 10" />
         <conditional name="archiveselection">
             <param name="archive_type" type="select" label="Archive Selection">
               <option value="registry">Query IVOA registry</option>
@@ -103,7 +96,33 @@
               <option value="raw_query">Raw ADQL query builder</option>
             </param>
             <when value="obscore_query">
+              <param name="target_name" type="text" label="Target name" help="Name of the astronomical object observed" />
+              <param name="t_min" type="text" label="Start time in MJD" />
+              <param name="t_max" type="text" label="Stop time in MJD" />
               <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type (image etc.)" />
+              <param name="dataproduct_type_select" type="select" label="Data product type" help="Logical data product type">
+                <option value="none" selected="true">None</option>
+                <option value="image">Image</option>
+                <option value="cube">Cube</option>
+                <option value="dynamic-spectrum">Dynamic spectrum</option>
+                <option value="event-list">Event list</option>
+                <option value="light-curve">Light curve</option>
+                <option value="measurements">Measurements</option>
+                <option value="polarization-cube">Polarization cube</option>
+                <option value="polarization-cube">Polarization resolved dataset</option>
+                <option value="polarized-spectrum">Polarized spectrum</option>
+                <option value="sed">SED</option>
+                <option value="slit-spectrum">Slit spectrum</option>
+                <option value="spatially-resolved-dataset">Spatially resolved dataset</option>
+                <option value="spectral-cube">Spectral cube</option>
+                <option value="spectrally-resolved-dataset">Spectrally resolved dataset</option>
+                <option value="spectrum">Spectrum</option>
+                <option value="temporally-resolved-dataset">Temporally resolved dataset</option>
+                <option value="time-cube">Time cube</option>
+                <option value="timeseries">Time series</option>
+                <option value="velocity-curve">Velocity curve</option>
+                <option value="visibility">Visibility</option>
+              </param>
               <param name="obs_collection" type="text" label="Collection" help="Name of the data collection" />
               <param name="obs_title" type="text" label="Title" help="Title" />
               <param name="obs_id" type="text" label="Id" help="Id" />
@@ -111,11 +130,8 @@
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
               <param name="em_min" type="text" label="Spectral coordinates (start)" />
               <param name="em_max" type="text" label="Spectral coordinates (end)" />
-              <param name="target_name" type="text" label="Target name" help="Name of the astronomical object observed" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Bounds of the covered region" />
-              <param name="t_min" type="text" label="Start time in MJD" />
-              <param name="t_max" type="text" label="Stop time in MJD" />
               <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
                 <option value="none">None</option>
                 <option value="0">0</option>
@@ -142,55 +158,67 @@
             </when>
           </conditional>
         </section>
+        <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 10" />
+        <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download urls as csv"/>
+        <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>
+        <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview urls in extended html"/>
+        <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview urls in basic html"/>
     </inputs>
     <outputs>
-
-
-        <data name="output" format="html" label="${tool.name} -> ${archiveselection.archive_type}:" >
+        <data name="output" format="fits" label="${tool.name} -> File from ${archiveselection.archive_type} search:" >
           <discover_datasets pattern="__designation_and_ext__" directory="fits" visible="true" format="fits" />
+          <filter>image_file == True</filter>
         </data>
-
+        <data name="output_csv" format="txt" label="${tool.name} -> CSV Manifest:">
+          <filter>csv_file == True</filter>
+        </data>
+        <data name="output_html" format="html" label="${tool.name} -> HTML Preview:">
+          <filter>html_file == True</filter>
+        </data>
+        <data name="output_basic_html" format="html" label="${tool.name} -> Basic HTML Preview:">
+          <filter>basic_html_file == True</filter>
+        </data>
+        <data name="output_error" format="txt" label="${tool.name} -> Error Log:"></data>
     </outputs>
     <tests>
         <test>
-            <param name="file_type" value="files"/>
+            <param name="image_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
-                <param name="archive_type" value="archive"/>
-                <param name="archive" value="https://vo.astron.nl/tap"/>
+                <param name="archive_type" value="registry"/>
+                <param name="keyword" value="apertif"/>
             </conditional>
             <conditional name="query_selection">
                 <param name="query_type" value="obscore_query" />
                 <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807041_AP_B001"/>
+                <param name="order_by" value="size" />
             </conditional>
             <output name="output">
               <assert_contents>
-                  <has_line line="SIMPLE =" />
+                  <has_line line="SIMPLE  =                    T  /                                               BITPIX  =           " />
               </assert_contents>
             </output>
         </test>
         <test>
-            <param name="file_type" value="files"/>
+            <param name="image_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
-                <param name="archive_type" value="archive"/>
-                <param name="archive" value="https://vo.astron.nl/tap"/>
+                <param name="archive_type" value="registry"/>
+                <param name="keyword" value="apertif"/>
             </conditional>
             <conditional name="query_selection">
                 <param name="query_type" value="obscore_query" />
                 <param name="dataproduct_type" value="image" />
-                <param name="t_min" value="58703.1467199074"/>
-                <param name="t_max" value="58703.1467199074"/>
+                <param name="obs_title" value="190807041_AP_B001" />
             </conditional>
             <output name="output">
               <assert_contents>
-                  <has_line line="SIMPLE =" />
+                  <has_line line="SIMPLE  =                    T  /                                               BITPIX  =           " />
               </assert_contents>
             </output>
         </test>
         <test>
-            <param name="file_type" value="urls"/>
+            <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
                 <param name="archive_type" value="registry"/>
@@ -205,10 +233,11 @@
               <assert_contents>
                   <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807041_AP_B001/image_mf_02.fits," />
               </assert_contents>
+              <filer></filer>
             </output>
         </test>
         <test>
-            <param name="file_type" value="urls"/>
+            <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
                 <param name="archive_type" value="registry"/>
@@ -951,4 +980,26 @@ VO's premier way to access public data holdings.
 Tables exposed through this endpoint include: columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, epn_core from the hrsc3nd schema, emptyobscore, obscore from the ivoa schema.
 
     </help>
+  <citations>
+        <citation type="doi">
+            10.3847/1538-4357/ac7c74
+        </citation>
+        <citation type="doi">
+            10.3847/1538-3881/aabc4f
+        </citation>
+        <citation type="doi">
+            10.5479/ADS/bib/2008ivoa.spec.1030O
+        </citation>
+        <citation type="doi">
+            10.1051/0004-6361/201322068
+        </citation>
+        <citation type="bibtex">
+        @ARTICLE{ivoa_arch,
+           author = {Patrick Dowler and Janet Evans and Christophe Arviset and Severin Gaudet and Technical Coordination Group},
+           title = {IVOA Architecture},
+           url = {https://www.ivoa.net/documents/IVOAArchitecture/20211101/index.html},
+           year = {2021},
+           }
+        </citation>
+    </citations>
 </tool>

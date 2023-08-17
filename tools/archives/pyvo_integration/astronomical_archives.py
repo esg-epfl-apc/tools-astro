@@ -3,6 +3,7 @@ import os
 
 import pyvo
 from pyvo import registry
+from pyvo import DALQueryError, DALServiceError, DALAccessError
 
 import urllib
 from urllib import parse, request
@@ -87,6 +88,8 @@ class TapArchive:
         resource_list = []
         resource_list_hydrated = []
 
+        error_message = None
+
         if self.initialized:
 
             try:
@@ -96,10 +99,17 @@ class TapArchive:
                     if i < number_of_results:
                         # resource_list.append(resource[url_field])
                         resource_list_hydrated.append(self._get_resource_object(resource))
+            except DALQueryError as dqe:
+                if self.has_obscore_table():
+                    error_message = "Error in query : " + query
+                else:
+                    error_message = "No obscore table in the archive"
+            except DALServiceError as dse:
+                error_message = "Error communicating with the service"
             except Exception as e:
-                pass
+                error_message = "Unknow error while querying the service"
 
-        return resource_list_hydrated
+        return resource_list_hydrated, error_message
 
     def _get_resource_object(self, resource):
         resource_hydrated = {}
@@ -110,11 +120,20 @@ class TapArchive:
         return resource_hydrated
 
     def initialize(self):
-        self._get_service()
+        error_message = None
 
-        if self.archive_service:
-            self._set_archive_tables()
-            self.initialized = True
+        try:
+            self._get_service()
+
+            if self.archive_service:
+                self._set_archive_tables()
+                self.initialized = True
+        except DALAccessError as dae:
+            error_message = "A connection to the service could not be established"
+        except Exception as e:
+            error_message = "Unknow error while initializing TAP service"
+
+        return self.initialized, error_message
 
     def _get_service(self):
         if self.access_url:
@@ -161,10 +180,24 @@ class TapArchive:
         for idx in range(idx_from + len('from') + 1, idx_where):
             table_name = table_name + query[idx]
 
-        if table_name not in self.tables.values():
+        if not next((item for item in self.tables if item["name"] == table_name), False):
             is_valid = False
 
         return is_valid
+
+    def has_obscore_table(self) -> bool:
+        has_obscore_table = False
+
+        has_obscore_table = self._has_table("ivoa.obscore")
+
+        return has_obscore_table
+
+    def _has_table(self, table_name) -> bool:
+        _has_table = False
+
+        _has_table = next((item for item in self.tables if item["name"] == table_name), False)
+
+        return _has_table
 
 
 class RegistrySearchParameters:
@@ -299,7 +332,8 @@ class ADQLObscoreQuery(BaseADQLQuery):
                  calibration_level,
                  t_min,
                  t_max,
-                 order_by):
+                 order_by,
+                 dataproduct_type_select=None):
 
         super().__init__()
 
@@ -308,6 +342,12 @@ class ADQLObscoreQuery(BaseADQLQuery):
 
         if order_by == 'none':
             order_by = ''
+
+        if dataproduct_type_select == 'none' or dataproduct_type_select is None:
+            dataproduct_type_select = ''
+
+        if dataproduct_type == '' and dataproduct_type_select != '':
+            dataproduct_type = dataproduct_type_select
 
         self.parameters = {
             'dataproduct_type': dataproduct_type,
@@ -526,6 +566,54 @@ class OutputHandler:
 
         return html_file
 
+    @staticmethod
+    def generateBasicHTMLOutput(urls_data, archive_name, adql_query):
+        html_file = ''
+
+        html_file += """<div>
+                          <h2>Resources Preview from archive :
+                            <br />
+                            <br />
+                            <span> """ + str(archive_name) + """</span>
+                            <br />
+                            <br />
+                            <span> With ADQL query : """ + str(adql_query) + """</span>
+                          </h2>
+                        </div>"""
+
+        for resource in urls_data:
+
+            html_file += '<table border="1"><thead><tr>'
+
+            for key in resource.keys():
+                html_file += '<th>' + str(key) + '</th>'
+
+            html_file += '</thead></tr>'
+            html_file += '<tbody><tr>'
+
+            for key, value in resource.items():
+                html_file += '<td>' + str(value) + '</td>'
+
+            html_file += '</tr></tbody>'
+            html_file += '</table>'
+
+            if 'preview' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['preview']) + '"/></details>'
+
+            if 'preview_url' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['preview_url']) + '"/></details>'
+
+            if 'postcard_url' in resource:
+                html_file += '<details><summary>Preview</summary><img src="' + str(
+                    resource['postcard_url']) + '"/></details>'
+
+            html_file += '<br />'
+            html_file += '<br />'
+
+        return html_file
+
 
 class FileHandler:
 
@@ -540,8 +628,8 @@ class FileHandler:
         return fits_file
 
     @staticmethod
-    def write_file_to_output(file, output):
-        with open(output, "w") as file_output:
+    def write_file_to_output(file, output, write_type="w"):
+        with open(output, write_type) as file_output:
             file_output.write(file)
 
     @staticmethod
@@ -618,13 +706,17 @@ class FileHandler:
 if __name__ == "__main__":
 
     output = sys.argv[1]
-    download_type = sys.argv[2]
-    number_of_files = sys.argv[3]
-    archive_type = sys.argv[4]
+    output_csv = sys.argv[2]
+    output_html = sys.argv[3]
+    output_basic_html = sys.argv[4]
+    output_error = sys.argv[5]
+    number_of_files = sys.argv[6]
+    archive_type = sys.argv[7]
 
     archive = ''
 
     file_url = []
+    error_message = None
 
     outputHandler = OutputHandler()
 
@@ -638,28 +730,29 @@ if __name__ == "__main__":
 
     if archive_type == 'registry':
 
-        keyword = sys.argv[5]
-        waveband = sys.argv[6]
-        service_type = sys.argv[7]
-        query_type = sys.argv[8]
+        keyword = sys.argv[8]
+        waveband = sys.argv[9]
+        service_type = sys.argv[10]
+        query_type = sys.argv[11]
 
         if query_type == 'obscore_query':
 
-            dataproduct_type = sys.argv[9]
-            obs_collection = sys.argv[10]
-            facility_name = sys.argv[11]
-            instrument_name = sys.argv[12]
-            em_min = sys.argv[13]
-            em_max = sys.argv[14]
-            target_name = sys.argv[15]
-            obs_publisher_id = sys.argv[16]
-            s_fov = sys.argv[17]
-            calibration_level = sys.argv[18]
-            order_by = sys.argv[19]
-            obs_title = sys.argv[20]
-            obs_id = sys.argv[21]
-            t_min = sys.argv[22]
-            t_max = sys.argv[23]
+            dataproduct_type = sys.argv[12]
+            obs_collection = sys.argv[13]
+            facility_name = sys.argv[14]
+            instrument_name = sys.argv[15]
+            em_min = sys.argv[16]
+            em_max = sys.argv[17]
+            target_name = sys.argv[18]
+            obs_publisher_id = sys.argv[19]
+            s_fov = sys.argv[20]
+            calibration_level = sys.argv[21]
+            order_by = sys.argv[22]
+            obs_title = sys.argv[23]
+            obs_id = sys.argv[24]
+            t_min = sys.argv[25]
+            t_max = sys.argv[26]
+            dataproduct_type_select = sys.argv[27]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
@@ -675,15 +768,16 @@ if __name__ == "__main__":
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
-                                                    order_by)
+                                                    order_by,
+                                                    dataproduct_type_select)
 
             adql_query = obscore_query_object.get_query()
 
         elif query_type == 'raw_query':
-            tap_table = sys.argv[9]
-            where_field = sys.argv[10]
-            where_condition = sys.argv[11]
-            url_field = sys.argv[12]
+            tap_table = sys.argv[12]
+            where_field = sys.argv[13]
+            where_condition = sys.argv[14]
+            url_field = sys.argv[15]
 
             adql_query = ADQLTapQuery().get_query(tap_table, where_field, where_condition)
 
@@ -696,36 +790,38 @@ if __name__ == "__main__":
 
         archive = archive_list[0]
 
-        archive.initialize()
+        is_initialisation_success, error_message = archive.initialize()
 
-        if query_type == 'raw_query':
-            file_url = archive.get_resources(adql_query, int(number_of_files), url_field)
-        else:
-            file_url = archive.get_resources(adql_query, int(number_of_files))
+        if is_initialisation_success:
+            if query_type == 'raw_query':
+                file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+            else:
+                file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
 
     elif archive_type == 'archive':
 
-        service_url = sys.argv[5]
+        service_url = sys.argv[8]
 
-        query_type = sys.argv[6]
+        query_type = sys.argv[9]
 
         if query_type == 'obscore_query':
 
-            dataproduct_type = sys.argv[7]
-            obs_collection = sys.argv[8]
-            facility_name = sys.argv[9]
-            instrument_name = sys.argv[10]
-            em_min = sys.argv[11]
-            em_max = sys.argv[12]
-            target_name = sys.argv[13]
-            obs_publisher_id = sys.argv[14]
-            s_fov = sys.argv[15]
-            calibration_level = sys.argv[16]
-            order_by = sys.argv[17]
-            obs_title = sys.argv[18]
-            obs_id = sys.argv[19]
-            t_min = sys.argv[20]
-            t_max = sys.argv[21]
+            dataproduct_type = sys.argv[10]
+            obs_collection = sys.argv[11]
+            facility_name = sys.argv[12]
+            instrument_name = sys.argv[13]
+            em_min = sys.argv[14]
+            em_max = sys.argv[15]
+            target_name = sys.argv[16]
+            obs_publisher_id = sys.argv[17]
+            s_fov = sys.argv[18]
+            calibration_level = sys.argv[19]
+            order_by = sys.argv[20]
+            obs_title = sys.argv[21]
+            obs_id = sys.argv[22]
+            t_min = sys.argv[23]
+            t_max = sys.argv[24]
+            dataproduct_type_select = sys.argv[25]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
@@ -741,16 +837,17 @@ if __name__ == "__main__":
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
-                                                    order_by)
+                                                    order_by,
+                                                    dataproduct_type_select)
 
             adql_query = obscore_query_object.get_query()
 
         elif query_type == 'raw_query':
 
-            tap_table = sys.argv[7]
-            where_field = sys.argv[8]
-            where_condition = sys.argv[9]
-            url_field = sys.argv[10]
+            tap_table = sys.argv[10]
+            where_field = sys.argv[11]
+            where_condition = sys.argv[12]
+            url_field = sys.argv[13]
 
             adql_query = ADQLTapQuery().get_query(tap_table, where_field, where_condition)
 
@@ -759,37 +856,39 @@ if __name__ == "__main__":
 
         archive = TapArchive(1, 'name', 'title', service_url)
 
-        archive.initialize()
+        is_initialisation_success, error_message = archive.initialize()
+
+        if is_initialisation_success:
+            if query_type == 'raw_query':
+                file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+            else:
+                file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
+
+    if file_url and output_csv != 'XXXX':
 
         if query_type == 'raw_query':
-            file_url = archive.get_resources(adql_query, int(number_of_files), url_field)
+            FileHandler.write_urls_to_output(file_url, output_csv, url_field)
         else:
-            file_url = archive.get_resources(adql_query, int(number_of_files))
+            FileHandler.write_urls_to_output(file_url, output_csv)
 
-    if file_url and download_type == 'urls':
-
-        if query_type == 'raw_query':
-            FileHandler.write_urls_to_output(file_url, output, url_field)
-        else:
-            FileHandler.write_urls_to_output(file_url, output)
-
-    elif file_url and download_type == 'files':
+    if file_url and output != 'XXXX':
 
         if query_type == 'raw_query':
-            FileHandler.write_urls_to_output(file_url, output, url_field)
             access_url = url_field
         else:
-            FileHandler.write_urls_to_output(file_url, output)
             access_url = 'access_url'
 
-        for i, url in enumerate(file_url):
+        fits_file = FileHandler.download_file_from_url(file_url[0][access_url])
+        FileHandler.write_file_to_output(fits_file, output, "wb")
+
+        for i, url in enumerate(file_url[1:], start=1):
             try:
                 fits_file = FileHandler.download_file_from_url(url[access_url])
                 FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url[access_url]))
             except Exception as e:
                 pass
 
-    elif file_url and download_type == 'html':
+    if file_url and (output_html != 'XXXX' or output_basic_html != 'XXXX'):
 
         archive_name = ''
 
@@ -801,9 +900,23 @@ if __name__ == "__main__":
         except Exception as e:
             archive_name = 'Unknown archive title'
 
-        html_file = OutputHandler.generateHTMLOutput(file_url, archive_name, adql_query)
-        FileHandler.write_file_to_output(html_file, output)
+        if output_html:
+            html_file = OutputHandler.generateHTMLOutput(file_url, archive_name, adql_query)
+            FileHandler.write_file_to_output(html_file, output_html)
+
+        if output_basic_html:
+            html_file = OutputHandler.generateBasicHTMLOutput(file_url, archive_name, adql_query)
+            FileHandler.write_file_to_output(html_file, output_basic_html)
+
+    if file_url is None or error_message:
+        if error_message is not None:
+            error_file = error_message
+        else:
+            error_file = "No resources matching given parameters"
+
+        FileHandler.write_file_to_output(error_file, output_error)
 
     else:
-        error_file = "No resources matching given parameters"
-        FileHandler.write_file_to_output(error_file, output)
+        error_file = "No error detected during tool run"
+
+        FileHandler.write_file_to_output(error_file, output_error)
