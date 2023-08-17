@@ -178,7 +178,7 @@
         <data name="output_basic_html" format="html" label="${tool.name} -> Basic HTML Preview:">
           <filter>basic_html_file == True</filter>
         </data>
-        <data name="output_error" format="txt" label="${tool.name} -> Error Log:"></data>
+        <data name="output_error" format="txt" label="${tool.name} -> Query summary:"></data>
     </outputs>
     <tests>
         <test>
