@@ -1,0 +1,23 @@
+name: astronomicalarchivestool
+owner: volodymyrss
+type: unrestricted
+categories:
+- Astronomy
+description: Astronomical archives tools contains tools for querying and fetching resources from astronomical archives into Galaxy
+long_description: |
+  This set of tool uses VO protocols (like TAP) through python libraries like pyvo, in order to enable the 
+  user to interact with astronomical archives which have registered themselves (in the IVOA registry for instance).
+  
+  They offer the possibility to search and preview those archives content as well as download resources made available
+  by them.
+
+homepage_url:
+
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools/
+auto_tool_repositories:
+  name_template: "{{ tool_id }}"
+  description_template: "{{ tool_name }}"
+suite:
+  name: "astronomicalarchivestools"
+  description: "A suite of Galaxy tools to interact with astronomical archives"
+  type: repository_suite_definition

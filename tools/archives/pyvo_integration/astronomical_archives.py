@@ -101,13 +101,17 @@ class TapArchive:
                         resource_list_hydrated.append(self._get_resource_object(resource))
             except DALQueryError as dqe:
                 if self.has_obscore_table():
-                    error_message = "Error in query : " + query
+                    error_message = "Error in query -> " + query
+                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
                 else:
                     error_message = "No obscore table in the archive"
+                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
             except DALServiceError as dse:
                 error_message = "Error communicating with the service"
+                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
             except Exception as e:
                 error_message = "Unknow error while querying the service"
+                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
 
         return resource_list_hydrated, error_message
 
@@ -130,8 +134,10 @@ class TapArchive:
                 self.initialized = True
         except DALAccessError as dae:
             error_message = "A connection to the service could not be established"
+            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
         except Exception as e:
             error_message = "Unknow error while initializing TAP service"
+            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
 
         return self.initialized, error_message
 
@@ -198,6 +204,19 @@ class TapArchive:
         _has_table = next((item for item in self.tables if item["name"] == table_name), False)
 
         return _has_table
+
+    def get_archive_name(self, archive_type):
+        name = ''
+
+        try:
+            if archive_type == 'registry':
+                name = str(self.title).strip("',()")
+            else:
+                name = self.access_url
+        except Exception as e:
+            name = 'Unknown archive title'
+
+        return name
 
 
 class RegistrySearchParameters:
@@ -332,8 +351,7 @@ class ADQLObscoreQuery(BaseADQLQuery):
                  calibration_level,
                  t_min,
                  t_max,
-                 order_by,
-                 dataproduct_type_select=None):
+                 order_by):
 
         super().__init__()
 
@@ -343,11 +361,8 @@ class ADQLObscoreQuery(BaseADQLQuery):
         if order_by == 'none':
             order_by = ''
 
-        if dataproduct_type_select == 'none' or dataproduct_type_select is None:
-            dataproduct_type_select = ''
-
-        if dataproduct_type == '' and dataproduct_type_select != '':
-            dataproduct_type = dataproduct_type_select
+        if dataproduct_type == 'none' or dataproduct_type is None:
+            dataproduct_type = ''
 
         self.parameters = {
             'dataproduct_type': dataproduct_type,
@@ -703,6 +718,68 @@ class FileHandler:
         return file_name
 
 
+class Logger:
+    _logs = []
+
+    ACTION_SUCCESS = 1
+    ACTION_ERROR = 2
+
+    ACTION_TYPE = 1
+    INFO_TYPE = 2
+
+    ACTION_TYPE_DOWNLOAD = 1
+    ACTION_TYPE_ARCHIVE_CONNECTION = 2
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def create_action_log(outcome, action, message) -> bool:
+
+        is_log_created = False
+        log = ""
+
+        if action == Logger.ACTION_TYPE_DOWNLOAD:
+            if outcome == Logger.ACTION_SUCCESS:
+                log += "Success downloading file : " + message
+            else:
+                log += "Error downloading file : " + message
+
+            is_log_created = True
+        elif action == Logger.ACTION_TYPE_ARCHIVE_CONNECTION:
+            if outcome == Logger.ACTION_SUCCESS:
+                log += "Success connecting to archive : " + message
+            else:
+                log += "Error connecting to archive : " + message
+
+            is_log_created = True
+
+        if is_log_created:
+            Logger._insert_log(Logger.ACTION_TYPE, log)
+
+        return is_log_created
+
+    @staticmethod
+    def create_info_log(message):
+        pass
+
+    @staticmethod
+    def _insert_log(type, log):
+        Logger._logs.append(log)
+
+    @staticmethod
+    def create_log_file(archive_name, query):
+        log_file = ""
+
+        log_file += "Run summary for archive : " + archive_name + "\n"
+        log_file += "With query : " + query + "\n"
+
+        for log in Logger._logs:
+            log_file += log + "\n"
+
+        return log_file
+
+
 if __name__ == "__main__":
 
     output = sys.argv[1]
@@ -714,6 +791,7 @@ if __name__ == "__main__":
     archive_type = sys.argv[7]
 
     archive = ''
+    archive_name = 'No archive name'
 
     file_url = []
     error_message = None
@@ -723,8 +801,8 @@ if __name__ == "__main__":
     if number_of_files is not None and number_of_files != '':
         if int(number_of_files) < 1:
             number_of_files = 1
-        elif int(number_of_files) > 10:
-            number_of_files = 10
+        elif int(number_of_files) > 100:
+            number_of_files = 100
     else:
         number_of_files = 1
 
@@ -752,7 +830,6 @@ if __name__ == "__main__":
             obs_id = sys.argv[24]
             t_min = sys.argv[25]
             t_max = sys.argv[26]
-            dataproduct_type_select = sys.argv[27]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
@@ -768,8 +845,7 @@ if __name__ == "__main__":
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
-                                                    order_by,
-                                                    dataproduct_type_select)
+                                                    order_by)
 
             adql_query = obscore_query_object.get_query()
 
@@ -788,15 +864,26 @@ if __name__ == "__main__":
 
         archive_list = Registry.search_registries(rsp, 1)
 
-        archive = archive_list[0]
+        if archive_list:
+            archive = archive_list[0]
 
-        is_initialisation_success, error_message = archive.initialize()
+            archive_name = archive.get_archive_name(archive_type)
 
-        if is_initialisation_success:
-            if query_type == 'raw_query':
-                file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
-            else:
-                file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
+            is_initialisation_success, error_message = archive.initialize()
+
+            if is_initialisation_success:
+                if query_type == 'raw_query':
+                    if url_field:
+                        file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+                    else:
+                        error_message = "no url field specified"
+                        Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                else:
+                    file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
+
+        else:
+            error_message = "no archive matching search parameters"
+            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
 
     elif archive_type == 'archive':
 
@@ -821,7 +908,6 @@ if __name__ == "__main__":
             obs_id = sys.argv[22]
             t_min = sys.argv[23]
             t_max = sys.argv[24]
-            dataproduct_type_select = sys.argv[25]
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
@@ -837,8 +923,7 @@ if __name__ == "__main__":
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
-                                                    order_by,
-                                                    dataproduct_type_select)
+                                                    order_by)
 
             adql_query = obscore_query_object.get_query()
 
@@ -856,18 +941,28 @@ if __name__ == "__main__":
 
         archive = TapArchive(1, 'name', 'title', service_url)
 
+        archive_name = archive.get_archive_name(archive_type)
+
         is_initialisation_success, error_message = archive.initialize()
 
         if is_initialisation_success:
             if query_type == 'raw_query':
-                file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+                if url_field:
+                    file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+                else:
+                    error_message = "no url field specified"
+                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
             else:
                 file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
 
     if file_url and output_csv != 'XXXX':
 
         if query_type == 'raw_query':
-            FileHandler.write_urls_to_output(file_url, output_csv, url_field)
+            if file_url:
+                FileHandler.write_urls_to_output(file_url, output_csv, url_field)
+            else:
+                error_message = "no url field specified"
+                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
         else:
             FileHandler.write_urls_to_output(file_url, output_csv)
 
@@ -878,27 +973,33 @@ if __name__ == "__main__":
         else:
             access_url = 'access_url'
 
-        fits_file = FileHandler.download_file_from_url(file_url[0][access_url])
-        FileHandler.write_file_to_output(fits_file, output, "wb")
+        if access_url:
 
-        for i, url in enumerate(file_url[1:], start=1):
             try:
-                fits_file = FileHandler.download_file_from_url(url[access_url])
-                FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url[access_url]))
+                fits_file = FileHandler.download_file_from_url(file_url[0][access_url])
+                FileHandler.write_file_to_output(fits_file, output, "wb")
+
+                log_message = "from url " + file_url[0][access_url]
+                Logger.create_action_log(Logger.ACTION_SUCCESS, Logger.ACTION_TYPE_DOWNLOAD, log_message)
             except Exception as e:
-                pass
+                error_message = "from url " + file_url[0][access_url]
+                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+
+            for i, url in enumerate(file_url[1:], start=1):
+                try:
+                    fits_file = FileHandler.download_file_from_url(url[access_url])
+                    FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url[access_url]))
+
+                    log_message = "from url " + url[access_url]
+                    Logger.create_action_log(Logger.ACTION_SUCCESS, Logger.ACTION_TYPE_DOWNLOAD, log_message)
+                except Exception as e:
+                    error_message = "from url " + url[access_url]
+                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+        else:
+            error_message = "no url field specified"
+            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
 
     if file_url and (output_html != 'XXXX' or output_basic_html != 'XXXX'):
-
-        archive_name = ''
-
-        try:
-            if archive_type == 'registry':
-                archive_name = str(archive.title).strip("',()")
-            else:
-                archive_name = archive.access_url
-        except Exception as e:
-            archive_name = 'Unknown archive title'
 
         if output_html:
             html_file = OutputHandler.generateHTMLOutput(file_url, archive_name, adql_query)
@@ -909,14 +1010,18 @@ if __name__ == "__main__":
             FileHandler.write_file_to_output(html_file, output_basic_html)
 
     if file_url is None or error_message:
-        if error_message is not None:
-            error_file = error_message
-        else:
-            error_file = "No resources matching given parameters"
+
+        error_file = Logger.create_log_file(archive_name, adql_query)
+
+        if error_message is None:
+            error_file += "\n No resources matching parameters found"
 
         FileHandler.write_file_to_output(error_file, output_error)
 
     else:
-        error_file = "No error detected during tool run"
+
+        error_file = Logger.create_log_file(archive_name, adql_query)
+
+        error_file += "\n Tool run executed with success"
 
         FileHandler.write_file_to_output(error_file, output_error)
