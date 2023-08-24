@@ -2,7 +2,7 @@ name: astronomicalarchivestool
 owner: volodymyrss
 type: unrestricted
 categories:
-- Astronomy
+- Data Source
 description: Astronomical archives tools contains tools for querying and fetching resources from astronomical archives into Galaxy
 long_description: |
   This set of tool uses VO protocols (like TAP) through python libraries like pyvo, in order to enable the 

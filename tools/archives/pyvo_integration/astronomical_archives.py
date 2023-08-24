@@ -1,6 +1,5 @@
 import os
 import sys
-
 import urllib
 from urllib import request
 
@@ -144,7 +143,8 @@ class TapArchive:
                 self._set_archive_tables()
                 self.initialized = True
         except DALAccessError:
-            error_message = "A connection to the service could not be established"
+            error_message = \
+                "A connection to the service could not be established"
             Logger.create_action_log(
                 Logger.ACTION_ERROR,
                 Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
@@ -578,7 +578,7 @@ class OutputHandler:
                         <span> """ + str(archive_name) + """</span>
                         <br />
                         <br />
-                        <span> With ADQL query : 
+                        <span> With ADQL query :
                         """ + str(adql_query) + """</span>
                       </h2>
                     </div>"""
