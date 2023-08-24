@@ -18,6 +18,6 @@ auto_tool_repositories:
   name_template: "{{ tool_id }}"
   description_template: "{{ tool_name }}"
 suite:
-  name: "astronomicalarchivestools"
+  name: "suite_astronomicalarchivestools"
   description: "A suite of Galaxy tools to interact with astronomical archives"
   type: repository_suite_definition

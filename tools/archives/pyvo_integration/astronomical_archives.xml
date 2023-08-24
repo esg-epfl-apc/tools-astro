@@ -26,9 +26,10 @@
 
         #elif $query_section.query_selection.query_type == 'obscore_query':
 
-          #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type_select
-          #if $dataproduct_type == 'custom':
-              #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type
+          #if $query_section.query_selection.dataproduct_type_selection.dataproduct_input_type == 'custom':
+            #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type
+          #else:
+            #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type_select
           #end if
 
           #if $archiveselection.archive_type == 'registry' :
@@ -86,10 +87,7 @@
             </when>
             <when value="archive">
               <param name="archive" type="select" label="Archive">
-                <options from_file="astronomical_archives_gen.loc">
-                  <column name="value" index="2" />
-                  <column name="name" index="1" />
-                </options>
+                <options from_data_table="astronomical_archives" />
               </param>
             </when>
         </conditional>
@@ -107,30 +105,36 @@
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
               <!-- Dataproduct_type field values definition https://www.ivoa.net/rdf/product-type/2023-06-26/product-type.html  -->
               <conditional name="dataproduct_type_selection">
-                <param name="dataproduct_type_select" type="select" label="Data product type" help="Logical data product type (link to reference in Help section)">
-                  <option value="none" selected="true">None</option>
+                <param name="dataproduct_input_type" type="select" label="Data product type input choice">
+                  <option value="list" selected="true">From list</option>
                   <option value="custom">Custom (Input data product type yourself)</option>
-                  <option value="image">Image</option>
-                  <option value="cube">Cube</option>
-                  <option value="dynamic-spectrum">Dynamic spectrum</option>
-                  <option value="event-list">Event list</option>
-                  <option value="light-curve">Light curve</option>
-                  <option value="measurements">Measurements</option>
-                  <option value="polarization-cube">Polarization cube</option>
-                  <option value="polarization-resolved-dataset">Polarization resolved dataset</option>
-                  <option value="polarized-spectrum">Polarized spectrum</option>
-                  <option value="sed">SED</option>
-                  <option value="slit-spectrum">Slit spectrum</option>
-                  <option value="spatially-resolved-dataset">Spatially resolved dataset</option>
-                  <option value="spectral-cube">Spectral cube</option>
-                  <option value="spectrally-resolved-dataset">Spectrally resolved dataset</option>
-                  <option value="spectrum">Spectrum</option>
-                  <option value="temporally-resolved-dataset">Temporally resolved dataset</option>
-                  <option value="time-cube">Time cube</option>
-                  <option value="timeseries">Time series</option>
-                  <option value="velocity-curve">Velocity curve</option>
-                  <option value="visibility">Visibility</option>
                 </param>
+                <when value="list">
+                  <param name="dataproduct_type_select" type="select" label="Data product type" help="Logical data product type (link to reference in Help section)">
+                    <option value="none" selected="true">None</option>
+                    <option value="custom">Custom (Input data product type yourself)</option>
+                    <option value="image">Image</option>
+                    <option value="cube">Cube</option>
+                    <option value="dynamic-spectrum">Dynamic spectrum</option>
+                    <option value="event-list">Event list</option>
+                    <option value="light-curve">Light curve</option>
+                    <option value="measurements">Measurements</option>
+                    <option value="polarization-cube">Polarization cube</option>
+                    <option value="polarization-resolved-dataset">Polarization resolved dataset</option>
+                    <option value="polarized-spectrum">Polarized spectrum</option>
+                    <option value="sed">SED</option>
+                    <option value="slit-spectrum">Slit spectrum</option>
+                    <option value="spatially-resolved-dataset">Spatially resolved dataset</option>
+                    <option value="spectral-cube">Spectral cube</option>
+                    <option value="spectrally-resolved-dataset">Spectrally resolved dataset</option>
+                    <option value="spectrum">Spectrum</option>
+                    <option value="temporally-resolved-dataset">Temporally resolved dataset</option>
+                    <option value="time-cube">Time cube</option>
+                    <option value="timeseries">Time series</option>
+                    <option value="velocity-curve">Velocity curve</option>
+                    <option value="visibility">Visibility</option>
+                  </param>
+                </when>
                 <when value="custom">
                   <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type" />
                 </when>
@@ -193,7 +197,7 @@
         <data name="output_error" format="txt" label="${tool.name} -> Query Summary:"></data>
     </outputs>
     <tests>
-        <test>
+        <test expect_num_outputs="1">
             <param name="image_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -211,7 +215,7 @@
               </assert_contents>
             </output>
         </test>
-        <test>
+        <test expect_num_outputs="1">
             <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -229,7 +233,7 @@
               </assert_contents>
             </output>
         </test>
-        <test>
+        <test expect_num_outputs="1">
             <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -247,7 +251,7 @@
               </assert_contents>
             </output>
         </test>
-        <test>
+        <test expect_num_outputs="1">
           <param name="csv_file" value="True"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archiveselection">
@@ -263,7 +267,7 @@
             </assert_contents>
           </output>
         </test>
-        <test>
+        <test expect_num_outputs="1">
           <param name="csv_file" value="True"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archiveselection">
@@ -669,7 +673,7 @@ This service provides ObsTAP access to VizieR spectra, time-series and images.
 
 -----
 
-**TAPVizieR** http://tapvizier.cds.unistra.fr/TAPVizieR/tap TAP VizieR query engine
+**TAPVizieR** tapvizier.cds.unistra.fr/TAPVizieR/tap TAP VizieR query engine
 
 -----
 

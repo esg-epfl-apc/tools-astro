@@ -1,0 +1,7 @@
+<!-- Files containing data related to astronomical archives like TAP services access urls -->
+<tables>
+    <table name="astronomical_archives" comment_char="#" allow_duplicate_entries="False">
+        <columns>id, name, value</columns>
+        <file path="tool-data/astronomical_archives_gen.loc" />
+    </table>
+</tables>

@@ -1,12 +1,12 @@
-import sys
 import os
-
-import pyvo
-from pyvo import registry
-from pyvo import DALQueryError, DALServiceError, DALAccessError
+import sys
 
 import urllib
-from urllib import parse, request
+from urllib import request
+
+import pyvo
+from pyvo import DALAccessError, DALQueryError, DALServiceError
+from pyvo import registry
 
 
 class Service:
@@ -84,8 +84,7 @@ class TapArchive:
         self.archive_service = None
         self.tables = None
 
-    def get_resources(self, query, number_of_results, url_field='access_url'):
-        resource_list = []
+    def get_resources(self, query, number_of_results):
         resource_list_hydrated = []
 
         error_message = None
@@ -97,21 +96,33 @@ class TapArchive:
 
                 for i, resource in enumerate(raw_resource_list):
                     if i < number_of_results:
-                        # resource_list.append(resource[url_field])
-                        resource_list_hydrated.append(self._get_resource_object(resource))
-            except DALQueryError as dqe:
+                        resource_list_hydrated.append(
+                            self._get_resource_object(resource))
+            except DALQueryError:
                 if self.has_obscore_table():
                     error_message = "Error in query -> " + query
-                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                    Logger.create_action_log(
+                        Logger.ACTION_ERROR,
+                        Logger.ACTION_TYPE_DOWNLOAD,
+                        error_message)
                 else:
                     error_message = "No obscore table in the archive"
-                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
-            except DALServiceError as dse:
+                    Logger.create_action_log(
+                        Logger.ACTION_ERROR,
+                        Logger.ACTION_TYPE_DOWNLOAD,
+                        error_message)
+            except DALServiceError:
                 error_message = "Error communicating with the service"
-                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
-            except Exception as e:
+                Logger.create_action_log(
+                    Logger.ACTION_ERROR,
+                    Logger.ACTION_TYPE_DOWNLOAD,
+                    error_message)
+            except Exception:
                 error_message = "Unknow error while querying the service"
-                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                Logger.create_action_log(
+                    Logger.ACTION_ERROR,
+                    Logger.ACTION_TYPE_DOWNLOAD,
+                    error_message)
 
         return resource_list_hydrated, error_message
 
@@ -132,12 +143,18 @@ class TapArchive:
             if self.archive_service:
                 self._set_archive_tables()
                 self.initialized = True
-        except DALAccessError as dae:
+        except DALAccessError:
             error_message = "A connection to the service could not be established"
-            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
-        except Exception as e:
+            Logger.create_action_log(
+                Logger.ACTION_ERROR,
+                Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                error_message)
+        except Exception:
             error_message = "Unknow error while initializing TAP service"
-            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
+            Logger.create_action_log(
+                Logger.ACTION_ERROR,
+                Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                error_message)
 
         return self.initialized, error_message
 
@@ -186,7 +203,9 @@ class TapArchive:
         for idx in range(idx_from + len('from') + 1, idx_where):
             table_name = table_name + query[idx]
 
-        if not next((item for item in self.tables if item["name"] == table_name), False):
+        if not next(
+                (item for item in self.tables if item["name"] == table_name),
+                False):
             is_valid = False
 
         return is_valid
@@ -201,7 +220,9 @@ class TapArchive:
     def _has_table(self, table_name) -> bool:
         _has_table = False
 
-        _has_table = next((item for item in self.tables if item["name"] == table_name), False)
+        _has_table = next(
+            (item for item in self.tables if item["name"] == table_name),
+            False)
 
         return _has_table
 
@@ -213,7 +234,7 @@ class TapArchive:
                 name = str(self.title).strip("',()")
             else:
                 name = self.access_url
-        except Exception as e:
+        except Exception:
             name = 'Unknown archive title'
 
         return name
@@ -254,7 +275,8 @@ class Registry:
         pass
 
     @staticmethod
-    def search_registries(rsp: RegistrySearchParameters, number_of_registries):
+    def search_registries(rsp: RegistrySearchParameters,
+                          number_of_registries):
 
         parameters = rsp.get_parameters()
 
@@ -265,12 +287,16 @@ class Registry:
         registry_list = []
 
         if not waveband:
-            registry_list = registry.search(keywords=keywords, servicetype=service_type)
+            registry_list = registry.search(keywords=keywords,
+                                            servicetype=service_type)
         else:
-            registry_list = registry.search(keywords=keywords, waveband=waveband, servicetype=service_type)
+            registry_list = registry.search(keywords=keywords,
+                                            waveband=waveband,
+                                            servicetype=service_type)
 
         if registry_list:
-            registry_list = Registry._get_registries_from_list(registry_list, 1)
+            registry_list = Registry._get_registries_from_list(
+                registry_list, 1)
 
         return registry_list
 
@@ -279,9 +305,12 @@ class Registry:
 
         archive_list = []
 
-        for i, registry in enumerate(registry_list):
+        for i, ivoa_registry in enumerate(registry_list):
             if i < number_of_registries:
-                archive = TapArchive(registry.standard_id, registry.res_title, registry.short_name, registry.access_url)
+                archive = TapArchive(ivoa_registry.standard_id,
+                                     ivoa_registry.res_title,
+                                     ivoa_registry.short_name,
+                                     ivoa_registry.access_url)
                 archive_list.append(archive)
 
         return archive_list
@@ -384,7 +413,9 @@ class ADQLObscoreQuery(BaseADQLQuery):
         self.order_by = order_by
 
     def get_query(self):
-        return ADQLObscoreQuery.base_query + self.get_where_statement() + self.get_order_by_statement()
+        return ADQLObscoreQuery.base_query + \
+            self.get_where_statement() + \
+            self.get_order_by_statement()
 
     def get_order_by_statement(self):
         if self.order_by != '':
@@ -416,8 +447,11 @@ class ADQLTapQuery(BaseADQLQuery):
 
     def get_query(self, table, where_field, where_condition):
         if where_field != '' and where_condition != '':
-            return ADQLTapQuery.base_query + str(table) + ' WHERE ' + str(where_field) + ' = ' + '\'' + str(
-                where_condition) + '\''
+            return ADQLTapQuery.base_query + str(table) + \
+                ' WHERE ' + str(where_field) + \
+                ' = ' + \
+                '\'' + \
+                str(where_condition) + '\''
         else:
             return ADQLTapQuery.base_query + str(table)
 
@@ -544,7 +578,8 @@ class OutputHandler:
                         <span> """ + str(archive_name) + """</span>
                         <br />
                         <br />
-                        <span> With ADQL query : """ + str(adql_query) + """</span>
+                        <span> With ADQL query : 
+                        """ + str(adql_query) + """</span>
                       </h2>
                     </div>"""
 
@@ -565,16 +600,16 @@ class OutputHandler:
             html_file += '</table>'
 
             if 'preview' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['preview']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['preview']) + '"/></details>'
 
             if 'preview_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['preview_url']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['preview_url']) + '"/></details>'
 
             if 'postcard_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['postcard_url']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['postcard_url']) + '"/></details>'
 
             html_file += '<br />'
             html_file += '<br />'
@@ -592,7 +627,8 @@ class OutputHandler:
                             <span> """ + str(archive_name) + """</span>
                             <br />
                             <br />
-                            <span> With ADQL query : """ + str(adql_query) + """</span>
+                            <span> With ADQL query : """\
+                            + str(adql_query) + """</span>
                           </h2>
                         </div>"""
 
@@ -613,16 +649,16 @@ class OutputHandler:
             html_file += '</table>'
 
             if 'preview' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['preview']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['preview']) + '"/></details>'
 
             if 'preview_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['preview_url']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['preview_url']) + '"/></details>'
 
             if 'postcard_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="' + str(
-                    resource['postcard_url']) + '"/></details>'
+                html_file += '<details><summary>Preview</summary><img src="'\
+                             + str(resource['postcard_url']) + '"/></details>'
 
             html_file += '<br />'
             html_file += '<br />'
@@ -652,42 +688,6 @@ class FileHandler:
         with open(output, "w") as file_output:
             for url in urls:
                 file_output.write(url[access_url] + ',')
-
-    @staticmethod
-    def write_multiple_outputs(output_id):
-
-        out_files = {}
-
-        for i in range(1, 10):
-            out_files[i] = open(
-                os.path.join(database_tmp_dir, "primary_%s_%s_visible_interval_%s" % (output_id, i, i)), "w+"
-            )
-            out_files[i].write("aaaaa")
-
-        for file_out in out_files.values():
-            file_out.close()
-
-    @staticmethod
-    def write_collection(output):
-        dir = os.getcwd()
-
-        dir += '/fits'
-
-        upload_dir = os.path.join(dir, 'aaaaa.fits')
-
-        with open(output, "w") as file_output:
-            file_output.write(upload_dir)
-
-    @staticmethod
-    def write_collection1(index):
-        dir = os.getcwd()
-
-        dir += '/fits'
-
-        upload_dir = os.path.join(dir, index + '.fits')
-
-        with open(upload_dir, "w") as file_output:
-            file_output.write(upload_dir)
 
     @staticmethod
     def write_file_to_subdir(file, index):
@@ -855,12 +855,16 @@ if __name__ == "__main__":
             where_condition = sys.argv[14]
             url_field = sys.argv[15]
 
-            adql_query = ADQLTapQuery().get_query(tap_table, where_field, where_condition)
+            adql_query = ADQLTapQuery().get_query(tap_table,
+                                                  where_field,
+                                                  where_condition)
 
         else:
             adql_query = ADQLObscoreQuery.base_query
 
-        rsp = RegistrySearchParameters(keyword=keyword, waveband=waveband, service_type=service_type)
+        rsp = RegistrySearchParameters(keyword=keyword,
+                                       waveband=waveband,
+                                       service_type=service_type)
 
         archive_list = Registry.search_registries(rsp, 1)
 
@@ -874,16 +878,25 @@ if __name__ == "__main__":
             if is_initialisation_success:
                 if query_type == 'raw_query':
                     if url_field:
-                        file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+                        file_url, error_message = archive.get_resources(
+                            adql_query,
+                            int(number_of_files),
+                            url_field)
                     else:
                         error_message = "no url field specified"
-                        Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                        Logger.create_action_log(Logger.ACTION_ERROR,
+                                                 Logger.ACTION_TYPE_DOWNLOAD,
+                                                 error_message)
                 else:
-                    file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
+                    file_url, error_message = archive.get_resources(
+                        adql_query,
+                        int(number_of_files))
 
         else:
             error_message = "no archive matching search parameters"
-            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
+            Logger.create_action_log(Logger.ACTION_ERROR,
+                                     Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                                     error_message)
 
     elif archive_type == 'archive':
 
@@ -934,7 +947,9 @@ if __name__ == "__main__":
             where_condition = sys.argv[12]
             url_field = sys.argv[13]
 
-            adql_query = ADQLTapQuery().get_query(tap_table, where_field, where_condition)
+            adql_query = ADQLTapQuery().get_query(tap_table,
+                                                  where_field,
+                                                  where_condition)
 
         else:
             adql_query = ADQLObscoreQuery.base_query
@@ -948,21 +963,32 @@ if __name__ == "__main__":
         if is_initialisation_success:
             if query_type == 'raw_query':
                 if url_field:
-                    file_url, error_message = archive.get_resources(adql_query, int(number_of_files), url_field)
+                    file_url, error_message = archive.get_resources(
+                        adql_query,
+                        int(number_of_files),
+                        url_field)
                 else:
                     error_message = "no url field specified"
-                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                    Logger.create_action_log(Logger.ACTION_ERROR,
+                                             Logger.ACTION_TYPE_DOWNLOAD,
+                                             error_message)
             else:
-                file_url, error_message = archive.get_resources(adql_query, int(number_of_files))
+                file_url, error_message = archive.get_resources(
+                    adql_query,
+                    int(number_of_files))
 
     if file_url and output_csv != 'XXXX':
 
         if query_type == 'raw_query':
             if file_url:
-                FileHandler.write_urls_to_output(file_url, output_csv, url_field)
+                FileHandler.write_urls_to_output(file_url,
+                                                 output_csv,
+                                                 url_field)
             else:
                 error_message = "no url field specified"
-                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                Logger.create_action_log(Logger.ACTION_ERROR,
+                                         Logger.ACTION_TYPE_DOWNLOAD,
+                                         error_message)
         else:
             FileHandler.write_urls_to_output(file_url, output_csv)
 
@@ -976,37 +1002,56 @@ if __name__ == "__main__":
         if access_url:
 
             try:
-                fits_file = FileHandler.download_file_from_url(file_url[0][access_url])
+                fits_file = FileHandler.download_file_from_url(
+                    file_url[0][access_url])
                 FileHandler.write_file_to_output(fits_file, output, "wb")
 
                 log_message = "from url " + file_url[0][access_url]
-                Logger.create_action_log(Logger.ACTION_SUCCESS, Logger.ACTION_TYPE_DOWNLOAD, log_message)
-            except Exception as e:
+                Logger.create_action_log(Logger.ACTION_SUCCESS,
+                                         Logger.ACTION_TYPE_DOWNLOAD,
+                                         log_message)
+            except Exception:
                 error_message = "from url " + file_url[0][access_url]
-                Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                Logger.create_action_log(Logger.ACTION_ERROR,
+                                         Logger.ACTION_TYPE_DOWNLOAD,
+                                         error_message)
 
             for i, url in enumerate(file_url[1:], start=1):
                 try:
-                    fits_file = FileHandler.download_file_from_url(url[access_url])
-                    FileHandler.write_file_to_subdir(fits_file, FileHandler.get_file_name_from_url(url[access_url]))
+                    fits_file = FileHandler.download_file_from_url(
+                        url[access_url])
+                    FileHandler.write_file_to_subdir(
+                        fits_file,
+                        FileHandler.get_file_name_from_url(url[access_url]))
 
                     log_message = "from url " + url[access_url]
-                    Logger.create_action_log(Logger.ACTION_SUCCESS, Logger.ACTION_TYPE_DOWNLOAD, log_message)
-                except Exception as e:
+                    Logger.create_action_log(Logger.ACTION_SUCCESS,
+                                             Logger.ACTION_TYPE_DOWNLOAD,
+                                             log_message)
+                except Exception:
                     error_message = "from url " + url[access_url]
-                    Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+                    Logger.create_action_log(Logger.ACTION_ERROR,
+                                             Logger.ACTION_TYPE_DOWNLOAD,
+                                             error_message)
         else:
             error_message = "no url field specified"
-            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_DOWNLOAD, error_message)
+            Logger.create_action_log(Logger.ACTION_ERROR,
+                                     Logger.ACTION_TYPE_DOWNLOAD,
+                                     error_message)
 
     if file_url and (output_html != 'XXXX' or output_basic_html != 'XXXX'):
 
         if output_html:
-            html_file = OutputHandler.generateHTMLOutput(file_url, archive_name, adql_query)
+            html_file = OutputHandler.generateHTMLOutput(
+                file_url,
+                archive_name,
+                adql_query)
             FileHandler.write_file_to_output(html_file, output_html)
 
         if output_basic_html:
-            html_file = OutputHandler.generateBasicHTMLOutput(file_url, archive_name, adql_query)
+            html_file = OutputHandler.generateBasicHTMLOutput(file_url,
+                                                              archive_name,
+                                                              adql_query)
             FileHandler.write_file_to_output(html_file, output_basic_html)
 
     if file_url is None or error_message:
