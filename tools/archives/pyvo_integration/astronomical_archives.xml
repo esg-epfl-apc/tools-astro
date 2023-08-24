@@ -198,7 +198,7 @@
         <data name="output_error" format="txt" label="${tool.name} -> Query Summary:"></data>
     </outputs>
     <tests>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="image_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -216,7 +216,7 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -234,7 +234,7 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="csv_file" value="True"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archiveselection">
@@ -253,7 +253,6 @@
             </output>
         </test>
         <test expect_num_outputs="1">
-          <param name="csv_file" value="True"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archiveselection">
               <param name="archive_type" value="registry"/>
@@ -269,7 +268,6 @@
           </output>
         </test>
         <test expect_num_outputs="1">
-          <param name="csv_file" value="True"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archiveselection">
               <param name="archive_type" value="registry"/>
