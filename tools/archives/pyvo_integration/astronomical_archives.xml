@@ -57,13 +57,14 @@
         #end if
 
         python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error'
+        
       ]]>
     </command>
     <inputs>
         <conditional name="archiveselection">
             <param name="archive_type" type="select" label="Archive Selection">
+              <option value="archive">Query specific IVOA TAP archive</option>
               <option value="registry">Query IVOA registry</option>
-              <option value="archive">Query specific IVOA archive</option>
             </param>
             <when value="registry">
               <param name="keyword" type="text" label="Keyword" />
@@ -175,11 +176,11 @@
             </when>
           </conditional>
         </section>
-        <param name="number_of_files" type="integer" value="1" label="Number of files or urls to download" help="Min = 1 Max = 100; Beware of disk space usage when downloading large number of files!" />
-        <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download URLs as CSV"/>
-        <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>
+        <param name="number_of_files" type="integer" value="10" label="Maximum number of files or urls to download" help="Min = 1 Max = 100; Beware of disk space usage when downloading large number of files!" />
         <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview URLs in extended HTML (requires HTML rendering permission, see help)"/>
-        <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview URLs as HTML"/>
+        <param name="basic_html_file" type="boolean" checked="true" truevalue="true" falsevalue="false" label="Preview URLs as HTML"/>        
+        <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>        
+        <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download URLs as CSV"/>        
     </inputs>
     <outputs>
         <data name="output" format="fits" label="${tool.name} -> File from ${archiveselection.archive_type} search:" >
@@ -489,7 +490,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-The MAST Archive at STScI TAP end point for the TESS Input Catalog.  The TIC is used to help identify two-minute cadence target selection for the TESS mission, and to calculate physical and observational properties of planet candidates. It is for use by both the TESS science team and the public, and it is periodically updated – the current version is TIC-8. TIC-8 uses the GAIA DR2 catalog as a base and merges a large number of other photometric catalogs, including 2MASS, UCAC4, APASS, SDSS, WISE, etc. There are roughly 1.5 billion stellar and extended sources in TIC-8, containing compiled magnitudes including B, V, u, g, r, i, z, J, H, K, W1-W4, and G.
+The MAST Archive at STScI TAP end point for the TESS Input Catalog.The TIC is used to help identify two-minute cadence target selection for the TESS mission, and to calculate physical and observational properties of planet candidates. It is for use by both the TESS science team and the public, and it is periodically updated – the current version is TIC-8. TIC-8 uses the GAIA DR2 catalog as a base and merges a large number of other photometric catalogs, including 2MASS, UCAC4, APASS, SDSS, WISE, etc. There are roughly 1.5 billion stellar and extended sources in TIC-8, containing compiled magnitudes including B, V, u, g, r, i, z, J, H, K, W1-W4, and G.
 The TIC can be directly accessed through the Mikulski Archive for Space Telescopes (MAST), using either queries or bulk download.
 
 The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.

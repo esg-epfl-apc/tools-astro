@@ -1,5 +1,5 @@
 # Table used for listing astronomical archives TAP service urls
-#<id>	<display_name>	<value>
+#<unique_id>	<display_name>	<access_url>
 0	AIP DaCHS TAP service	http://gavo.aip.de/tap
 1	MAST STScI CAOM and ObsCore TAP service	https://vao.stsci.edu/CAOMTAP/TapService.aspx
 2	MAST STScI Hubble Source Catalog Version 3 (HSCv3) TAP service	https://vao.stsci.edu/hsctap/TapService.aspx
