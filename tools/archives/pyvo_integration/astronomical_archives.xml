@@ -140,7 +140,7 @@
                   <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type" />
                 </when>
               </conditional>
-              <param name="obs_collection" type="text" label="Collection" help="Name of the observation collection" />
+              <param name="obs_collection" type="text" label="Observation collection name"/>
               <param name="obs_title" type="text" label="Observation title (archive specific)" />
               <param name="obs_id" type="text" label="Observation Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
