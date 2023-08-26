@@ -145,7 +145,7 @@
               <param name="obs_id" type="text" label="Observation Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
-              <param name="em_min" type="text" label="Start of the energy range, vacuum wavelength in meters" />
+              <param name="em_min" type="float" label="Start of the energy range, vacuum wavelength in meters" />
               <param name="em_max" type="text" label="Stop of the energy range, vacuum wavelength in meters" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Diameter (bounds) of the covered region (deg)" />
