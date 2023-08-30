@@ -178,7 +178,7 @@
         <param name="number_of_files" type="integer" value="1" min="1" max="100" label="Number of files or urls to download" help="Beware of disk space usage when downloading large number of files!" />
         <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download URLs as CSV"/>
         <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>
-        <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview URLs in extended HTML (requires HTML rendering permission, see help)"/>
+        <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Return URL list in extended HTML (requires HTML rendering permission, see help)"/>
         <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Return URL list as simple HTML"/>
     </inputs>
     <outputs>
