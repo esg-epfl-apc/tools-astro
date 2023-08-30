@@ -179,7 +179,7 @@
         <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download URLs as CSV"/>
         <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>
         <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview URLs in extended HTML (requires HTML rendering permission, see help)"/>
-        <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Preview URLs as HTML"/>
+        <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Return URL list as simple HTML"/>
     </inputs>
     <outputs>
         <data name="output" format="fits" label="${tool.name} -> File from ${archiveselection.archive_type} search:" >
