@@ -1,16 +1,13 @@
-import sys
-import os
-
 import json
+import os
+import sys
 
 import urllib
 from urllib import parse, request
 
 import pyvo
-from pyvo import registry
 from pyvo import DALAccessError, DALQueryError, DALServiceError
-
-
+from pyvo import registry
 
 MAX_ALLOWED_ENTRIES = 100
 MAX_REGISTRIES_TO_SEARCH = 100
@@ -116,7 +113,8 @@ class TapArchive:
                             self._get_resource_object(resource))
                     else:
                         break
-            except DALQueryError as dqe:
+
+            except DALQueryError:
                 if self.has_obscore_table():
                     error_message = "Error in query -> " + query
                     Logger.create_action_log(
@@ -164,7 +162,7 @@ class TapArchive:
                 self._set_archive_tables()
                 self.initialized = True
 
-        except DALAccessError as dae:
+        except DALAccessError:
             error_message = \
                 "A connection to the service could not be established"
             Logger.create_action_log(
@@ -236,8 +234,6 @@ class TapArchive:
         return is_valid
 
     def has_obscore_table(self) -> bool:
-        has_obscore_table = False
-
         has_obscore_table = self._has_table("ivoa.obscore")
 
         return has_obscore_table
@@ -252,14 +248,12 @@ class TapArchive:
         return _has_table
 
     def get_archive_name(self, archive_type):
-        name = ''
-
         try:
             if archive_type == 'registry':
                 name = str(self.title).strip("',()")
             else:
                 name = self.access_url
-        except Exception as e:
+        except Exception:
             name = 'Unknown archive title'
 
         return name
@@ -310,8 +304,6 @@ class Registry:
         keywords = parameters['keywords']
         waveband = parameters['waveband']
         service_type = parameters['service_type']
-
-        registry_list = []
 
         if not waveband:
             registry_list = registry.search(
@@ -371,7 +363,6 @@ class BaseADQLQuery:
         is_first_statement = True
 
         for key, value in parameters.items():
-            statement = ''
 
             if value != '':
                 statement = str(key) + ' = ' + '\'' + str(value) + '\' '
@@ -487,38 +478,41 @@ class ToolRunner:
 
     def _set_query(self):
 
+        qs = 'query_section'
+        qsl = 'query_selection'
+
         if self._query_type == 'obscore_query':
 
             dataproduct_type = \
-                self._json_parameters['query_section']['query_selection']['dataproduct_type']
+                self._json_parameters[qs][qsl]['dataproduct_type']
             obs_collection = \
-                self._json_parameters['query_section']['query_selection']['obs_collection']
+                self._json_parameters[qs][qsl]['obs_collection']
             obs_title = \
-                self._json_parameters['query_section']['query_selection']['obs_title']
+                self._json_parameters[qs][qsl]['obs_title']
             obs_id = \
-                self._json_parameters['query_section']['query_selection']['obs_id']
+                self._json_parameters[qs][qsl]['obs_id']
             facility_name = \
-                self._json_parameters['query_section']['query_selection']['facility_name']
+                self._json_parameters[qs][qsl]['facility_name']
             instrument_name = \
-                self._json_parameters['query_section']['query_selection']['instrument_name']
+                self._json_parameters[qs][qsl]['instrument_name']
             em_min = \
-                self._json_parameters['query_section']['query_selection']['em_min']
+                self._json_parameters[qs][qsl]['em_min']
             em_max = \
-                self._json_parameters['query_section']['query_selection']['em_max']
+                self._json_parameters[qs][qsl]['em_max']
             target_name = \
-                self._json_parameters['query_section']['query_selection']['target_name']
+                self._json_parameters[qs][qsl]['target_name']
             obs_publisher_id = \
-                self._json_parameters['query_section']['query_selection']['obs_publisher_id']
+                self._json_parameters[qs][qsl]['obs_publisher_id']
             s_fov = \
-                self._json_parameters['query_section']['query_selection']['s_fov']
+                self._json_parameters[qs][qsl]['s_fov']
             calibration_level = \
-                self._json_parameters['query_section']['query_selection']['calibration_level']
+                self._json_parameters[qs][qsl]['calibration_level']
             t_min = \
-                self._json_parameters['query_section']['query_selection']['t_min']
+                self._json_parameters[qs][qsl]['t_min']
             t_max = \
-                self._json_parameters['query_section']['query_selection']['t_max']
+                self._json_parameters[qs][qsl]['t_max']
             order_by = \
-                self._json_parameters['query_section']['query_selection']['order_by']
+                self._json_parameters[qs][qsl]['order_by']
 
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
@@ -540,16 +534,18 @@ class ToolRunner:
 
         elif self._query_type == 'raw_query':
 
+            wc = 'where_clause'
+
             tap_table = \
-                self._json_parameters['query_section']['query_selection']['table']
+                self._json_parameters[qs][qsl]['table']
 
             where_field = \
-                self._json_parameters['query_section']['query_selection']['where_clause']['where_field']
+                self._json_parameters[qs][qsl][wc]['where_field']
             where_condition = \
-                self._json_parameters['query_section']['query_selection']['where_clause']['where_condition']
+                self._json_parameters[qs][qsl][wc]['where_condition']
 
             self._url_field = \
-                self._json_parameters['query_section']['query_selection']['url_field']
+                self._json_parameters[qs][qsl]['url_field']
 
             self._adql_query = \
                 ADQLTapQuery().get_query(
@@ -727,7 +723,9 @@ class ADQLObscoreQuery(BaseADQLQuery):
         'object': 'target_name'
     }
 
-    base_query = 'SELECT TOP 100 * FROM ivoa.obscore '
+    base_query = 'SELECT TOP ' + \
+                 str(MAX_ALLOWED_ENTRIES) + \
+                 ' * FROM ivoa.obscore '
 
     def __init__(self,
                  dataproduct_type,
@@ -807,21 +805,21 @@ class ADQLObscoreQuery(BaseADQLQuery):
 
 
 class ADQLTapQuery(BaseADQLQuery):
-    base_query = 'SELECT TOP 100 * FROM '
+    base_query = 'SELECT TOP '+str(MAX_ALLOWED_ENTRIES)+' * FROM '
 
     def __init__(self):
         super().__init__()
 
     def get_order_by_clause(self, order_type):
-        return super().get_order_by_clause(order_type)
+        return super()._get_order_by_clause(order_type)
 
     def get_query(self, table, where_field, where_condition):
         if where_field != '' and where_condition != '':
             return ADQLTapQuery.base_query + \
                 str(table) + \
                 ' WHERE ' + \
-                str(where_field) + ' = ' + '\'' + str(
-                where_condition) + '\''
+                str(where_field) + ' = ' + '\'' + \
+                str(where_condition) + '\''
         else:
             return ADQLTapQuery.base_query + str(table)
 
@@ -1023,16 +1021,15 @@ class FileHandler:
     def get_file_name_from_url(url, index=None):
         url_parts = url.split('/')
 
-        file_name = 'archive file '
+        file_name = ''
 
         try:
-
             if (url_parts[-1]) != '':
                 file_name = url_parts[-1]
             elif len(url_parts) > 1:
                 file_name = url_parts[-2]
         except Exception:
-            pass
+            file_name = 'archive file '
 
         return file_name
 
@@ -1145,8 +1142,3 @@ if __name__ == "__main__":
                              output_error)
 
     tool_runner.run()
-
-
-
-
-

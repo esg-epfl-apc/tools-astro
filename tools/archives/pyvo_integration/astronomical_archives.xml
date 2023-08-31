@@ -49,7 +49,7 @@
             </when>
             <when value="archive">
               <param name="archive" type="select" label="Astronomical archives">
-                <options from_data_table="astronomical_archives_1" />
+                <options from_data_table="astronomical_archives" />
               </param>
             </when>
         </conditional>
@@ -95,8 +95,8 @@
               <param name="obs_id" type="text" label="Observation Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
-              <param name="em_min" type="float" label="Start of the energy range, vacuum wavelength in meters" />
-              <param name="em_max" type="float" label="Stop of the energy range, vacuum wavelength in meters" />
+              <param name="em_min" type="float" optional="true" label="Start of the energy range, vacuum wavelength in meters" />
+              <param name="em_max" type="float" optional="true" label="Stop of the energy range, vacuum wavelength in meters" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Diameter (bounds) of the covered region (deg)" />
               <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
@@ -154,7 +154,7 @@
           <filter>'b' in output_section['output_selection']</filter>
           <filter>output_section['output_selection'] is not None</filter>
         </data>
-        <data name="output_error" format="txt" label="${tool.name} -> Query Summary:"></data>
+        <data name="output_error" format="txt" label="${tool.name} -> Query Summary:" />
     </outputs>
     <tests>
         <test expect_num_outputs="1">
