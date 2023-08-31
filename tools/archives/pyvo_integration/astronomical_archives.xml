@@ -10,60 +10,22 @@
     <command>
       <![CDATA[
 
-        mkdir fits;
+        mkdir fits
 
-        #if $query_section.query_selection.query_type == 'none':
+        &&
 
-          #if $archiveselection.archive_type == 'registry' :
+        python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' inputs.json
 
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type'
-
-          #elif $archiveselection.archive_type == 'archive' :
-
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type'
-
-          #end if
-
-        #elif $query_section.query_selection.query_type == 'obscore_query':
-
-          #if $query_section.query_selection.dataproduct_type_selection.dataproduct_input_type == 'custom':
-            #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type
-          #else:
-            #set $dataproduct_type = $query_section.query_selection.dataproduct_type_selection.dataproduct_type_select
-          #end if
-
-          #if $archiveselection.archive_type == 'registry' :
-
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
-
-          #elif $archiveselection.archive_type == 'archive' :
-
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$dataproduct_type' '$query_section.query_selection.obs_collection' '$query_section.query_selection.facility_name' '$query_section.query_selection.instrument_name' '$query_section.query_selection.em_min' '$query_section.query_selection.em_max' '$query_section.query_selection.target_name' '$query_section.query_selection.obs_publisher_id' '$query_section.query_selection.s_fov' '$query_section.query_selection.calibration_level' '$query_section.query_selection.order_by' '$query_section.query_selection.obs_title' '$query_section.query_selection.obs_id' '$query_section.query_selection.t_min' '$query_section.query_selection.t_max'
-
-          #end if
-
-        #elif $query_section.query_selection.query_type == 'raw_query':
-
-          #if $archiveselection.archive_type == 'registry' :
-
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.keyword' '$archiveselection.wavebands' '$archiveselection.service_type' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
-
-          #elif $archiveselection.archive_type == 'archive' :
-
-            python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' $number_of_files '$archiveselection.archive_type' '$archiveselection.archive' '$query_section.query_selection.query_type' '$query_section.query_selection.table' '$query_section.query_selection.where_clause.where_field' '$query_section.query_selection.where_clause.where_condition' '$query_section.query_selection.url_field'
-
-          #end if
-
-        #end if
-
-        python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error'
       ]]>
     </command>
+    <configfiles>
+        <inputs name="inputs" filename="inputs.json" />
+    </configfiles>
     <inputs>
-        <conditional name="archiveselection">
+        <conditional name="archive_selection">
             <param name="archive_type" type="select" label="Archive Selection">
-              <option value="registry">Query IVOA registry</option>
               <option value="archive">Query specific IVOA archive</option>
+              <option value="registry">Query IVOA registry</option>
             </param>
             <when value="registry">
               <param name="keyword" type="text" label="Keyword" />
@@ -86,18 +48,19 @@
               </param>
             </when>
             <when value="archive">
-              <param name="archive" type="select" label="Archive">
-                <options from_data_table="astronomical_archives" />
+              <param name="archive" type="select" label="Astronomical archives">
+                <options from_data_table="astronomical_archives_1" />
               </param>
             </when>
         </conditional>
-        <section name="query_section" title="Query selection" expanded="false">
+        <section name="query_section" title="Query selection" expanded="true">
           <conditional name="query_selection">
             <param name="query_type" type="select" label="ADQL Query Selection">
               <option value="none">No specific query (first n files from archive)</option>
               <option value="obscore_query">IVOA obscore table query builder</option>
               <option value="raw_query">Raw ADQL query builder</option>
             </param>
+            <!-- Parameters used in tests cannot be optional -->
             <when value="none"></when>
             <when value="obscore_query">
               <!-- Fields defined https://www.ivoa.net/documents/ObsCore/20160224/WD-ObsCore-v1.1-20160224.pdf -->
@@ -105,48 +68,35 @@
               <param name="t_min" type="float" optional="true" label="Start time in MJD" />
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
               <!-- Dataproduct_type field values definition https://www.ivoa.net/rdf/product-type/2023-06-26/product-type.html  -->
-              <conditional name="dataproduct_type_selection">
-                <param name="dataproduct_input_type" type="select" label="Data product type input choice">
-                  <option value="list" selected="true">From list</option>
-                  <option value="custom">Custom (Input data product type yourself)</option>
-                </param>
-                <when value="list">
-                  <param name="dataproduct_type_select" type="select" label="Data product type" help="Logical data product type (link to reference in Help section)">
-                    <option value="none" selected="true">None</option>
-                    <option value="custom">Custom (Input data product type yourself)</option>
-                    <option value="image">Image</option>
-                    <option value="cube">Cube</option>
-                    <option value="dynamic-spectrum">Dynamic spectrum</option>
-                    <option value="event-list">Event list</option>
-                    <option value="light-curve">Light curve</option>
-                    <option value="measurements">Measurements</option>
-                    <option value="polarization-cube">Polarization cube</option>
-                    <option value="polarization-resolved-dataset">Polarization resolved dataset</option>
-                    <option value="polarized-spectrum">Polarized spectrum</option>
-                    <option value="sed">SED</option>
-                    <option value="slit-spectrum">Slit spectrum</option>
-                    <option value="spatially-resolved-dataset">Spatially resolved dataset</option>
-                    <option value="spectral-cube">Spectral cube</option>
-                    <option value="spectrally-resolved-dataset">Spectrally resolved dataset</option>
-                    <option value="spectrum">Spectrum</option>
-                    <option value="temporally-resolved-dataset">Temporally resolved dataset</option>
-                    <option value="time-cube">Time cube</option>
-                    <option value="timeseries">Time series</option>
-                    <option value="velocity-curve">Velocity curve</option>
-                    <option value="visibility">Visibility</option>
-                  </param>
-                </when>
-                <when value="custom">
-                  <param name="dataproduct_type" type="text" label="Data product type" help="Logical data product type" />
-                </when>
-              </conditional>
-              <param name="obs_collection" type="text" label="Observation collection name"/>
+              <param name="dataproduct_type" type="text" label="Data product type" optional="true" help="Logical data product type (link to reference in Help section)">
+                <option value="image">Image</option>
+                <option value="cube">Cube</option>
+                <option value="dynamic-spectrum">Dynamic spectrum</option>
+                <option value="event-list">Event list</option>
+                <option value="light-curve">Light curve</option>
+                <option value="measurements">Measurements</option>
+                <option value="polarization-cube">Polarization cube</option>
+                <option value="polarization-resolved-dataset">Polarization resolved dataset</option>
+                <option value="polarized-spectrum">Polarized spectrum</option>
+                <option value="sed">SED</option>
+                <option value="slit-spectrum">Slit spectrum</option>
+                <option value="spatially-resolved-dataset">Spatially resolved dataset</option>
+                <option value="spectral-cube">Spectral cube</option>
+                <option value="spectrally-resolved-dataset">Spectrally resolved dataset</option>
+                <option value="spectrum">Spectrum</option>
+                <option value="temporally-resolved-dataset">Temporally resolved dataset</option>
+                <option value="time-cube">Time cube</option>
+                <option value="timeseries">Time series</option>
+                <option value="velocity-curve">Velocity curve</option>
+                <option value="visibility">Visibility</option>
+              </param>
+              <param name="obs_collection" type="text" label="Collection" help="Observation collection name" />
               <param name="obs_title" type="text" label="Observation title (archive specific)" />
               <param name="obs_id" type="text" label="Observation Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
               <param name="em_min" type="float" label="Start of the energy range, vacuum wavelength in meters" />
-              <param name="em_max" type="text" label="Stop of the energy range, vacuum wavelength in meters" />
+              <param name="em_max" type="float" label="Stop of the energy range, vacuum wavelength in meters" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Diameter (bounds) of the covered region (deg)" />
               <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
@@ -175,33 +125,42 @@
             </when>
           </conditional>
         </section>
-        <param name="number_of_files" type="integer" value="1" min="1" max="100" label="Number of files or urls to download" help="Beware of disk space usage when downloading large number of files!" />
-        <param name="csv_file" type="boolean" truevalue="true" falsevalue="false" label="Download URLs as CSV"/>
-        <param name="image_file" type="boolean" truevalue="true" falsevalue="false" label="Download files"/>
-        <param name="html_file" type="boolean" truevalue="true" falsevalue="false" label="Return URL list in extended HTML (requires HTML rendering permission, see help)"/>
-        <param name="basic_html_file" type="boolean" truevalue="true" falsevalue="false" label="Return URL list as simple HTML"/>
+        <section name="output_section" title="Output selection" expanded="true">
+          <param name="number_of_files" type="integer" value="1" min="1" max="100" label="Number of files or urls to download" help="Beware of disk space usage when downloading large number of files!" />
+          <param name="output_selection" type="select" label="Get" multiple="true" display="checkboxes">
+            <option selected="true" value="c">Return URL list as CSV</option>
+            <option value="i">Download files</option>
+            <option value="h">Return URL list in extended HTML (requires HTML rendering permission, see help)</option>
+            <option value="b">Return URL list as HTML</option>
+          </param>
+        </section>
+
     </inputs>
     <outputs>
-        <data name="output" format="fits" label="${tool.name} -> File from ${archiveselection.archive_type} search:" >
+        <data name="output" format="fits" label="${tool.name} -> File from ${archive_selection.archive_type} search:" >
           <discover_datasets pattern="__designation_and_ext__" directory="fits" visible="true" format="fits" />
-          <filter>image_file == True</filter>
+          <filter>'i' in output_section['output_selection']</filter>
+          <filter>output_section['output_selection'] is not None</filter>
         </data>
         <data name="output_csv" format="txt" label="${tool.name} -> CSV Manifest:">
-          <filter>csv_file == True</filter>
+          <filter>'c' in output_section['output_selection']</filter>
+          <filter>output_section['output_selection'] is not None</filter>
         </data>
         <data name="output_html" format="html" label="${tool.name} -> HTML Preview:">
-          <filter>html_file == True</filter>
+          <filter>'h' in output_section['output_selection']</filter>
+          <filter>output_section['output_selection'] is not None</filter>
         </data>
         <data name="output_basic_html" format="html" label="${tool.name} -> Basic HTML Preview:">
-          <filter>basic_html_file == True</filter>
+          <filter>'b' in output_section['output_selection']</filter>
+          <filter>output_section['output_selection'] is not None</filter>
         </data>
         <data name="output_error" format="txt" label="${tool.name} -> Query Summary:"></data>
     </outputs>
     <tests>
-        <test expect_num_outputs="2">
-            <param name="image_file" value="True"/>
+        <test expect_num_outputs="1">
+            <param name="output_selection" value="i"/>
             <param name="number_of_files" value="1"/>
-            <conditional name="archiveselection">
+            <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
@@ -216,10 +175,10 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="2">
-            <param name="csv_file" value="True"/>
+        <test expect_num_outputs="1">
+            <param name="output_selection" value="c"/>
             <param name="number_of_files" value="1"/>
-            <conditional name="archiveselection">
+            <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
@@ -234,10 +193,10 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="2">
-            <param name="csv_file" value="True"/>
+        <test expect_num_outputs="1">
+            <param name="output_selection" value="c"/>
             <param name="number_of_files" value="1"/>
-            <conditional name="archiveselection">
+            <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
@@ -253,8 +212,9 @@
             </output>
         </test>
         <test expect_num_outputs="1">
+          <param name="output_selection" value="c"/>
           <param name="number_of_files" value="1"/>
-          <conditional name="archiveselection">
+          <conditional name="archive_selection">
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="simbad"/>
           </conditional>
@@ -268,8 +228,9 @@
           </output>
         </test>
         <test expect_num_outputs="1">
+          <param name="output_selection" value="c"/>
           <param name="number_of_files" value="1"/>
-          <conditional name="archiveselection">
+          <conditional name="archive_selection">
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="apertif"/>
           </conditional>
@@ -664,7 +625,7 @@ This service provides TAP access to a simplified view of the SIMBAD database
 
 -----
 
-**VizieR ObsTAP** http://cdsarc.cds.unistra.fr/saadavizier.tap/tap TAP VizieR query engine
+**VizieR ObsTAP** cdsarc.cds.unistra.fr/saadavizier.tap/tap TAP VizieR query engine
 
 -----
 
@@ -930,7 +891,7 @@ ObsLocTAP and Integral observation resources
 -----
 
 This service provides access to tables and catalogues of the ISO ESA mission.
-The Infrared Space Observatory (ISO) was the world's first true orbiting infrared observatory. Equipped with four highly-sophisticated and versatile scientific instruments, it was launched by Ariane in November 1995 and provided astronomers world-wide with a facility of unprecedented sensitivity and capabilities for a detailed exploration of the Universe at infrared wavelengths. The two spectrometers (SWS and LWS), a camera (ISOCAM) and an imaging photo-polarimeter (ISOPHOT) jointly covered wavelengths from 2.5 to around 240 microns with spatial resolutions ranging from 1.5 arcseconds (at the shortest wavelengths) to 90 arcseconds (at the longer wavelengths). Its 60 cm diameter telescope was cooled by superfluid liquid helium to temperatures of 2-4 K.
+        				The Infrared Space Observatory (ISO) was the world's first true orbiting infrared observatory. Equipped with four highly-sophisticated and versatile scientific instruments, it was launched by Ariane in November 1995 and provided astronomers world-wide with a facility of unprecedented sensitivity and capabilities for a detailed exploration of the Universe at infrared wavelengths. The two spectrometers (SWS and LWS), a camera (ISOCAM) and an imaging photo-polarimeter (ISOPHOT) jointly covered wavelengths from 2.5 to around 240 microns with spatial resolutions ranging from 1.5 arcseconds (at the shortest wavelengths) to 90 arcseconds (at the longer wavelengths). Its 60 cm diameter telescope was cooled by superfluid liquid helium to temperatures of 2-4 K.
 
 -----
 
@@ -966,14 +927,6 @@ This service provides access to XMM-Newton data and catalogues generated by the 
 
 -----
 
-**ESO TAP_CAT** http://archive.eso.org/tap_cat ESO TAP_CAT: a TAP service to query the astronomical catalogs generated by ESO observers, including the catalogs of the ESO Public Surveys.
-
------
-
-**ESO TAP_OBS** http://archive.eso.org/tap_obs ESO TAP_OBS: a TAP service to browse and access raw and reduced data, and to query the ambient measurements, of the La Silla Paranal Observatory.
-
------
-
 **FAI NVO DC TAP** http://vo.fai.kz/tap FAI archives TAP service
 
 -----
@@ -997,7 +950,8 @@ inspect various metadata, and upload your own data. It is thus the
 VO's premier way to access public data holdings.
 
 Tables exposed through this endpoint include: columns, groups, key_columns, keys, schemas, tables from the tap_schema schema, epn_core from the hrsc3nd schema, emptyobscore, obscore from the ivoa schema.
-  </help>
+
+    </help>
   <citations>
         <citation type="doi">
             10.3847/1538-4357/ac7c74

@@ -1,11 +1,19 @@
-import os
 import sys
+import os
+
+import json
+
 import urllib
-from urllib import request
+from urllib import parse, request
 
 import pyvo
-from pyvo import DALAccessError, DALQueryError, DALServiceError
 from pyvo import registry
+from pyvo import DALAccessError, DALQueryError, DALServiceError
+
+
+
+MAX_ALLOWED_ENTRIES = 100
+MAX_REGISTRIES_TO_SEARCH = 100
 
 
 class Service:
@@ -74,7 +82,12 @@ class TapArchive:
 
     service_type = Service.services['TAP']
 
-    def __init__(self, id, title, name, access_url):
+    def __init__(self,
+                 id=1,
+                 title="Unknown title",
+                 name="Unknown name",
+                 access_url=""):
+
         self.id = id,
         self.title = title,
         self.name = name,
@@ -83,7 +96,11 @@ class TapArchive:
         self.archive_service = None
         self.tables = None
 
-    def get_resources(self, query, number_of_results):
+    def get_resources(self,
+                      query,
+                      number_of_results,
+                      url_field='access_url'):
+
         resource_list_hydrated = []
 
         error_message = None
@@ -97,7 +114,9 @@ class TapArchive:
                     if i < number_of_results:
                         resource_list_hydrated.append(
                             self._get_resource_object(resource))
-            except DALQueryError:
+                    else:
+                        break
+            except DALQueryError as dqe:
                 if self.has_obscore_table():
                     error_message = "Error in query -> " + query
                     Logger.create_action_log(
@@ -110,12 +129,14 @@ class TapArchive:
                         Logger.ACTION_ERROR,
                         Logger.ACTION_TYPE_DOWNLOAD,
                         error_message)
+
             except DALServiceError:
                 error_message = "Error communicating with the service"
                 Logger.create_action_log(
                     Logger.ACTION_ERROR,
                     Logger.ACTION_TYPE_DOWNLOAD,
                     error_message)
+
             except Exception:
                 error_message = "Unknow error while querying the service"
                 Logger.create_action_log(
@@ -142,13 +163,15 @@ class TapArchive:
             if self.archive_service:
                 self._set_archive_tables()
                 self.initialized = True
-        except DALAccessError:
+
+        except DALAccessError as dae:
             error_message = \
                 "A connection to the service could not be established"
             Logger.create_action_log(
                 Logger.ACTION_ERROR,
                 Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
                 error_message)
+
         except Exception:
             error_message = "Unknow error while initializing TAP service"
             Logger.create_action_log(
@@ -204,8 +227,10 @@ class TapArchive:
             table_name = table_name + query[idx]
 
         if not next(
-                (item for item in self.tables if item["name"] == table_name),
+                (item for item in self.tables if
+                 item["name"] == table_name),
                 False):
+
             is_valid = False
 
         return is_valid
@@ -234,7 +259,7 @@ class TapArchive:
                 name = str(self.title).strip("',()")
             else:
                 name = self.access_url
-        except Exception:
+        except Exception as e:
             name = 'Unknown archive title'
 
         return name
@@ -259,10 +284,12 @@ class RegistrySearchParameters:
             parameters['keywords'] = self.keyword
 
         if Waveband.is_waveband_supported(self.waveband):
-            parameters['waveband'] = Waveband.wavebands[self.waveband]
+            parameters['waveband'] = \
+                Waveband.wavebands[self.waveband]
 
         if Service.is_service_supported(self.service_type):
-            parameters['service_type'] = Service.services[self.service_type]
+            parameters['service_type'] = \
+                Service.services[self.service_type]
         else:
             parameters['service_type'] = Service.services['TAP']
 
@@ -287,16 +314,19 @@ class Registry:
         registry_list = []
 
         if not waveband:
-            registry_list = registry.search(keywords=keywords,
-                                            servicetype=service_type)
+            registry_list = registry.search(
+                keywords=keywords,
+                servicetype=service_type)
         else:
-            registry_list = registry.search(keywords=keywords,
-                                            waveband=waveband,
-                                            servicetype=service_type)
+            registry_list = registry.search(
+                keywords=keywords,
+                waveband=waveband,
+                servicetype=service_type)
 
         if registry_list:
             registry_list = Registry._get_registries_from_list(
-                registry_list, 1)
+                registry_list,
+                number_of_registries)
 
         return registry_list
 
@@ -305,12 +335,13 @@ class Registry:
 
         archive_list = []
 
-        for i, ivoa_registry in enumerate(registry_list):
+        for i, registry in enumerate(registry_list):
             if i < number_of_registries:
-                archive = TapArchive(ivoa_registry.standard_id,
-                                     ivoa_registry.res_title,
-                                     ivoa_registry.short_name,
-                                     ivoa_registry.access_url)
+                archive = TapArchive(registry.standard_id,
+                                     registry.res_title,
+                                     registry.short_name,
+                                     registry.access_url)
+
                 archive_list.append(archive)
 
         return archive_list
@@ -356,6 +387,339 @@ class BaseADQLQuery:
         return where_clause
 
 
+class ToolRunner:
+
+    def __init__(self,
+                 run_parameters,
+                 output,
+                 output_csv,
+                 output_html,
+                 output_basic_html,
+                 output_error):
+
+        self._raw_parameters_path = run_parameters
+        self._json_parameters = json.load(open(run_parameters, "r"))
+        self._archive_type = ''
+        self._query_type = ''
+        self._archives = []
+        self._adql_query = ''
+        self._services_access_url = ''
+        self._url_field = 'access_url'
+        self._number_of_files = ''
+        self._is_initialised = False
+
+        self._csv_file = False
+        self._image_file = False
+        self._html_file = False
+        self._basic_html_file = False
+
+        self._output = output
+        self._output_csv = output_csv
+        self._output_html = output_html
+        self._output_basic_html = output_basic_html
+        self._output_error = output_error
+
+        self._set_run_main_parameters()
+        self._is_initialised, error_message = self._set_archive()
+
+        if self._is_initialised and error_message is None:
+            self._set_query()
+            self._set_output()
+
+    def _set_run_main_parameters(self):
+        self._archive_type = \
+            self._json_parameters['archive_selection']['archive_type']
+        self._query_type = \
+            self._json_parameters['query_section']['query_selection']['query_type']
+
+    def _set_archive(self):
+
+        error_message = None
+
+        if self._archive_type == 'archive':
+            self._service_access_url =\
+                self._json_parameters['archive_selection']['archive']
+
+            self._archives.append(
+                TapArchive(access_url=self._service_access_url))
+
+        else:
+            keyword = \
+                self._json_parameters['archive_selection']['keyword']
+            waveband = \
+                self._json_parameters['archive_selection']['wavebands']
+            service_type = \
+                self._json_parameters['archive_selection']['service_type']
+
+            rsp = RegistrySearchParameters(
+                keyword=keyword,
+                waveband=waveband,
+                service_type=service_type)
+
+            archive_list = Registry.search_registries(
+                rsp,
+                MAX_REGISTRIES_TO_SEARCH)
+
+            if len(archive_list) >= 1:
+                self._archives = archive_list
+            else:
+                error_message = "no archive matching search parameters"
+                Logger.create_action_log(
+                    Logger.ACTION_ERROR,
+                    Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                    error_message)
+
+        if error_message is None:
+
+            self._archives[:] = \
+                [archive for archive in self._archives if
+                 archive.initialize()[0]]
+
+            if len(self._archives) >= 1:
+                return True, None
+            else:
+                return False, \
+                    "no archive matching search" \
+                    " parameters could be initialized"
+
+        else:
+            return False, error_message
+
+    def _set_query(self):
+
+        if self._query_type == 'obscore_query':
+
+            dataproduct_type = \
+                self._json_parameters['query_section']['query_selection']['dataproduct_type']
+            obs_collection = \
+                self._json_parameters['query_section']['query_selection']['obs_collection']
+            obs_title = \
+                self._json_parameters['query_section']['query_selection']['obs_title']
+            obs_id = \
+                self._json_parameters['query_section']['query_selection']['obs_id']
+            facility_name = \
+                self._json_parameters['query_section']['query_selection']['facility_name']
+            instrument_name = \
+                self._json_parameters['query_section']['query_selection']['instrument_name']
+            em_min = \
+                self._json_parameters['query_section']['query_selection']['em_min']
+            em_max = \
+                self._json_parameters['query_section']['query_selection']['em_max']
+            target_name = \
+                self._json_parameters['query_section']['query_selection']['target_name']
+            obs_publisher_id = \
+                self._json_parameters['query_section']['query_selection']['obs_publisher_id']
+            s_fov = \
+                self._json_parameters['query_section']['query_selection']['s_fov']
+            calibration_level = \
+                self._json_parameters['query_section']['query_selection']['calibration_level']
+            t_min = \
+                self._json_parameters['query_section']['query_selection']['t_min']
+            t_max = \
+                self._json_parameters['query_section']['query_selection']['t_max']
+            order_by = \
+                self._json_parameters['query_section']['query_selection']['order_by']
+
+            obscore_query_object = ADQLObscoreQuery(dataproduct_type,
+                                                    obs_collection,
+                                                    obs_title,
+                                                    obs_id,
+                                                    facility_name,
+                                                    instrument_name,
+                                                    em_min,
+                                                    em_max,
+                                                    target_name,
+                                                    obs_publisher_id,
+                                                    s_fov,
+                                                    calibration_level,
+                                                    t_min,
+                                                    t_max,
+                                                    order_by)
+
+            self._adql_query = obscore_query_object.get_query()
+
+        elif self._query_type == 'raw_query':
+
+            tap_table = \
+                self._json_parameters['query_section']['query_selection']['table']
+
+            where_field = \
+                self._json_parameters['query_section']['query_selection']['where_clause']['where_field']
+            where_condition = \
+                self._json_parameters['query_section']['query_selection']['where_clause']['where_condition']
+
+            self._url_field = \
+                self._json_parameters['query_section']['query_selection']['url_field']
+
+            self._adql_query = \
+                ADQLTapQuery().get_query(
+                    tap_table,
+                    where_field,
+                    where_condition)
+        else:
+            self._adql_query = ADQLObscoreQuery.base_query
+
+    def _set_output(self):
+        self._number_of_files = \
+            int(
+                self._json_parameters['output_section']['number_of_files']
+            )
+
+        if self._number_of_files < 1:
+            self._number_of_files = 1
+        elif self._number_of_files > 100:
+            self._number_of_files = MAX_ALLOWED_ENTRIES
+
+        output_selection = \
+            self._json_parameters['output_section']['output_selection']
+
+        if output_selection is not None:
+            if 'c' in output_selection:
+                self._csv_file = True
+            if 'i' in output_selection:
+                self._image_file = True
+            if 'h' in output_selection:
+                self._html_file = True
+            if 'b' in output_selection:
+                self._basic_html_file = True
+
+    def _validate_json_parameters(self, json_parameters):
+        self._json_parameters = json.load(open(json_parameters, "r"))
+
+    def run(self):
+        if self._is_initialised:
+            error_message = None
+            file_url = []
+
+            archive_name = self._archives[0].get_archive_name(
+                self._archive_type)
+
+            for archive in self._archives:
+                _file_url, error_message = archive.get_resources(
+                    self._adql_query,
+                    self._number_of_files,
+                    self._url_field)
+
+                file_url.extend(_file_url)
+
+                if len(file_url) >= int(self._number_of_files):
+                    file_url = file_url[:int(self._number_of_files)]
+                    break
+
+            if file_url:
+
+                if self._csv_file:
+                    FileHandler.write_urls_to_output(
+                        file_url,
+                        self._output_csv,
+                        self._url_field)
+
+                if self._image_file:
+
+                    try:
+                        fits_file = FileHandler.download_file_from_url(
+                            file_url[0][self._url_field])
+
+                        FileHandler.write_file_to_output(
+                            fits_file,
+                            self._output, "wb")
+
+                        log_message = "from url " +\
+                                      file_url[0][self._url_field]
+
+                        Logger.create_action_log(
+                            Logger.ACTION_SUCCESS,
+                            Logger.ACTION_TYPE_DOWNLOAD,
+                            log_message)
+
+                    except Exception:
+                        error_message = "from url " + \
+                                        file_url[0][self._url_field]
+
+                        Logger.create_action_log(
+                            Logger.ACTION_ERROR,
+                            Logger.ACTION_TYPE_DOWNLOAD,
+                            error_message)
+
+                    for i, url in enumerate(file_url[1:], start=1):
+                        try:
+                            fits_file = \
+                                FileHandler.download_file_from_url(
+                                    url[self._url_field])
+
+                            FileHandler.write_file_to_subdir(
+                                fits_file,
+                                FileHandler.get_file_name_from_url(
+                                    url[self._url_field]))
+
+                            log_message = "from url " + \
+                                          url[self._url_field]
+
+                            Logger.create_action_log(
+                                Logger.ACTION_SUCCESS,
+                                Logger.ACTION_TYPE_DOWNLOAD,
+                                log_message)
+
+                        except Exception:
+                            error_message = "from url " + \
+                                            url[self._url_field]
+
+                            Logger.create_action_log(
+                                Logger.ACTION_ERROR,
+                                Logger.ACTION_TYPE_DOWNLOAD,
+                                error_message)
+
+                if self._html_file:
+                    html_file = OutputHandler.generate_html_output(
+                        file_url,
+                        archive_name,
+                        self._adql_query)
+
+                    FileHandler.write_file_to_output(html_file,
+                                                     self._output_html)
+
+                if self._basic_html_file:
+                    html_file = \
+                        OutputHandler.generate_basic_html_output(
+                            file_url,
+                            archive_name,
+                            self._adql_query)
+
+                    FileHandler.write_file_to_output(
+                        html_file,
+                        self._output_basic_html)
+
+                summary_file = Logger.create_log_file(archive_name,
+                                                      self._adql_query)
+                summary_file += "\n Tool run executed with success"
+
+                FileHandler.write_file_to_output(summary_file,
+                                                 self._output_error)
+
+            else:
+
+                summary_file = Logger.create_log_file(archive_name,
+                                                      self._adql_query)
+
+                if error_message is None:
+                    summary_file += \
+                        "\n No resources matching parameters found"
+                else:
+                    summary_file += error_message
+
+                FileHandler.write_file_to_output(summary_file,
+                                                 self._output_error)
+
+        else:
+            summary_file = Logger.create_log_file("Archive",
+                                                  self._adql_query)
+
+            summary_file += "Unable to initialize archive"
+
+            FileHandler.write_file_to_output(summary_file,
+                                             self._output_error)
+
+
 class ADQLObscoreQuery(BaseADQLQuery):
     order_by_field = {
         'size': 'access_estsize',
@@ -389,6 +753,12 @@ class ADQLObscoreQuery(BaseADQLQuery):
 
         if order_by == 'none':
             order_by = ''
+
+        if t_min == 'None' or t_min is None:
+            t_min = ''
+
+        if t_max == 'None' or t_max is None:
+            t_max = ''
 
         if dataproduct_type == 'none' or dataproduct_type is None:
             dataproduct_type = ''
@@ -447,11 +817,11 @@ class ADQLTapQuery(BaseADQLQuery):
 
     def get_query(self, table, where_field, where_condition):
         if where_field != '' and where_condition != '':
-            return ADQLTapQuery.base_query + str(table) + \
-                ' WHERE ' + str(where_field) + \
-                ' = ' + \
-                '\'' + \
-                str(where_condition) + '\''
+            return ADQLTapQuery.base_query + \
+                str(table) + \
+                ' WHERE ' + \
+                str(where_field) + ' = ' + '\'' + str(
+                where_condition) + '\''
         else:
             return ADQLTapQuery.base_query + str(table)
 
@@ -472,198 +842,140 @@ class OutputHandler:
         pass
 
     @staticmethod
-    def generateBasicUrlFile(urls_data):
-        FileHandler.write_urls_to_output(urls_data)
+    def generate_html_output(urls_data, archive_name, adql_query):
+        return OutputHandler.html_header + \
+            OutputHandler.generate_html_content(
+                urls_data,
+                archive_name,
+                adql_query,
+                div_attr='class="title"',
+                table_attr='class="fl-table"')
 
     @staticmethod
-    def generateCSVOutput(urls_data):
-        csv_file = ''
-
-        for i, url in enumerate(urls_data):
-            csv_file += url['access_url']
-            csv_file += ','
-            csv_file += url['est_size']
-            csv_file += ','
-            csv_file += url['obs_collection']
-            csv_file += ','
-            csv_file += url['target_name']
-            csv_file += '\n'
-
-        return csv_file
+    def generate_basic_html_output(urls_data,
+                                   archive_name,
+                                   adql_query, ):
+        return OutputHandler.generate_html_content(urls_data,
+                                                   archive_name,
+                                                   adql_query)
 
     @staticmethod
-    def generateHTMLOutput(urls_data, archive_name, adql_query):
-        html_file = ''
-
-        css = """ <head><style>
-
-            details {
-                padding: 10px;
-            }
-
-            .table-wrapper {
-                margin: 10px 70px 70px;
-                box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
-            }
-
-            .fl-table {
-                border-radius: 5px;
-                font-size: 12px;
-                font-weight: normal;
-                border: none;
-                border-collapse: collapse;
-                width: 100%;
-                max-width: 100%;
-                white-space: nowrap;
-                background-color: white;
-            }
-
-            .fl-table td, .fl-table th {
-                text-align: center;
-                padding: 8px;
-            }
-
-            .fl-table td {
-                border: 1px solid #999999;
-                font-size: 15px;
-            }
-
-            .fl-table thead th {
-                color: #ffffff;
-                background: #4FC3A1;
-                border: 1px solid #999999;
-            }
-
-
-            .fl-table thead th:nth-child(odd) {
-                color: #ffffff;
-                background: #324960;
-            }
-
-            .fl-table tr:nth-child(even) {
-                background: #F8F8F8;
-            }
-
-            .five h2 {
-              text-align: center;
-              font-size: 22px;
-              font-weight: 700; color:#202020;
-              text-transform: uppercase;
-              word-spacing: 1px; letter-spacing:2px;
-              margin-bottom: 50px;
-            }
-
-            .five h2 span {
-              padding-top: 40px;
-              text-transform: none;
-              font-size:.80em;
-              font-weight: bold;
-              font-family: "Playfair Display","Bookman",serif;
-              color:#999; letter-spacing:-0.005em; word-spacing:1px;
-              letter-spacing:none;
-            }
-
-            .five h1:before {
-              background-color: #dfdfdf;
-            }
-
-        </style></head>"""
-
-        html_file += css
-
-        html_file += """<div class="five">
-                      <h2>Resources Preview from archive :
-                        <br />
-                        <br />
-                        <span> """ + str(archive_name) + """</span>
-                        <br />
-                        <br />
-                        <span> With ADQL query :
-                        """ + str(adql_query) + """</span>
-                      </h2>
+    def generate_html_content(urls_data, archive_name, adql_query,
+                              div_attr="", table_attr="border='1'"):
+        html_file = \
+            f"""
+                    <div {div_attr}>
+                        <h2>Resources Preview archive: 
+                            <span> 
+                                {archive_name} 
+                            </span>
+                        </h2>
+                        <span>ADQL query : {adql_query}</span>
                     </div>"""
 
-        for resource in urls_data:
+        html_file += f'<table {table_attr}><thead><tr>'
 
-            html_file += '<table class="fl-table"><thead><tr>'
+        for key in Utils.collect_resource_keys(urls_data):
+            html_file += '<th>' + str(key) + '</th>'
 
-            for key in resource.keys():
-                html_file += '<th>' + str(key) + '</th>'
-
-            html_file += '</thead></tr>'
-            html_file += '<tbody><tr>'
-
-            for key, value in resource.items():
-                html_file += '<td>' + str(value) + '</td>'
-
-            html_file += '</tr></tbody>'
-            html_file += '</table>'
-
-            if 'preview' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['preview']) + '"/></details>'
-
-            if 'preview_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['preview_url']) + '"/></details>'
-
-            if 'postcard_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['postcard_url']) + '"/></details>'
-
-            html_file += '<br />'
-            html_file += '<br />'
-
-        return html_file
-
-    @staticmethod
-    def generateBasicHTMLOutput(urls_data, archive_name, adql_query):
-        html_file = ''
-
-        html_file += """<div>
-                          <h2>Resources Preview from archive :
-                            <br />
-                            <br />
-                            <span> """ + str(archive_name) + """</span>
-                            <br />
-                            <br />
-                            <span> With ADQL query : """\
-                            + str(adql_query) + """</span>
-                          </h2>
-                        </div>"""
+        html_file += '</thead></tr><tbody>'
 
         for resource in urls_data:
-
-            html_file += '<table border="1"><thead><tr>'
-
-            for key in resource.keys():
-                html_file += '<th>' + str(key) + '</th>'
-
-            html_file += '</thead></tr>'
-            html_file += '<tbody><tr>'
+            html_file += '<tr>'
 
             for key, value in resource.items():
-                html_file += '<td>' + str(value) + '</td>'
+                html_file += f'<td>{value}</td>'
 
-            html_file += '</tr></tbody>'
-            html_file += '</table>'
+            html_file += '<td>'
+            for preview_key in \
+                    ['preview', 'preview_url', 'postcard_url']:
+                if preview_key in resource:
+                    html_file += (
+                        '<details><summary>Preview</summary>'
+                        f'<img src="{resource[preview_key]}"/>'
+                        '</details>'
+                    )
+            html_file += '</td>'
+            html_file += '</tr>'
 
-            if 'preview' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['preview']) + '"/></details>'
-
-            if 'preview_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['preview_url']) + '"/></details>'
-
-            if 'postcard_url' in resource:
-                html_file += '<details><summary>Preview</summary><img src="'\
-                             + str(resource['postcard_url']) + '"/></details>'
-
-            html_file += '<br />'
-            html_file += '<br />'
-
+        html_file += '</tbody></table>'
         return html_file
+
+    html_header = """ <head><style>
+
+                    details {
+                        padding: 10px;
+                    }
+
+                    .table-wrapper {
+                        margin: 10px 70px 70px;
+                        box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
+                    }
+
+                    .fl-table {
+                        border-radius: 5px;
+                        font-size: 12px;
+                        font-weight: normal;
+                        border: none;
+                        border-collapse: collapse;
+                        width: 100%;
+                        max-width: 100%;
+                        white-space: nowrap;
+                        background-color: white;
+                    }
+
+                    .fl-table td, .fl-table th {
+                        text-align: center;
+                        padding: 8px;
+                    }
+
+                    .fl-table td {
+                        border: 1px solid #999999;
+                        font-size: 15px;
+                    }
+
+                    .fl-table thead th {
+                        color: #ffffff;
+                        background: #4FC3A1;
+                        border: 1px solid #999999;
+                    }
+
+
+                    .fl-table thead th:nth-child(odd) {
+                        color: #ffffff;
+                        background: #324960;
+                    }
+
+                    .fl-table tr:nth-child(even) {
+                        background: #F8F8F8;
+                    }
+
+                    .title h2 {
+                      text-align: center;
+                      font-size: 22px;
+                      font-weight: 700; color:#202020;
+                      text-transform: uppercase;
+                      word-spacing: 1px; letter-spacing:2px;
+                      margin-bottom: 50px;
+                    }
+
+                    .title h2 span {
+                      padding-top: 40px;
+                      text-transform: none;
+                      font-size:.80em;
+                      font-weight: bold;
+                      font-family: "Playfair Display","Bookman",serif;
+                      color:#999; 
+                      letter-spacing:-0.005em; 
+                      word-spacing:1px;
+                      letter-spacing:none;
+                    }
+
+                    .title h1:before {
+                      background-color: #dfdfdf;
+                    }
+
+                </style></head>"""
 
 
 class FileHandler:
@@ -687,7 +999,14 @@ class FileHandler:
     def write_urls_to_output(urls: [], output, access_url="access_url"):
         with open(output, "w") as file_output:
             for url in urls:
-                file_output.write(url[access_url] + ',')
+                try:
+                    file_output.write(url[access_url] + ',')
+                except Exception:
+                    error_message = "url field not found for url"
+                    Logger.create_action_log(
+                        Logger.ACTION_ERROR,
+                        Logger.ACTION_TYPE_WRITE_URL,
+                        error_message)
 
     @staticmethod
     def write_file_to_subdir(file, index):
@@ -718,6 +1037,26 @@ class FileHandler:
         return file_name
 
 
+class Utils:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def collect_resource_keys(urls_data: list) -> list:
+        """
+        Collect all the keys from the resources,
+        keeping the order in the order of key appearance in the resources
+        """
+
+        resource_keys = []
+        for resource in urls_data:
+            for key in resource.keys():
+                if key not in resource_keys:
+                    resource_keys.append(key)
+        return resource_keys
+
+
 class Logger:
     _logs = []
 
@@ -729,6 +1068,8 @@ class Logger:
 
     ACTION_TYPE_DOWNLOAD = 1
     ACTION_TYPE_ARCHIVE_CONNECTION = 2
+    ACTION_TYPE_WRITE_URL = 3
+    ACTION_TYPE_WRITE_FILE = 4
 
     def __init__(self):
         pass
@@ -751,6 +1092,13 @@ class Logger:
                 log += "Success connecting to archive : " + message
             else:
                 log += "Error connecting to archive : " + message
+
+            is_log_created = True
+        elif action == Logger.ACTION_TYPE_WRITE_URL:
+            if outcome == Logger.ACTION_SUCCESS:
+                log += "Success writing url to file : " + message
+            else:
+                log += "Error writing to file : " + message
 
             is_log_created = True
 
@@ -781,292 +1129,24 @@ class Logger:
 
 
 if __name__ == "__main__":
-
     output = sys.argv[1]
     output_csv = sys.argv[2]
     output_html = sys.argv[3]
     output_basic_html = sys.argv[4]
     output_error = sys.argv[5]
-    number_of_files = sys.argv[6]
-    archive_type = sys.argv[7]
 
-    archive = ''
-    archive_name = 'No archive name'
+    inputs = sys.argv[6]
 
-    file_url = []
-    error_message = None
+    tool_runner = ToolRunner(inputs,
+                             output,
+                             output_csv,
+                             output_html,
+                             output_basic_html,
+                             output_error)
 
-    outputHandler = OutputHandler()
+    tool_runner.run()
 
-    if number_of_files is not None and number_of_files != '':
-        if int(number_of_files) < 1:
-            number_of_files = 1
-        elif int(number_of_files) > 100:
-            number_of_files = 100
-    else:
-        number_of_files = 1
 
-    if archive_type == 'registry':
 
-        keyword = sys.argv[8]
-        waveband = sys.argv[9]
-        service_type = sys.argv[10]
-        query_type = sys.argv[11]
 
-        if query_type == 'obscore_query':
 
-            dataproduct_type = sys.argv[12]
-            obs_collection = sys.argv[13]
-            facility_name = sys.argv[14]
-            instrument_name = sys.argv[15]
-            em_min = sys.argv[16]
-            em_max = sys.argv[17]
-            target_name = sys.argv[18]
-            obs_publisher_id = sys.argv[19]
-            s_fov = sys.argv[20]
-            calibration_level = sys.argv[21]
-            order_by = sys.argv[22]
-            obs_title = sys.argv[23]
-            obs_id = sys.argv[24]
-            t_min = sys.argv[25]
-            t_max = sys.argv[26]
-
-            obscore_query_object = ADQLObscoreQuery(dataproduct_type,
-                                                    obs_collection,
-                                                    obs_title,
-                                                    obs_id,
-                                                    facility_name,
-                                                    instrument_name,
-                                                    em_min,
-                                                    em_max,
-                                                    target_name,
-                                                    obs_publisher_id,
-                                                    s_fov,
-                                                    calibration_level,
-                                                    t_min,
-                                                    t_max,
-                                                    order_by)
-
-            adql_query = obscore_query_object.get_query()
-
-        elif query_type == 'raw_query':
-            tap_table = sys.argv[12]
-            where_field = sys.argv[13]
-            where_condition = sys.argv[14]
-            url_field = sys.argv[15]
-
-            adql_query = ADQLTapQuery().get_query(tap_table,
-                                                  where_field,
-                                                  where_condition)
-
-        else:
-            adql_query = ADQLObscoreQuery.base_query
-
-        rsp = RegistrySearchParameters(keyword=keyword,
-                                       waveband=waveband,
-                                       service_type=service_type)
-
-        archive_list = Registry.search_registries(rsp, 1)
-
-        if archive_list:
-            archive = archive_list[0]
-
-            archive_name = archive.get_archive_name(archive_type)
-
-            is_initialisation_success, error_message = archive.initialize()
-
-            if is_initialisation_success:
-                if query_type == 'raw_query':
-                    if url_field:
-                        file_url, error_message = archive.get_resources(
-                            adql_query,
-                            int(number_of_files),
-                            url_field)
-                    else:
-                        error_message = "no url field specified"
-                        Logger.create_action_log(Logger.ACTION_ERROR,
-                                                 Logger.ACTION_TYPE_DOWNLOAD,
-                                                 error_message)
-                else:
-                    file_url, error_message = archive.get_resources(
-                        adql_query,
-                        int(number_of_files))
-
-        else:
-            error_message = "no archive matching search parameters"
-            Logger.create_action_log(Logger.ACTION_ERROR,
-                                     Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
-                                     error_message)
-
-    elif archive_type == 'archive':
-
-        service_url = sys.argv[8]
-
-        query_type = sys.argv[9]
-
-        if query_type == 'obscore_query':
-
-            dataproduct_type = sys.argv[10]
-            obs_collection = sys.argv[11]
-            facility_name = sys.argv[12]
-            instrument_name = sys.argv[13]
-            em_min = sys.argv[14]
-            em_max = sys.argv[15]
-            target_name = sys.argv[16]
-            obs_publisher_id = sys.argv[17]
-            s_fov = sys.argv[18]
-            calibration_level = sys.argv[19]
-            order_by = sys.argv[20]
-            obs_title = sys.argv[21]
-            obs_id = sys.argv[22]
-            t_min = sys.argv[23]
-            t_max = sys.argv[24]
-
-            obscore_query_object = ADQLObscoreQuery(dataproduct_type,
-                                                    obs_collection,
-                                                    obs_title,
-                                                    obs_id,
-                                                    facility_name,
-                                                    instrument_name,
-                                                    em_min,
-                                                    em_max,
-                                                    target_name,
-                                                    obs_publisher_id,
-                                                    s_fov,
-                                                    calibration_level,
-                                                    t_min,
-                                                    t_max,
-                                                    order_by)
-
-            adql_query = obscore_query_object.get_query()
-
-        elif query_type == 'raw_query':
-
-            tap_table = sys.argv[10]
-            where_field = sys.argv[11]
-            where_condition = sys.argv[12]
-            url_field = sys.argv[13]
-
-            adql_query = ADQLTapQuery().get_query(tap_table,
-                                                  where_field,
-                                                  where_condition)
-
-        else:
-            adql_query = ADQLObscoreQuery.base_query
-
-        archive = TapArchive(1, 'name', 'title', service_url)
-
-        archive_name = archive.get_archive_name(archive_type)
-
-        is_initialisation_success, error_message = archive.initialize()
-
-        if is_initialisation_success:
-            if query_type == 'raw_query':
-                if url_field:
-                    file_url, error_message = archive.get_resources(
-                        adql_query,
-                        int(number_of_files),
-                        url_field)
-                else:
-                    error_message = "no url field specified"
-                    Logger.create_action_log(Logger.ACTION_ERROR,
-                                             Logger.ACTION_TYPE_DOWNLOAD,
-                                             error_message)
-            else:
-                file_url, error_message = archive.get_resources(
-                    adql_query,
-                    int(number_of_files))
-
-    if file_url and output_csv != 'XXXX':
-
-        if query_type == 'raw_query':
-            if file_url:
-                FileHandler.write_urls_to_output(file_url,
-                                                 output_csv,
-                                                 url_field)
-            else:
-                error_message = "no url field specified"
-                Logger.create_action_log(Logger.ACTION_ERROR,
-                                         Logger.ACTION_TYPE_DOWNLOAD,
-                                         error_message)
-        else:
-            FileHandler.write_urls_to_output(file_url, output_csv)
-
-    if file_url and output != 'XXXX':
-
-        if query_type == 'raw_query':
-            access_url = url_field
-        else:
-            access_url = 'access_url'
-
-        if access_url:
-
-            try:
-                fits_file = FileHandler.download_file_from_url(
-                    file_url[0][access_url])
-                FileHandler.write_file_to_output(fits_file, output, "wb")
-
-                log_message = "from url " + file_url[0][access_url]
-                Logger.create_action_log(Logger.ACTION_SUCCESS,
-                                         Logger.ACTION_TYPE_DOWNLOAD,
-                                         log_message)
-            except Exception:
-                error_message = "from url " + file_url[0][access_url]
-                Logger.create_action_log(Logger.ACTION_ERROR,
-                                         Logger.ACTION_TYPE_DOWNLOAD,
-                                         error_message)
-
-            for i, url in enumerate(file_url[1:], start=1):
-                try:
-                    fits_file = FileHandler.download_file_from_url(
-                        url[access_url])
-                    FileHandler.write_file_to_subdir(
-                        fits_file,
-                        FileHandler.get_file_name_from_url(url[access_url]))
-
-                    log_message = "from url " + url[access_url]
-                    Logger.create_action_log(Logger.ACTION_SUCCESS,
-                                             Logger.ACTION_TYPE_DOWNLOAD,
-                                             log_message)
-                except Exception:
-                    error_message = "from url " + url[access_url]
-                    Logger.create_action_log(Logger.ACTION_ERROR,
-                                             Logger.ACTION_TYPE_DOWNLOAD,
-                                             error_message)
-        else:
-            error_message = "no url field specified"
-            Logger.create_action_log(Logger.ACTION_ERROR,
-                                     Logger.ACTION_TYPE_DOWNLOAD,
-                                     error_message)
-
-    if file_url and (output_html != 'XXXX' or output_basic_html != 'XXXX'):
-
-        if output_html:
-            html_file = OutputHandler.generateHTMLOutput(
-                file_url,
-                archive_name,
-                adql_query)
-            FileHandler.write_file_to_output(html_file, output_html)
-
-        if output_basic_html:
-            html_file = OutputHandler.generateBasicHTMLOutput(file_url,
-                                                              archive_name,
-                                                              adql_query)
-            FileHandler.write_file_to_output(html_file, output_basic_html)
-
-    if file_url is None or error_message:
-
-        error_file = Logger.create_log_file(archive_name, adql_query)
-
-        if error_message is None:
-            error_file += "\n No resources matching parameters found"
-
-        FileHandler.write_file_to_output(error_file, output_error)
-
-    else:
-
-        error_file = Logger.create_log_file(archive_name, adql_query)
-
-        error_file += "\n Tool run executed with success"
-
-        FileHandler.write_file_to_output(error_file, output_error)
