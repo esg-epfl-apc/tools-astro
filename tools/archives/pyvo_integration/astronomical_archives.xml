@@ -7,7 +7,7 @@
         <requirement type="package" version="5.2.2">astropy</requirement>
         <requirement type="package" version="1.4.1">pyvo</requirement>
     </requirements>
-    <command>
+    <command detect_errors="exit_code">
       <![CDATA[
 
         mkdir fits
