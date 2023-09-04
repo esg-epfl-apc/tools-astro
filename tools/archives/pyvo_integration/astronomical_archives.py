@@ -1,9 +1,8 @@
 import json
 import os
 import sys
-
 import urllib
-from urllib import parse, request
+from urllib import request
 
 import pyvo
 from pyvo import DALAccessError, DALQueryError, DALServiceError
@@ -327,12 +326,12 @@ class Registry:
 
         archive_list = []
 
-        for i, registry in enumerate(registry_list):
+        for i, ivoa_registry in enumerate(registry_list):
             if i < number_of_registries:
-                archive = TapArchive(registry.standard_id,
-                                     registry.res_title,
-                                     registry.short_name,
-                                     registry.access_url)
+                archive = TapArchive(ivoa_registry.standard_id,
+                                     ivoa_registry.res_title,
+                                     ivoa_registry.short_name,
+                                     ivoa_registry.access_url)
 
                 archive_list.append(archive)
 
@@ -418,10 +417,14 @@ class ToolRunner:
             self._set_output()
 
     def _set_run_main_parameters(self):
+
+        qs = "query_section"
+        qsl = "query_selection"
+
         self._archive_type = \
             self._json_parameters['archive_selection']['archive_type']
         self._query_type = \
-            self._json_parameters['query_section']['query_selection']['query_type']
+            self._json_parameters['qs']['qsl']['query_type']
 
     def _set_archive(self):
 
@@ -863,9 +866,9 @@ class OutputHandler:
         html_file = \
             f"""
                     <div {div_attr}>
-                        <h2>Resources Preview archive: 
-                            <span> 
-                                {archive_name} 
+                        <h2>Resources Preview archive:
+                            <span>
+                                {archive_name}
                             </span>
                         </h2>
                         <span>ADQL query : {adql_query}</span>
@@ -963,8 +966,8 @@ class OutputHandler:
                       font-size:.80em;
                       font-weight: bold;
                       font-family: "Playfair Display","Bookman",serif;
-                      color:#999; 
-                      letter-spacing:-0.005em; 
+                      color:#999;
+                      letter-spacing:-0.005em;
                       word-spacing:1px;
                       letter-spacing:none;
                     }
