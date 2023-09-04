@@ -761,6 +761,12 @@ class ADQLObscoreQuery(BaseADQLQuery):
         if t_max == 'None' or t_max is None:
             t_max = ''
 
+        if em_min == 'None' or em_min is None:
+            em_min = ''
+
+        if em_max == 'None' or em_max is None:
+            em_max = ''
+
         if dataproduct_type == 'none' or dataproduct_type is None:
             dataproduct_type = ''
 

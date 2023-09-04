@@ -157,7 +157,7 @@
         <data name="output_error" format="txt" label="${tool.name} -> Query Summary:" />
     </outputs>
     <tests>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="output_selection" value="i"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archive_selection">
@@ -175,7 +175,7 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="output_selection" value="c"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archive_selection">
@@ -193,7 +193,7 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
             <param name="output_selection" value="c"/>
             <param name="number_of_files" value="1"/>
             <conditional name="archive_selection">
@@ -211,7 +211,7 @@
               </assert_contents>
             </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
           <param name="output_selection" value="c"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archive_selection">
@@ -227,7 +227,7 @@
             </assert_contents>
           </output>
         </test>
-        <test expect_num_outputs="1">
+        <test expect_num_outputs="2">
           <param name="output_selection" value="c"/>
           <param name="number_of_files" value="1"/>
           <conditional name="archive_selection">
