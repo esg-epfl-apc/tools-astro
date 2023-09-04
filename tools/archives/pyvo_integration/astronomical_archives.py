@@ -424,7 +424,7 @@ class ToolRunner:
         self._archive_type = \
             self._json_parameters['archive_selection']['archive_type']
         self._query_type = \
-            self._json_parameters['qs']['qsl']['query_type']
+            self._json_parameters[qs][qsl]['query_type']
 
     def _set_archive(self):
 
