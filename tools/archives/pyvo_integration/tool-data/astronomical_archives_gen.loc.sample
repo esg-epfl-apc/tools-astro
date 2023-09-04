@@ -1,0 +1,8 @@
+#This is a sample file distributed with Galaxy that enables tools
+#to use a directory of astronomical archives urls.
+#file has this format (white space characters are TAB characters)
+# - id
+# - name
+# - url
+#Archive_id	 Archive_name  https://archive.url
+
