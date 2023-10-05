@@ -123,6 +123,34 @@
               </section>
               <param name="url_field" type="text" label="Url field" help="Table field containing the url of the file to download" />
             </when>
+            <when value="cone_search">
+                <conditional name="cone_search_target_selection">
+                  <param name="target_selection" type="select" label="Target Selection">
+                    <option value="coordinates">Coordinates</option>
+                    <option value="object_name">Object name</option>
+                  </param>
+                  <when value="coordinates">
+                    <param name="ra" type="text" label="Right ascension" />
+                    <param name="dec" type="text" label="Declination" />
+                  </when>
+                  <when value="object_name">
+                    <param name="cone_object_name" type="text" label="Object name" />
+                  </when>
+                </conditional>
+                <conditional name="cone_search_source_selection">
+                  <param name="source_selection" type="select" label="Source Selection">
+                    <option value="archives">Archive(s) from Archive Selection</option>
+                    <option value="cone_services">Cone search services (Will override archive selection)</option>
+                  </param>
+                  <when value="cone_services">
+                    <param name="keyword" type="text" label="Keyword" />
+                  </when>
+                  <when value="archives">
+                    <param name="time" type="text" label="Time in MJD" />
+                  </when>
+                </conditional>
+                <param name="radius" type="text" label="Search radius" />
+            </when>
           </conditional>
         </section>
         <section name="output_section" title="Output selection" expanded="true">

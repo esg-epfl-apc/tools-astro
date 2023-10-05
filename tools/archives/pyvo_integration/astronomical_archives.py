@@ -4,6 +4,10 @@ import sys
 import urllib
 from urllib import request
 
+from astropy import units as u
+from astropy.coordinates import SkyCoord
+from astropy import time
+
 import pyvo
 from pyvo import DALAccessError, DALQueryError, DALServiceError
 from pyvo import registry
@@ -258,6 +262,26 @@ class TapArchive:
         return name
 
 
+class ConeService(TapArchive):
+
+    def _get_service(self):
+        if self.access_url:
+            self.archive_service = pyvo.dal.SCSService(self.access_url)
+
+    def get_resources_from_service_list(self, service_list, target, radius):
+
+        resource_list_hydrated = []
+
+        for service in service_list:
+            resources = service.search(target, radius)
+            for i in range(resources.__len__()):
+                resource_url = resources.getrecord(i).getdataurl()
+                if resource_url:
+                    resource_list_hydrated.append(resource_url)
+
+        return resource_list_hydrated
+
+
 class RegistrySearchParameters:
 
     def __init__(self, keyword=None, waveband=None, service_type=None):
@@ -338,6 +362,24 @@ class Registry:
         return archive_list
 
 
+class ConeServiceRegistry:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def search_services(keyword, number_of_registries):
+
+        service_list = []
+
+        service_list = registry.search(servicetype="scs", keywords=keyword)
+
+        if service_list:
+            service_list = service_list[:number_of_registries]
+
+        return service_list
+
+
 class TapQuery:
 
     def __init__(self, query):
@@ -410,10 +452,25 @@ class ToolRunner:
         self._output_error = output_error
 
         self._set_run_main_parameters()
-        self._is_initialised, error_message = self._set_archive()
+
+        if self._query_type == 'cone_search':
+            self._cone_search_source = \
+            self._json_parameters['query_section']['query_selection']['cone_search_source_selection'][
+                'source_selection']
+            if self._cone_search_source == 'archives':
+                self._is_initialised, error_message = self._set_archive()
+            else:
+                # self._is_initialised, error_message = self._set_cone_service()
+                self._is_initialised, error_message = self._set_archive()
+        else:
+            self._is_initialised, error_message = self._set_archive()
+            self._cone_search_source = 'aaaaa'
 
         if self._is_initialised and error_message is None:
-            self._set_query()
+            if self._query_type != 'cone_search':
+                self._set_query()
+            elif self._cone_search_source == 'archives':
+                self._set_cone_query()
             self._set_output()
 
     def _set_run_main_parameters(self):
@@ -478,6 +535,24 @@ class ToolRunner:
 
         else:
             return False, error_message
+
+    def _set_cone_service(self):
+
+        error_message = None
+        is_service_initialised = True
+
+        keyword = self._json_parameters['query_section']['query_selection']['cone_search_source_selection']['keyword']
+
+        service_list = ConeServiceRegistry.search_services(keyword, MAX_REGISTRIES_TO_SEARCH)
+
+        if len(service_list) >= 1:
+            self._services = service_list
+        else:
+            is_service_initialised = False
+            error_message = "no services matching search parameters"
+            Logger.create_action_log(Logger.ACTION_ERROR, Logger.ACTION_TYPE_ARCHIVE_CONNECTION, error_message)
+
+        return is_service_initialised, error_message
 
     def _set_query(self):
 
@@ -557,6 +632,27 @@ class ToolRunner:
                     where_condition)
         else:
             self._adql_query = ADQLObscoreQuery.base_query
+
+    def _set_cone_query(self):
+
+        search_radius = self._json_parameters['query_section']['query_selection']['radius']
+        time = None
+
+        if self._json_parameters['query_section']['query_selection']['cone_search_target_selection']['target_selection'] == 'coordinates':
+            ra = self._json_parameters['query_section']['query_selection']['cone_search_target_selection']['ra']
+            dec = self._json_parameters['query_section']['query_selection']['cone_search_target_selection']['dec']
+            time = self._json_parameters['query_section']['query_selection']['cone_search_source_selection']['time']
+        else:
+            target = CelestialObject(self._json_parameters['query_section']['query_selection']['cone_search_target_selection']['cone_object_name'])
+
+            target_coordinates = target.get_coordinates_in_degrees()
+
+            ra = target_coordinates['ra']
+            dec = target_coordinates['dec']
+
+        cone_query_object = ADQLConeSearchQuery(ra, dec, search_radius, time)
+
+        self._adql_query = cone_query_object.get_query()
 
     def _set_output(self):
         self._number_of_files = \
@@ -831,6 +927,78 @@ class ADQLTapQuery(BaseADQLQuery):
                 str(where_condition) + '\''
         else:
             return ADQLTapQuery.base_query + str(table)
+
+
+class ADQLConeSearchQuery:
+
+    base_query = "SELECT TOP 100 * FROM ivoa.obscore"
+    cone_query = "SELECT TOP 10 * FROM ivoa.obscore WHERE CONTAINS(POINT('ICRS', 166.114, 38.2088), CIRCLE('ICRS', 166.114, 38.2088, 10.0)) = 1"
+    cone_time_query = "SELECT TOP 10 * FROM ivoa.obscore WHERE CONTAINS(POINT('ICRS', 166.114, 38.2088), CIRCLE('ICRS', 166.114, 38.2088, 10.0)) = 1"
+    cone_query_test = "SELECT TOP 10 * from ivoa.obscore WHERE CONTAINS(POINT('ICRS', 208.4, 52.4), CIRCLE('ICRS', 208.4, 52.4, 10.0)) = 1"
+    # 27.1 30.5 58704 57.3 -12
+
+
+    def __init__(self, ra, dec, radius, time=None):
+
+        self.ra = ra
+        self.dec = dec
+        self.radius = radius
+        self.time = time
+
+        self._query = ADQLObscoreQuery.base_query
+
+        if self.ra and self.dec and self.radius:
+            self._query += " WHERE "
+            self._query += self._get_search_circle(ra, dec, radius)
+
+            if self.time:
+                self._query += self._get_search_time()
+
+    def _get_search_circle(self, ra, dec, radius):
+        return "(CONTAINS(POINT('ICRS', s_ra, s_dec), CIRCLE('ICRS', "+str(ra)+", "+str(dec)+", "+str(radius)+")) = 1)"
+
+    def _get_search_time(self):
+        return " AND t_min <= "+self.time+" AND t_max >= "+self.time
+
+    def get_query(self):
+        return self._query
+
+
+class CelestialObject:
+
+    def __init__(self, name):
+        self.name = name
+        self.coordinates = None
+
+        self.coordinates = SkyCoord.from_name(self.name)
+
+    def get_coordinates_in_degrees(self, time=None):
+
+        coordinates = {
+            'ra': '',
+            'dec': ''
+        }
+
+        if time:
+            try:
+                mjd_time = astropy.time.Time(val=time, format="mjd")
+
+                time_adjusted_coordinates = self.coordinates.apply_space_motion(new_obstime=mjd_time)
+
+                ra_dec = time_adjusted_coordinates.ravel()
+
+                coordinates['ra'] = ra_dec.ra.degree[0]
+                coordinates['dec'] = ra_dec.dec.degree[0]
+
+            except Exception as e:
+                pass
+        else:
+            ra_dec = self.coordinates.ravel()
+
+            coordinates['ra'] = ra_dec.ra.degree[0]
+            coordinates['dec'] = ra_dec.dec.degree[0]
+
+        return coordinates
 
 
 class HTMLReport:
