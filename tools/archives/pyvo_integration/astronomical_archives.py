@@ -1,6 +1,9 @@
 import json
 import os
 import sys
+import errno
+import signal
+import functools
 import urllib
 from urllib import request
 
@@ -12,9 +15,33 @@ import pyvo
 from pyvo import DALAccessError, DALQueryError, DALServiceError
 from pyvo import registry
 
+
 MAX_ALLOWED_ENTRIES = 100
 MAX_REGISTRIES_TO_SEARCH = 100
 
+
+class TimeoutError(Exception):
+    pass
+
+
+def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            raise TimeoutError(error_message)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return wrapper
+
+    return decorator
 
 class Service:
     # https://pyvo.readthedocs.io/en/latest/api/pyvo.registry.Servicetype.html
@@ -592,6 +619,29 @@ class ToolRunner:
             order_by = \
                 self._json_parameters[qs][qsl]['order_by']
 
+            if self._json_parameters['query_section']['query_selection']['cone_section']['cone_search_target_selection']['target_selection'] == 'coordinates':
+                ra = self._json_parameters['query_section']['query_selection']['cone_section']['cone_search_target_selection']['ra']
+                dec = self._json_parameters['query_section']['query_selection']['cone_section']['cone_search_target_selection']['dec']
+            else:
+                obs_target = self._json_parameters['query_section']['query_selection']['cone_section']['cone_search_target_selection']['cone_object_name']
+
+                if obs_target != 'none' and obs_target is not None:
+                    target = CelestialObject(obs_target)
+                    target_coordinates = target.get_coordinates_in_degrees()
+
+                    ra = target_coordinates['ra']
+                    dec = target_coordinates['dec']
+                else:
+                    ra = None
+                    dec = None
+
+            radius = self._json_parameters['query_section']['query_selection']['cone_section']['radius']
+
+            if (ra != '' and ra is not None) and (dec != '' and dec is not None) and (radius != '' and radius is not None):
+                cone_condition = ADQLConeSearchQuery.get_search_circle_condition(ra, dec, radius)
+            else:
+                cone_condition = None
+
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
                                                     obs_title,
@@ -606,6 +656,7 @@ class ToolRunner:
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
+                                                    cone_condition,
                                                     order_by)
 
             self._adql_query = obscore_query_object.get_query()
@@ -841,6 +892,7 @@ class ADQLObscoreQuery(BaseADQLQuery):
                  calibration_level,
                  t_min,
                  t_max,
+                 cone_condition,
                  order_by):
 
         super().__init__()
@@ -866,6 +918,11 @@ class ADQLObscoreQuery(BaseADQLQuery):
         if dataproduct_type == 'none' or dataproduct_type is None:
             dataproduct_type = ''
 
+        if cone_condition is not None:
+            self.cone_condition = cone_condition
+        else:
+            self.cone_condition = None
+
         self.parameters = {
             'dataproduct_type': dataproduct_type,
             'obs_collection': obs_collection,
@@ -878,17 +935,15 @@ class ADQLObscoreQuery(BaseADQLQuery):
             'target_name': target_name,
             'obs_publisher_id': obs_publisher_id,
             's_fov': s_fov,
-            'calibration_level': calibration_level,
+            'calib_level': calibration_level,
             't_min': t_min,
-            't_max': t_max
+            't_max': t_max,
         }
 
         self.order_by = order_by
 
     def get_query(self):
-        return ADQLObscoreQuery.base_query + \
-            self.get_where_statement() + \
-            self.get_order_by_statement()
+        return ADQLObscoreQuery.base_query + self.get_where_statement() + self.get_order_by_statement()
 
     def get_order_by_statement(self):
         if self.order_by != '':
@@ -903,10 +958,20 @@ class ADQLObscoreQuery(BaseADQLQuery):
         return super()._get_order_by_clause(obscore_order_type)
 
     def get_where_statement(self):
-        return self._get_where_clause(self.parameters)
+        where_clause = self._get_where_clause(self.parameters)
+
+        if where_clause == '' and self.cone_condition is not None:
+            where_clause = 'WHERE ' + self.get_cone_condition()
+        elif where_clause != '' and self.cone_condition is not None:
+            where_clause += 'AND ' + self.get_cone_condition()
+
+        return where_clause
 
     def _get_where_clause(self, parameters):
         return super()._get_where_clause(parameters)
+
+    def get_cone_condition(self):
+        return self.cone_condition
 
 
 class ADQLTapQuery(BaseADQLQuery):
@@ -963,6 +1028,10 @@ class ADQLConeSearchQuery:
     def get_query(self):
         return self._query
 
+    @staticmethod
+    def get_search_circle_condition(ra, dec, radius):
+        return "(CONTAINS(POINT('ICRS', s_ra, s_dec), CIRCLE('ICRS', " + str(ra) + ", " + str(dec) + ", " + str(
+            radius) + ")) = 1) "
 
 class CelestialObject:
 
@@ -979,24 +1048,10 @@ class CelestialObject:
             'dec': ''
         }
 
-        if time:
-            try:
-                mjd_time = astropy.time.Time(val=time, format="mjd")
+        ra_dec = self.coordinates.ravel()
 
-                time_adjusted_coordinates = self.coordinates.apply_space_motion(new_obstime=mjd_time)
-
-                ra_dec = time_adjusted_coordinates.ravel()
-
-                coordinates['ra'] = ra_dec.ra.degree[0]
-                coordinates['dec'] = ra_dec.dec.degree[0]
-
-            except Exception as e:
-                pass
-        else:
-            ra_dec = self.coordinates.ravel()
-
-            coordinates['ra'] = ra_dec.ra.degree[0]
-            coordinates['dec'] = ra_dec.dec.degree[0]
+        coordinates['ra'] = ra_dec.ra.degree[0]
+        coordinates['dec'] = ra_dec.dec.degree[0]
 
         return coordinates
 
