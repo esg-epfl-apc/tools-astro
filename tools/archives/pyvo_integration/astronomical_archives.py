@@ -1,9 +1,9 @@
 import json
 import os
-import sys
 import errno
-import signal
+import sys
 import functools
+import signal
 import urllib
 from urllib import request
 
@@ -40,6 +40,7 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
         return wrapper
 
     return decorator
+
 
 class Service:
     # https://pyvo.readthedocs.io/en/latest/api/pyvo.registry.Servicetype.html
@@ -695,7 +696,7 @@ class ToolRunner:
         ts = 'target_selection'
         con = 'cone_object_name'
 
-        search_radius = self._json_parameters[qs][qse]['radius']
+        search_radius = self._json_parameters[qs][qsl]['radius']
         time = None
 
         if self._json_parameters[qs][qsl][csts][ts] == 'coordinates':
@@ -876,10 +877,11 @@ class ToolRunner:
             summary_file = Logger.create_log_file("Archive",
                                                   self._adql_query)
 
-            summary_file += "Unable to initialize archive"
+            summary_file += "Unable to initialize archives"
 
             FileHandler.write_file_to_output(summary_file,
                                              self._output_error)
+
 
 class ADQLObscoreQuery(BaseADQLQuery):
     order_by_field = {
