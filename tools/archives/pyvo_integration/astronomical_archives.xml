@@ -9,13 +9,11 @@
     </requirements>
     <command detect_errors="exit_code">
       <![CDATA[
-
         mkdir fits
 
         &&
 
         python '$__tool_directory__/astronomical_archives.py' '$output' '$output_csv' '$output_html' '$output_basic_html' '$output_error' inputs.json
-
       ]]>
     </command>
     <configfiles>
