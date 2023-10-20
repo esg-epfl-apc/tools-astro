@@ -60,7 +60,7 @@
               <param name="target_name" type="text" label="Observation target name" help="Typically name of the astronomical object observed" />
               <section name="cone_section" title="Cone search parameters">
                 <conditional name="cone_search_target_selection">
-                  <param name="target_selection" type="select" label="Observation Search Center Selection">
+                  <param name="target_selection" type="select" label="Search center">
                     <option value="coordinates">Coordinates</option>
                     <option value="object_name">Observation target</option>
                   </param>
