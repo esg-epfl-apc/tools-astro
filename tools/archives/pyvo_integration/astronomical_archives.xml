@@ -62,7 +62,7 @@
                 <conditional name="cone_search_target_selection">
                   <param name="target_selection" type="select" label="Search center">
                     <option value="coordinates">Coordinates</option>
-                    <option value="object_name">Observation target</option>
+                    <option value="object_name">Source name</option>
                   </param>
                   <when value="coordinates">
                     <param name="ra" type="text" label="Right ascension" optional="false" help="In degree e.g. 27.1" />
