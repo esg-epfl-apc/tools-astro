@@ -759,7 +759,7 @@ class ToolRunner:
                     file_url.extend(_file_url)
                 except TimeoutException:
                     error_message = \
-                        "Archive is taking too long to respond"
+                        "Archive is taking too long to respond (timeout)"
                     Logger.create_action_log(
                         Logger.ACTION_ERROR,
                         Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
