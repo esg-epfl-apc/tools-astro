@@ -1,8 +1,8 @@
+import errno
+import functools
 import json
 import os
-import errno
 import sys
-import functools
 import signal
 import urllib
 from urllib import request
