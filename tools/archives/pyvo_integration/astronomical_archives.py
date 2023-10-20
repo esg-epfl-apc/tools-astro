@@ -1,16 +1,45 @@
 import json
 import os
 import sys
+import errno
+import signal
+import functools
 import urllib
 from urllib import request
+
+from astropy.coordinates import SkyCoord
 
 import pyvo
 from pyvo import DALAccessError, DALQueryError, DALServiceError
 from pyvo import registry
 
+
 MAX_ALLOWED_ENTRIES = 100
 MAX_REGISTRIES_TO_SEARCH = 100
 
+
+class TimeoutException(Exception):
+    pass
+
+
+def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
+    def decorator(func):
+        def _handle_timeout(signum, frame):
+            raise TimeoutException(error_message)
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            signal.signal(signal.SIGALRM, _handle_timeout)
+            signal.alarm(seconds)
+            try:
+                result = func(*args, **kwargs)
+            finally:
+                signal.alarm(0)
+            return result
+
+        return wrapper
+
+    return decorator
 
 class Service:
     # https://pyvo.readthedocs.io/en/latest/api/pyvo.registry.Servicetype.html
@@ -92,6 +121,7 @@ class TapArchive:
         self.archive_service = None
         self.tables = None
 
+    @timeout(10)
     def get_resources(self,
                       query,
                       number_of_results,
@@ -258,6 +288,26 @@ class TapArchive:
         return name
 
 
+class ConeService(TapArchive):
+
+    def _get_service(self):
+        if self.access_url:
+            self.archive_service = pyvo.dal.SCSService(self.access_url)
+
+    def get_resources_from_service_list(self, service_list, target, radius):
+
+        resource_list_hydrated = []
+
+        for service in service_list:
+            resources = service.search(target, radius)
+            for i in range(resources.__len__()):
+                resource_url = resources.getrecord(i).getdataurl()
+                if resource_url:
+                    resource_list_hydrated.append(resource_url)
+
+        return resource_list_hydrated
+
+
 class RegistrySearchParameters:
 
     def __init__(self, keyword=None, waveband=None, service_type=None):
@@ -338,6 +388,24 @@ class Registry:
         return archive_list
 
 
+class ConeServiceRegistry:
+
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def search_services(keyword, number_of_registries):
+
+        service_list = []
+
+        service_list = registry.search(servicetype="scs", keywords=keyword)
+
+        if service_list:
+            service_list = service_list[:number_of_registries]
+
+        return service_list
+
+
 class TapQuery:
 
     def __init__(self, query):
@@ -410,6 +478,7 @@ class ToolRunner:
         self._output_error = output_error
 
         self._set_run_main_parameters()
+
         self._is_initialised, error_message = self._set_archive()
 
         if self._is_initialised and error_message is None:
@@ -479,10 +548,41 @@ class ToolRunner:
         else:
             return False, error_message
 
+    def _set_cone_service(self):
+
+        qs = 'query_section'
+        qsl = 'query_selection'
+        csts = 'cone_search_target_selection'
+
+        error_message = None
+        is_service_initialised = True
+
+        keyword = self._json_parameters[qs][qsl][csts]['keyword']
+
+        service_list = ConeServiceRegistry.search_services(
+            keyword,
+            MAX_REGISTRIES_TO_SEARCH)
+
+        if len(service_list) >= 1:
+            self._services = service_list
+        else:
+            is_service_initialised = False
+            error_message = "no services matching search parameters"
+            Logger.create_action_log(
+                Logger.ACTION_ERROR,
+                Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                error_message)
+
+        return is_service_initialised, error_message
+
     def _set_query(self):
 
         qs = 'query_section'
         qsl = 'query_selection'
+        csts = 'cone_search_target_selection'
+        cs = 'cone_section'
+        ts = 'target_selection'
+        con = 'cone_object_name'
 
         if self._query_type == 'obscore_query':
 
@@ -517,6 +617,34 @@ class ToolRunner:
             order_by = \
                 self._json_parameters[qs][qsl]['order_by']
 
+            if self._json_parameters[qs][qsl][cs][csts][ts] == 'coordinates':
+                ra = self._json_parameters[qs][qsl][cs][csts]['ra']
+                dec = self._json_parameters[qs][qsl][cs][csts]['dec']
+            else:
+                obs_target = self._json_parameters[qs][qsl][cs][csts][con]
+
+                if obs_target != 'none' and obs_target is not None:
+                    target = CelestialObject(obs_target)
+                    target_coordinates = target.get_coordinates_in_degrees()
+
+                    ra = target_coordinates['ra']
+                    dec = target_coordinates['dec']
+                else:
+                    ra = None
+                    dec = None
+
+            radius = self._json_parameters[qs][qsl][cs]['radius']
+
+            if (ra != '' and ra is not None)\
+                    and (dec != '' and dec is not None)\
+                    and (radius != '' and radius is not None):
+                cone_condition = \
+                    ADQLConeSearchQuery.get_search_circle_condition(ra,
+                                                                    dec,
+                                                                    radius)
+            else:
+                cone_condition = None
+
             obscore_query_object = ADQLObscoreQuery(dataproduct_type,
                                                     obs_collection,
                                                     obs_title,
@@ -531,6 +659,7 @@ class ToolRunner:
                                                     calibration_level,
                                                     t_min,
                                                     t_max,
+                                                    cone_condition,
                                                     order_by)
 
             self._adql_query = obscore_query_object.get_query()
@@ -557,6 +686,33 @@ class ToolRunner:
                     where_condition)
         else:
             self._adql_query = ADQLObscoreQuery.base_query
+
+    def _set_cone_query(self):
+
+        qs = 'query_section'
+        qsl = 'query_selection'
+        csts = 'cone_search_target_selection'
+        ts = 'target_selection'
+        con = 'cone_object_name'
+
+        search_radius = self._json_parameters[qs][qse]['radius']
+        time = None
+
+        if self._json_parameters[qs][qsl][csts][ts] == 'coordinates':
+            ra = self._json_parameters[qs][qsl][csts]['ra']
+            dec = self._json_parameters[qs][qsl][csts]['dec']
+            time = self._json_parameters[qs][qsl][csts]['time']
+        else:
+            target = CelestialObject(self._json_parameters[qs][qsl][csts][con])
+
+            target_coordinates = target.get_coordinates_in_degrees()
+
+            ra = target_coordinates['ra']
+            dec = target_coordinates['dec']
+
+        cone_query_object = ADQLConeSearchQuery(ra, dec, search_radius, time)
+
+        self._adql_query = cone_query_object.get_query()
 
     def _set_output(self):
         self._number_of_files = \
@@ -594,12 +750,20 @@ class ToolRunner:
                 self._archive_type)
 
             for archive in self._archives:
-                _file_url, error_message = archive.get_resources(
-                    self._adql_query,
-                    self._number_of_files,
-                    self._url_field)
+                try:
+                    _file_url, error_message = archive.get_resources(
+                        self._adql_query,
+                        self._number_of_files,
+                        self._url_field)
 
-                file_url.extend(_file_url)
+                    file_url.extend(_file_url)
+                except TimeoutException:
+                    error_message = \
+                        "Archive is taking too long to respond (timeout)"
+                    Logger.create_action_log(
+                        Logger.ACTION_ERROR,
+                        Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                        error_message)
 
                 if len(file_url) >= int(self._number_of_files):
                     file_url = file_url[:int(self._number_of_files)]
@@ -708,7 +872,6 @@ class ToolRunner:
 
                 FileHandler.write_file_to_output(summary_file,
                                                  self._output_error)
-
         else:
             summary_file = Logger.create_log_file("Archive",
                                                   self._adql_query)
@@ -717,7 +880,6 @@ class ToolRunner:
 
             FileHandler.write_file_to_output(summary_file,
                                              self._output_error)
-
 
 class ADQLObscoreQuery(BaseADQLQuery):
     order_by_field = {
@@ -745,6 +907,7 @@ class ADQLObscoreQuery(BaseADQLQuery):
                  calibration_level,
                  t_min,
                  t_max,
+                 cone_condition,
                  order_by):
 
         super().__init__()
@@ -770,6 +933,11 @@ class ADQLObscoreQuery(BaseADQLQuery):
         if dataproduct_type == 'none' or dataproduct_type is None:
             dataproduct_type = ''
 
+        if cone_condition is not None:
+            self.cone_condition = cone_condition
+        else:
+            self.cone_condition = None
+
         self.parameters = {
             'dataproduct_type': dataproduct_type,
             'obs_collection': obs_collection,
@@ -782,9 +950,9 @@ class ADQLObscoreQuery(BaseADQLQuery):
             'target_name': target_name,
             'obs_publisher_id': obs_publisher_id,
             's_fov': s_fov,
-            'calibration_level': calibration_level,
+            'calib_level': calibration_level,
             't_min': t_min,
-            't_max': t_max
+            't_max': t_max,
         }
 
         self.order_by = order_by
@@ -807,10 +975,20 @@ class ADQLObscoreQuery(BaseADQLQuery):
         return super()._get_order_by_clause(obscore_order_type)
 
     def get_where_statement(self):
-        return self._get_where_clause(self.parameters)
+        where_clause = self._get_where_clause(self.parameters)
+
+        if where_clause == '' and self.cone_condition is not None:
+            where_clause = 'WHERE ' + self.get_cone_condition()
+        elif where_clause != '' and self.cone_condition is not None:
+            where_clause += 'AND ' + self.get_cone_condition()
+
+        return where_clause
 
     def _get_where_clause(self, parameters):
         return super()._get_where_clause(parameters)
+
+    def get_cone_condition(self):
+        return self.cone_condition
 
 
 class ADQLTapQuery(BaseADQLQuery):
@@ -831,6 +1009,69 @@ class ADQLTapQuery(BaseADQLQuery):
                 str(where_condition) + '\''
         else:
             return ADQLTapQuery.base_query + str(table)
+
+
+class ADQLConeSearchQuery:
+
+    base_query = "SELECT TOP 100 * FROM ivoa.obscore"
+
+    def __init__(self, ra, dec, radius, time=None):
+
+        self.ra = ra
+        self.dec = dec
+        self.radius = radius
+        self.time = time
+
+        self._query = ADQLObscoreQuery.base_query
+
+        if self.ra and self.dec and self.radius:
+            self._query += " WHERE "
+            self._query += self._get_search_circle(ra, dec, radius)
+
+            if self.time:
+                self._query += self._get_search_time()
+
+    def _get_search_circle(self, ra, dec, radius):
+        return "(CONTAINS" \
+               "(POINT('ICRS', s_ra, s_dec), " \
+               "CIRCLE('ICRS', "+str(ra)+", "+str(dec)+", "+str(radius)+")" \
+               ") = 1)"
+
+    def _get_search_time(self):
+        return " AND t_min <= "+self.time+" AND t_max >= "+self.time
+
+    def get_query(self):
+        return self._query
+
+    @staticmethod
+    def get_search_circle_condition(ra, dec, radius):
+        return "(CONTAINS" \
+               "(POINT('ICRS', s_ra, s_dec)," \
+               "CIRCLE('ICRS', "+str(ra)+", "+str(dec)+", "+str(radius)+")" \
+               ") = 1) "
+
+
+class CelestialObject:
+
+    def __init__(self, name):
+        self.name = name
+        self.coordinates = None
+
+        self.coordinates = SkyCoord.from_name(self.name)
+
+    def get_coordinates_in_degrees(self):
+
+        coordinates = {
+            'ra': '',
+            'dec': ''
+        }
+
+        ra_dec = self.coordinates.ravel()
+
+        coordinates['ra'] = ra_dec.ra.degree[0]
+        coordinates['dec'] = ra_dec.dec.degree[0]
+
+        return coordinates
 
 
 class HTMLReport:

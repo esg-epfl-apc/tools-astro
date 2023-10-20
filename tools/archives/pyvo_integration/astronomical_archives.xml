@@ -1,4 +1,4 @@
-<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.9.0">
+<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.9.1">
     <description>queries astronomical archives through Virtual Observatory protocols</description>
     <edam_operations>
         <edam_operation>operation_0224</edam_operation>
@@ -23,15 +23,12 @@
         <conditional name="archive_selection">
             <param name="archive_type" type="select" label="Archive Selection">
               <option value="archive">Query specific IVOA archive</option>
-              <option value="registry">Query IVOA registry</option>
+              <option value="registry">Query all matching IVOA archives</option>
             </param>
             <when value="registry">
               <param name="keyword" type="text" label="Keyword" />
               <param name="service_type" type="select" label="Service type">
                 <option value="TAP" selected="true">TAP: Tables</option>
-                <option value="SCS">SCS: Cone search</option>
-                <option value="SSA">SSA: Spectra</option>
-                <option value="SIA">SIA: Images</option>
               </param>
               <param name="wavebands" type="select" label="Wavebands">
                 <option value="all" selected="true">All</option>
@@ -58,11 +55,25 @@
               <option value="obscore_query">IVOA obscore table query builder</option>
               <option value="raw_query">Raw ADQL query builder</option>
             </param>
-            <!-- Parameters used in tests cannot be optional -->
-            <when value="none"></when>
             <when value="obscore_query">
               <!-- Fields defined https://www.ivoa.net/documents/ObsCore/20160224/WD-ObsCore-v1.1-20160224.pdf -->
               <param name="target_name" type="text" label="Observation target name" help="Typically name of the astronomical object observed" />
+              <section name="cone_section" title="Cone search parameters">
+                <conditional name="cone_search_target_selection">
+                  <param name="target_selection" type="select" label="Search center">
+                    <option value="coordinates">Coordinates</option>
+                    <option value="object_name">Source name</option>
+                  </param>
+                  <when value="coordinates">
+                    <param name="ra" type="text" label="Right ascension" optional="false" help="In degree e.g. 27.1" />
+                    <param name="dec" type="text" label="Declination" optional="false" help="In degree e.g. 30.5" />
+                  </when>
+                  <when value="object_name">
+                    <param name="cone_object_name" type="text" label="Observation target name" optional="false" help="e.g. mrk 421" />
+                  </when>
+                </conditional>
+                <param name="radius" type="text" label="Search radius" optional="false" help="In degree e.g. 0.1"/>
+              </section>
               <param name="t_min" type="float" optional="true" label="Start time in MJD" />
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
               <!-- Dataproduct_type field values definition https://www.ivoa.net/rdf/product-type/2023-06-26/product-type.html  -->
@@ -93,12 +104,13 @@
               <param name="obs_id" type="text" label="Observation Id" />
               <param name="facility_name" type="text" label="Facility name" help="Name of the facility used for this observation" />
               <param name="instrument_name" type="text" label="Instrument name" help="Name of the instrument used for this observation" />
-              <param name="em_min" type="float" optional="true" label="Start of the energy range, vacuum wavelength in meters" />
-              <param name="em_max" type="float" optional="true" label="Stop of the energy range, vacuum wavelength in meters" />
+              <param name="em_min" type="float" optional="true"  label="Start of the energy range, vacuum wavelength in meters" />
+              <param name="em_max" type="float" optional="true"  label="Stop of the energy range, vacuum wavelength in meters" />
               <param name="obs_publisher_id" type="text" label="Publisher dataset ID" />
               <param name="s_fov" type="text" label="Diameter (bounds) of the covered region (deg)" />
-              <param name="calibration_level" type="select" label="Calibration level (0, 1, 2, 3, 4, 5)" >
+              <param name="calibration_level" type="select" label="Calibration level (-1, 0, 1, 2, 3, 4, 5)" >
                 <option value="none">None</option>
+                <option value="-1">-1</option>
                 <option value="0">0</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -132,7 +144,6 @@
             <option value="b">Return URL list as HTML</option>
           </param>
         </section>
-
     </inputs>
     <outputs>
         <data name="output" format="fits" label="${tool.name} -> File from ${archive_selection.archive_type} search:" >
