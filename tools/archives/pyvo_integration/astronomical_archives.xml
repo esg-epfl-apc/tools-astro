@@ -46,7 +46,7 @@
             </when>
             <when value="archive">
               <param name="archive" type="select" label="Astronomical archives">
-                <options from_data_table="astronomical_archives_1" />
+                <options from_data_table="astronomical_archives" />
               </param>
             </when>
         </conditional>
@@ -56,14 +56,13 @@
               <option value="none">No specific query (first n files from archive)</option>
               <option value="obscore_query">IVOA obscore table query builder</option>
               <option value="raw_query">Raw ADQL query builder</option>
-              <option value="cone_search">Cone search builder</option>
             </param>
             <when value="obscore_query">
               <!-- Fields defined https://www.ivoa.net/documents/ObsCore/20160224/WD-ObsCore-v1.1-20160224.pdf -->
               <param name="target_name" type="text" label="Observation target name" help="Typically name of the astronomical object observed" />
               <section name="cone_section" title="Cone search parameters">
                 <conditional name="cone_search_target_selection">
-                  <param name="target_selection" type="select" label="Target Selection">
+                  <param name="target_selection" type="select" label="Observation Search Center Selection">
                     <option value="coordinates">Coordinates</option>
                     <option value="object_name">Observation target</option>
                   </param>
@@ -72,10 +71,10 @@
                     <param name="dec" type="text" label="Declination" optional="false" help="In degree e.g. 30.5" />
                   </when>
                   <when value="object_name">
-                    <param name="cone_object_name" type="text" label="Observation target name" optional="false" help="e.g. mrk421" />
+                    <param name="cone_object_name" type="text" label="Observation target name" optional="false" help="e.g. mrk 421" />
                   </when>
                 </conditional>
-                <param name="radius" type="text" label="Search radius" optional="false"/>
+                <param name="radius" type="text" label="Search radius" optional="false" help="In degree e.g. 0.1"/>
               </section>
               <param name="t_min" type="float" optional="true" label="Start time in MJD" />
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
@@ -135,34 +134,6 @@
                 <param name="where_condition" type="text" label="WHERE value" help="WHERE field = **value**" />
               </section>
               <param name="url_field" type="text" label="Url field" help="Table field containing the url of the file to download" />
-            </when>
-            <when value="cone_search">
-                <conditional name="cone_search_target_selection">
-                  <param name="target_selection" type="select" label="Target Selection">
-                    <option value="coordinates">Coordinates</option>
-                    <option value="object_name">Object name</option>
-                  </param>
-                  <when value="coordinates">
-                    <param name="ra" type="text" label="Right ascension" optional="false" />
-                    <param name="dec" type="text" label="Declination" optional="false" />
-                  </when>
-                  <when value="object_name">
-                    <param name="cone_object_name" type="text" label="Object name" optional="false" />
-                  </when>
-                </conditional>
-                <conditional name="cone_search_source_selection">
-                  <param name="source_selection" type="select" label="Source Selection">
-                    <option value="archives">Archive(s) from Archive Selection</option>
-                    <option value="cone_services">Cone search services (Will override archive selection)</option>
-                  </param>
-                  <when value="cone_services">
-                    <param name="keyword" type="text" label="Keyword" />
-                  </when>
-                  <when value="archives">
-                    <param name="time" type="text" label="Time in MJD" />
-                  </when>
-                </conditional>
-                <param name="radius" type="text" label="Search radius" optional="false"/>
             </when>
           </conditional>
         </section>
