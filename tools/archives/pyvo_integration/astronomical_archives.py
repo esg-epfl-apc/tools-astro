@@ -2,8 +2,8 @@ import errno
 import functools
 import json
 import os
-import sys
 import signal
+import sys
 import urllib
 from urllib import request
 
