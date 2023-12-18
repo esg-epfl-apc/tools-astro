@@ -58,7 +58,7 @@ jobs:
     - name: Install requirenments
       run: sudo apt-get install -y ansible
     - name: Save ssh key
-      run: echo ${{ secrets.SSH_PRIVATE_KEY }} > ~/.ssh/id_ed25519 & chmod 600 ~/.ssh/id_rsa
+      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 & chmod 600 ~/.ssh/id_rsa
     - name: Populate known_hosts
       run: ssh-keyscan -H galaxy.odahub.fr >> ~/.ssh/known_hosts
     - name: Deploy tools
