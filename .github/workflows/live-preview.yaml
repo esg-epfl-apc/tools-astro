@@ -32,7 +32,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - uses: actions/checkout@v3
       with:
-        fetch-depth: 1
+        fetch-depth: 0
     - name: Fake a Planemo run to determine tool list
       uses: galaxyproject/planemo-ci-action@v1
       id: discover
@@ -55,8 +55,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 1
     - name: Install requirenments
       run: sudo apt-get install -y ansible
     - name: Save ssh key
