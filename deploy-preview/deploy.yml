@@ -14,7 +14,7 @@
   tasks:
     - name: Sync tool dir
       ansible.posix.synchronize:
-        src: "{{ src_tools_dir }}/{{ tool_dir }}"
+        src: "{{ src_tools_dir }}/{{ tool_dir }}/"
         dest: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
 
     - name: Make id unique
