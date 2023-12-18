@@ -31,10 +31,18 @@
         replace: '<tool\1name="\2_pr{{ pr_num }}"'
       loop: "{{ tools_list }}"
 
-    - name: Enable tool
+    - name: Clean previous references
+      lineinfile:
+        path: "{{ dest_tools_conf }}"
+        regexp: '^\s*<tool\s+file="{{ tool_dir }}_pr{{ pr_num }}/'
+        state: absent
+      loop: "{{ tools_list }}"
+
+    - name: Enable tools
       lineinfile:
         path: "{{ dest_tools_conf }}"
         regexp: '^\s*<tool\s+file="{{ tool_dir }}_pr{{ pr_num }}/{{ item|regex_escape }}"'
         insertafter: '<section id="astro_staging"'
         line: '    <tool file="{{ tool_dir }}_pr{{ pr_num }}/{{ item }}" />'
       loop: "{{ tools_list }}"
+
