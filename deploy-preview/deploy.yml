@@ -37,4 +37,4 @@
         regexp: '^\s*<tool\s+file="{{ tool_dir }}_pr{{ pr_num }}/{{ item|regex_escape }}"'
         insertafter: '<section id="astro_staging"'
         line: '    <tool file="{{ tool_dir }}_pr{{ pr_num }}/{{ item }}" />'
-      loop: "{{ def_files.stdout_lines }}"
+      loop: "{{ tools_list }}"
