@@ -46,7 +46,7 @@ jobs:
   # deploy the tools
   deploy:
     name: Deploy
-    if: contains( github.event.pull_request.labels.*.name, 'test-live') and ${{ needs.setup.outputs.tool-list }}
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') && needs.setup.outputs.tool-list
     needs: setup
     runs-on: ubuntu-latest
     strategy:
@@ -58,7 +58,9 @@ jobs:
     - name: Install requirenments
       run: sudo apt-get install -y ansible
     - name: Save ssh key
-      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 & chmod 600 ~/.ssh/id_rsa
+      run: |
+        mkdir ~/.ssh & chmod 700 ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519 & chmod 600 ~/.ssh/id_rsa
     - name: Populate known_hosts
       run: ssh-keyscan -H galaxy.odahub.fr >> ~/.ssh/known_hosts
     - name: Deploy tools
