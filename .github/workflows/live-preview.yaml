@@ -46,9 +46,6 @@ jobs:
     if: contains( github.event.pull_request.labels.*.name, 'test-live') && needs.setup.outputs.tool-list
     needs: setup
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.7']
 
     steps:
     - uses: actions/checkout@v3
