@@ -46,7 +46,7 @@ jobs:
   # deploy the tools
   deploy:
     name: Deploy
-    if: contains( github.event.pull_request.labels.*.name, 'test-live')
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') and ${{ needs.setup.outputs.tool-list }}
     needs: setup
     runs-on: ubuntu-latest
     strategy:
