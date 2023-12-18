@@ -16,6 +16,8 @@
       ansible.posix.synchronize:
         src: "{{ src_tools_dir }}/{{ tool_dir }}/"
         dest: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
+        rsync_opts:
+          - "--chown=galaxy:galaxy"
 
     - name: Make id unique
       replace:
@@ -45,4 +47,3 @@
         insertafter: '<section id="astro_staging"'
         line: '    <tool file="{{ tool_dir }}_pr{{ pr_num }}/{{ item }}" />'
       loop: "{{ tools_list }}"
-
