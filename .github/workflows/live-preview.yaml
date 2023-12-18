@@ -23,13 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tool-list: ${{ steps.discover.outputs.tool-list }}
-    strategy:
-      matrix:
-        python-version: ['3.7']
     steps:
     - uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.7"
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -39,7 +36,7 @@ jobs:
       with:
         galaxy-fork: ${{ env.GALAXY_FORK }}
         galaxy-branch: ${{ env.GALAXY_BRANCH }}
-        python-version: ${{ matrix.python-version }}
+        python-version: "3.7"
     - name: Show tool list
       run: echo '${{ steps.discover.outputs.tool-list }}'
 
