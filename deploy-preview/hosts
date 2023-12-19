@@ -1,0 +1,2 @@
+[all]
+galaxy.odahub.fr ansible_ssh_user=ubuntu
