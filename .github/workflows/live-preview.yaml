@@ -1,0 +1,75 @@
+name: Preview PR on galaxy.odahub.fr
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - labeled
+      - synchronize
+    paths-ignore:
+      - '.github/**'
+      - 'deprecated/**'
+      - 'docs/**'
+      - '*'
+env:
+  GALAXY_FORK: galaxyproject
+  GALAXY_BRANCH: release_23.1
+
+jobs:
+  setup:
+    if: contains( github.event.pull_request.labels.*.name, 'test-live')
+    name: Determine changed repositories
+    runs-on: ubuntu-latest
+    outputs:
+      tool-list: ${{ steps.discover.outputs.tool-list }}
+    steps:
+    - uses: actions/setup-python@v4
+      with:
+        python-version: "3.7"
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Fake a Planemo run to determine tool list
+      uses: galaxyproject/planemo-ci-action@v1
+      id: discover
+      with:
+        galaxy-fork: ${{ env.GALAXY_FORK }}
+        galaxy-branch: ${{ env.GALAXY_BRANCH }}
+        python-version: "3.7"
+    - name: Show tool list
+      run: echo '${{ steps.discover.outputs.tool-list }}'
+
+  # deploy the tools
+  deploy:
+    name: Deploy
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') && needs.setup.outputs.tool-list
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install requirenments
+      run: sudo apt-get install -y ansible
+    - name: Install SSH key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+    - name: Deploy tools
+      env: 
+        TOOL_LIST: ${{ needs.setup.outputs.tool-list }}
+        pr_num: ${{ github.event.pull_request.number }}
+      run: |
+        cd deploy-preview
+
+        dir_list=`for tl in $TOOL_LIST ; do echo $tl | awk -F '/' '{print $2}'; done | uniq`
+
+        for dr in $dir_list; do
+          tools_list=`for tl in $TOOL_LIST; do if [[ "$tl" == *"$dr"*  ]] ; then basename $tl ; fi ; done`
+          
+          export tools_list
+          export tool_dir=$dr
+
+          ansible-playbook deploy.yml
+        done
