@@ -96,22 +96,6 @@
   <help>This is help for MWA
 </help>
   <citations>
-    <citation type="bibtex">@article{2017MNRAS.464.1146H,
-			author = {{Hurley-Walker}, N. and {Callingham}, J.~R. and {Hancock}, P.~J. and {Franzen}, T.~M.~O. and {Hindson}, L. and {Kapi{\'n}ska}, A.~D. and {Morgan}, J. and {Offringa}, A.~R. and {Wayth}, R.~B. and {Wu}, C. and {Zheng}, Q. and {Murphy}, T. and {Bell}, M.~E. and {Dwarakanath}, K.~S. and {For}, B. and {Gaensler}, B.~M. and {Johnston-Hollitt}, M. and {Lenc}, E. and {Procopio}, P. and {Staveley-Smith}, L. and {Ekers}, R. and {Bowman}, J.~D. and {Briggs}, F. and {Cappallo}, R.~J. and {Deshpande}, A.~A. and {Greenhill}, L. and {Hazelton}, B.~J. and {Kaplan}, D.~L. and {Lonsdale}, C.~J. and {McWhirter}, S.~R. and {Mitchell}, D.~A. and {Morales}, M.~F. and {Morgan}, E. and {Oberoi}, D. and {Ord}, S.~M. and {Prabu}, T. and {Shankar}, N. Udaya and {Srivani}, K.~S. and {Subrahmanyan}, R. and {Tingay}, S.~J. and {Webster}, R.~L. and {Williams}, A. and {Williams}, C.~L.},
-			title = {{GaLactic and Extragalactic All-sky Murchison Widefield Array (GLEAM) survey - I. A low-frequency extragalactic catalogue}},
-			journal = {\mnras},
-			keywords = {techniques: interferometric, surveys, galaxies: general, Astrophysics - Astrophysics of Galaxies},
-			year = {2017},
-			month = {jan},
-			volume = {464},
-			number = {1},
-			pages = {1146-1167},
-			doi = {10.1093/mnras/stw2337},
-			archivePrefix = {arXiv},
-			eprint = {1610.08318},
-			primaryClass = {astro-ph.GA},
-			adsurl = {https://ui.adsabs.harvard.edu/abs/2017MNRAS.464.1146H},
-			adsnote = {Provided by the SAO/NASA Astrophysics Data System}
-		}</citation>
+    <citation type="doi">10.1093/mnras/stw2337</citation>
   </citations>
 </tool>
