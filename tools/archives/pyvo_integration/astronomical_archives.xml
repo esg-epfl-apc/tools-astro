@@ -24,6 +24,7 @@
             <param name="archive_type" type="select" label="Archive Selection">
               <option value="archive">Query specific IVOA archive</option>
               <option value="registry">Query all matching IVOA archives</option>
+              <option value="custom">Query custom TAP archive</option>
             </param>
             <when value="registry">
               <param name="keyword" type="text" label="Keyword" />
@@ -46,6 +47,9 @@
               <param name="archive" type="select" label="Astronomical archives">
                 <options from_data_table="astronomical_archives" />
               </param>
+            </when>
+            <when value="custom">
+              <param name="access_url" type="text" label="TAP archive access url" />
             </when>
         </conditional>
         <section name="query_section" title="Query selection" expanded="true">
