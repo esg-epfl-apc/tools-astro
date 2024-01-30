@@ -2,6 +2,7 @@ import errno
 import functools
 import json
 import os
+import re
 import signal
 import sys
 import urllib
@@ -507,6 +508,20 @@ class ToolRunner:
             self._archives.append(
                 TapArchive(access_url=self._service_access_url))
 
+        elif self._archive_type == 'custom':
+            self._service_access_url = \
+                self._json_parameters['archive_selection']['access_url']
+
+            if Utils.is_valid_url(self._service_access_url):
+                self._archives.append(
+                    TapArchive(access_url=self._service_access_url))
+            else:
+                error_message = "archive access url is not a valid url"
+                Logger.create_action_log(
+                    Logger.ACTION_ERROR,
+                    Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
+                    error_message)
+        
         else:
             keyword = \
                 self._json_parameters['archive_selection']['keyword']
@@ -1304,6 +1319,17 @@ class Utils:
                 if key not in resource_keys:
                     resource_keys.append(key)
         return resource_keys
+
+    @staticmethod
+    def is_valid_url(url: str) -> bool:
+        regex_url = re.compile(
+            r'^(?:http)s?://'
+            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
+            r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|)'
+            r'(?::\d+)?'
+            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+
+        return re.match(regex_url, url) is not None
 
 
 class Logger:
