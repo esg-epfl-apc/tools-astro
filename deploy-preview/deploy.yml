@@ -35,8 +35,8 @@
     - name: Make name unique
       replace:
         path: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}/{{ item }}"
-        regexp: '<tool(.*)name="([a-z0-9_]+)"'
-        replace: '<tool\1name="\2_pr{{ pr_num }}"'
+        regexp: '<tool(.*)name="([^"]+)"'
+        replace: '<tool\1name="\2 (PR {{ pr_num }})"'
       loop: "{{ tools_list }}"
 
     - name: Clean previous references
