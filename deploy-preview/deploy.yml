@@ -12,13 +12,18 @@
 
 
   tasks:
+    - name: Create tool dir
+      ansible.builtin.file:
+        path: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
+        state: directory
+        mode: 0755
+
     - name: Sync tool dir
       ansible.posix.synchronize:
         src: "{{ src_tools_dir }}/{{ tool_dir }}/"
         dest: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
         rsync_opts:
           - "--chown=galaxy:galaxy"
-          - "--mkpath"
 
     - name: Make id unique
       replace:
