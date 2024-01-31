@@ -18,6 +18,7 @@
         dest: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
         rsync_opts:
           - "--chown=galaxy:galaxy"
+          - "--mkpath"
 
     - name: Make id unique
       replace:
