@@ -616,7 +616,7 @@ Illumination by the Sun of each face of the comet 67P/Churyumov-Gerasimenko base
                 CSHP_DV_130_01_LORES_OBJ.OBJ. The service provides the cosine between the normal of each face (in the same order as the faces defined in the shape model) and the Sun direction; both
                 numerical values and images of the illumination are available. Each map is defined for a given position of the Sun
                 in the frame of 67P (67P/C-G_CK). Longitude 0 is at the center of each map. The code is developed by A. Beth,
-                Imperial College London, UK and the service is provided by CDPP (http://cdpp.eu). Acknowlegment: The illumination models
+                Imperial College London, UK and the service is provided by CDPP (cdpp.eu). Acknowlegment: The illumination models
                 have been developed at the Department of Physics at Imperial College London (UK) under the financial support of STFC
                 grant of UK ST/N000692/1 and ESA contract 4000119035/16/ES/JD (Rosetta RPC-PIU). We would also like to warmly
                 thank Bernhard Geiger (ESA) for his support in validating the 2D-illumination maps.
