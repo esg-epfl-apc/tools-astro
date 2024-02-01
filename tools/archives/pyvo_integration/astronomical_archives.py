@@ -507,7 +507,7 @@ class ToolRunner:
 
             self._archives.append(
                 TapArchive(access_url=self._service_access_url))
-        
+
         elif self._archive_type == 'custom':
             self._service_access_url = \
                 self._json_parameters['archive_selection']['access_url']
@@ -521,7 +521,7 @@ class ToolRunner:
                     Logger.ACTION_ERROR,
                     Logger.ACTION_TYPE_ARCHIVE_CONNECTION,
                     error_message)
-        
+
         else:
             keyword = \
                 self._json_parameters['archive_selection']['keyword']
