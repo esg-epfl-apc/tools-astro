@@ -4,4 +4,4 @@ channels:
   - defaults
 dependencies:
   - pip:
-      - planemo==0.75.7
+      - planemo==0.75.10
