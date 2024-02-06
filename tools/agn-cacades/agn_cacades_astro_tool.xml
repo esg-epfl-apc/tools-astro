@@ -1,0 +1,43 @@
+<tool id="agn_cacades_astro_tool" name="AGN cacades" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="3.28.3">cmake</requirement>
+    <requirement type="package" version="12.3.0">gfortran</requirement>
+    <requirement type="package" version="2.7">gsl</requirement>
+    <requirement type="package" version="1.7.0">compilers</requirement>
+    <requirement type="package" version="3.2.5">xerces-c</requirement>
+    <requirement type="package" version="8.21.0">ipython</requirement>
+    <requirement type="package" version="6.0.0">astropy</requirement>
+    <requirement type="package" version="3.8.2">matplotlib</requirement>
+    <requirement type="package" version="0.4.6">astroquery</requirement>
+    <requirement type="package" version="1.12.0">scipy</requirement>
+    <requirement type="package" version="1.2.7">oda-api</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.15.0">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/Simulate.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" />
+  </configfiles>
+  <inputs>
+    <param name="Gamma" type="float" value="2.4" label="Gamma" />
+    <param name="Emax" type="float" value="1000000000000000.0" label="Emax" />
+    <param name="Ecut" type="float" value="100000000000000.0" label="Ecut" />
+    <param name="B" type="float" value="100.0" label="B" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; Simulate picture" name="out_Simulate_picture" format="auto" from_work_dir="picture_galaxy.output" />
+    <data label="${tool.name} -&gt; Simulate spectrum_astropy_table" name="out_Simulate_spectrum_astropy_table" format="auto" from_work_dir="spectrum_astropy_table_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <param name="Gamma" value="2.4" />
+      <param name="Emax" value="1000000000000000.0" />
+      <param name="Ecut" value="100000000000000.0" />
+      <param name="B" value="100.0" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>
