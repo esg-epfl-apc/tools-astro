@@ -36,6 +36,12 @@ from oda_api.data_products import PictureProduct
 from oda_api.data_products import ODAAstropyTable
 
 
+# In[1]:
+
+
+get_ipython().system('pwd')
+
+
 # In[4]:
 
 
@@ -45,7 +51,7 @@ get_ipython().system('git lfs install ; git lfs pull')
 # In[5]:
 
 
-get_ipython().system('bash install.sh')
+get_ipython().run_cell_magic('bash', '', './install.sh\n')
 
 
 # In[88]:
