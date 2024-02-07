@@ -62,7 +62,7 @@ DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
 T1='2000-10-09T13:16:00.0'# http://odahub.io/ontology#StartTime
 T2='2022-10-10T13:16:00.0' # http://odahub.io/ontology#EndTime
 Radius=2.5  #http://odahub.io/ontology#AngleDegrees
-pixsize=0.1 #http://odahub.io/ontology#AngleDegrees
+pixsize=0.1 #http://odahub.io/ontology#AngleDegrees; oda:label "Pixel size"
 Emin=100.    #http://odahub.io/ontology#Energy_GeV
 Emax=10000. #http://odahub.io/ontology#Energy_GeV
 
