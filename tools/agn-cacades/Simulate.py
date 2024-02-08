@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[ ]:
+# In[1]:
 
 
 import numpy as np
@@ -36,34 +36,36 @@ from oda_api.data_products import PictureProduct
 from oda_api.data_products import ODAAstropyTable
 
 
-# In[ ]:
+# In[2]:
 
 
 get_ipython().system('pwd')
 
 
-# In[ ]:
+# In[3]:
 
 
 get_ipython().system('git lfs install ; git lfs pull')
 
 
-# In[ ]:
+# In[4]:
 
 
 get_ipython().run_cell_magic('bash', '', './install.sh\n')
 
 
-# In[ ]:
+# In[15]:
 
 
 Gamma=2.4 # http://odahub.io/ontology#Float
 Emax=1e15 # http://odahub.io/ontology#Float
 Ecut=1e14 # http://odahub.io/ontology#Float
 B=1e4     # http://odahub.io/ontology#Float
+source_size_cm=3.0856e+13  # http://odahub.io/ontology#Float
 background_norm_mode='density_cm3' # http://odahub.io/ontology#String ; oda:allowed_value "absolute","density_cm3","energy_density_eV_cm3"
 corona_backround_norm_cm3=4.18876e15  # http://odahub.io/ontology#Float
 disk_background_norm_cm3=1.39654e17   # http://odahub.io/ontology#Float
+min_steps=100 #http://odahub.io/ontology#Integer ; oda:lower_limit 10 ; oda:upper_limit 10000
 
 
 # In[ ]:
@@ -81,13 +83,17 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[ ]:
+# In[16]:
 
 
 background_norm_mode_index=["absolute","density_cm3","energy_density_eV_cm3"].index(background_norm_mode)
+distance_Mpc = source_size_cm/3.0856775807e+24
+electron_distance_Mpc = 100*distance_Mpc # electrons propagate longer
+min_step_Mpc = distance_Mpc/min_steps
+electron_min_step_Mpc = electron_distance_Mpc/min_steps
 
 
-# In[ ]:
+# In[17]:
 
 
 fname='pp_a'+str(Gamma)+'_'+str(f"{Ecut:.2e}")+'_'+str(B)
@@ -95,7 +101,7 @@ fname='run'
 get_ipython().system('cp propagation/pp_a2.4_E1e14.xsw propagation/{fname}.xsw')
 
 
-# In[ ]:
+# In[18]:
 
 
 get_ipython().system('python propagation/replacePar CommonAlpha {str(Gamma)} propagation/{fname}.xsw')
@@ -121,20 +127,32 @@ get_ipython().system('python propagation/getPar IROBackgroundNormMode propagatio
 get_ipython().system('python propagation/replacePar CustomBackgroundNormMode {str(background_norm_mode_index)} propagation/step??_template.xsw')
 get_ipython().system('python propagation/getPar CustomBackgroundNormMode propagation/step2g_template.xsw')
 
+get_ipython().system('python propagation/replacePar L_short_distance_test {str(distance_Mpc)} propagation/step?g_template.xsw')
+get_ipython().system('python propagation/getPar L_short_distance_test propagation/step2g_template.xsw')
 
-# In[ ]:
+get_ipython().system('python propagation/replacePar L_short_distance_test {str(electron_distance_Mpc)} propagation/step3e_template.xsw')
+get_ipython().system('python propagation/getPar L_short_distance_test propagation/step3e_template.xsw')
+
+get_ipython().system('python propagation/replacePar microStep {str(min_step_Mpc)} propagation/step?g_template.xsw')
+get_ipython().system('python propagation/getPar microStep propagation/step2g_template.xsw')
+
+get_ipython().system('python propagation/replacePar microStep {str(electron_min_step_Mpc)} propagation/step3e_template.xsw')
+get_ipython().system('python propagation/getPar microStep propagation/step3e_template.xsw')
+
+
+# In[9]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd propagation\n./run_all.sh run.xsw\n')
 
 
-# In[ ]:
+# In[10]:
 
 
 get_ipython().system("cat 'propagation/results/run_step4g/fin/tot'")
 
 
-# In[ ]:
+# In[11]:
 
 
 d=np.genfromtxt('propagation/results/run_step4g/fin/tot')
@@ -150,7 +168,7 @@ plt.yscale('log')
 plt.ylim(1e-20,1e-8)
 
 
-# In[ ]:
+# In[12]:
 
 
 d=np.genfromtxt('NGC_1068_contour.csv')
@@ -219,7 +237,7 @@ plt.ylabel(r'$EF_E$, TeV/(cm$^2$s)',fontsize=12)
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[ ]:
+# In[13]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -229,7 +247,7 @@ names=('E[eV]','E2 dN/dE gamma [TeV/cm2s]','E2 dN/dE nu[ TeV/cm2 s]')
 spectrum = ODAAstropyTable(Table(data, names = names))
 
 
-# In[ ]:
+# In[14]:
 
 
 picture = bin_image # http://odahub.io/ontology#ODAPictureProduct
