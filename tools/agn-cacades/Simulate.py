@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[1]:
+# In[ ]:
 
 
 import numpy as np
@@ -36,25 +36,25 @@ from oda_api.data_products import PictureProduct
 from oda_api.data_products import ODAAstropyTable
 
 
-# In[2]:
+# In[ ]:
 
 
 get_ipython().system('pwd')
 
 
-# In[3]:
+# In[ ]:
 
 
 get_ipython().system('git lfs install ; git lfs pull')
 
 
-# In[4]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './install.sh\n')
 
 
-# In[15]:
+# In[ ]:
 
 
 Gamma=2.4 # http://odahub.io/ontology#Float
@@ -83,7 +83,7 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[16]:
+# In[ ]:
 
 
 background_norm_mode_index=["absolute","density_cm3","energy_density_eV_cm3"].index(background_norm_mode)
@@ -93,7 +93,7 @@ min_step_Mpc = distance_Mpc/min_steps
 electron_min_step_Mpc = electron_distance_Mpc/min_steps
 
 
-# In[17]:
+# In[ ]:
 
 
 fname='pp_a'+str(Gamma)+'_'+str(f"{Ecut:.2e}")+'_'+str(B)
@@ -101,7 +101,7 @@ fname='run'
 get_ipython().system('cp propagation/pp_a2.4_E1e14.xsw propagation/{fname}.xsw')
 
 
-# In[18]:
+# In[ ]:
 
 
 get_ipython().system('python propagation/replacePar CommonAlpha {str(Gamma)} propagation/{fname}.xsw')
@@ -140,19 +140,19 @@ get_ipython().system('python propagation/replacePar microStep {str(electron_min_
 get_ipython().system('python propagation/getPar microStep propagation/step3e_template.xsw')
 
 
-# In[9]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', 'cd propagation\n./run_all.sh run.xsw\n')
 
 
-# In[10]:
+# In[ ]:
 
 
 get_ipython().system("cat 'propagation/results/run_step4g/fin/tot'")
 
 
-# In[11]:
+# In[ ]:
 
 
 d=np.genfromtxt('propagation/results/run_step4g/fin/tot')
@@ -168,7 +168,7 @@ plt.yscale('log')
 plt.ylim(1e-20,1e-8)
 
 
-# In[12]:
+# In[ ]:
 
 
 d=np.genfromtxt('NGC_1068_contour.csv')
@@ -237,7 +237,7 @@ plt.ylabel(r'$EF_E$, TeV/(cm$^2$s)',fontsize=12)
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[13]:
+# In[ ]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -247,7 +247,7 @@ names=('E[eV]','E2 dN/dE gamma [TeV/cm2s]','E2 dN/dE nu[ TeV/cm2 s]')
 spectrum = ODAAstropyTable(Table(data, names = names))
 
 
-# In[14]:
+# In[ ]:
 
 
 picture = bin_image # http://odahub.io/ontology#ODAPictureProduct
