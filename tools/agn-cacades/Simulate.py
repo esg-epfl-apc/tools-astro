@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[100]:
+# In[ ]:
 
 
 import numpy as np
@@ -36,31 +36,34 @@ from oda_api.data_products import PictureProduct
 from oda_api.data_products import ODAAstropyTable
 
 
-# In[1]:
+# In[ ]:
 
 
 get_ipython().system('pwd')
 
 
-# In[4]:
+# In[ ]:
 
 
 get_ipython().system('git lfs install ; git lfs pull')
 
 
-# In[5]:
+# In[ ]:
 
 
 get_ipython().run_cell_magic('bash', '', './install.sh\n')
 
 
-# In[88]:
+# In[ ]:
 
 
 Gamma=2.4 # http://odahub.io/ontology#Float
 Emax=1e15 # http://odahub.io/ontology#Float
 Ecut=1e14 # http://odahub.io/ontology#Float
-B=1e2     # http://odahub.io/ontology#Float
+B=1e4     # http://odahub.io/ontology#Float
+background_norm_mode='density_cm3' # http://odahub.io/ontology#String ; oda:allowed_value "absolute","density_cm3","energy_density_eV_cm3"
+corona_backround_norm_cm3=4.18876e15  # http://odahub.io/ontology#Float
+disk_background_norm_cm3=1.39654e17   # http://odahub.io/ontology#Float
 
 
 # In[ ]:
@@ -78,18 +81,21 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[89]:
+# In[ ]:
+
+
+background_norm_mode_index=["absolute","density_cm3","energy_density_eV_cm3"].index(background_norm_mode)
+
+
+# In[ ]:
 
 
 fname='pp_a'+str(Gamma)+'_'+str(f"{Ecut:.2e}")+'_'+str(B)
 fname='run'
 get_ipython().system('cp propagation/pp_a2.4_E1e14.xsw propagation/{fname}.xsw')
-get_ipython().system('cp propagation/pp_a2.4_E1e14_step2g.xsw propagation/{fname}_step2g.xsw')
-get_ipython().system('cp propagation/pp_a2.4_E1e14_step3e.xsw propagation/{fname}_step3e.xsw')
-get_ipython().system('cp propagation/pp_a2.4_E1e14_step4g.xsw propagation/{fname}_step4g.xsw')
 
 
-# In[90]:
+# In[ ]:
 
 
 get_ipython().system('python propagation/replacePar CommonAlpha {str(Gamma)} propagation/{fname}.xsw')
@@ -103,10 +109,17 @@ get_ipython().system('python propagation/replacePar injSpectraHigherCutoff {str(
 get_ipython().system('python propagation/getPar injSpectraHigherCutoff propagation/{fname}.xsw')
 
 
-get_ipython().system('python propagation/replacePar B0 {str(B)} propagation/{fname}_step2g.xsw')
-get_ipython().system('python propagation/replacePar B0 {str(B)} propagation/{fname}_step3e.xsw')
-get_ipython().system('python propagation/replacePar B0 {str(B)} propagation/{fname}_step4g.xsw')
-get_ipython().system('python propagation/getPar B0 propagation/{fname}_step2g.xsw')
+get_ipython().system('python propagation/replacePar B0 {str(B)} propagation/step??_template.xsw')
+get_ipython().system('python propagation/getPar B0 propagation/step2g_template.xsw')
+
+get_ipython().system('python propagation/replacePar iroMult {str(disk_background_norm_cm3)} propagation/step??_template.xsw')
+get_ipython().system('python propagation/getPar iroMult propagation/step2g_template.xsw')
+
+get_ipython().system('python propagation/replacePar IROBackgroundNormMode {str(background_norm_mode_index)} propagation/step??_template.xsw')
+get_ipython().system('python propagation/getPar IROBackgroundNormMode propagation/step2g_template.xsw')
+
+get_ipython().system('python propagation/replacePar CustomBackgroundNormMode {str(background_norm_mode_index)} propagation/step??_template.xsw')
+get_ipython().system('python propagation/getPar CustomBackgroundNormMode propagation/step2g_template.xsw')
 
 
 # In[ ]:
@@ -115,13 +128,13 @@ get_ipython().system('python propagation/getPar B0 propagation/{fname}_step2g.xs
 get_ipython().run_cell_magic('bash', '', 'cd propagation\n./run_all.sh run.xsw\n')
 
 
-# In[95]:
+# In[ ]:
 
 
 get_ipython().system("cat 'propagation/results/run_step4g/fin/tot'")
 
 
-# In[96]:
+# In[ ]:
 
 
 d=np.genfromtxt('propagation/results/run_step4g/fin/tot')
@@ -137,7 +150,7 @@ plt.yscale('log')
 plt.ylim(1e-20,1e-8)
 
 
-# In[98]:
+# In[ ]:
 
 
 d=np.genfromtxt('NGC_1068_contour.csv')
@@ -206,7 +219,7 @@ plt.ylabel(r'$EF_E$, TeV/(cm$^2$s)',fontsize=12)
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[101]:
+# In[ ]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -216,7 +229,7 @@ names=('E[eV]','E2 dN/dE gamma [TeV/cm2s]','E2 dN/dE nu[ TeV/cm2 s]')
 spectrum = ODAAstropyTable(Table(data, names = names))
 
 
-# In[102]:
+# In[ ]:
 
 
 picture = bin_image # http://odahub.io/ontology#ODAPictureProduct
