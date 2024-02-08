@@ -10,7 +10,7 @@
     <requirement type="package" version="1.11.4">scipy</requirement>
     <requirement type="package" version="1.1">gammapy</requirement>
     <requirement type="package" version="3.8.2">matplotlib</requirement>
-    <requirement type="package" version="1.2.7">oda-api</requirement>
+    <requirement type="package" version="1.2.10">oda-api</requirement>
     <requirement type="package" version="7.16.0">nbconvert</requirement>
     <requirement type="package" version="1.20.3">wget</requirement>
     <requirement type="package" version="0.4.6">astroquery</requirement>
