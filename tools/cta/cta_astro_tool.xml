@@ -9,8 +9,6 @@
     <requirement type="package" version="7.16.0">nbconvert</requirement>
     <requirement type="package" version="1.20.3">wget</requirement>
     <requirement type="package" version="0.4.6">astroquery</requirement>
-    <!--Requirements string 'ctadata
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
