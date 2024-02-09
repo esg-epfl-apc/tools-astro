@@ -61,23 +61,22 @@ from astropy.time import Time
 
 
 hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
-if(os.path.exists(hess_data)==False):
-    get_ipython().system('gammapy download datasets')
+#if(os.path.exists(hess_data)==False):
+get_ipython().system('gammapy download datasets')
 
 
 # In[3]:
 
 
-hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
 data_store = DataStore.from_dir(hess_data)
 
 
 # In[4]:
 
 
-src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+src_name='PKS 2155-304' #http://odahub.io/ontology#AstrophysicalObject
+RA = 329.71667  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -30.725555 # http://odahub.io/ontology#PointOfInterestDEC
 T1='2000-10-09T13:16:00.0'# http://odahub.io/ontology#StartTime
 T2='2022-10-10T13:16:00.0' # http://odahub.io/ontology#EndTime
 Radius=2.5  #http://odahub.io/ontology#AngleDegrees
@@ -141,41 +140,28 @@ obs_ids=OBSIDs[mask]
 if(len(obs_ids)==0):
     message='No data found'
     raise RuntimeError('No data found')
+obs_ids
 
 
-# In[9]:
+# In[8]:
 
 
 observations = data_store.get_observations(obs_ids)
 
 
-# In[10]:
+# In[9]:
 
 
 target_position = Coords_s
 on_region_radius = Angle(str(R_s)+" deg")
 on_region = CircleSkyRegion(center=target_position, radius=on_region_radius)
-
-
-# In[11]:
-
-
-exclusion_region = CircleSkyRegion(
-    center=SkyCoord(183.604, -8.708, unit="deg", frame="galactic"),
-    radius=0.5 * u.deg,
-)
-
 skydir = target_position.galactic
 geom = WcsGeom.create(
     npix=(150, 150), binsz=0.05, skydir=skydir, proj="TAN", frame="icrs"
 )
 
-exclusion_mask = ~geom.region_mask([exclusion_region])
-exclusion_mask.plot()
-plt.show()
 
-
-# In[12]:
+# In[10]:
 
 
 Emin=100.    #http://odahub.io/ontology#Energy_GeV
@@ -195,11 +181,11 @@ dataset_empty = SpectrumDataset.create(geom=geom, energy_axis_true=energy_axis_t
 dataset_maker = SpectrumDatasetMaker(
     containment_correction=True, selection=["counts", "exposure", "edisp"]
 )
-bkg_maker = ReflectedRegionsBackgroundMaker(exclusion_mask=exclusion_mask)
+bkg_maker = ReflectedRegionsBackgroundMaker()
 safe_mask_masker = SafeMaskMaker(methods=["aeff-max"], aeff_percent=10)
 
 
-# In[13]:
+# In[18]:
 
 
 datasets = Datasets()
@@ -207,25 +193,13 @@ datasets = Datasets()
 for obs_id, observation in zip(obs_ids, observations):
     dataset = dataset_maker.run(dataset_empty.copy(name=str(obs_id)), observation)
     dataset_on_off = bkg_maker.run(dataset, observation)
-    dataset_on_off = safe_mask_masker.run(dataset_on_off, observation)
+    #dataset_on_off = safe_mask_masker.run(dataset_on_off, observation)
     datasets.append(dataset_on_off)
 
 print(datasets)
 
 
-# In[14]:
-
-
-from gammapy.visualization import plot_spectrum_datasets_off_regions
-
-plt.figure()
-ax = exclusion_mask.plot()
-on_region.to_pixel(ax.wcs).plot(ax=ax, edgecolor="k")
-plot_spectrum_datasets_off_regions(ax=ax, datasets=datasets)
-plt.show()
-
-
-# In[16]:
+# In[19]:
 
 
 from pathlib import Path
@@ -246,7 +220,7 @@ for obs_id in obs_ids:
     datasets.append(SpectrumDatasetOnOff.read(filename))
 
 
-# In[18]:
+# In[47]:
 
 
 from gammapy.modeling.models import (
@@ -273,19 +247,19 @@ result_joint = fit_joint.run(datasets=datasets)
 model_best_joint = model.copy()
 
 
-# In[19]:
+# In[48]:
 
 
 print(result_joint)
 
 
-# In[20]:
+# In[49]:
 
 
 display(result_joint.models.to_parameters_table())
 
 
-# In[21]:
+# In[50]:
 
 
 ax_spectrum, ax_residuals = datasets[1].plot_fit()
@@ -294,14 +268,14 @@ datasets[0].plot_masks(ax=ax_spectrum)
 plt.show()
 
 
-# In[22]:
+# In[51]:
 
 
 e_min, e_max = Emin*1e-3, Emax*1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV
 
 
-# In[23]:
+# In[52]:
 
 
 from gammapy.estimators import FluxPointsEstimator
@@ -312,7 +286,7 @@ fpe = FluxPointsEstimator(
 flux_points = fpe.run(datasets=datasets)
 
 
-# In[24]:
+# In[53]:
 
 
 flux_points_dataset = FluxPointsDataset(data=flux_points, models=model_best_joint)
@@ -321,14 +295,14 @@ flux_points_dataset.plot_fit()
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[25]:
+# In[54]:
 
 
 res=flux_points.to_table(sed_type="dnde", formatted=True)
 np.array(res['dnde'])
 
 
-# In[26]:
+# In[24]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -343,7 +317,7 @@ names=('Emean[TeV]','Emin[TeV]','Emax[TeV]','Flux[TeV/cm2s]','Flux_error[TeV/cm2
 spec = ODAAstropyTable(Table(data, names = names))
 
 
-# In[27]:
+# In[25]:
 
 
 picture_png = bin_image # http://odahub.io/ontology#ODAPictureProduct
