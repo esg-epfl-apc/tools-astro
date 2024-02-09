@@ -74,7 +74,13 @@ from numpy.random import randint
 from numpy import log,exp
 
 
-# In[2]:
+# In[20]:
+
+
+get_ipython().run_cell_magic('bash', '', 'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n')
+
+
+# In[18]:
 
 
 #We simulate point source in wobble observaiton, 
@@ -120,7 +126,7 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[4]:
+# In[19]:
 
 
 #We use "cube" model filled with counts
@@ -142,11 +148,11 @@ pnt_DEC=DEC
 pnt=SkyCoord(pnt_RA,pnt_DEC,unit='degree')
 
 
-# In[5]:
+# In[22]:
 
 
 #Here we read the IRFs
-hdul=fits.open('Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz')
+hdul=fits.open('IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.18000s-v0.1.fits.gz')
 Aeff=hdul['EFFECTIVE AREA'].data
 th_min=Aeff['THETA_LO']
 th_min
@@ -159,7 +165,7 @@ n_Ebins=len(E_MIN)
 A=Aeff['EFFAREA'][0,0][:-2]
 
 
-# In[6]:
+# In[23]:
 
 
 d=np.genfromtxt('Franceschini17.txt')
@@ -194,7 +200,7 @@ def tau(x):
     return np.interp(log(x),log(en),tau_ss)
 
 
-# In[7]:
+# In[24]:
 
 
 #Just in case, point source is a narrow Gaussian
@@ -202,7 +208,7 @@ def Gauss(x, y, A, x0, y0, sigma_x, sigma_y):
     return A*np.exp(-(x-x0)**2/(2*sigma_x**2) -(y-y0)**2/(2*sigma_y**2))
 
 
-# In[8]:
+# In[25]:
 
 
 cdec=cos(DEC*pi/180)
@@ -227,7 +233,7 @@ for i in range(n_Ebins):
     
 
 
-# In[9]:
+# In[26]:
 
 
 hdul=fits.open('3d.fits',mode='update')
@@ -248,7 +254,7 @@ hdul[0].data=cube
 hdul.close()
 
 
-# In[10]:
+# In[27]:
 
 
 m_cube=Map.read('3d.fits')
@@ -271,7 +277,7 @@ source=SkyCoord(src_ra,src_dec,unit='degree')
 m_cube
 
 
-# In[11]:
+# In[28]:
 
 
 # telescope is pointing at a fixed position in ICRS for the observation
@@ -288,7 +294,7 @@ irfs = load_irf_dict_from_file(filename)
 irfs
 
 
-# In[12]:
+# In[29]:
 
 
 map0 = m_cube.slice_by_idx({"energy": 0})
@@ -296,7 +302,7 @@ map0.plot()
 plt.show()
 
 
-# In[13]:
+# In[30]:
 
 
 energy_axis_true = MapAxis.from_energy_bounds(
@@ -319,7 +325,7 @@ geom = WcsGeom.create(
 migra_axis = MapAxis.from_bounds(-2, 2, nbin=150, node_type="edges", name="migra")
 
 
-# In[14]:
+# In[31]:
 
 
 def GetBinSpectralModel(E, bins_per_decade=20, norm=1):
@@ -331,27 +337,27 @@ def GetBinSpectralModel(E, bins_per_decade=20, norm=1):
     return GaussianSpectralModel(mean=E, sigma=sigma, amplitude=amplitude)
 
 
-# In[15]:
+# In[32]:
 
 
 spec = m_cube.get_spectrum()
 spec.plot()
 
 
-# In[16]:
+# In[33]:
 
 
 energy_bins = m_cube.geom.axes['energy'].center
 len(energy_bins), float(np.min(energy_bins)/u.TeV), float(np.max(energy_bins)/u.TeV)
 
 
-# In[17]:
+# In[34]:
 
 
 int_bin_flux = spec.data.flatten()
 
 
-# In[18]:
+# In[35]:
 
 
 observation = Observation.create(
@@ -364,7 +370,7 @@ observation = Observation.create(
 print(observation)
 
 
-# In[19]:
+# In[36]:
 
 
 empty = MapDataset.create(
@@ -377,7 +383,7 @@ maker = MapDatasetMaker(selection=["exposure", "background", "psf", "edisp"])
 dataset = maker.run(empty, observation)
 
 
-# In[20]:
+# In[37]:
 
 
 bin_models = []
@@ -394,27 +400,27 @@ for i, (flux, E) in enumerate(zip(int_bin_flux, energy_bins)):
     bin_models.append(sky_bin_model)
 
 
-# In[21]:
+# In[38]:
 
 
 bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
 models = Models(bin_models + [bkg_model])
 
 
-# In[22]:
+# In[39]:
 
 
 dataset.models = models
 
 
-# In[23]:
+# In[ ]:
 
 
 sampler = MapDatasetEventSampler(random_state=0)
 events = sampler.run(dataset, observation)
 
 
-# In[24]:
+# In[ ]:
 
 
 E=events.energy/u.TeV
@@ -434,7 +440,7 @@ plt.legend(loc='upper right')
 plt.savefig('event_spectrum.png',format='png')
 
 
-# In[25]:
+# In[ ]:
 
 
 mask=np.where(E>1)
@@ -444,7 +450,7 @@ plt.hist2d(ras[mask],decs[mask],bins=[np.linspace(pnt_RA-ROI/cdec,pnt_RA+ROI/cde
 plt.colorbar()
 
 
-# In[26]:
+# In[ ]:
 
 
 print(f"Save events ...") 
@@ -456,7 +462,7 @@ hdu_all.writeto(f"./events.fits", overwrite=True)
 ####################
 
 
-# In[27]:
+# In[ ]:
 
 
 hdul=fits.open('events.fits')
@@ -464,7 +470,7 @@ T_exp=hdul['EVENTS'].header['ONTIME']
 events=hdul['EVENTS'].data
 
 
-# In[28]:
+# In[ ]:
 
 
 coords_s=SkyCoord(RA,DEC,unit='degree')
@@ -481,7 +487,7 @@ seps_b=coords.separation(coords_b).deg
 coords_s=SkyCoord(RA,DEC,unit='degree')
 
 
-# In[29]:
+# In[ ]:
 
 
 hdul=fits.open('Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz')
@@ -496,7 +502,7 @@ Ebins_irf=np.concatenate((Emin_irf,[Emax_irf[-1]]))
 A=Aeff['EFFAREA'][0,0]
 
 
-# In[30]:
+# In[ ]:
 
 
 th_cut=0.3
@@ -515,7 +521,7 @@ Src_err=sqrt(Ns+Nb)
 print(Src,Src_err)
 
 
-# In[31]:
+# In[ ]:
 
 
 EE=E_irf[4:-3]
@@ -545,7 +551,7 @@ plt.ylim(1e-14,1e-9)
 plt.savefig('spectrum.png',format='png')
 
 
-# In[32]:
+# In[ ]:
 
 
 #theta2 plot
@@ -567,7 +573,7 @@ plt.text(0.15,max(h1[0][:10]),'S/N='+str(SN))
 plt.savefig('theta2.png',format='png')
 
 
-# In[33]:
+# In[ ]:
 
 
 events_fits = NumpyDataProduct.from_fits_file('events.fits')
@@ -575,7 +581,7 @@ spectrum_png = PictureProduct.from_file('spectrum.png')
 theta2_png = PictureProduct.from_file('theta2.png')
 
 
-# In[34]:
+# In[ ]:
 
 
 theta2 = theta2_png # http://odahub.io/ontology#ODAPictureProduct
