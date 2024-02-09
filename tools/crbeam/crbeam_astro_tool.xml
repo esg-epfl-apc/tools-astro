@@ -6,6 +6,7 @@
     <requirement type="package" version="1.7.0">compilers</requirement>
     <requirement type="package" version="15.0.0">pyarrow</requirement>
     <requirement type="package" version="8.20.0">ipython</requirement>
+    <requirement type="package" version="1.2.10">oda_api</requirement>
     <!--Requirements string 'oda_api
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="3.8.2">matplotlib</requirement>
