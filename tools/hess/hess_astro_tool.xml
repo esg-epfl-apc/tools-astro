@@ -21,7 +21,6 @@
         <option value="Image" selected="true">Image</option>
         <option value="Spectrum" selected="false">Spectrum</option>
         <option value="Spectrum_gammapy" selected="false">Spectrum_gammapy</option>
-        <option value="Spectrum_folded" selected="false">Spectrum_folded</option>
         <option value="Lightcurve" selected="false">Lightcurve</option>
       </param>
       <when value="Image">
@@ -59,18 +58,6 @@
         <param name="Emax" type="float" value="10000.0" label="Emax Units: GeV" />
         <param name="NEbins" type="integer" value="20" label="NEbins" />
       </when>
-      <when value="Spectrum_folded">
-        <param name="src_name" type="text" value="Crab" label="src_name" />
-        <param name="RA" type="float" value="83.6287" label="RA Units: deg" />
-        <param name="DEC" type="float" value="22.0147" label="DEC Units: deg" />
-        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
-        <param name="Radius" type="float" value="2.5" label="Radius Units: deg" />
-        <param name="R_s" type="float" value="0.2" label="R_s Units: deg" />
-        <param name="Emin" type="float" value="100.0" label="Emin Units: GeV" />
-        <param name="Emax" type="float" value="10000.0" label="Emax Units: GeV" />
-        <param name="NEbins" type="integer" value="20" label="NEbins" />
-      </when>
       <when value="Lightcurve">
         <param name="src_name" type="text" value="Crab" label="src_name" />
         <param name="RA" type="float" value="83.6287" label="RA Units: deg" />
@@ -103,12 +90,6 @@
     </data>
     <data label="${tool.name} -&gt; Spectrum_gammapy spectrum_astropy_table" name="out_Spectrum_gammapy_spectrum_astropy_table" format="auto" from_work_dir="spectrum_astropy_table_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum_gammapy'</filter>
-    </data>
-    <data label="${tool.name} -&gt; Spectrum_folded picture_png" name="out_Spectrum_folded_picture_png" format="auto" from_work_dir="picture_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'Spectrum_folded'</filter>
-    </data>
-    <data label="${tool.name} -&gt; Spectrum_folded spectrum_astropy_table" name="out_Spectrum_folded_spectrum_astropy_table" format="auto" from_work_dir="spectrum_astropy_table_galaxy.output">
-      <filter>_data_product['_selector'] == 'Spectrum_folded'</filter>
     </data>
     <data label="${tool.name} -&gt; Lightcurve picture" name="out_Lightcurve_picture" format="auto" from_work_dir="picture_galaxy.output">
       <filter>_data_product['_selector'] == 'Lightcurve'</filter>
@@ -163,24 +144,6 @@
         <param name="T2" value="2022-10-10T13:16:00.0" />
         <param name="Radius" value="2.5" />
         <param name="R_s" value="0.11" />
-        <param name="Emin" value="100.0" />
-        <param name="Emax" value="10000.0" />
-        <param name="NEbins" value="20" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
-    <test expect_num_outputs="2">
-      <conditional name="_data_product">
-        <param name="_selector" value="Spectrum_folded" />
-        <param name="src_name" value="Crab" />
-        <param name="RA" value="83.6287" />
-        <param name="DEC" value="22.0147" />
-        <param name="T1" value="2000-10-09T13:16:00.0" />
-        <param name="T2" value="2022-10-10T13:16:00.0" />
-        <param name="Radius" value="2.5" />
-        <param name="R_s" value="0.2" />
         <param name="Emin" value="100.0" />
         <param name="Emax" value="10000.0" />
         <param name="NEbins" value="20" />

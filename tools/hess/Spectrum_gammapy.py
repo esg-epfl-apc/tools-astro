@@ -57,7 +57,7 @@ import os
 from astropy.time import Time
 
 
-# In[2]:
+# In[4]:
 
 
 hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
@@ -65,7 +65,7 @@ hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
 get_ipython().system('gammapy download datasets')
 
 
-# In[3]:
+# In[5]:
 
 
 data_store = DataStore.from_dir(hess_data)
