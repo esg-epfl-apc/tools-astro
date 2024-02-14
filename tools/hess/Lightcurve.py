@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[1]:
+# In[72]:
 
 
 import astropy.units as u
@@ -44,23 +44,12 @@ from oda_api.data_products import PictureProduct
 from oda_api.data_products import ODAAstropyTable
 from oda_api.data_products import ImageDataProduct
 from astropy.time import Time
+if(os.path.exists('hess_dl3_dr1.tar.gz')==False):
+    get_ipython().system('wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz')
+    get_ipython().system('tar -zxvf hess_dl3_dr1.tar.gz')
 
 
-# In[11]:
-
-
-hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
-if not(os.path.exists(hess_data)):
-    get_ipython().system('gammapy download datasets')
-    
-data_store = DataStore.from_dir(hess_data)
-
-
-# if(os.path.exists('hess_dl3_dr1.tar.gz')==False):
-#     !wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz
-#     !tar -zxvf hess_dl3_dr1.tar.gz
-
-# In[62]:
+# In[74]:
 
 
 src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
@@ -90,29 +79,32 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[63]:
+# In[75]:
 
 
 T1=Time(T1, format='isot', scale='utc').mjd
 T2=Time(T2, format='isot', scale='utc').mjd
-
-dates1=data_store.obs_table['DATE-OBS']
-dates2=data_store.obs_table['DATE-END']
-times1=data_store.obs_table['TIME-OBS']
-times2=data_store.obs_table['TIME-END']
-OBSIDs=data_store.obs_table['OBS_ID']
+message=''
+RA_pnts=[]
+DEC_pnts=[]
+DL3_files=[]
+OBSIDs=[]
 Tstart=[]
 Tstop=[]
-for i in range(len(dates1)):
-    Tstart.append(Time(dates1[i]+'T'+times1[i], format='isot', scale='utc').mjd)
-    Tstop.append(Time(dates2[i]+'T'+times2[i], format='isot', scale='utc').mjd)
-    
-RA_pnts=np.array(data_store.obs_table['RA_PNT'])
-DEC_pnts=np.array(data_store.obs_table['DEC_PNT'])
-Tstart=np.array(Tstart)
+flist=os.listdir('data')
+for f in flist:
+    if(f[-7:]=='fits.gz'):
+        DL3_files.append(f)
+        OBSIDs.append(int(f[20:26]))
+        hdul=fits.open('data/'+f)
+        RA_pnts.append(float(hdul[1].header['RA_PNT']))
+        DEC_pnts.append(float(hdul[1].header['DEC_PNT']))   
+        Tstart.append(Time(hdul[1].header['DATE-OBS']+'T'+hdul[1].header['TIME-OBS'], format='isot', scale='utc').mjd)
+        Tstop.append(Time(hdul[1].header['DATE-END']+'T'+hdul[1].header['TIME-END'], format='isot', scale='utc').mjd)
+        hdul.close()
 
 
-# In[64]:
+# In[76]:
 
 
 Coords_s=SkyCoord(RA,DEC,unit='degree')
@@ -120,19 +112,22 @@ COORDS_pnts=SkyCoord(RA_pnts,DEC_pnts,unit='degree')
 seps=COORDS_pnts.separation(Coords_s).deg
 
 
-# In[65]:
+# In[78]:
 
 
 mask=np.where((seps<Radius) & (Tstart>T1) & (Tstop<T2))[0]
-obs_ids=OBSIDs[mask]
-Tbegs=Tstart[mask]
-if(len(obs_ids)==0):
+OBSlist=[]
+Tbegs=[]
+for i in mask:
+    OBSlist.append(DL3_files[i])
+    Tbegs.append(Tstart[i])
+if(len(OBSlist)==0):
     message='No data found'
     raise RuntimeError('No data found')
-obs_ids
+message
 
 
-# In[66]:
+# In[79]:
 
 
 Tbins=np.linspace(T1,T2,NTbins+1)
@@ -142,16 +137,7 @@ Tmean=(Tmin+Tmax)/2.
 Tbins
 
 
-# In[67]:
-
-
-OBSlist=[]
-for obs in obs_ids:
-    OBSlist.append(hess_data+'/data/hess_dl3_dr1_obs_id_0'+str(obs)+'.fits.gz')
-OBSlist
-
-
-# In[68]:
+# In[80]:
 
 
 flux=np.zeros(NTbins)
@@ -160,7 +146,7 @@ flux_b=np.zeros(NTbins)
 flux_b_err=np.zeros(NTbins)
 Expos=np.zeros(NTbins)
 for count,f in enumerate(OBSlist):
-    hdul=fits.open(f)
+    hdul=fits.open('data/'+f)
     RA_pnt=hdul[1].header['RA_PNT']
     DEC_pnt=hdul[1].header['DEC_PNT']
     Texp=hdul[1].header['LIVETIME']
@@ -206,7 +192,7 @@ for count,f in enumerate(OBSlist):
     hdul.close()
 
 
-# In[69]:
+# In[81]:
 
 
 if(message==''):
@@ -222,7 +208,7 @@ if(message==''):
     plt.savefig('Lightcurve.png',format='png')
 
 
-# In[70]:
+# In[82]:
 
 
 if (message==''):
@@ -233,7 +219,7 @@ if (message==''):
     lc = ODAAstropyTable(Table(data, names = names))
 
 
-# In[71]:
+# In[83]:
 
 
 picture = bin_image # http://odahub.io/ontology#ODAPictureProduct

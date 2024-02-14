@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[1]:
+# In[2]:
 
 
 import astropy.units as u
@@ -43,12 +43,16 @@ if(os.path.exists('hess_dl3_dr1.tar.gz')==False):
     get_ipython().system('tar -zxvf hess_dl3_dr1.tar.gz')
 
 
-# In[2]:
+# In[12]:
 
 
-src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+#src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
+#RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+#DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+src_name='PKS 2155-304'
+RA = 329.716938  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -30.225588 # http://odahub.io/ontology#PointOfInterestDEC
+
 T1='2000-10-09T13:16:00.0'# http://odahub.io/ontology#StartTime
 T2='2022-10-10T13:16:00.0' # http://odahub.io/ontology#EndTime
 Radius=2.5  #http://odahub.io/ontology#AngleDegrees
@@ -74,7 +78,7 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[3]:
+# In[13]:
 
 
 Emin=Emin/1e3
@@ -87,7 +91,7 @@ Emean=sqrt(Emin*Emax)
 lgEmean=log10(Emean)
 
 
-# In[4]:
+# In[14]:
 
 
 T1=Time(T1, format='isot', scale='utc').mjd
@@ -112,7 +116,7 @@ for f in flist:
         hdul.close()
 
 
-# In[5]:
+# In[15]:
 
 
 Coords_s=SkyCoord(RA,DEC,unit='degree')
@@ -120,7 +124,7 @@ COORDS_pnts=SkyCoord(RA_pnts,DEC_pnts,unit='degree')
 seps=COORDS_pnts.separation(Coords_s).deg
 
 
-# In[6]:
+# In[16]:
 
 
 mask=np.where((seps<Radius) & (Tstart>T1) & (Tstop<T2))[0]
@@ -133,7 +137,7 @@ if(len(OBSlist)==0):
 message
 
 
-# In[9]:
+# In[17]:
 
 
 cts_s=np.zeros(NEbins)
@@ -177,7 +181,7 @@ for f in OBSlist:
     hdul.close()
 
 
-# In[10]:
+# In[18]:
 
 
 flux=(cts_s-cts_b)/(Emax-Emin)*Emax*Emin/(Expos*1e4)
@@ -190,7 +194,7 @@ plt.ylabel('$E^2 dN/dE$, erg/(cm$^2$s)')
 plt.savefig('Spectrum.png',format='png')
 
 
-# In[11]:
+# In[10]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -200,7 +204,7 @@ names=('Emean[TeV]','Emin[TeV]','Emax[TeV]','Flux[TeV/cm2s]','Flux_error[TeV/cm2
 spec = ODAAstropyTable(Table(data, names = names))
 
 
-# In[12]:
+# In[11]:
 
 
 picture_png = bin_image # http://odahub.io/ontology#ODAPictureProduct
