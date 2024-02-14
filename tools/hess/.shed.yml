@@ -4,7 +4,7 @@ description: Basic analysis of Data Level 3 public data sample of HESS gamma-ray
 homepage_url: null
 long_description: Basic analysis of Data Level 3 public data sample of HESS gamma-ray
   telescope
-name: HESS
+name: hess_astro_tool
 owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
 type: unrestricted
