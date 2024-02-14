@@ -1,16 +1,10 @@
-name: HESS
-owner: astroteam
-type: unrestricted
 categories:
 - Astronomy
 description: Basic analysis of Data Level 3 public data sample of HESS gamma-ray telescope
-long_description: Basic analysis of Data Level 3 public data sample of HESS gamma-ray telescope
-homepage_url:
+homepage_url: null
+long_description: Basic analysis of Data Level 3 public data sample of HESS gamma-ray
+  telescope
+name: hess_astro_tool
+owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
-auto_tool_repositories:
-  name_template: "{{ tool_id }}"
-  description_template: "{{ tool_name }}"
-suite:
-  name: "suite_hess"
-  description: "Basic analysis of Data Level 3 public data sample of HESS gamma-ray telescope"
-  type: repository_suite_definition
+type: unrestricted
