@@ -23,7 +23,7 @@ except ImportError:
 _galaxy_wd = os.getcwd()
 
 
-# In[1]:
+# In[49]:
 
 
 import astropy.units as u
@@ -57,19 +57,7 @@ import os
 from astropy.time import Time
 
 
-# In[24]:
-
-
-import pydantic
-
-
-# In[25]:
-
-
-pydantic.__version__
-
-
-# In[2]:
+# In[50]:
 
 
 hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
@@ -77,13 +65,13 @@ if not(os.path.exists(hess_data)):
     get_ipython().system('gammapy download datasets')
 
 
-# In[3]:
+# In[51]:
 
 
 data_store = DataStore.from_dir(hess_data)
 
 
-# In[26]:
+# In[52]:
 
 
 #src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
@@ -117,7 +105,7 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[27]:
+# In[53]:
 
 
 T1=Time(T1, format='isot', scale='utc').mjd
@@ -138,7 +126,7 @@ RA_pnts=np.array(data_store.obs_table['RA_PNT'])
 DEC_pnts=np.array(data_store.obs_table['DEC_PNT'])
 
 
-# In[28]:
+# In[54]:
 
 
 Coords_s=SkyCoord(RA,DEC,unit='degree')
@@ -146,7 +134,7 @@ COORDS_pnts=SkyCoord(RA_pnts,DEC_pnts,unit='degree')
 seps=COORDS_pnts.separation(Coords_s).deg
 
 
-# In[29]:
+# In[55]:
 
 
 mask=np.where((seps<Radius) & (Tstart>T1) & (Tstop<T2))[0]
@@ -158,13 +146,13 @@ if(len(obs_ids)==0):
 obs_ids
 
 
-# In[30]:
+# In[56]:
 
 
 observations = data_store.get_observations(obs_ids)
 
 
-# In[31]:
+# In[57]:
 
 
 target_position = Coords_s
@@ -176,7 +164,7 @@ geom = WcsGeom.create(
 )
 
 
-# In[32]:
+# In[58]:
 
 
 Emin=100.    #http://odahub.io/ontology#Energy_GeV
@@ -200,7 +188,7 @@ bkg_maker = ReflectedRegionsBackgroundMaker()
 safe_mask_masker = SafeMaskMaker(methods=["aeff-max"], aeff_percent=10)
 
 
-# In[33]:
+# In[59]:
 
 
 datasets = Datasets()
@@ -214,7 +202,7 @@ for obs_id, observation in zip(obs_ids, observations):
 print(datasets)
 
 
-# In[34]:
+# In[60]:
 
 
 from pathlib import Path
@@ -225,7 +213,7 @@ for dataset in datasets:
     dataset.write(filename=path / f"obs_{dataset.name}.fits.gz", overwrite=True)
 
 
-# In[35]:
+# In[61]:
 
 
 datasets = Datasets()
@@ -235,7 +223,7 @@ for obs_id in obs_ids:
     datasets.append(SpectrumDatasetOnOff.read(filename))
 
 
-# In[36]:
+# In[62]:
 
 
 from gammapy.modeling.models import (
@@ -262,26 +250,26 @@ result_joint = fit_joint.run(datasets=datasets)
 model_best_joint = model.copy()
 
 
-# In[37]:
+# In[63]:
 
 
 print(result_joint)
 
 
-# In[38]:
+# In[64]:
 
 
 display(result_joint.models.to_parameters_table())
 
 
-# In[39]:
+# In[65]:
 
 
 e_min, e_max = Emin*1e-3, Emax*1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV
 
 
-# In[40]:
+# In[66]:
 
 
 from gammapy.estimators import FluxPointsEstimator
@@ -292,7 +280,7 @@ fpe = FluxPointsEstimator(
 flux_points = fpe.run(datasets=datasets)
 
 
-# In[41]:
+# In[67]:
 
 
 flux_points_dataset = FluxPointsDataset(data=flux_points, models=model_best_joint)
@@ -301,14 +289,14 @@ flux_points_dataset.plot_fit()
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[42]:
+# In[68]:
 
 
 res=flux_points.to_table(sed_type="dnde", formatted=True)
 np.array(res['dnde'])
 
 
-# In[43]:
+# In[69]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -323,7 +311,7 @@ names=('Emean[TeV]','Emin[TeV]','Emax[TeV]','Flux[TeV/cm2s]','Flux_error[TeV/cm2
 spec = ODAAstropyTable(Table(data, names = names))
 
 
-# In[44]:
+# In[70]:
 
 
 picture_png = bin_image # http://odahub.io/ontology#ODAPictureProduct

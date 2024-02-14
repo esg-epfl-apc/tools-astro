@@ -70,7 +70,7 @@
         <param name="R_s" type="float" value="0.2" label="R_s Units: deg" />
         <param name="Emin" type="float" value="100.0" label="Emin Units: GeV" />
         <param name="Emax" type="float" value="10000.0" label="Emax Units: GeV" />
-        <param name="NTbins" type="integer" value="2" label="NTbins" />
+        <param name="NTbins" type="integer" value="10" label="NTbins" />
       </when>
     </conditional>
   </inputs>
@@ -166,7 +166,7 @@
         <param name="R_s" value="0.2" />
         <param name="Emin" value="100.0" />
         <param name="Emax" value="10000.0" />
-        <param name="NTbins" value="2" />
+        <param name="NTbins" value="10" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
