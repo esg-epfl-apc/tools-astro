@@ -57,15 +57,15 @@ import os
 from astropy.time import Time
 
 
-# In[4]:
+# In[2]:
 
 
 hess_data="gammapy-datasets/1.1/hess-dl3-dr1/"
-#if(os.path.exists(hess_data)==False):
-get_ipython().system('gammapy download datasets')
+if not(os.path.exists(hess_data)):
+    get_ipython().system('gammapy download datasets')
 
 
-# In[5]:
+# In[3]:
 
 
 data_store = DataStore.from_dir(hess_data)
@@ -74,13 +74,13 @@ data_store = DataStore.from_dir(hess_data)
 # In[4]:
 
 
-src_name='PKS 2155-304' #http://odahub.io/ontology#AstrophysicalObject
-RA = 329.71667  # http://odahub.io/ontology#PointOfInterestRA
-DEC = -30.725555 # http://odahub.io/ontology#PointOfInterestDEC
+src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
+RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
 T1='2000-10-09T13:16:00.0'# http://odahub.io/ontology#StartTime
 T2='2022-10-10T13:16:00.0' # http://odahub.io/ontology#EndTime
 Radius=2.5  #http://odahub.io/ontology#AngleDegrees
-R_s=0.11     #http://odahub.io/ontology#AngleDegrees
+R_s=0.5     #http://odahub.io/ontology#AngleDegrees
 
 Emin=100.    #http://odahub.io/ontology#Energy_GeV
 Emax=10000. #http://odahub.io/ontology#Energy_GeV
@@ -185,7 +185,7 @@ bkg_maker = ReflectedRegionsBackgroundMaker()
 safe_mask_masker = SafeMaskMaker(methods=["aeff-max"], aeff_percent=10)
 
 
-# In[18]:
+# In[11]:
 
 
 datasets = Datasets()
@@ -199,7 +199,7 @@ for obs_id, observation in zip(obs_ids, observations):
 print(datasets)
 
 
-# In[19]:
+# In[12]:
 
 
 from pathlib import Path
@@ -210,7 +210,7 @@ for dataset in datasets:
     dataset.write(filename=path / f"obs_{dataset.name}.fits.gz", overwrite=True)
 
 
-# In[17]:
+# In[13]:
 
 
 datasets = Datasets()
@@ -220,7 +220,7 @@ for obs_id in obs_ids:
     datasets.append(SpectrumDatasetOnOff.read(filename))
 
 
-# In[47]:
+# In[14]:
 
 
 from gammapy.modeling.models import (
@@ -247,35 +247,26 @@ result_joint = fit_joint.run(datasets=datasets)
 model_best_joint = model.copy()
 
 
-# In[48]:
+# In[15]:
 
 
 print(result_joint)
 
 
-# In[49]:
+# In[16]:
 
 
 display(result_joint.models.to_parameters_table())
 
 
-# In[50]:
-
-
-ax_spectrum, ax_residuals = datasets[1].plot_fit()
-ax_spectrum.set_ylim(0.1, 40)
-datasets[0].plot_masks(ax=ax_spectrum)
-plt.show()
-
-
-# In[51]:
+# In[18]:
 
 
 e_min, e_max = Emin*1e-3, Emax*1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV
 
 
-# In[52]:
+# In[19]:
 
 
 from gammapy.estimators import FluxPointsEstimator
@@ -286,7 +277,7 @@ fpe = FluxPointsEstimator(
 flux_points = fpe.run(datasets=datasets)
 
 
-# In[53]:
+# In[20]:
 
 
 flux_points_dataset = FluxPointsDataset(data=flux_points, models=model_best_joint)
@@ -295,14 +286,14 @@ flux_points_dataset.plot_fit()
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[54]:
+# In[21]:
 
 
 res=flux_points.to_table(sed_type="dnde", formatted=True)
 np.array(res['dnde'])
 
 
-# In[24]:
+# In[22]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -317,7 +308,7 @@ names=('Emean[TeV]','Emin[TeV]','Emax[TeV]','Flux[TeV/cm2s]','Flux_error[TeV/cm2
 spec = ODAAstropyTable(Table(data, names = names))
 
 
-# In[25]:
+# In[23]:
 
 
 picture_png = bin_image # http://odahub.io/ontology#ODAPictureProduct
