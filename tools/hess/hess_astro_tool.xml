@@ -173,6 +173,42 @@
       </assert_stdout>
     </test>
   </tests>
-  <help>Tool for HESS analysis in Galaxy&#8230;
+  <help>This service provides analysis of publicly available sample &#8220;Data Level
+3&#8221; (DL3) data of HESS gamma-ray telescope, described by `Hess
+Collaboration (2018) &lt;https://arxiv.org/abs/1810.04516&gt;`__. Three types
+of data products are generated: sky images, source lightcurves and
+spectra.
+
+The sky images are count maps produced by histogramming of the events in
+sky coordinates (Right Ascention and Declinaiton), in the energy range
+that can be set by adjusting the ``Emin`` and ``Emax`` parameters and in
+the time range that can be adjusted setting the ``T1`` (start time) and
+``T2`` (stop time) parameters.
+
+The lightcurves are produced by hystrogramming of the events in time, in
+the number ``NTbins`` of time intervals of equalt time width between
+``T1`` (start time) and ``T2`` (stop time). The events are selected in a
+desired energy range between ``Emin`` and ``Emax`` from a circular
+region of the radius ``R_s`` (in degrees) around the source position
+``RA``,\ ``DEC``. Conversion of the counts to the physical flux units is
+done by dividing by the exposure time and effective area that is
+extracted from the Instrument Response Functions (IRF).
+
+For the spectra, two alternative tools are considered. The service
+``Spectrum`` performs histogramming of the events in energy, in the
+number ``NEbins`` of energy bins homogeneously spaces in logarithm of
+energy, beterrn ``Emin`` and ``Emax``. Conversion of the counts to the
+physical flux units is done by dividing by the exposure time and
+effective area that is extracted from the IRF. This method does not take
+into account the energy bias and can result in a wrong spectral shape at
+the low-energy threshold where the bias is strongest.
+
+An alternative spectral extraction is done using
+`Gammapy &lt;https://gammapy.org/&gt;`__, following the script `Spectrum
+Analysis &lt;https://docs.gammapy.org/0.18.2/tutorials/spectrum_analysis.html&gt;`__.
+It performs forward folding of the spectral model (a cut-off powerlaw by
+default) with the IRF and fits the folded model to the binned count data
+in the energy range between ``Emin`` and ``Emax`` in ``NEbins``
+logarithmically spaced energy bins.
 </help>
 </tool>
