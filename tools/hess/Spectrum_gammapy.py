@@ -57,6 +57,18 @@ import os
 from astropy.time import Time
 
 
+# In[24]:
+
+
+import pydantic
+
+
+# In[25]:
+
+
+pydantic.__version__
+
+
 # In[2]:
 
 
@@ -71,12 +83,15 @@ if not(os.path.exists(hess_data)):
 data_store = DataStore.from_dir(hess_data)
 
 
-# In[4]:
+# In[26]:
 
 
-src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+#src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
+#RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+#DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+src_name='PKS 2155-304'
+RA = 329.716938  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -30.225588 # http://odahub.io/ontology#PointOfInterestDEC
 T1='2000-10-09T13:16:00.0'# http://odahub.io/ontology#StartTime
 T2='2022-10-10T13:16:00.0' # http://odahub.io/ontology#EndTime
 Radius=2.5  #http://odahub.io/ontology#AngleDegrees
@@ -102,7 +117,7 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 
-# In[5]:
+# In[27]:
 
 
 T1=Time(T1, format='isot', scale='utc').mjd
@@ -123,7 +138,7 @@ RA_pnts=np.array(data_store.obs_table['RA_PNT'])
 DEC_pnts=np.array(data_store.obs_table['DEC_PNT'])
 
 
-# In[6]:
+# In[28]:
 
 
 Coords_s=SkyCoord(RA,DEC,unit='degree')
@@ -131,7 +146,7 @@ COORDS_pnts=SkyCoord(RA_pnts,DEC_pnts,unit='degree')
 seps=COORDS_pnts.separation(Coords_s).deg
 
 
-# In[7]:
+# In[29]:
 
 
 mask=np.where((seps<Radius) & (Tstart>T1) & (Tstop<T2))[0]
@@ -143,13 +158,13 @@ if(len(obs_ids)==0):
 obs_ids
 
 
-# In[8]:
+# In[30]:
 
 
 observations = data_store.get_observations(obs_ids)
 
 
-# In[9]:
+# In[31]:
 
 
 target_position = Coords_s
@@ -161,7 +176,7 @@ geom = WcsGeom.create(
 )
 
 
-# In[10]:
+# In[32]:
 
 
 Emin=100.    #http://odahub.io/ontology#Energy_GeV
@@ -185,7 +200,7 @@ bkg_maker = ReflectedRegionsBackgroundMaker()
 safe_mask_masker = SafeMaskMaker(methods=["aeff-max"], aeff_percent=10)
 
 
-# In[11]:
+# In[33]:
 
 
 datasets = Datasets()
@@ -199,7 +214,7 @@ for obs_id, observation in zip(obs_ids, observations):
 print(datasets)
 
 
-# In[12]:
+# In[34]:
 
 
 from pathlib import Path
@@ -210,7 +225,7 @@ for dataset in datasets:
     dataset.write(filename=path / f"obs_{dataset.name}.fits.gz", overwrite=True)
 
 
-# In[13]:
+# In[35]:
 
 
 datasets = Datasets()
@@ -220,7 +235,7 @@ for obs_id in obs_ids:
     datasets.append(SpectrumDatasetOnOff.read(filename))
 
 
-# In[14]:
+# In[36]:
 
 
 from gammapy.modeling.models import (
@@ -247,26 +262,26 @@ result_joint = fit_joint.run(datasets=datasets)
 model_best_joint = model.copy()
 
 
-# In[15]:
+# In[37]:
 
 
 print(result_joint)
 
 
-# In[16]:
+# In[38]:
 
 
 display(result_joint.models.to_parameters_table())
 
 
-# In[18]:
+# In[39]:
 
 
 e_min, e_max = Emin*1e-3, Emax*1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV
 
 
-# In[19]:
+# In[40]:
 
 
 from gammapy.estimators import FluxPointsEstimator
@@ -277,7 +292,7 @@ fpe = FluxPointsEstimator(
 flux_points = fpe.run(datasets=datasets)
 
 
-# In[20]:
+# In[41]:
 
 
 flux_points_dataset = FluxPointsDataset(data=flux_points, models=model_best_joint)
@@ -286,14 +301,14 @@ flux_points_dataset.plot_fit()
 plt.savefig('Spectrum.png',format='png',bbox_inches='tight')
 
 
-# In[21]:
+# In[42]:
 
 
 res=flux_points.to_table(sed_type="dnde", formatted=True)
 np.array(res['dnde'])
 
 
-# In[22]:
+# In[43]:
 
 
 bin_image = PictureProduct.from_file('Spectrum.png')
@@ -308,7 +323,7 @@ names=('Emean[TeV]','Emin[TeV]','Emax[TeV]','Flux[TeV/cm2s]','Flux_error[TeV/cm2
 spec = ODAAstropyTable(Table(data, names = names))
 
 
-# In[23]:
+# In[44]:
 
 
 picture_png = bin_image # http://odahub.io/ontology#ODAPictureProduct
