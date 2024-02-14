@@ -211,4 +211,7 @@ default) with the IRF and fits the folded model to the binned count data
 in the energy range between ``Emin`` and ``Emax`` in ``NEbins``
 logarithmically spaced energy bins.
 </help>
+  <citations>
+    <citation type="doi">10.5281/zenodo.1421098</citation>
+  </citations>
 </tool>
