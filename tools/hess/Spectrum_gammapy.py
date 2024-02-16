@@ -1,80 +1,39 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 import json
 import os
 import shutil
-import sys
-
-try:
-    import numpy as np
-
-    _numpy_available = True
-except ImportError:
-    _numpy_available = False
-
-try:
-    from oda_api.json import CustomJSONEncoder
-except ImportError:
-    from json import JSONEncoder as CustomJSONEncoder
-
-_galaxy_wd = os.getcwd()
-
-
-# In[49]:
-
 
 import astropy.units as u
-from astropy.coordinates import Angle, SkyCoord
-from regions import CircleSkyRegion
 import matplotlib.pyplot as plt
-from astropy.io import fits
 import numpy as np
-from numpy import pi, cos, sin, sqrt, log10
-import os
-
+from astropy.coordinates import Angle, SkyCoord
+from astropy.time import Time
 from gammapy.data import DataStore
-
-# from gammapy.makers.utils import make_theta_squared_table
-from gammapy.maps import MapAxis, RegionGeom, WcsGeom
 from gammapy.datasets import (
     Datasets,
     FluxPointsDataset,
     SpectrumDataset,
     SpectrumDatasetOnOff,
 )
-
 from gammapy.makers import (
     ReflectedRegionsBackgroundMaker,
     SafeMaskMaker,
     SpectrumDatasetMaker,
 )
 
-from oda_api.data_products import PictureProduct
-from oda_api.data_products import ODAAstropyTable
-import os
-from astropy.time import Time
-
-
-# In[50]:
-
+# from gammapy.makers.utils import make_theta_squared_table
+from gammapy.maps import MapAxis, RegionGeom, WcsGeom
+from oda_api.data_products import ODAAstropyTable, PictureProduct
+from oda_api.json import CustomJSONEncoder
+from regions import CircleSkyRegion
 
 hess_data = "gammapy-datasets/1.1/hess-dl3-dr1/"
 if not (os.path.exists(hess_data)):
-    get_ipython().system("gammapy download datasets")
-
-
-# In[51]:
-
+    get_ipython().system("gammapy download datasets") # noqa: F821
 
 data_store = DataStore.from_dir(hess_data)
-
-
-# In[52]:
-
 
 # src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
@@ -91,9 +50,7 @@ Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
 Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
 NEbins = 20  # http://odahub.io/ontology#Integer
 
-
-# In[ ]:
-
+_galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
@@ -105,10 +62,6 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
-
-
-# In[53]:
-
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
@@ -131,17 +84,9 @@ for i in range(len(dates1)):
 RA_pnts = np.array(data_store.obs_table["RA_PNT"])
 DEC_pnts = np.array(data_store.obs_table["DEC_PNT"])
 
-
-# In[54]:
-
-
 Coords_s = SkyCoord(RA, DEC, unit="degree")
 COORDS_pnts = SkyCoord(RA_pnts, DEC_pnts, unit="degree")
 seps = COORDS_pnts.separation(Coords_s).deg
-
-
-# In[55]:
-
 
 mask = np.where((seps < Radius) & (Tstart > T1) & (Tstop < T2))[0]
 OBSlist = []
@@ -151,15 +96,7 @@ if len(obs_ids) == 0:
     raise RuntimeError("No data found")
 obs_ids
 
-
-# In[56]:
-
-
 observations = data_store.get_observations(obs_ids)
-
-
-# In[57]:
-
 
 target_position = Coords_s
 on_region_radius = Angle(str(R_s) + " deg")
@@ -168,10 +105,6 @@ skydir = target_position.galactic
 geom = WcsGeom.create(
     npix=(150, 150), binsz=0.05, skydir=skydir, proj="TAN", frame="icrs"
 )
-
-
-# In[58]:
-
 
 Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
 Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
@@ -200,10 +133,6 @@ dataset_maker = SpectrumDatasetMaker(
 bkg_maker = ReflectedRegionsBackgroundMaker()
 safe_mask_masker = SafeMaskMaker(methods=["aeff-max"], aeff_percent=10)
 
-
-# In[59]:
-
-
 datasets = Datasets()
 
 for obs_id, observation in zip(obs_ids, observations):
@@ -216,10 +145,6 @@ for obs_id, observation in zip(obs_ids, observations):
 
 print(datasets)
 
-
-# In[60]:
-
-
 from pathlib import Path
 
 path = Path("spectrum_analysis")
@@ -230,26 +155,14 @@ for dataset in datasets:
         filename=path / f"obs_{dataset.name}.fits.gz", overwrite=True
     )
 
-
-# In[61]:
-
-
 datasets = Datasets()
 
 for obs_id in obs_ids:
     filename = path / f"obs_{obs_id}.fits.gz"
     datasets.append(SpectrumDatasetOnOff.read(filename))
 
-
-# In[62]:
-
-
-from gammapy.modeling.models import (
-    ExpCutoffPowerLawSpectralModel,
-    SkyModel,
-    create_crab_spectral_model,
-)
 from gammapy.modeling import Fit
+from gammapy.modeling.models import ExpCutoffPowerLawSpectralModel, SkyModel
 
 spectral_model = ExpCutoffPowerLawSpectralModel(
     amplitude=1e-12 * u.Unit("cm-2 s-1 TeV-1"),
@@ -267,28 +180,12 @@ result_joint = fit_joint.run(datasets=datasets)
 # we make a copy here to compare it later
 model_best_joint = model.copy()
 
-
-# In[63]:
-
-
 print(result_joint)
-
-
-# In[64]:
-
 
 display(result_joint.models.to_parameters_table())
 
-
-# In[65]:
-
-
 e_min, e_max = Emin * 1e-3, Emax * 1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV
-
-
-# In[66]:
-
 
 from gammapy.estimators import FluxPointsEstimator
 
@@ -297,10 +194,6 @@ fpe = FluxPointsEstimator(
 )
 flux_points = fpe.run(datasets=datasets)
 
-
-# In[67]:
-
-
 flux_points_dataset = FluxPointsDataset(
     data=flux_points, models=model_best_joint
 )
@@ -308,16 +201,8 @@ flux_points_dataset.plot_fit()
 # plt.show()
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
-
-# In[68]:
-
-
 res = flux_points.to_table(sed_type="dnde", formatted=True)
 np.array(res["dnde"])
-
-
-# In[69]:
-
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
@@ -337,22 +222,12 @@ names = (
 )
 spec = ODAAstropyTable(Table(data, names=names))
 
-
-# In[70]:
-
-
 picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 spectrum_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
 
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-_simple_outs, _oda_outs = [], []
+# output gathering
 _galaxy_meta_data = {}
+_oda_outs = []
 _oda_outs.append(
     (
         "out_Spectrum_gammapy_picture_png",
@@ -383,20 +258,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)

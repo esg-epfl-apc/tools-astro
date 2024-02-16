@@ -1,60 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
-
-
 import json
 import os
 import shutil
-import sys
-
-try:
-    import numpy as np
-
-    _numpy_available = True
-except ImportError:
-    _numpy_available = False
-
-try:
-    from oda_api.json import CustomJSONEncoder
-except ImportError:
-    from json import JSONEncoder as CustomJSONEncoder
-
-_galaxy_wd = os.getcwd()
-
-
-# In[72]:
-
-
-import astropy.units as u
-from astropy.coordinates import SkyCoord
 
 import matplotlib.pyplot as plt
-from gammapy.data import DataStore
-from gammapy.makers import MapDatasetMaker
-from gammapy.makers.utils import make_theta_squared_table
-from gammapy.maps import Map, MapAxis, WcsGeom
-from astropy.io import fits
 import numpy as np
-from numpy import pi, cos, sin, sqrt, log10
-import os
-from astropy import wcs
+from astropy.coordinates import SkyCoord
 from astropy.io import fits
-from oda_api.data_products import PictureProduct
-from oda_api.data_products import ODAAstropyTable
-from oda_api.data_products import ImageDataProduct
 from astropy.time import Time
+from numpy import sqrt
+from oda_api.data_products import ODAAstropyTable, PictureProduct
+from oda_api.json import CustomJSONEncoder
 
 if os.path.exists("hess_dl3_dr1.tar.gz") == False:
-    get_ipython().system(
+    get_ipython().system( # noqa: F821
         "wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz"
     )
-    get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")
-
-
-# In[74]:
-
+    get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz") # noqa: F821
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
@@ -67,9 +31,7 @@ Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
 Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
 NTbins = 10  # http://odahub.io/ontology#Integer
 
-
-# In[ ]:
-
+_galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
@@ -81,10 +43,6 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
-
-
-# In[75]:
-
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
@@ -119,17 +77,9 @@ for f in flist:
         )
         hdul.close()
 
-
-# In[76]:
-
-
 Coords_s = SkyCoord(RA, DEC, unit="degree")
 COORDS_pnts = SkyCoord(RA_pnts, DEC_pnts, unit="degree")
 seps = COORDS_pnts.separation(Coords_s).deg
-
-
-# In[78]:
-
 
 mask = np.where((seps < Radius) & (Tstart > T1) & (Tstop < T2))[0]
 OBSlist = []
@@ -142,19 +92,11 @@ if len(OBSlist) == 0:
     raise RuntimeError("No data found")
 message
 
-
-# In[79]:
-
-
 Tbins = np.linspace(T1, T2, NTbins + 1)
 Tmin = Tbins[:-1]
 Tmax = Tbins[1:]
 Tmean = (Tmin + Tmax) / 2.0
 Tbins
-
-
-# In[80]:
-
 
 flux = np.zeros(NTbins)
 flux_err = np.zeros(NTbins)
@@ -207,10 +149,6 @@ for count, f in enumerate(OBSlist):
     flux_b_err += np.sum(sqrt(cts2) / AA, axis=1)
     hdul.close()
 
-
-# In[81]:
-
-
 if message == "":
     plt.errorbar(
         Tmean,
@@ -237,10 +175,6 @@ if message == "":
     plt.legend(loc="lower left")
     plt.savefig("Lightcurve.png", format="png")
 
-
-# In[82]:
-
-
 if message == "":
     bin_image = PictureProduct.from_file("Lightcurve.png")
     from astropy.table import Table
@@ -257,22 +191,12 @@ if message == "":
     )
     lc = ODAAstropyTable(Table(data, names=names))
 
-
-# In[83]:
-
-
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 lightcurve_astropy_table = lc  # http://odahub.io/ontology#ODAAstropyTable
 
-
-# In[ ]:
-
-
-# In[ ]:
-
-
-_simple_outs, _oda_outs = [], []
+# output gathering
 _galaxy_meta_data = {}
+_oda_outs = []
 _oda_outs.append(("out_Lightcurve_picture", "picture_galaxy.output", picture))
 _oda_outs.append(
     (
@@ -297,20 +221,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
