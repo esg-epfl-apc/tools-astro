@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# flake8: noqa
+
 import json
 import os
 import shutil
@@ -31,7 +33,7 @@ from regions import CircleSkyRegion
 
 hess_data = "gammapy-datasets/1.1/hess-dl3-dr1/"
 if not (os.path.exists(hess_data)):
-    get_ipython().system("gammapy download datasets") # noqa: F821
+    get_ipython().system("gammapy download datasets")   # noqa: F821
 
 data_store = DataStore.from_dir(hess_data)
 
@@ -182,7 +184,7 @@ model_best_joint = model.copy()
 
 print(result_joint)
 
-display(result_joint.models.to_parameters_table())
+display(result_joint.models.to_parameters_table())   # noqa: F821
 
 e_min, e_max = Emin * 1e-3, Emax * 1e-3
 energy_edges = np.geomspace(e_min, e_max, NEbins) * u.TeV

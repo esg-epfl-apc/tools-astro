@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# flake8: noqa
+
 import json
 import os
 import shutil
@@ -15,10 +17,10 @@ from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
 if os.path.exists("hess_dl3_dr1.tar.gz") == False:
-    get_ipython().system( # noqa: F821
+    get_ipython().system(   # noqa: F821
         "wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz"
     )
-    get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz") # noqa: F821
+    get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
 
 # src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
