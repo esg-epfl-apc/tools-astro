@@ -13,6 +13,9 @@ light_curve = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
 time_column = "TIME"
 rate_column = "FLUX"
 rate_err_column = "FLUX_ERR"
+mode = (
+    "Background"  # oda:String; oda:allowed_value 'Background','Peak','Focus'.
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -29,7 +32,7 @@ for vn, vv in inp_pdic.items():
 
 import numpy as np
 from astropy.io import fits
-from oda_api.data_products import PictureProduct
+from oda_api.data_products import LightCurveDataProduct, PictureProduct
 
 lc = fits.open(light_curve)[1].data
 
@@ -52,11 +55,14 @@ bkg = np.mean(rate)
 
 peak_i = rate.argmax()
 
+if mode == "Background":
+    rate -= bkg
+
 from matplotlib import pylab as plt
 
 plt.figure()
 
-plt.errorbar(t, rate - bkg, rate_err)
+plt.errorbar(t, rate, rate_err)
 
 plt.axvline(t[peak_i], c="r")
 
@@ -65,9 +71,15 @@ plt.ylabel("counts/s")
 
 plt.savefig("lc.png")
 
-outlc = PictureProduct.from_file("lc.png")
+from astropy.time import Time
+
+outlcpng = PictureProduct.from_file("lc.png")
+outlc = LightCurveDataProduct.from_arrays(
+    times=Time(t, format="mjd"), rates=rate, errors=rate_err
+)
 
 detection_image = outlc  # oda:ODAPictureProduct
+processed_lc = outlc  # oda:LightCurve
 
 # output gathering
 _galaxy_meta_data = {}
@@ -77,6 +89,13 @@ _oda_outs.append(
         "out_detect_impulsive_detection_image",
         "detection_image_galaxy.output",
         detection_image,
+    )
+)
+_oda_outs.append(
+    (
+        "out_detect_impulsive_processed_lc",
+        "processed_lc_galaxy.output",
+        processed_lc,
     )
 )
 
