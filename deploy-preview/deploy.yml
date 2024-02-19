@@ -53,3 +53,7 @@
         insertafter: '<section id="astro_staging"'
         line: '    <tool file="{{ tool_dir }}_pr{{ pr_num }}/{{ item }}" />'
       loop: "{{ tools_list }}"
+
+    - name: Restart Galaxy
+      command: galaxyctl restart
+      changed_when: true
