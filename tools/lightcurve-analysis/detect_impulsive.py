@@ -10,6 +10,9 @@ import shutil
 from oda_api.json import CustomJSONEncoder
 
 light_curve = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
+time_column = "TIME"
+rate_column = "FLUX"
+rate_err_column = "FLUX_ERR"
 
 _galaxy_wd = os.getcwd()
 
@@ -34,13 +37,16 @@ lc
 
 lc.columns.names
 
-t = lc["TIME"]
+def get_one_of_names(d, names):
+    for n in names:
+        if n in lc.columns.names:
+            return lc[n]
 
-for rate_name in ["RATE", "FLUX"]:
-    if rate_name in lc.columns.names:
-        rate = lc[rate_name]
-
-rate_err = lc["ERROR"]
+t = get_one_of_names(lc, ["TIME", "Tmean[MJD]", time_column])
+rate = get_one_of_names(lc, ["RATE", "FLUX", "Flux[counts/cm2s]", rate_column])
+rate_err = get_one_of_names(
+    lc, ["ERROR", "Flux_error[counts/cm2s]", rate_err_column]
+)
 
 bkg = np.mean(rate)
 
@@ -59,9 +65,9 @@ plt.ylabel("counts/s")
 
 plt.savefig("lc.png")
 
-lc = PictureProduct.from_file("lc.png")
+outlc = PictureProduct.from_file("lc.png")
 
-detection_image = lc  # oda:ODAPictureProduct
+detection_image = outlc  # oda:ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
