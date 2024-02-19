@@ -41,10 +41,12 @@ plt.figure()
 plt.plot(lc1["TIME"], lc1["RATE"])
 plt.plot(lc2["TIME"], lc1["RATE"])
 
+plt.savefig("lc.png")
+
 outlcpng = PictureProduct.from_file("lc.png")
 outlc = LightCurveDataProduct.from_arrays(
-    times=Time(lc1["TIME"], format="mjd"),
-    rates=lc1["RATE"] - lc2["RATE"],
+    times=Time(lc2["TIME"], format="mjd"),
+    rates=lc2["RATE"],
     errors=lc2["ERROR"],
 )
 
