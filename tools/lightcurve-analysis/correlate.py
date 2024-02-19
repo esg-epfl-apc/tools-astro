@@ -39,7 +39,7 @@ lc2 = fits.open(light_curve_2)[1].data
 plt.figure()
 
 plt.plot(lc1["TIME"], lc1["RATE"])
-plt.plot(lc2["TIME"], lc1["RATE"])
+plt.plot(lc2["TIME"], lc2["RATE"])
 
 plt.savefig("lc.png")
 
