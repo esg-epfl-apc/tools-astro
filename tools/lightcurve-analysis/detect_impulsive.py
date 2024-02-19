@@ -9,7 +9,7 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-light_curve = "spiacs_lc_query.fits"  # oda:POSIXPath
+light_curve = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
 
 _galaxy_wd = os.getcwd()
 

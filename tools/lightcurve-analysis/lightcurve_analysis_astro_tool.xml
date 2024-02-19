@@ -3,6 +3,7 @@
     <requirement type="package" version="6.0.0">astropy</requirement>
     <requirement type="package" version="3.8.3">matplotlib</requirement>
     <requirement type="package" version="1.2.12">oda-api</requirement>
+    <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/detect_impulsive.py'</command>
   <configfiles>
