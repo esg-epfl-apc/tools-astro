@@ -32,8 +32,14 @@ lc = fits.open(light_curve)[1].data
 
 lc
 
+lc.columns.names
+
 t = lc["TIME"]
-rate = lc["RATE"]
+
+for rate_name in ["RATE", "FLUX"]:
+    if rate_name in lc.columns.names:
+        rate = lc[rate_name]
+
 rate_err = lc["ERROR"]
 
 bkg = np.mean(rate)
