@@ -9,11 +9,11 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-light_curve = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
-time_column = "TIME"
-rate_column = "FLUX"
-rate_err_column = "FLUX_ERR"
-mode = "Background"  # oda:String; oda:allowed_value 'Background','Peak','Focus', 'Standartize'.
+light_curve_1 = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
+light_curve_2 = "spiacs_lc_query.fits"  # http://odahub.io/ontology#POSIXPath
+mode = (
+    "Background"  # oda:String; oda:allowed_value 'Background','Peak','Focus'.
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -28,52 +28,24 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-import numpy as np
 from astropy.io import fits
+from astropy.time import Time
+from matplotlib import pylab as plt
 from oda_api.data_products import LightCurveDataProduct, PictureProduct
 
-lc = fits.open(light_curve)[1].data
-
-lc
-
-lc.columns.names
-
-def get_one_of_names(d, names):
-    for n in names:
-        if n in lc.columns.names:
-            return lc[n]
-
-t = get_one_of_names(lc, ["TIME", "Tmean[MJD]", time_column])
-rate = get_one_of_names(lc, ["RATE", "FLUX", "Flux[counts/cm2s]", rate_column])
-rate_err = get_one_of_names(
-    lc, ["ERROR", "Flux_error[counts/cm2s]", rate_err_column]
-)
-
-bkg = np.mean(rate)
-
-peak_i = rate.argmax()
-
-if mode == "Background":
-    rate -= bkg
-
-from matplotlib import pylab as plt
+lc1 = fits.open(light_curve_1)[1].data
+lc2 = fits.open(light_curve_2)[1].data
 
 plt.figure()
 
-plt.errorbar(t, rate, rate_err)
-
-plt.axvline(t[peak_i], c="r")
-
-plt.xlabel("seconds since T$_0$")
-plt.ylabel("counts/s")
-
-plt.savefig("lc.png")
-
-from astropy.time import Time
+plt.plot(lc1["TIME"], lc1["RATE"])
+plt.plot(lc2["TIME"], lc1["RATE"])
 
 outlcpng = PictureProduct.from_file("lc.png")
 outlc = LightCurveDataProduct.from_arrays(
-    times=Time(t, format="mjd"), rates=rate, errors=rate_err
+    times=Time(lc1["TIME"], format="mjd"),
+    rates=lc1["RATE"] - lc2["RATE"],
+    errors=lc2["ERROR"],
 )
 
 detection_image = outlcpng  # oda:ODAPictureProduct
@@ -84,17 +56,13 @@ _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     (
-        "out_detect_impulsive_detection_image",
+        "out_correlate_detection_image",
         "detection_image_galaxy.output",
         detection_image,
     )
 )
 _oda_outs.append(
-    (
-        "out_detect_impulsive_processed_lc",
-        "processed_lc_galaxy.output",
-        processed_lc,
-    )
+    ("out_correlate_processed_lc", "processed_lc_galaxy.output", processed_lc)
 )
 
 for _outn, _outfn, _outv in _oda_outs:
