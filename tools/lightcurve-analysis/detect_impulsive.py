@@ -78,7 +78,7 @@ outlc = LightCurveDataProduct.from_arrays(
     times=Time(t, format="mjd"), rates=rate, errors=rate_err
 )
 
-detection_image = outlc  # oda:ODAPictureProduct
+detection_image = outlcpng  # oda:ODAPictureProduct
 processed_lc = outlc  # oda:LightCurve
 
 # output gathering
