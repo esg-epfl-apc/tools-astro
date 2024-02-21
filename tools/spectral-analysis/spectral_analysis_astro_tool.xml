@@ -1,5 +1,6 @@
 <tool id="spectral_analysis_astro_tool" name="spectral-analysis" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
+    <requirement type="package" version="8.21.0">ipython</requirement>
     <requirement type="package" version="1.2.12">oda-api</requirement>
     <requirement type="package" version="6.0.0">astropy</requirement>
     <requirement type="package" version="3.8.3">matplotlib</requirement>
