@@ -3,7 +3,7 @@ categories:
 description: CRbeam
 homepage_url: null
 long_description: CRbeam
-name: CRbeam
+name: crbeam_astro_tool
 owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
 type: unrestricted
