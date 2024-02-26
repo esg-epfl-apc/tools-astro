@@ -22,8 +22,8 @@ from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 # RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
 # DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
 src_name = "TXS 0506+056"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 77.35
-DEC = 5.7
+RA = 77.35  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 5.7  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
@@ -95,8 +95,8 @@ print(f"llhratio_value = {llhratio_value:.3f}")
 print(f"grad_ns = {grad_ns:.3f}")
 print(f"grad_gamma = {grad_gamma:.3f}")
 
-(ns_min, ns_max, ns_step) = (0, 80, 0.5)
-(gamma_min, gamma_max, gamma_step) = (1.5, 4.0, 0.1)
+(ns_min, ns_max, ns_step) = (0, 100, 0.5)
+(gamma_min, gamma_max, gamma_step) = (1.5, 5.0, 0.1)
 
 ns_edges = np.linspace(ns_min, ns_max, int((ns_max - ns_min) / ns_step) + 1)
 ns_vals = 0.5 * (ns_edges[1:] + ns_edges[:-1])
@@ -152,6 +152,10 @@ cont = cnt.get_paths()[0].vertices
 gammas = cont[:, 0]
 norms = cont[:, 1]
 
+cont1 = cnt1.get_paths()[0].vertices
+gammas1 = cont1[:, 0]
+norms1 = cont1[:, 1]
+
 F_norms = []
 for i in range(len(norms)):
     F_norms.append(
@@ -159,23 +163,60 @@ for i in range(len(norms)):
     )
 Fbest = ana.calculate_fluxmodel_scaling_factor(ns_best, [ns_best, gamma_best])
 
+F_norms1 = []
+for i in range(len(norms1)):
+    F_norms1.append(
+        ana.calculate_fluxmodel_scaling_factor(
+            norms1[i], [norms1[i], gammas1[i]]
+        )
+    )
+
 plt.plot(gammas, F_norms)
+plt.plot(gammas1, F_norms1)
 plt.yscale("log")
 plt.ylabel("Flux normalisation at 1 TeV, 1/(GeV s cm$^2$)")
 plt.scatter([gamma_best], [Fbest], marker="x")
 plt.xlabel("Slope")
 plt.savefig("Confidence_range_68.png", format="png", bbox_inches="tight")
 
-bin_image = PictureProduct.from_file("Confidence_range_68.png")
+x = np.logspace(-1, 3, 10)
+
+# 3.690e-15 (E/1000 GeV)^{-2.33} 1/(GeV s cm^2 sr)
+ymax = np.zeros(len(x))
+ymin = np.ones(len(x))
+for i in range(len(gammas)):
+    y = (
+        3 * F_norms[i] * (x / 1.0) ** (-gammas[i]) * x**2 * 1e3
+    )  # TeV *(TeV/GeV)/cm2 s
+    ymax = np.maximum(ymax, y)
+    ymin = np.minimum(ymin, y)
+
+ymax90 = np.zeros(len(x))
+for i in range(len(gammas1)):
+    y = (
+        3 * F_norms1[i] * (x / 1.0) ** (-gammas1[i]) * x**2 * 1e3
+    )  # TeV *(TeV/GeV)/cm2 s
+    ymax90 = np.maximum(ymax90, y)
+
+    # plt.plot(x,y)
+if min(ymin) > 0.0:
+    plt.fill_between(x, ymin, ymax, alpha=0.5, label="68% error")
+plt.plot(x, ymax90, color="black", linewidth=4, label="90% UL")
+plt.xscale("log")
+plt.yscale("log")
+plt.legend(loc="upper right")
+plt.xlabel("$E$, TeV")
+plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$s), all flavours")
+plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
+
+bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
 data = [gammas, F_norms]
 names = ("Slopes", "Fnorms_1TeV[1/(Gev s cm2)")
 spec_params = ODAAstropyTable(Table(data, names=names))
 
-confidence_contour_png = (
-    bin_image  # http://odahub.io/ontology#ODAPictureProduct
-)
+spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 spec_params_astropy_table = (
     spec_params  # http://odahub.io/ontology#ODAAstropyTable
 )
@@ -184,11 +225,7 @@ spec_params_astropy_table = (
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    (
-        "out_Spectrum_confidence_contour_png",
-        "confidence_contour_png_galaxy.output",
-        confidence_contour_png,
-    )
+    ("out_Spectrum_spectrum_png", "spectrum_png_galaxy.output", spectrum_png)
 )
 _oda_outs.append(
     (
