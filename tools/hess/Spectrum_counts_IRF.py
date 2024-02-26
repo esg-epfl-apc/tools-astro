@@ -25,7 +25,7 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
-# src_name='PKS 2155-304'
+# src_name='PKS 2155-304' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 329.716938  # http://odahub.io/ontology#PointOfInterestRA
 # DEC = -30.225588 # http://odahub.io/ontology#PointOfInterestDEC
 
@@ -37,6 +37,9 @@ R_s = 0.2  # http://odahub.io/ontology#AngleDegrees
 Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
 Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
 NEbins = 30  # http://odahub.io/ontology#Integer
+
+Efit_min = 0.5  # http://odahub.io/ontology#Energy_TeV
+Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV
 
 _galaxy_wd = os.getcwd()
 
@@ -67,7 +70,6 @@ Emaxs = Ebins[1:]
 Emeans = sqrt(Emins * Emaxs)
 lgEmeans = log10(Emeans)
 dE = Ebins[1:] - Ebins[:-1]
-Emeans
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
@@ -115,7 +117,7 @@ if len(OBSlist) == 0:
     raise RuntimeError("No data found")
 offaxis = seps[mask]
 Tstart = np.array(Tstart)[mask]
-offaxis, Tstart
+print("Found", len(Tstart), "pointings")
 
 ind = 0
 pointing = OBSlist[ind]
@@ -195,31 +197,17 @@ cts_s_tot = sum(cts_s)
 cts_b_tot = sum(cts_b)
 src_tot = cts_s_tot - cts_b_tot
 src_tot_err = sqrt(cts_s_tot + cts_b_tot)
-print(sum(cts_s_tot))
 Expos_tot_interp = sum(Eff_area_interp * np.outer(Texp, np.ones(NEbins))) * 1e4
-Expos_tot = sum(Eff_area * np.outer(Texp, np.ones(len(ENERG)))) * 1e4
-
 flux_tot = src_tot / (Expos_tot_interp + 1) / (Emaxs - Emins) * Emaxs * Emins
 flux_tot_err = (
     src_tot_err / (Expos_tot_interp + 1) / (Emaxs - Emins) * Emaxs * Emins
 )
-plt.errorbar(
-    Emeans,
-    flux_tot,
-    flux_tot_err,
-    xerr=[Emeans - Emins, Emaxs - Emeans],
-    linestyle="none",
+print(
+    "Total source counts:",
+    sum(cts_s_tot),
+    "; background counts",
+    sum(cts_b_tot),
 )
-
-d = np.genfromtxt("Crab_spectrum.csv")
-plt.plot(d[:, 0], d[:, 1])
-
-plt.xscale("log")
-plt.yscale("log")
-
-N = 5.5e-12 * 7
-Gam = -2.68
-model_ENERG = model_rate(ENERG_LO, ENERG_HI, N, Gam)
 
 def model_cts_Erec(N, Gam):
     model_ENERG = model_rate(ENERG_LO, ENERG_HI, N, Gam)
@@ -230,8 +218,17 @@ def model_cts_Erec(N, Gam):
             res += model_counts_ENERG[k] * RMFs[ind][:, k] * dE
     return res
 
-model_counts_Emeans = model_cts_Erec(N, Gam)
-plt.plot(Emeans, model_counts_Emeans)
+def chi2(p):
+    N, slope = p
+    counts = model_cts_Erec(N, slope)
+    m = Emeans > Efit_min
+    m &= Emeans < Efit_max
+    m &= src_tot_err > 0.0
+    chi2 = (((counts[m] - src_tot[m]) / src_tot_err[m]) ** 2).sum()
+    dof = sum(m)
+    # print(N,slope,chi2)
+    return chi2, dof
+
 plt.errorbar(
     Emeans,
     src_tot,
@@ -240,58 +237,21 @@ plt.errorbar(
     linestyle="none",
 )
 
+plt.axvline(Efit_min, color="black")
+plt.axvline(Efit_max, color="black")
 plt.xscale("log")
 plt.yscale("log")
-plt.xlim(0.3, 30)
-plt.ylim(0.1, 1e4)
+N = 5e-11
+Gam = -4.1
+plt.plot(Emeans, model_cts_Erec(N, Gam))
+chi2([N, Gam])[0]
 
-flux = src_tot / (Expos_tot_interp + 1) / (Emaxs - Emins) * Emins * Emaxs
-flux_err = (
-    src_tot_err / (Expos_tot_interp + 1) / (Emaxs - Emins) * Emins * Emaxs
-)
-d = np.genfromtxt("Crab_spectrum.csv")
-plt.plot(d[:, 0], d[:, 1])
-plt.errorbar(
-    Emeans,
-    flux,
-    flux_err,
-    xerr=[Emeans - Emins, Emaxs - Emeans],
-    linestyle="none",
-)
-
-plt.plot(Emeans, model_dNdE(Emeans, N, Gam) * Emeans**2)
-plt.xscale("log")
-plt.yscale("log")
-
-def chi2(p):
-    N, slope = p
-    counts = model_cts_Erec(N, slope)
-    print(sum(counts))
-    m = Emeans > e_min
-    m &= Emeans < e_max
-    chi2 = (((counts[m] - src_tot[m]) / src_tot_err[m]) ** 2).sum()
-    # print(N,slope,chi2)
-    return chi2
-
-N = 5.5e-12 * 7
-Gam = -2.68
-chi2([N, Gam])
-
-def chi2(p):
-    N, slope = p
-    counts = model_cts_Erec(N, slope)
-    m = Emeans > e_min
-    m &= Emeans < e_max
-    chi2 = (((counts[m] - src_tot[m]) / src_tot_err[m]) ** 2).sum()
-    # print(N,slope,chi2)
-    return chi2
-
-chi2([6e-12, -2.75])
+# 1) find 90% confidence contour scanning over a wide parameter space
 Norm_max = 1e-10
-Norm_min = 1e-11
+Norm_min = 1e-12
 Norm_bins = 100
-Gam_min = -2.8
-Gam_max = -2.4
+Gam_min = -1.0
+Gam_max = -5.0
 Gam_bins = 100
 Ns = np.linspace(Norm_min, Norm_max, Norm_bins)
 Gams = np.linspace(Gam_min, Gam_max, Gam_bins)
@@ -301,7 +261,7 @@ Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
     for j, Gam in enumerate(Gams):
-        chi2_map[i, j] = chi2([N, Gam])
+        chi2_map[i, j] = chi2([N, Gam])[0]
         if chi2_map[i, j] < chi2_best:
             Norm_best = N
             Gam_best = Gam
@@ -310,9 +270,10 @@ print(Norm_best, Gam_best)
 # plt.imshow(chi2_map,vmax=np.amin(chi2_map)+4,origin='lower',extent=[Gams[0],Gams[-1],Ns[0],Ns[-1]],aspect=(Gams[-1]-Gams[0])/(Ns[-1]-Ns[0]))
 
 # 68% contour from https://ui.adsabs.harvard.edu/abs/1976ApJ...208..177L/abstract for two-parameter fit
+# 90% contour from https://ui.adsabs.harvard.edu/abs/1976ApJ...208..177L/abstract for two-parameter fit
 
 cnt = plt.contour(
-    Gams, Ns, chi2_map, levels=[np.amin(chi2_map) + 2.3], colors="red"
+    Gams, Ns, chi2_map, levels=[np.amin(chi2_map) + 4.61], colors="red"
 )
 plt.scatter([Gam_best], [Norm_best], marker="x", color="red")
 # plt.colorbar()
@@ -321,6 +282,44 @@ print(np.amin(chi2_map))
 cont = cnt.get_paths()[0].vertices
 gammas = cont[:, 0]
 norms = cont[:, 1]
+
+# 2) refine with 68% contour calculation within the initial 90% countour
+Norm_max = max(norms)
+Norm_min = min(norms)
+Norm_bins = 50
+Gam_min = min(gammas)
+Gam_max = max(gammas)
+Gam_bins = 50
+Ns = np.linspace(Norm_min, Norm_max, Norm_bins)
+Gams = np.linspace(Gam_min, Gam_max, Gam_bins)
+chi2_map = np.zeros((Norm_bins, Gam_bins))
+Norm_best = Norm_min
+Gam_best = Gam_min
+chi2_best = 1e10
+for i, N in enumerate(Ns):
+    for j, Gam in enumerate(Gams):
+        chi2_map[i, j] = chi2([N, Gam])[0]
+        if chi2_map[i, j] < chi2_best:
+            Norm_best = N
+            Gam_best = Gam
+            chi2_best = chi2_map[i, j]
+print(Norm_best, Gam_best)
+# plt.imshow(chi2_map,vmax=np.amin(chi2_map)+4,origin='lower',extent=[Gams[0],Gams[-1],Ns[0],Ns[-1]],aspect=(Gams[-1]-Gams[0])/(Ns[-1]-Ns[0]))
+
+# 68% contour from https://ui.adsabs.harvard.edu/abs/1976ApJ...208..177L/abstract for two-parameter fit
+cnt = plt.contour(
+    Gams, Ns, chi2_map, levels=[np.amin(chi2_map) + 2.3], colors="black"
+)
+cont = cnt.get_paths()[0].vertices
+gammas = cont[:, 0]
+norms = cont[:, 1]
+
+plt.scatter([Gam_best], [Norm_best], marker="x", color="black")
+# plt.colorbar()
+print(chi2([Norm_best, Gam_best]))
+plt.xlabel("Slope")
+plt.ylabel(r"Norm, 1/(TeV cm$^2$ s)")
+plt.savefig("Contour.png", format="png", bbox_inches="tight")
 
 x = np.logspace(-0.5, 1.5, 10)
 ymax = np.zeros(10)
@@ -331,234 +330,75 @@ for i in range(len(gammas)):
     ymin = np.minimum(y, ymin)
     # plt.plot(x,y)
 plt.fill_between(x, ymin, ymax, alpha=0.2)
+plt.plot(x, model_dNdE(x, Norm_best, Gam_best) * x**2)
 
 plt.errorbar(
     Emeans,
-    flux,
-    flux_err,
+    flux_tot,
+    flux_tot_err,
     xerr=[Emeans - Emins, Emaxs - Emeans],
     linestyle="none",
+    color="black",
+    linewidth=2,
 )
+
+plt.axvspan(0, Efit_min, alpha=0.2, color="black")
+plt.axvspan(Efit_max, 1000, alpha=0.2, color="black")
 
 plt.xscale("log")
 plt.yscale("log")
-d = np.genfromtxt("Crab_spectrum.csv")
-plt.plot(d[:, 0], d[:, 1])
+plt.xlim(0.1, 100)
+plt.xlabel("$E$, TeV")
+plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$ s)")
+plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
+
+new_hdul = fits.HDUList()
+form = str(len(ENERG)) + "E"
+
+for i in range(len(OBSlist)):
+    col1 = fits.Column(name="COUNTS", format="E", array=cts_s[i])
+    col2 = fits.Column(name="BACKGROUND", format="E", array=cts_b[i])
+    hdu = fits.BinTableHDU.from_columns([col1, col2], name="COUNTS")
+    new_hdul.append(hdu)
+    col = fits.Column(format=form, array=RMFs[i], name="RMF")
+    hdu = fits.BinTableHDU.from_columns([col], name="RMF")
+    new_hdul.append(hdu)
+    col = fits.Column(format="E", array=Eff_area[i], name="ARF")
+    hdu = fits.BinTableHDU.from_columns([col], name="ARF")
+    new_hdul.append(hdu)
 
 col1 = fits.Column(name="E_MIN", format="E", unit="TeV", array=Emins)
 col2 = fits.Column(name="E_MAX", format="E", unit="TeV", array=Emaxs)
 cols = fits.ColDefs([col1, col2])
-hdu = fits.BinTableHDU.from_columns(cols)
-hdu.writeto("E_MIN_E_MAX.fits", overwrite=True)
-
+hdu = fits.BinTableHDU.from_columns(cols, name="Erec_BOUNDS")
+new_hdul.append(hdu)
 col1 = fits.Column(name="ENERG_LO", format="E", unit="TeV", array=ENERG_LO)
 col2 = fits.Column(name="ENERG_HI", format="E", unit="TeV", array=ENERG_HI)
 cols = fits.ColDefs([col1, col2])
-hdu = fits.BinTableHDU.from_columns(cols)
-hdu.writeto("ENERG_LO_ENERG_HI.fits", overwrite=True)
+hdu = fits.BinTableHDU.from_columns(cols, name="Etrue_BOUNDS")
+new_hdul.append(hdu)
+new_hdul.writeto("Spectra.fits", overwrite=True)
 
-hdu = fits.PrimaryHDU(RMF)
-hdu.writeto("MATRIX.fits", overwrite=True)
-
-hdu = fits.PrimaryHDU(AEFF_th)
-hdu.writeto("AEFF.fits", overwrite=True)
-
-plt.plot(Emeans, EXPOS_tot)
-
-plt.imshow(RMF_rebin)
-
-plt.imshow(R)
-
-def model(e1, e2, N, slope):
-    return N * (e1 / 3.0) ** slope
-
-def convolve(p, return_counts=False):
-    N, slope = p
-    counts = np.dot(R, model(ENERG_LO, ENERG_HI, N, slope))
-
-    m = Emean > e_min
-    m &= Emean < e_max
-
-    chi2 = (((counts - src) / src_err)[m] ** 2).sum()
-
-    # print(p, chi2, chi2 / np.sum(m))
-
-    if return_counts:
-        return counts
-    else:
-        return chi2
-
-N = 1e-8
-slope = -2.0
-
-f = minimize(convolve, [N, slope])
-print(f)
-model_cts = convolve(f.x, True)
-plt.plot(Emean, model_cts)
-
-m = Emean > e_min
-m &= Emean < e_max
-chi2 = (((model_cts - src) / src_err)[m] ** 2).sum()
-print("reduced chi2", chi2 / np.sum(m))
-# plt.plot(Emean,counts)
-plt.errorbar(Emean, src, src_err)
-plt.axvline(e_min, color="red")
-plt.axvline(e_max, color="red")
-plt.xscale("log")
-plt.yscale("log")
-
-f.x
-
-ind = 0
-pointing = OBSlist[ind]
-hdul = fits.open("data/" + pointing)
-
-RA_pnt = hdul[1].header["RA_PNT"]
-DEC_pnt = hdul[1].header["DEC_PNT"]
-Texp = hdul[1].header["LIVETIME"]
-dRA = RA - RA_pnt
-dDEC = DEC - DEC_pnt
-RA_b = RA_pnt - dRA
-DEC_b = DEC_pnt - dDEC
-Coords_b = SkyCoord(RA_b, DEC_b, unit="degree")
-Coords_pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
-dist = Coords_pnt.separation(Coords_s).deg
-
-Texp = hdul[1].header["LIVETIME"]
-
-RMF = hdul["EDISP"].data
-RMF.columns
-mask = RMF["THETA_LO"] < dist
-ind_th = len(RMF["THETA_LO"][mask])
-
-AEFF = hdul["AEFF"].data
-AEFF_th = AEFF["EFFAREA"][0][ind_th]
-
-RMF_th = RMF["MATRIX"][0][ind_th]
-ENERG_LO = RMF["ENERG_LO"][0]
-ENERG_HI = RMF["ENERG_HI"][0]
-MIGRA_LO = RMF["MIGRA_LO"][0]
-MIGRA_HI = RMF["MIGRA_HI"][0]
-Ebins = np.concatenate((MIGRA_LO, [MIGRA_HI[-1]]))
-
-AEFF_matrix = np.outer(np.ones(len(MIGRA_LO)), AEFF_th)
-R = AEFF_matrix * RMF_th * Texp
-
-ev = hdul["EVENTS"].data
-ev_ra = ev["RA"]
-ev_dec = ev["DEC"]
-ev_en = ev["ENERGY"]
-ev_time = ev["TIME"]
-ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
-sep_s = ev_coords.separation(Coords_s).deg
-sep_b = ev_coords.separation(Coords_b).deg
-
-mask = sep_s < R_s
-cts_s = np.histogram(ev_en[mask], bins=Ebins)[0]
-mask = sep_b < R_s
-cts_b = np.histogram(ev_en[mask], bins=Ebins)[0]
-hdul.close()
-src = cts_s - cts_b
-
-def model(e1, e2, N, slope):
-    return N * (e1 / 25.0) ** slope
-
-N = 2e-4
-slope = -2
-
-def convolve(p, return_rate=False):
-    N, slope = p
-
-    model_rate = np.dot(model(ENERG_LO, ENERG_HI, N, slope), R)
-
-    m = c_e1 > e_min
-    m &= c_e2 < e_max
-
-    chi2 = (((model_rate - rate) / rate_err)[m] ** 2).sum()
-
-    print(p, chi2, chi2 / np.sum(m))
-
-    if return_rate:
-        return model_rate
-    else:
-        return chi2
-
-plt.plot(ENERG_LO, model(ENERG_LO, ENERG_HI, N, slope))
-plt.xscale("log")
-plt.yscale("log")
-
-Aeff_matrix = np.outer(np.ones(160), Aeff(96))
-R = Aeff_matrix * MATRIX
-
-OBSlist[0]
-
-cts_s = np.zeros(NEbins)
-cts_b = np.zeros(NEbins)
-ARF = []
-RMF = []
-for f in OBSlist:
-    cts_s = np.zeros(NEbins)
-    cts_b = np.zeros(NEbins)
-    Expos = np.zeros(NEbins)
-    hdul = fits.open("data/" + f)
-    RA_pnt = hdul[1].header["RA_PNT"]
-    DEC_pnt = hdul[1].header["DEC_PNT"]
-    Texp = hdul[1].header["LIVETIME"]
-    dRA = RA - RA_pnt
-    dDEC = DEC - DEC_pnt
-    RA_b = RA_pnt - dRA
-    DEC_b = DEC_pnt - dDEC
-    Coords_b = SkyCoord(RA_b, DEC_b, unit="degree")
-    Coords_pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
-    dist = Coords_pnt.separation(Coords_s).deg
-
-    RMF.append(hdul["EDISP"])
-    ARF.append(hdul["AEFF"])
-
-    ev = hdul["EVENTS"].data
-    ev_ra = ev["RA"]
-    ev_dec = ev["DEC"]
-    ev_en = ev["ENERGY"]
-    ev_time = ev["TIME"]
-    ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
-    sep_s = ev_coords.separation(Coords_s).deg
-    sep_b = ev_coords.separation(Coords_b).deg
-
-    hdu = hdul["AEFF"].data
-    EEmin = hdu["ENERG_LO"][0]
-    EEmax = hdu["ENERG_HI"][0]
-    lgEE = log10(sqrt(EEmin * EEmax))
-    lgAA = log10(hdu["EFFAREA"][0] + 1e-10)
-    Thmin = hdu["THETA_LO"][0]
-    Thmax = hdu["THETA_HI"][0]
-    ind = np.argmin((Thmin - dist) ** 2)
-    # Expos+=10**(np.interp(lgEmean,lgEE,lgAA[ind]))*Texp
-    # ARF.append(10**(np.interp(lgEmean,lgEE,lgAA[ind]))*Texp)
-    mask = sep_s < R_s
-    cts_s += np.histogram(ev_en[mask], bins=Ebins)[0]
-    mask = sep_b < R_s
-    cts_b += np.histogram(ev_en[mask], bins=Ebins)[0]
-    hdul.close()
-
-BKG
+new_hdul.info()
 
 bin_image = PictureProduct.from_file("Spectrum.png")
+bin_image1 = PictureProduct.from_file("Contour.png")
 from astropy.table import Table
 
-data = [Emean, Emin, Emax, flux, flux_err, cts_s, cts_b, Expos * 1e4]
+data = [Emeans, Emins, Emaxs, flux_tot, flux_tot_err]
 names = (
     "Emean[TeV]",
     "Emin[TeV]",
     "Emax[TeV]",
     "Flux[TeV/cm2s]",
     "Flux_error[TeV/cm2s]",
-    "Cts_s",
-    "Cts_b",
-    "Exposure[cm2s]",
 )
 spec = ODAAstropyTable(Table(data, names=names))
 
-picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+confidence_contour_png = (
+    bin_image  # http://odahub.io/ontology#ODAPictureProduct
+)
 spectrum_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
@@ -566,9 +406,16 @@ _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     (
-        "out_Spectrum_counts_IRF_picture_png",
-        "picture_png_galaxy.output",
-        picture_png,
+        "out_Spectrum_counts_IRF_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Spectrum_counts_IRF_confidence_contour_png",
+        "confidence_contour_png_galaxy.output",
+        confidence_contour_png,
     )
 )
 _oda_outs.append(
