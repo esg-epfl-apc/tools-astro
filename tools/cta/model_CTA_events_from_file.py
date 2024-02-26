@@ -41,7 +41,9 @@ from oda_api.json import CustomJSONEncoder
 # Exposure time in hours
 Texp = 2.4  # http://odahub.io/ontology#TimeIntervalHours
 
-fileurl = "file://3d.fits"  # http://odahub.io/ontology#String
+file_path = "3d.fits"  # http://odahub.io/ontology#POSIXPath
+
+file_url = ""  # http://odahub.io/ontology#String
 
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
 # TODO: implement flux normalisation for fits input
@@ -64,10 +66,11 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-if fileurl.startswith("file://"):
-    file_path = fileurl[len("file://") :]
-else:
-    file_path = wget.download(fileurl)
+if len(file_url) > 0:
+    if file_url.startswith("file://"):
+        file_path = fileurl[len("file://") :]
+    else:
+        file_path = wget.download(file_url)
 file_path
 
 cube_map = Map.read(file_path)
