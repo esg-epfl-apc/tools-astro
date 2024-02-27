@@ -23,7 +23,7 @@ from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 # DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
 src_name = "TXS 0506+056"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 77.35  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 5.7  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = 15.7  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
@@ -199,7 +199,7 @@ for i in range(len(gammas1)):
     ymax90 = np.maximum(ymax90, y)
 
     # plt.plot(x,y)
-if min(ymin) > 0.0:
+if min(norms) > 1:
     plt.fill_between(x, ymin, ymax, alpha=0.5, label="68% error")
 plt.plot(x, ymax90, color="black", linewidth=4, label="90% UL")
 plt.xscale("log")
