@@ -1,5 +1,6 @@
 <tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
+    <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="8.22.1">ipython</requirement>
     <requirement type="package" version="5.3">astropy</requirement>
     <requirement type="package" version="1.26.4">numpy</requirement>
