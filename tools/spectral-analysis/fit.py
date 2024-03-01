@@ -13,6 +13,7 @@ spectrum = "spectrum.fits.gz"  # http://odahub.io/ontology#POSIXPath
 rmf = "rmf.fits.gz"  # http://odahub.io/ontology#POSIXPath
 arf = "arf.fits.gz"  # http://odahub.io/ontology#POSIXPath
 background = ""
+model = "powerlaw"  # oda:allowed_value 'powerlaw' .
 e_min = 25
 e_max = 100
 
@@ -65,7 +66,7 @@ def convolve(p, return_rate=False):
 
     chi2 = (((model_rate - rate) / rate_err)[m] ** 2).sum()
 
-    print(p, chi2, chi2 / np.sum(m))
+    # print(p, chi2, chi2 / np.sum(m))
 
     if return_rate:
         return model_rate
