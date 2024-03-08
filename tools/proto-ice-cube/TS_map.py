@@ -6,7 +6,7 @@
 import json
 import os
 import shutil
-
+os.system("pip install --upgrade skyllh")
 import numpy as np
 from astropy.coordinates import SkyCoord
 from matplotlib import pyplot as plt
