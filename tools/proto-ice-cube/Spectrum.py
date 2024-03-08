@@ -7,11 +7,16 @@ import json
 import os
 import shutil
 
+from oda_api.json import CustomJSONEncoder
+
+os.system("pip install skyllh")
+
+import os
+
 import numpy as np
 import scipy.stats
 from matplotlib import pyplot as plt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
-from oda_api.json import CustomJSONEncoder
 from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
 from skyllh.core.config import Config
 from skyllh.core.random import RandomStateService
@@ -55,10 +60,6 @@ dsc = create_dataset_collection(cfg=cfg, base_path=data_dir)
 dsc.dataset_names
 
 datasets = dsc["IC86_I", "IC86_II-VII"]
-
-import os
-
-os.system("pip install skyllh")
 
 source = PointLikeSource(ra=np.deg2rad(RA), dec=np.deg2rad(DEC))
 
