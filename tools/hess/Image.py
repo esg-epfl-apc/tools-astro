@@ -96,8 +96,12 @@ message
 
 cdec = cos(DEC * pi / 180.0)
 Npix = int(2 * Radius / pixsize) + 1
-RA_bins = np.linspace(RA - Radius / cdec, RA + Radius / cdec, Npix + 1)
-DEC_bins = np.linspace(DEC - Radius, DEC + Radius, Npix + 1)
+RA_bins = np.linspace(
+    RA - Npix * pixsize / cdec / 2, RA + Npix * pixsize / cdec / 2, Npix + 1
+)
+DEC_bins = np.linspace(
+    DEC - Npix * pixsize / 2, DEC + Npix * pixsize / 2, Npix + 1
+)
 
 image = np.zeros((Npix, Npix))
 for f in OBSlist:
@@ -133,15 +137,14 @@ w = wcs.WCS(naxis=2)
 w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
 # we need a Plate carrée (CAR) projection since histogram is binned by ra-dec
 # the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
+# also, we will follow convention of RA increasing from right to left (CDELT1<0, need to flip an input image)
+# otherwise, aladin-lite doesn't show it
 w.wcs.crval = [RA, 0]
-w.wcs.crpix = [Npix / 2.0 + 0.5, Npix / 2.0 + 0.5 - DEC / pixsize]
+w.wcs.crpix = [Npix / 2.0 + 0.5, 0.5 - DEC_bins[0] / pixsize]
 w.wcs.cdelt = np.array([-pixsize / cdec, pixsize])
 
-# Now, write out the WCS object as a FITS header
 header = w.to_header()
 
-# header is an astropy.io.fits.Header object.  We can use it to create a new
-# PrimaryHDU and write it to a file.
 hdu = fits.PrimaryHDU(np.flip(image, axis=1), header=header)
 hdu.writeto("Image.fits", overwrite=True)
 hdu = fits.open("Image.fits")
