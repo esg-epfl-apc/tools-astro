@@ -28,9 +28,9 @@ RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
+Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
 pixsize = (
-    0.1  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
+    0.05  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
 )
 Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
 Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
@@ -95,9 +95,10 @@ if len(OBSlist) == 0:
 message
 
 cdec = cos(DEC * pi / 180.0)
-Npix = int(4 * Radius / pixsize) + 1
+Npix = int(2 * Radius / pixsize) + 1
 RA_bins = np.linspace(RA - Radius / cdec, RA + Radius / cdec, Npix + 1)
 DEC_bins = np.linspace(DEC - Radius, DEC + Radius, Npix + 1)
+
 image = np.zeros((Npix, Npix))
 for f in OBSlist:
     hdul = fits.open("data/" + f)
@@ -110,12 +111,18 @@ for f in OBSlist:
     image += h[0]
     hdul.close()
 
+image = np.transpose(image)
+
 plt.imshow(
-    np.flip(image, axis=1),
-    extent=(RA_bins[-1], RA_bins[0], DEC_bins[0], DEC_bins[-1]),
+    image,
+    extent=(RA_bins[0], RA_bins[-1], DEC_bins[0], DEC_bins[-1]),
     origin="lower",
 )
 plt.colorbar()
+
+# plt.plot(RA, DEC, 'r.')
+
+plt.xlim(*plt.xlim()[::-1])
 
 plt.xlabel("RA, degrees")
 plt.ylabel("DEC,degrees")
@@ -125,13 +132,13 @@ plt.savefig("Image.png", format="png")
 # from the start
 w = wcs.WCS(naxis=2)
 
-# Set up an "Airy's zenithal" projection
-# Vector properties may be set with Python lists, or Numpy arrays
-w.wcs.crpix = [Npix / 2.0, Npix / 2.0]
+w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
+# we need a Plate carrée (CAR) projection since histogram is binned by ra-dec
+# the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
+w.wcs.crval = [RA, 0]
+w.wcs.crpix = [Npix / 2.0 + 0.5, Npix / 2.0 + 0.5 - DEC / pixsize]
+
 w.wcs.cdelt = np.array([pixsize / cdec, pixsize])
-w.wcs.crval = [RA, DEC]
-w.wcs.ctype = ["RA---AIR", "DEC--AIR"]
-w.wcs.set_pv([(2, 1, 45.0)])
 
 # Now, write out the WCS object as a FITS header
 header = w.to_header()
@@ -142,11 +149,15 @@ hdu = fits.PrimaryHDU(image, header=header)
 hdu.writeto("Image.fits", overwrite=True)
 hdu = fits.open("Image.fits")
 im = hdu[0].data
-from astropy.wcs import WCS
-
-wcs = WCS(hdu[0].header)
-plt.subplot(projection=wcs)
+wcs1 = wcs.WCS(hdu[0].header)
+plt.subplot(projection=wcs1)
 plt.imshow(im, origin="lower")
+
+# still some minor residual shift?
+# ax = plt.gca()
+# ax.plot(RA, DEC, 'r.', transform=ax.get_transform('world'))
+
+plt.xlim(*plt.xlim()[::-1])
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
