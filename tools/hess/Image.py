@@ -120,8 +120,6 @@ plt.imshow(
 )
 plt.colorbar()
 
-# plt.plot(RA, DEC, 'r.')
-
 plt.xlim(*plt.xlim()[::-1])
 
 plt.xlabel("RA, degrees")
@@ -137,15 +135,14 @@ w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
 # the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
 w.wcs.crval = [RA, 0]
 w.wcs.crpix = [Npix / 2.0 + 0.5, Npix / 2.0 + 0.5 - DEC / pixsize]
-
-w.wcs.cdelt = np.array([pixsize / cdec, pixsize])
+w.wcs.cdelt = np.array([-pixsize / cdec, pixsize])
 
 # Now, write out the WCS object as a FITS header
 header = w.to_header()
 
 # header is an astropy.io.fits.Header object.  We can use it to create a new
 # PrimaryHDU and write it to a file.
-hdu = fits.PrimaryHDU(image, header=header)
+hdu = fits.PrimaryHDU(np.flip(image, axis=1), header=header)
 hdu.writeto("Image.fits", overwrite=True)
 hdu = fits.open("Image.fits")
 im = hdu[0].data
@@ -153,11 +150,6 @@ wcs1 = wcs.WCS(hdu[0].header)
 plt.subplot(projection=wcs1)
 plt.imshow(im, origin="lower")
 
-# still some minor residual shift?
-# ax = plt.gca()
-# ax.plot(RA, DEC, 'r.', transform=ax.get_transform('world'))
-
-plt.xlim(*plt.xlim()[::-1])
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
