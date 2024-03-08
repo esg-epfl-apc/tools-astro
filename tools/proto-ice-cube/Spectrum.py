@@ -9,7 +9,7 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-os.system("pip install skyllh")
+os.system("pip install skyllh --user --ignore-installed")
 
 import os
 

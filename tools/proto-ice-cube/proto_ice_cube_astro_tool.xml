@@ -1,4 +1,4 @@
-<tool id="proto_ice_cube_astro_tool" name="ProtoIceCube" version="0.0.2+galaxy0" profile="23.0">
+<tool id="proto_ice_cube_astro_tool" name="ProtoIceCube" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="8.22.2">ipython</requirement>
