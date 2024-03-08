@@ -23,7 +23,7 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     )
     get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
+# src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
