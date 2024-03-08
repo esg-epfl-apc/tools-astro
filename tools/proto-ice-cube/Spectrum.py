@@ -6,7 +6,7 @@
 import json
 import os
 import shutil
-
+os.system("pip install --upgrade skyllh")
 from oda_api.json import CustomJSONEncoder
 
 os.system("pip install skyllh --user --ignore-installed")
