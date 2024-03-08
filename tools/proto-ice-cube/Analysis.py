@@ -5,7 +5,7 @@
 
 import json
 import os
-os.system("pip install skyllh")
+os.system("pip install --user --upgrade --ignore-installed skyllh")
 import numpy as np
 import scipy.stats
 from matplotlib import pyplot as plt
