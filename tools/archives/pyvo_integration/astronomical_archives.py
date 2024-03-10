@@ -18,6 +18,10 @@ from pyvo import registry
 MAX_ALLOWED_ENTRIES = 100
 MAX_REGISTRIES_TO_SEARCH = 100
 
+ARCHIVES_TIMEOUT_BYPASS = [
+    "https://datalab.noirlab.edu/tap"
+]
+
 
 class TimeoutException(Exception):
     pass
@@ -218,28 +222,34 @@ class TapArchive:
 
         self.tables = []
 
-        for table in self.archive_service.tables:
-            archive_table = {
-                'name': table.name,
-                'type': table.type,
-                'fields': None
-            }
-
-            fields = []
-
-            for table_field in table.columns:
-                field = {
-                    'name': table_field.name,
-                    'description': table_field.description,
-                    'unit': table_field.unit,
-                    'datatype': table_field.datatype.content
+        try:
+            for table in self.archive_service.tables:
+                archive_table = {
+                    'name': table.name,
+                    'type': table.type,
+                    'fields': None
                 }
 
-                fields.append(field)
+                fields = []
 
-            archive_table['fields'] = fields
+                for table_field in table.columns:
+                    field = {
+                        'name': table_field.name,
+                        'description': table_field.description,
+                        'unit': table_field.unit,
+                        'datatype': table_field.datatype.content
+                    }
 
-            self.tables.append(archive_table)
+                    fields.append(field)
+
+                archive_table['fields'] = fields
+
+                self.tables.append(archive_table)
+
+        # Exception is raised when a table schema is missing
+        # Missing table will be omitted so no action needed
+        except DALServiceError:
+            pass
 
     def _is_query_valid(self, query) -> bool:
         is_valid = True
@@ -767,6 +777,11 @@ class ToolRunner:
 
             for archive in self._archives:
                 try:
+
+                    if archive.access_url in ARCHIVES_TIMEOUT_BYPASS:
+                        archive.get_resources = \
+                            timeout(40)(TapArchive.get_resources.__get__(archive))
+                    
                     _file_url, error_message = archive.get_resources(
                         self._adql_query,
                         self._number_of_files,
@@ -1267,7 +1282,7 @@ class FileHandler:
                 try:
                     file_output.write(url[access_url] + ',')
                 except Exception:
-                    error_message = "url field not found for url"
+                    error_message = "url field "+access_url+" not found for url"
                     Logger.create_action_log(
                         Logger.ACTION_ERROR,
                         Logger.ACTION_TYPE_WRITE_URL,
@@ -1323,12 +1338,11 @@ class Utils:
     @staticmethod
     def is_valid_url(url: str) -> bool:
         regex_url = re.compile(
-            r'^(?:http)s?://'
-            r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+'
-            r'(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?))'
-            r'(?::\d+)?'
-            r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-
+            r'^https?: // [A - Za - z0 - 9]([A - Za - z0 - 9 -]'
+            r'{0, 61}[A - Za - z0 - 9])?\.[A - Za - z]'
+            r'{2, 6}(:\d +)?(/[^ \s] *)?$'
+        )
+        
         return re.match(regex_url, url) is not None
 
 
