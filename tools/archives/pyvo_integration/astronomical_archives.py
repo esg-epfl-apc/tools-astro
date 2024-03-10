@@ -1280,7 +1280,7 @@ class FileHandler:
         with open(output, "w") as file_output:
             for url in urls:
                 try:
-                    file_output.write(url[access_url] + ',')
+                    file_output.write(str(url[access_url]) + ',')
                 except Exception:
                     error_message = "url field "+access_url+" not found for url"
                     Logger.create_action_log(
