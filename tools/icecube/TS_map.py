@@ -19,11 +19,14 @@ from skyllh.core.random import RandomStateService
 from skyllh.core.source_model import PointLikeSource
 from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
-src_name = "NGC 1068"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
-DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
-Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
-pixel_size = 1.0  # http://odahub.io/ontology#AngleDegrees
+# src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
+# RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
+# DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
+RA = 308.2  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 41.0  # http://odahub.io/ontology#PointOfInterestDEC
+sigma = 0.7  # http://odahub.io/ontology#AngleDegrees
+Radius = 0.2  # http://odahub.io/ontology#AngleDegrees
+pixel_size = 0.2  # http://odahub.io/ontology#AngleDegrees
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
@@ -39,6 +42,27 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
+
+import fileinput
+import sys
+
+def replaceAll(file, searchExp, replaceExp):
+    for line in fileinput.input(file, inplace=1):
+        if searchExp in line:
+            line = line.replace(searchExp, replaceExp)
+        sys.stdout.write(line)
+
+get_ipython().system("cp signalpdf_template.py signalpdf.py")   # noqa: F821
+replaceAll(
+    "signalpdf.py",
+    "sigma_sq = np.take(sigma**2, evt_idxs)",
+    "sigma_sq = np.take(sigma**2, evt_idxs)+("
+    + str(sigma)
+    + "*np.pi/180.)**2",
+)
+get_ipython().system(   # noqa: F821
+    "mv signalpdf.py /opt/conda/lib/python3.10/site-packages/skyllh/core"
+)
 
 cfg = Config()
 coords_s = SkyCoord(RA, DEC, unit="degree")

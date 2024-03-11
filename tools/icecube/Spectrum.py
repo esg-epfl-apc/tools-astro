@@ -21,9 +21,11 @@ from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
 # DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
-src_name = "TXS 0506+056"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 77.35  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 15.7  # http://odahub.io/ontology#PointOfInterestDEC
+# src_name='TXS 0506+056' #http://odahub.io/ontology#AstrophysicalObject
+# RA=77.35 # http://odahub.io/ontology#PointOfInterestRA
+# DEC=15.7 # http://odahub.io/ontology#PointOfInterestDEC
+RA = 308.2  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 41.0  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
