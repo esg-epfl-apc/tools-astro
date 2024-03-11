@@ -21,7 +21,7 @@ from gammapy.data import (
     observatory_locations,
 )
 from gammapy.datasets import MapDataset, MapDatasetEventSampler
-from gammapy.irf import load_cta_irfs
+from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import Map, MapAxis, WcsGeom
 from gammapy.modeling.models import (
@@ -295,7 +295,7 @@ location = observatory_locations["cta_south"]
 
 # irfs = load_irf_dict_from_file(path / irf_filename)
 filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-irfs = load_cta_irfs(filename)
+irfs = load_irf_dict_from_file(filename)
 
 observation = Observation.create(
     obs_id=1001,
