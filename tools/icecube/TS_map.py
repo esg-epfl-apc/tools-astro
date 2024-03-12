@@ -3,9 +3,11 @@
 
 # flake8: noqa
 
+import fileinput
 import json
 import os
 import shutil
+import sys
 
 import numpy as np
 from astropy.coordinates import SkyCoord
@@ -13,11 +15,6 @@ from matplotlib import pyplot as plt
 from numpy import cos, pi
 from oda_api.data_products import PictureProduct
 from oda_api.json import CustomJSONEncoder
-from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
-from skyllh.core.config import Config
-from skyllh.core.random import RandomStateService
-from skyllh.core.source_model import PointLikeSource
-from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
@@ -25,8 +22,8 @@ from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 RA = 308.65  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 40.9  # http://odahub.io/ontology#PointOfInterestDEC
 sigma = 0.7  # http://odahub.io/ontology#AngleDegrees
-Radius = 0.2  # http://odahub.io/ontology#AngleDegrees
-pixel_size = 0.05  # http://odahub.io/ontology#AngleDegrees
+Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
+pixel_size = 0.1  # http://odahub.io/ontology#AngleDegrees
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
@@ -46,8 +43,8 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-import fileinput
-import sys
+get_ipython().run_line_magic("load_ext", "autoreload")   # noqa: F821
+get_ipython().run_line_magic("autoreload", "2")   # noqa: F821
 
 def set_extension(sig):
     get_ipython().system("cp signalpdf_template.py signalpdf.py")   # noqa: F821
@@ -67,6 +64,11 @@ def set_extension(sig):
     )
 
 set_extension(sigma)
+from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
+from skyllh.core.config import Config
+from skyllh.core.random import RandomStateService
+from skyllh.core.source_model import PointLikeSource
+from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
 cfg = Config()
 coords_s = SkyCoord(RA, DEC, unit="degree")
@@ -152,7 +154,7 @@ else:
             )
             if TS_map[i, j] > tsbest:
                 tsbest = TS_map[i, j]
-                ibset = i
+                ibest = i
                 jbest = j
                 print(RRa, DDec, tsbest)
 
@@ -165,8 +167,10 @@ plt.imshow(
         max(DEC_grid) + pixel_size / 2.0,
     ),
     origin="lower",
+    aspect=1 / cdec,
 )
 plt.colorbar(label="TS")
+plt.scatter([RA_grid[ibest]], [DEC_grid[jbest]], marker="x", color="red")
 plt.xlabel("Right Ascension, degrees")
 plt.ylabel("Declination, degrees")
 plt.savefig("Image.png", format="png", bbox_inches="tight")

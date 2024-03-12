@@ -32,8 +32,8 @@
         <param name="RA" type="float" value="308.65" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="40.9" label="DEC (unit: deg)" />
         <param name="sigma" type="float" value="0.7" label="sigma (unit: deg)" />
-        <param name="Radius" type="float" value="0.2" label="Radius (unit: deg)" />
-        <param name="pixel_size" type="float" value="0.05" label="pixel_size (unit: deg)" />
+        <param name="Radius" type="float" value="1.0" label="Radius (unit: deg)" />
+        <param name="pixel_size" type="float" value="0.1" label="pixel_size (unit: deg)" />
         <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
         <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
         <param name="TSmap_type" type="select" label="TSmap_type">
@@ -95,8 +95,8 @@
         <param name="RA" value="308.65" />
         <param name="DEC" value="40.9" />
         <param name="sigma" value="0.7" />
-        <param name="Radius" value="0.2" />
-        <param name="pixel_size" value="0.05" />
+        <param name="Radius" value="1.0" />
+        <param name="pixel_size" value="0.1" />
         <param name="T1" value="2000-10-09T13:16:00.0" />
         <param name="T2" value="2022-10-10T13:16:00.0" />
         <param name="TSmap_type" value="Fixed_slope" />

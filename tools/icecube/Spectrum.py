@@ -98,7 +98,12 @@ print(f"TS = {ts:.3f}")
 print(f'ns = {x["ns"]:.2f}')
 print(f'gamma = {x["gamma"]:.2f}')
 
-Slope
+# Determine the delta lambda value for the 95% quantile assuming a chi-sqaure
+# distribution with 2 degrees of freedom (i.e. assuming Wilks theorem).
+chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
+chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
+chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
+chi2_68_quantile, chi2_90_quantile, chi2_95_quantile
 
 if TSmap_type == "Fixed_slope":
     TS_profile = []
@@ -110,7 +115,7 @@ if TSmap_type == "Fixed_slope":
     print(max(TS_profile))
     cbest = counts[np.argmax(TS_profile)]
     # plt.axhline(tsmax-4.5) #4.5 is for two-parameter adjustment (N_s, sigma), or (N_s, gamma), if sigma=0
-    mask = TS_profile > tsmax - 4.5
+    mask = TS_profile > tsmax - chi2_68_quantile
     # mask=TS_profile>tsmax-1
 
     cmin = min(counts[mask])
