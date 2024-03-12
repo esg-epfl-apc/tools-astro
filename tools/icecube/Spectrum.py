@@ -3,20 +3,17 @@
 
 # flake8: noqa
 
+import fileinput
 import json
 import os
 import shutil
+import sys
 
 import numpy as np
 import scipy.stats
 from matplotlib import pyplot as plt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
-from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
-from skyllh.core.config import Config
-from skyllh.core.random import RandomStateService
-from skyllh.core.source_model import PointLikeSource
-from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
@@ -24,11 +21,13 @@ from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 # src_name='TXS 0506+056' #http://odahub.io/ontology#AstrophysicalObject
 # RA=77.35 # http://odahub.io/ontology#PointOfInterestRA
 # DEC=15.7 # http://odahub.io/ontology#PointOfInterestDEC
-RA = 308.2  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 41.0  # http://odahub.io/ontology#PointOfInterestDEC
-
+RA = 308.52  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 40.9  # http://odahub.io/ontology#PointOfInterestDEC
+sigma = 0.7  # http://odahub.io/ontology#AngleDegrees
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+TSmap_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
+Slope = 3.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
 
@@ -42,6 +41,33 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
+
+get_ipython().run_line_magic("load_ext", "autoreload")   # noqa: F821
+get_ipython().run_line_magic("autoreload", "2")   # noqa: F821
+
+def set_extension(sig):
+    get_ipython().system("cp signalpdf_template.py signalpdf.py")   # noqa: F821
+    file = "signalpdf.py"
+    searchExp = "sigma_sq = np.take(sigma**2, evt_idxs)"
+    replaceExp = (
+        "sigma_sq = np.take(sigma**2, evt_idxs)+("
+        + str(sig)
+        + "*np.pi/180.)**2"
+    )
+    for line in fileinput.input(file, inplace=1):
+        if searchExp in line:
+            line = line.replace(searchExp, replaceExp)
+        sys.stdout.write(line)
+    get_ipython().system(   # noqa: F821
+        "mv signalpdf.py /opt/conda/lib/python3.10/site-packages/skyllh/core"
+    )
+
+set_extension(sigma)
+from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
+from skyllh.core.config import Config
+from skyllh.core.random import RandomStateService
+from skyllh.core.source_model import PointLikeSource
+from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
 cfg = Config()
 
@@ -72,24 +98,73 @@ print(f"TS = {ts:.3f}")
 print(f'ns = {x["ns"]:.2f}')
 print(f'gamma = {x["gamma"]:.2f}')
 
-scaling_factor = ana.calculate_fluxmodel_scaling_factor(
-    x["ns"], [x["ns"], x["gamma"]]
-)
-print(f"Flux scaling factor = {scaling_factor:.3e}")
-print(
-    f"that is {scaling_factor:.3e}"
-    " (E/1000 GeV)^{-"
-    f'{x["gamma"]:.2f}' + "} 1/(GeV s cm^2 sr)"
-)
+Slope
 
-scaling_factor = ana.calculate_fluxmodel_scaling_factor(
-    x["ns"], [x["ns"], x["gamma"]]
+if TSmap_type == "Fixed_slope":
+    TS_profile = []
+    counts = np.linspace(0, 200, 200)
+    for n in counts:
+        TS_profile.append(2 * ana.llhratio.evaluate([n, Slope])[0])
+    # plt.plot(counts,TS_profile)
+    tsmax = max(TS_profile)
+    print(max(TS_profile))
+    cbest = counts[np.argmax(TS_profile)]
+    # plt.axhline(tsmax-4.5) #4.5 is for two-parameter adjustment (N_s, sigma), or (N_s, gamma), if sigma=0
+    mask = TS_profile > tsmax - 4.5
+    # mask=TS_profile>tsmax-1
+
+    cmin = min(counts[mask])
+    cmax = max(counts[mask])
+    print(cmin, cmax)
+    Fmin = ana.calculate_fluxmodel_scaling_factor(
+        cmin, [cmin, Slope]
+    )  # 1/(GeV s cm^2 sr) at 1e3 GeV
+    Fmax = ana.calculate_fluxmodel_scaling_factor(
+        cmax, [cmin, Slope]
+    )  # 1/(GeV s cm^2 sr) at 1e3 GeV
+    Fbest = ana.calculate_fluxmodel_scaling_factor(
+        cbest, [cmin, Slope]
+    )  # 1/(GeV s cm^2 sr) at 1e3 GeV
+    print(Fmin, Fmax)
+    # print(f'that is {scaling_factor:.3e}'' (E/1000 GeV)^{2-'f'{Slope:.2f}'+'} 1/(GeV s cm^2 sr)')
+    x = np.logspace(0, 2, 10)  # energy in TeV
+    ymin = 3 * Fmin * (x / 1) ** (2 - Slope) * 1e3  # in TeV/cm2s, all flavours
+    ymax = 3 * Fmax * (x / 1) ** (2 - Slope) * 1e3
+    ybest = 3 * Fbest * (x / 1) ** (2 - Slope) * 1e3
+    plt.fill_between(x, ymin, ymax, alpha=0.3, color="green", linewidth=0)
+    plt.plot(x, ybest, color="green", linewidth=2)
+    plt.xscale("log")
+    plt.yscale("log")
+    plt.xlabel("$E$, TeV")
+    # plt.ylim(1e-14,3e-10)
+    plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$s), all flavours")
+    plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
+
+TS_map = np.zeros((10, 100))
+counts = np.linspace(0, 200, 100)
+Slopes = np.linspace(1, 5, 10)
+tsbest = 0
+slope_best = 0
+n_best = 0
+for i, Slope in enumerate(Slopes):
+    for j, n in enumerate(counts):
+        TS_map[i, j] = 2 * ana.llhratio.evaluate([n, Slope])[0]
+        if TS_map[i, j] > tsbest:
+            tsbest = TS_map[i, j]
+            slope_best = Slope
+            n_best = n
+plt.imshow(
+    np.transpose(TS_map),
+    origin="lower",
+    extent=[Slopes[0], Slopes[-1], counts[0], counts[-1]],
+    aspect=0.03,
+    vmin=0,
 )
-print(f"Flux scaling factor = {scaling_factor:.3e}")
-print(
-    f"that is {scaling_factor:.3e}"
-    " (E/1000 GeV)^{-"
-    f'{x["gamma"]:.2f}' + "} 1/(GeV s cm^2 sr)"
+plt.colorbar()
+plt.scatter(slope_best, n_best, marker="x", color="red")
+print(Slope, n, tsbest, n_best, slope_best)
+cnt = plt.contour(
+    Slopes, counts, np.transpose(TS_map), [tsbest - 4.5], colors="red"
 )
 
 (llhratio_value, (grad_ns, grad_gamma)) = ana.llhratio.evaluate([14.58, 2.17])
@@ -97,7 +172,7 @@ print(f"llhratio_value = {llhratio_value:.3f}")
 print(f"grad_ns = {grad_ns:.3f}")
 print(f"grad_gamma = {grad_gamma:.3f}")
 
-(ns_min, ns_max, ns_step) = (0, 100, 0.5)
+(ns_min, ns_max, ns_step) = (0, 200, 1)
 (gamma_min, gamma_max, gamma_step) = (1.5, 5.0, 0.1)
 
 ns_edges = np.linspace(ns_min, ns_max, int((ns_max - ns_min) / ns_step) + 1)
@@ -130,6 +205,7 @@ gamma_best = gamma_vals[gamma_i_max]
 chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
 chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
 chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
+chi2_68_quantile, chi2_90_quantile, chi2_95_quantile
 
 plt.figure(figsize=(8, 6))
 # plt.pcolormesh(gamma_edges, ns_edges, delta_ts, cmap='nipy_spectral')
@@ -204,11 +280,15 @@ for i in range(len(gammas1)):
 if min(norms) > 1:
     plt.fill_between(x, ymin, ymax, alpha=0.5, label="68% error")
 plt.plot(x, ymax90, color="black", linewidth=4, label="90% UL")
+
+y = 3 * Fbest * (x / 1.0) ** (-gamma_best) * x**2 * 1e3
+plt.plot(x, y, color="black")
 plt.xscale("log")
 plt.yscale("log")
 plt.legend(loc="upper right")
 plt.xlabel("$E$, TeV")
 plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$s), all flavours")
+plt.ylim(1e-14, 3e-10)
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 bin_image = PictureProduct.from_file("Spectrum.png")
