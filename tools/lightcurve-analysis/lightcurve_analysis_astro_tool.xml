@@ -56,8 +56,8 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="correlate" />
-        <param name="light_curve_1" value="None" />
-        <param name="light_curve_2" value="None" />
+        <param name="light_curve_1" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/c8bab344dc771c571e7e347f34ecf20c53543c7b/spiacs_lc_query.fits" />
+        <param name="light_curve_2" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/c8bab344dc771c571e7e347f34ecf20c53543c7b/spiacs_lc_query.fits" />
         <param name="mode" value="Background" />
       </conditional>
       <assert_stdout>
@@ -67,7 +67,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="detect_impulsive" />
-        <param name="light_curve" value="None" />
+        <param name="light_curve" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/c8bab344dc771c571e7e347f34ecf20c53543c7b/spiacs_lc_query.fits" />
         <param name="time_column" value="TIME" />
         <param name="rate_column" value="FLUX" />
         <param name="rate_err_column" value="FLUX_ERR" />
