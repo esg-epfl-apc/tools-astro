@@ -12,9 +12,7 @@ from oda_api.json import CustomJSONEncoder
 get_ipython().run_line_magic("load_ext", "autoreload")   # noqa: F821
 get_ipython().run_line_magic("autoreload", "2")   # noqa: F821
 
-import fileinput
 import os
-import sys
 
 import numpy as np
 import scipy.stats
@@ -44,28 +42,6 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
-
-get_ipython().run_line_magic("load_ext", "autoreload")   # noqa: F821
-get_ipython().run_line_magic("autoreload", "2")   # noqa: F821
-
-def set_extension(sig):
-    get_ipython().system("cp signalpdf_template.py signalpdf.py")   # noqa: F821
-    file = "signalpdf.py"
-    searchExp = "sigma_sq = np.take(sigma**2, evt_idxs)"
-    replaceExp = (
-        "sigma_sq = np.take(sigma**2, evt_idxs)+("
-        + str(sig)
-        + "*np.pi/180.)**2"
-    )
-    for line in fileinput.input(file, inplace=1):
-        if searchExp in line:
-            line = line.replace(searchExp, replaceExp)
-        sys.stdout.write(line)
-    get_ipython().system(   # noqa: F821
-        "mv signalpdf.py /opt/conda/lib/python3.10/site-packages/skyllh/core"
-    )
-
-set_extension(sigma)
 
 from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
 from skyllh.core.config import Config
