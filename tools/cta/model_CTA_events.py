@@ -33,6 +33,8 @@ from numpy import cos, exp, log, log10, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
+get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
+
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
