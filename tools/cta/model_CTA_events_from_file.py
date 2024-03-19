@@ -35,6 +35,8 @@ from numpy import cos, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
+get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
+
 # We simulate point source in wobble observaiton,
 # 0.4 degree off-axis
 
