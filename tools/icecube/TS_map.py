@@ -8,23 +8,22 @@ import os
 import shutil
 
 import numpy as np
+from astropy import wcs
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
 from matplotlib import pyplot as plt
 from numpy import cos, pi
-from oda_api.data_products import PictureProduct
+from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
-# RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
-# DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
-RA = 308.65  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 40.9  # http://odahub.io/ontology#PointOfInterestDEC
-sigma = 0.7  # http://odahub.io/ontology#AngleDegrees
+RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
+# RA=308.65 # http://odahub.io/ontology#PointOfInterestRA
+# DEC=40.9 # http://odahub.io/ontology#PointOfInterestDEC
+# sigma=0.7  #http://odahub.io/ontology#AngleDegrees
 Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
-pixel_size = 0.1  # http://odahub.io/ontology#AngleDegrees
-T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-
+pixel_size = 0.2  # http://odahub.io/ontology#AngleDegrees
 TSmap_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
@@ -153,43 +152,50 @@ plt.ylabel("Declination, degrees")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 print(max(RA_grid), min(RA_grid), min(DEC_grid), max(DEC_grid))
 
-ncpu = int(os.cpu_count())
-ncpu
-# with mp.Pool(3) as pool:
-#    res=pool.map(process_pixel, range(Npix**2))
-tsbest = 0
-for i, RRa in enumerate(RA_grid):
-    for j, DDec in enumerate(DEC_grid):
-        ind = i * Npix + j
-        r, d, TS_map[i, j], ns_map[i, j], gamma_map[i, j] = process_pixel(ind)
-        if TS_map[i, j] > tsbest:
-            tsbest = TS_map[i, j]
-            print(RRa, DDec, tsbest)
+# Create a new WCS object.  The number of axes must be set
+# from the start
+w = wcs.WCS(naxis=2)
 
-plt.imshow(
-    np.flip(np.transpose(TS_map), axis=1),
-    extent=(
-        max(RA_grid) + pixel_size / cdec / 2.0,
-        min(RA_grid) - pixel_size / cdec / 2.0,
-        min(DEC_grid) - pixel_size / 2.0,
-        max(DEC_grid) + pixel_size / 2.0,
-    ),
-    origin="lower",
-)
+w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
+# we need a Plate carrée (CAR) projection since histogram is binned by ra-dec
+# the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
+# also, we will follow convention of RA increasing from right to left (CDELT1<0, need to flip an input image)
+# otherwise, aladin-lite doesn't show it
+w.wcs.crval = [RA, 0]
+w.wcs.crpix = [Npix / 2.0 + 0.5, 1 - DEC_grid[0] / pixel_size]
+w.wcs.cdelt = np.array([-pixel_size / cdec, pixel_size])
+
+header = w.to_header()
+
+hdu = fits.PrimaryHDU(np.flip(TS_map.T, axis=1), header=header)
+hdu.writeto("Image.fits", overwrite=True)
+hdu = fits.open("Image.fits")
+im = hdu[0].data
+wcs1 = wcs.WCS(hdu[0].header)
+ax = plt.subplot(projection=wcs1)
+lon = ax.coords["ra"]
+lon.set_major_formatter("d.dd")
+lat = ax.coords["dec"]
+lat.set_major_formatter("d.dd")
+plt.imshow(im, origin="lower")
 plt.colorbar(label="TS")
-plt.xlabel("Right Ascension, degrees")
-plt.ylabel("Declination, degrees")
-plt.savefig("Image.png", format="png", bbox_inches="tight")
-print(max(RA_grid), min(RA_grid), min(DEC_grid), max(DEC_grid))
+
+plt.grid(color="white", ls="solid")
+plt.xlabel("RA")
+plt.ylabel("Dec")
+
+fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
 bin_image = PictureProduct.from_file("Image.png")
 
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+image = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(("out_TS_map_picture", "picture_galaxy.output", picture))
+_oda_outs.append(("out_TS_map_image", "image_galaxy.output", image))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
