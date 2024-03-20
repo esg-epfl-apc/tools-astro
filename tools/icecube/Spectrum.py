@@ -14,7 +14,7 @@ from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
-RA = 40.669622 + 20  # http://odahub.io/ontology#PointOfInterestRA
+RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
 DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
 Spectrum_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float

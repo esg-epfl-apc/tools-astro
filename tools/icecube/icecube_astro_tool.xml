@@ -46,7 +46,7 @@
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
       <when value="Spectrum">
-        <param name="RA" type="text" value="40.669622+20" label="RA (unit: deg)" />
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
         <param name="Spectrum_type" type="select" label="Spectrum_type">
           <option value="Fixed_slope" selected="true">Fixed_slope</option>
@@ -115,7 +115,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Spectrum" />
-        <param name="RA" value="40.669622+20" />
+        <param name="RA" value="40.669622" />
         <param name="DEC" value="-0.013294" />
         <param name="Spectrum_type" value="Fixed_slope" />
         <param name="Slope" value="3.0" />
