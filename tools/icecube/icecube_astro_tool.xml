@@ -22,18 +22,10 @@
   <inputs>
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
-        <option value="Analysis_ipynb" selected="true">Analysis_ipynb</option>
-        <option value="TS_map" selected="false">TS_map</option>
+        <option value="TS_map" selected="true">TS_map</option>
         <option value="Spectrum" selected="false">Spectrum</option>
         <option value="Likelihood_profile" selected="false">Likelihood_profile</option>
       </param>
-      <when value="Analysis_ipynb">
-        <param name="src_name" type="text" value="NGC 1068" label="src_name" />
-        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
-        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
-      </when>
       <when value="TS_map">
         <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
@@ -55,11 +47,8 @@
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
       <when value="Likelihood_profile">
-        <param name="RA" type="float" value="308.65" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="40.9" label="DEC (unit: deg)" />
-        <param name="sigma" type="float" value="0.7" label="sigma (unit: deg)" />
-        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
     </conditional>
@@ -85,19 +74,6 @@
     </data>
   </outputs>
   <tests>
-    <test expect_num_outputs="0">
-      <conditional name="_data_product">
-        <param name="_selector" value="Analysis_ipynb" />
-        <param name="src_name" value="NGC 1068" />
-        <param name="RA" value="40.669622" />
-        <param name="DEC" value="-0.013294" />
-        <param name="T1" value="2000-10-09T13:16:00.0" />
-        <param name="T2" value="2022-10-10T13:16:00.0" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="TS_map" />
@@ -127,11 +103,8 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Likelihood_profile" />
-        <param name="RA" value="308.65" />
-        <param name="DEC" value="40.9" />
-        <param name="sigma" value="0.7" />
-        <param name="T1" value="2000-10-09T13:16:00.0" />
-        <param name="T2" value="2022-10-10T13:16:00.0" />
+        <param name="RA" value="40.669622" />
+        <param name="DEC" value="-0.013294" />
         <param name="Slope" value="3.0" />
       </conditional>
       <assert_stdout>

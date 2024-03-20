@@ -19,15 +19,8 @@ import scipy.stats
 from matplotlib import pyplot as plt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 
-# src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
-# RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
-# DEC = -0.013294 # http://odahub.io/ontology#PointOfInterestDEC
-# src_name='TXS 0506+056' #http://odahub.io/ontology#AstrophysicalObject
-RA = 308.65  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 40.9  # http://odahub.io/ontology#PointOfInterestDEC
-sigma = 0.7  # http://odahub.io/ontology#AngleDegrees
-T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
 Slope = 3.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
@@ -88,53 +81,41 @@ for n in counts:
     TS_profile.append(2 * ana.llhratio.evaluate([n, Slope])[0])
 
 plt.plot(counts, TS_profile)
+plt.axvline(np.argmax(TS_profile), color="black", label="best fit")
 tsmax = max(TS_profile)
 print(max(TS_profile))
 # plt.axhline(tsmax-4.5) #4.5 is for two-parameter adjustment (N_s, sigma), or (N_s, gamma), if sigma=0
 # Determine the delta lambda value for the 95% quantile assuming a chi-sqaure
 # distribution with 2 degrees of freedom (i.e. assuming Wilks theorem).
-chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
-chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
-chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
+chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=1)
+chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=1)
+chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=1)
 
 # chi2_90_quantile,chi2_95_quantile
-mask = TS_profile > tsmax - chi2_68_quantile
+mask_68 = TS_profile > tsmax - chi2_68_quantile
 cmin = min(counts[mask])
 cmax = max(counts[mask])
 print("68% confidence interval:", cmin, cmax)
 F_min = ana.calculate_fluxmodel_scaling_factor(cmin, [cmin, Slope])
 F_max = ana.calculate_fluxmodel_scaling_factor(cmax, [cmax, Slope])
-plt.axhline(tsmax - chi2_68_quantile, color="black", linestyle="dashed")
-plt.text(
-    0,
-    tsmax - chi2_68_quantile + 1,
-    r"$F_{max}=$" + str(F_max) + " (GeV s cm^2)$^{-1}$ at 1 TeV",
+plt.axhline(
+    tsmax - chi2_68_quantile, color="black", linestyle="dashed", label="68%"
 )
-plt.text(
-    0,
-    tsmax - chi2_68_quantile - 1.5,
-    r"$F_{min}=$" + str(F_min) + " (GeV s cm^2)$^{-1}$ at 1 TeV",
-)
+# plt.text(0,tsmax-chi2_68_quantile+1,r'$F_{max}=$'+str(F_max)+' (GeV s cm^2)$^{-1}$ at 1 TeV')
+# plt.text(0,tsmax-chi2_68_quantile-1.5,r'$F_{min}=$'+str(F_min)+' (GeV s cm^2)$^{-1}$ at 1 TeV')
 
-mask = TS_profile > tsmax - chi2_90_quantile
+mask_90 = TS_profile > tsmax - chi2_90_quantile
 c_ul = max(counts[mask])
 print("90% upper limit:", c_ul)
 F_ul = ana.calculate_fluxmodel_scaling_factor(c_ul, [c_ul, Slope])
 plt.axhline(
-    tsmax - chi2_90_quantile,
-    color="black",
-    linestyle="dotted",
-    label=r"$F_{ul}=$" + str(F_ul) + " (GeV s cm^2)$^{-1}$ at 1 TeV",
+    tsmax - chi2_90_quantile, color="black", linestyle="dotted", label=r"90%"
 )
-plt.text(
-    0,
-    tsmax - chi2_90_quantile - 1.5,
-    r"$F_{ul}=$" + str(F_ul) + " (GeV s cm^2)$^{-1}$ at 1 TeV",
-)
+# plt.text(0,tsmax-chi2_90_quantile-1.5,r'$F_{ul}=$'+str(F_ul)+' (GeV s cm^2)$^{-1}$ at 1 TeV')
 plt.xlabel("Counts")
 plt.ylabel("TS")
 plt.savefig("Likelihood_profile.png", format="png", bbox_inches="tight")
-# plt.legend(loc='lower left')
+plt.legend(loc="lower left")
 
 bin_image = PictureProduct.from_file("Likelihood_profile.png")
 from astropy.table import Table
