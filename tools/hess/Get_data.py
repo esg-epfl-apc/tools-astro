@@ -25,11 +25,11 @@ from oda_api.json import CustomJSONEncoder
 get_ipython().system(   # noqa: F821
     "wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz"
 )
-#!tar -zxvf hess_dl3_dr1.tar.gz
+get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
 
 from oda_api.data_products import BinaryProduct
 
-arxive = BinaryProduct.from_file("hess_dl3_dr1.tar.gz")
+arxive = BinaryProduct.from_file("data/hess_dl3_dr1_obs_id_033798.fits.gz")
 
 arxive = arxive  # http://odahub.io/ontology#ODABinaryProduct
 
