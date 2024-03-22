@@ -15,8 +15,8 @@ from oda_api.json import CustomJSONEncoder
 
 # src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
 RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
-DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
-Spectrum_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
+DEC = 10.013294  # http://odahub.io/ontology#PointOfInterestDEC
+Spectrum_type = "Free_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
@@ -83,26 +83,37 @@ if Spectrum_type == "Fixed_slope":
     cmin = min(counts[mask])
     cmax = max(counts[mask])
     print(cmin, cmax)
+    Fmin_68 = ana.calculate_fluxmodel_scaling_factor(
+        cmin, [cmin, Slope]
+    )  # 1/(GeV s cm^2 sr) at 1e3 GeV
+    Fmax_68 = ana.calculate_fluxmodel_scaling_factor(
+        cmax, [cmin, Slope]
+    )  # 1/(GeV s cm^2 sr) at 1e3 GeV
     mask = TS_profile > tsmax - chi2_90_quantile
     cmin = min(counts[mask])
     cmax = max(counts[mask])
-    Fmin = ana.calculate_fluxmodel_scaling_factor(
+    Fmin_90 = ana.calculate_fluxmodel_scaling_factor(
         cmin, [cmin, Slope]
     )  # 1/(GeV s cm^2 sr) at 1e3 GeV
-    Fmax = ana.calculate_fluxmodel_scaling_factor(
+    Fmax_90 = ana.calculate_fluxmodel_scaling_factor(
         cmax, [cmin, Slope]
     )  # 1/(GeV s cm^2 sr) at 1e3 GeV
     Fbest = ana.calculate_fluxmodel_scaling_factor(
         cbest, [cmin, Slope]
     )  # 1/(GeV s cm^2 sr) at 1e3 GeV
-    print(Fmin, Fmax)
-    # print(f'that is {scaling_factor:.3e}'' (E/1000 GeV)^{2-'f'{Slope:.2f}'+'} 1/(GeV s cm^2 sr)')
     x = np.logspace(0, 2, 10)  # energy in TeV
-    ymin = 3 * Fmin * (x / 1) ** (2 - Slope) * 1e3  # in TeV/cm2s, all flavours
-    ymax = 3 * Fmax * (x / 1) ** (2 - Slope) * 1e3
+    ymin_68 = (
+        3 * Fmin_68 * (x / 1) ** (2 - Slope) * 1e3
+    )  # in TeV/cm2s, all flavours
+    ymax_68 = 3 * Fmax_68 * (x / 1) ** (2 - Slope) * 1e3
+    ymax_90 = 3 * Fmax_90 * (x / 1) ** (2 - Slope) * 1e3
     ybest = 3 * Fbest * (x / 1) ** (2 - Slope) * 1e3
-    plt.fill_between(x, ymin, ymax, alpha=0.3, color="green", linewidth=0)
-    plt.plot(x, ybest, color="green", linewidth=2)
+
+    if np.amax(TS_profile) > chi2_95_quantile:
+        plt.fill_between(x, ymin_68, ymax_68, alpha=0.5, label="68% error")
+        plt.plot(x, ybest, color="black")
+    plt.plot(x, ymax_90, color="black", linewidth=4, label="90% UL")
+
     plt.xscale("log")
     plt.yscale("log")
     plt.xlabel("$E$, TeV")
@@ -112,14 +123,15 @@ if Spectrum_type == "Fixed_slope":
 
 if Spectrum_type == "Free_slope":
     chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
-    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
-    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
-    TS_map = np.zeros((10, 100))
+    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=1)
+    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=1)
+    TS_map = np.zeros((50, 100))
     counts = np.linspace(0, 200, 100)
-    Slopes = np.linspace(1, 5, 10)
+    Slopes = np.linspace(1, 5, 50)
     tsbest = 0
     slope_best = 0
     n_best = 0
+    c_ul = np.zeros(len(Slopes))
     for i, Slope in enumerate(Slopes):
         for j, n in enumerate(counts):
             TS_map[i, j] = 2 * ana.llhratio.evaluate([n, Slope])[0]
@@ -127,6 +139,10 @@ if Spectrum_type == "Free_slope":
                 tsbest = TS_map[i, j]
                 slope_best = Slope
                 n_best = n
+        tsmax = np.max(TS_map[i, :])
+        mask_90 = TS_map[i, :] > tsmax - chi2_90_quantile
+        c_ul[i] = max(counts[mask_90])
+    plt.plot(Slopes, c_ul)
     # plt.imshow(np.transpose(TS_map),origin='lower',extent=[Slopes[0],Slopes[-1],counts[0],counts[-1]],aspect=0.03,vmin=0)
     # plt.colorbar()
     # plt.scatter(slope_best,n_best,marker='x',color='red')
@@ -171,10 +187,19 @@ if Spectrum_type == "Free_slope":
                 norms_90[i], [norms_90[i], gammas_90[i]]
             )
         )
+    plt.plot(gammas_90, F_norms_90)
+    F_norms_90 = []
+    for i in range(len(Slopes)):
+        F_norms_90.append(
+            ana.calculate_fluxmodel_scaling_factor(
+                c_ul[i], [c_ul[i], Slopes[i]]
+            )
+        )
 
     plt.figure()
+    plt.plot(Slopes, F_norms_90)
+    print(F_norms_90)
     plt.plot(gammas_68, F_norms_68)
-    plt.plot(gammas_90, F_norms_90)
     plt.yscale("log")
     plt.ylabel("Flux normalisation at 1 TeV, 1/(GeV s cm$^2$)")
     plt.scatter([slope_best], [Fbest], marker="x")
@@ -182,32 +207,32 @@ if Spectrum_type == "Free_slope":
     plt.savefig("Confidence_range.png", format="png", bbox_inches="tight")
 
 if Spectrum_type == "Free_slope":
-    x = np.logspace(-1, 3, 10)
+    x = np.logspace(-1, 6, 50)
 
     # 3.690e-15 (E/1000 GeV)^{-2.33} 1/(GeV s cm^2 sr)
-    ymax = np.zeros(len(x))
-    ymin = np.ones(len(x))
+    ymax_68 = np.zeros(len(x))
+    ymin_68 = np.ones(len(x))
     for i in range(len(gammas_68)):
         y = (
             3 * F_norms_68[i] * (x / 1.0) ** (-gammas_68[i]) * x**2 * 1e3
         )  # TeV *(TeV/GeV)/cm2 s
-        ymax = np.maximum(ymax, y)
-        ymin = np.minimum(ymin, y)
+        ymax_68 = np.maximum(ymax_68, y)
+        ymin_68 = np.minimum(ymin_68, y)
 
-    ymax90 = np.zeros(len(x))
-    for i in range(len(gammas_90)):
+    ymax_90 = np.zeros(len(x))
+    for i in range(len(Slopes)):
         y = (
-            3 * F_norms_90[i] * (x / 1.0) ** (-gammas_90[i]) * x**2 * 1e3
+            3 * F_norms_90[i] * (x / 1.0) ** (-Slopes[i]) * x**2 * 1e3
         )  # TeV *(TeV/GeV)/cm2 s
-        ymax90 = np.maximum(ymax90, y)
+        ymax_90 = np.maximum(ymax_90, y)
 
         # plt.plot(x,y)
 
+    ybest = 3 * Fbest * (x / 1.0) ** (-slope_best) * x**2 * 1e3
     if np.amax(TS_map) > chi2_95_quantile:
-        plt.fill_between(x, ymin, ymax, alpha=0.5, label="68% error")
-        y = 3 * Fbest * (x / 1.0) ** (-slope_best) * x**2 * 1e3
-        plt.plot(x, y, color="black")
-    plt.plot(x, ymax90, color="black", linewidth=4, label="90% UL")
+        plt.fill_between(x, ymin_68, ymax_68, alpha=0.5, label="68% error")
+        plt.plot(x, ybest, color="black")
+    plt.plot(x, ymax_90, color="black", linewidth=4, label="90% UL")
 
     plt.xscale("log")
     plt.yscale("log")
@@ -217,141 +242,21 @@ if Spectrum_type == "Free_slope":
     plt.ylim(1e-14, 3e-10)
     plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
-(llhratio_value, (grad_ns, grad_gamma)) = ana.llhratio.evaluate([14.58, 2.17])
-print(f"llhratio_value = {llhratio_value:.3f}")
-print(f"grad_ns = {grad_ns:.3f}")
-print(f"grad_gamma = {grad_gamma:.3f}")
-
-(ns_min, ns_max, ns_step) = (0, 200, 1)
-(gamma_min, gamma_max, gamma_step) = (1.5, 5.0, 0.1)
-
-ns_edges = np.linspace(ns_min, ns_max, int((ns_max - ns_min) / ns_step) + 1)
-ns_vals = 0.5 * (ns_edges[1:] + ns_edges[:-1])
-
-gamma_edges = np.linspace(
-    gamma_min, gamma_max, int((gamma_max - gamma_min) / gamma_step + 1)
-)
-gamma_vals = 0.5 * (gamma_edges[1:] + gamma_edges[:-1])
-
-delta_ts = np.empty((len(ns_vals), len(gamma_vals)), dtype=np.double)
-for ns_i, ns in enumerate(ns_vals):
-    for gamma_i, gamma in enumerate(gamma_vals):
-
-        delta_ts[ns_i, gamma_i] = ana.calculate_test_statistic(
-            llhratio_value, [14.58, 2.17]
-        ) - ana.calculate_test_statistic(
-            ana.llhratio.evaluate([ns, gamma])[0], [ns, gamma]
-        )
-
-# Determine the best fit ns and gamma values from the scan.
-index_max = np.argmin(delta_ts)
-ns_i_max = int(index_max / len(gamma_vals))
-gamma_i_max = index_max % len(gamma_vals)
-ns_best = ns_vals[ns_i_max]
-gamma_best = gamma_vals[gamma_i_max]
-
-# Determine the delta lambda value for the 95% quantile assuming a chi-sqaure
-# distribution with 2 degrees of freedom (i.e. assuming Wilks theorem).
-chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
-chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
-chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
-chi2_68_quantile, chi2_90_quantile, chi2_95_quantile
-
-plt.figure(figsize=(8, 6))
-# plt.pcolormesh(gamma_edges, ns_edges, delta_ts, cmap='nipy_spectral')
-# cbar = plt.colorbar()
-# cbar.set_label(r'$\Delta$TS')
-cnt = plt.contour(
-    gamma_vals, ns_vals, delta_ts, [chi2_68_quantile], colors="black"
-)
-cnt1 = plt.contour(
-    gamma_vals, ns_vals, delta_ts, [chi2_90_quantile], colors="black"
-)
-cnt2 = plt.contour(
-    gamma_vals, ns_vals, delta_ts, [chi2_95_quantile], colors="black"
-)
-plt.plot(gamma_best, ns_best, marker="x", color="black", ms=10)
-plt.xlabel(r"$\gamma$")
-plt.ylabel(r"$n_{\mathrm{s}}$")
-plt.ylim(ns_min, ns_max)
-plt.xlim(gamma_min, gamma_max)
-
-cont = cnt.get_paths()[0].vertices
-gammas = cont[:, 0]
-norms = cont[:, 1]
-
-cont1 = cnt1.get_paths()[0].vertices
-gammas1 = cont1[:, 0]
-norms1 = cont1[:, 1]
-
-F_norms = []
-for i in range(len(norms)):
-    F_norms.append(
-        ana.calculate_fluxmodel_scaling_factor(norms[i], [norms[i], gammas[i]])
-    )
-Fbest = ana.calculate_fluxmodel_scaling_factor(ns_best, [ns_best, gamma_best])
-
-F_norms1 = []
-for i in range(len(norms1)):
-    F_norms1.append(
-        ana.calculate_fluxmodel_scaling_factor(
-            norms1[i], [norms1[i], gammas1[i]]
-        )
-    )
-
-plt.plot(gammas, F_norms)
-plt.plot(gammas1, F_norms1)
-plt.yscale("log")
-plt.ylabel("Flux normalisation at 1 TeV, 1/(GeV s cm$^2$)")
-plt.scatter([gamma_best], [Fbest], marker="x")
-plt.xlabel("Slope")
-plt.savefig("Confidence_range_68.png", format="png", bbox_inches="tight")
-
-x = np.logspace(-1, 3, 10)
-
-# 3.690e-15 (E/1000 GeV)^{-2.33} 1/(GeV s cm^2 sr)
-ymax = np.zeros(len(x))
-ymin = np.ones(len(x))
-for i in range(len(gammas)):
-    y = (
-        3 * F_norms[i] * (x / 1.0) ** (-gammas[i]) * x**2 * 1e3
-    )  # TeV *(TeV/GeV)/cm2 s
-    ymax = np.maximum(ymax, y)
-    ymin = np.minimum(ymin, y)
-
-ymax90 = np.zeros(len(x))
-for i in range(len(gammas1)):
-    y = (
-        3 * F_norms1[i] * (x / 1.0) ** (-gammas1[i]) * x**2 * 1e3
-    )  # TeV *(TeV/GeV)/cm2 s
-    ymax90 = np.maximum(ymax90, y)
-
-    # plt.plot(x,y)
-if min(norms) > 1:
-    plt.fill_between(x, ymin, ymax, alpha=0.5, label="68% error")
-plt.plot(x, ymax90, color="black", linewidth=4, label="90% UL")
-
-y = 3 * Fbest * (x / 1.0) ** (-gamma_best) * x**2 * 1e3
-plt.plot(x, y, color="black")
-plt.xscale("log")
-plt.yscale("log")
-plt.legend(loc="upper right")
-plt.xlabel("$E$, TeV")
-plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$s), all flavours")
-plt.ylim(1e-14, 3e-10)
-plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
-
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-data = [gammas, F_norms]
-names = ("Slopes", "Fnorms_1TeV[1/(Gev s cm2)")
+data = [x, ybest, ymin_68, ymax_68, ymax_90]
+names = (
+    "Energy[TeV]",
+    "F_best[TeV/cm2s]",
+    "F_min_68[TeV/cm2s]",
+    "F_max_68[TeV/cm2s]",
+    "F_max_90[TeV/cm2s]",
+)
 spec_params = ODAAstropyTable(Table(data, names=names))
 
 spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-spec_params_astropy_table = (
-    spec_params  # http://odahub.io/ontology#ODAAstropyTable
-)
+spectrum_table = spec_params  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
@@ -361,9 +266,9 @@ _oda_outs.append(
 )
 _oda_outs.append(
     (
-        "out_Spectrum_spec_params_astropy_table",
-        "spec_params_astropy_table_galaxy.output",
-        spec_params_astropy_table,
+        "out_Spectrum_spectrum_table",
+        "spectrum_table_galaxy.output",
+        spectrum_table,
     )
 )
 

@@ -2,18 +2,21 @@
   <requirements>
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="8.22.2">ipython</requirement>
-    <requirement type="package" version="6.0.0">astropy</requirement>
-    <requirement type="package" version="1.26.4">numpy</requirement>
-    <requirement type="package" version="1.12.0">scipy</requirement>
-    <requirement type="package" version="2.25.2">iminuit</requirement>
+    <requirement type="package" version="5.3.4">astropy</requirement>
+    <requirement type="package" version="1.11.4">scipy</requirement>
+    <requirement type="package" version="1.10.14">pydantic</requirement>
+    <requirement type="package" version="4.66.2">tqdm</requirement>
+    <requirement type="package" version="1.1">gammapy</requirement>
     <requirement type="package" version="3.8.3">matplotlib</requirement>
-    <requirement type="package" version="24.1.0">skyllh</requirement>
-    <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="0.70.16">multiprocess</requirement>
     <requirement type="package" version="1.2.13">oda-api</requirement>
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="2.25.2">iminuit</requirement>
+    <requirement type="package" version="24.1.0">skyllh</requirement>
+    <requirement type="package" version="0.70.16">multiprocess</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.2">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -22,11 +25,11 @@
   <inputs>
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
-        <option value="TS_map" selected="true">TS_map</option>
+        <option value="Image" selected="true">Image</option>
         <option value="Spectrum" selected="false">Spectrum</option>
-        <option value="Likelihood_profile" selected="false">Likelihood_profile</option>
+        <option value="Lightcurve" selected="false">Lightcurve</option>
       </param>
-      <when value="TS_map">
+      <when value="Image">
         <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
         <param name="Radius" type="float" value="1.0" label="Radius (unit: deg)" />
@@ -39,44 +42,44 @@
       </when>
       <when value="Spectrum">
         <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
+        <param name="DEC" type="float" value="10.013294" label="DEC (unit: deg)" />
         <param name="Spectrum_type" type="select" label="Spectrum_type">
-          <option value="Fixed_slope" selected="true">Fixed_slope</option>
-          <option value="Free_slope">Free_slope</option>
+          <option value="Fixed_slope">Fixed_slope</option>
+          <option value="Free_slope" selected="true">Free_slope</option>
         </param>
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
-      <when value="Likelihood_profile">
+      <when value="Lightcurve">
         <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
+        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" />
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
     </conditional>
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; TS_map picture" name="out_TS_map_picture" format="auto" from_work_dir="picture_galaxy.output">
-      <filter>_data_product['_selector'] == 'TS_map'</filter>
+    <data label="${tool.name} -&gt; Image picture" name="out_Image_picture" format="auto" from_work_dir="picture_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
     </data>
-    <data label="${tool.name} -&gt; TS_map image" name="out_TS_map_image" format="auto" from_work_dir="image_galaxy.output">
-      <filter>_data_product['_selector'] == 'TS_map'</filter>
+    <data label="${tool.name} -&gt; Image image" name="out_Image_image" format="auto" from_work_dir="image_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
     </data>
     <data label="${tool.name} -&gt; Spectrum spectrum_png" name="out_Spectrum_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; Spectrum spec_params_astropy_table" name="out_Spectrum_spec_params_astropy_table" format="auto" from_work_dir="spec_params_astropy_table_galaxy.output">
+    <data label="${tool.name} -&gt; Spectrum spectrum_table" name="out_Spectrum_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; Likelihood_profile likelihood_profile_png" name="out_Likelihood_profile_likelihood_profile_png" format="auto" from_work_dir="likelihood_profile_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'Likelihood_profile'</filter>
+    <data label="${tool.name} -&gt; Lightcurve lightcurve_png" name="out_Lightcurve_lightcurve_png" format="auto" from_work_dir="lightcurve_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Lightcurve'</filter>
     </data>
-    <data label="${tool.name} -&gt; Likelihood_profile likelihood_profile_table" name="out_Likelihood_profile_likelihood_profile_table" format="auto" from_work_dir="likelihood_profile_table_galaxy.output">
-      <filter>_data_product['_selector'] == 'Likelihood_profile'</filter>
+    <data label="${tool.name} -&gt; Lightcurve lightcurve_table" name="out_Lightcurve_lightcurve_table" format="auto" from_work_dir="lightcurve_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'Lightcurve'</filter>
     </data>
   </outputs>
   <tests>
     <test expect_num_outputs="2">
       <conditional name="_data_product">
-        <param name="_selector" value="TS_map" />
+        <param name="_selector" value="Image" />
         <param name="RA" value="40.669622" />
         <param name="DEC" value="-0.013294" />
         <param name="Radius" value="1.0" />
@@ -92,8 +95,8 @@
       <conditional name="_data_product">
         <param name="_selector" value="Spectrum" />
         <param name="RA" value="40.669622" />
-        <param name="DEC" value="-0.013294" />
-        <param name="Spectrum_type" value="Fixed_slope" />
+        <param name="DEC" value="10.013294" />
+        <param name="Spectrum_type" value="Free_slope" />
         <param name="Slope" value="3.0" />
       </conditional>
       <assert_stdout>
@@ -102,9 +105,9 @@
     </test>
     <test expect_num_outputs="2">
       <conditional name="_data_product">
-        <param name="_selector" value="Likelihood_profile" />
+        <param name="_selector" value="Lightcurve" />
         <param name="RA" value="40.669622" />
-        <param name="DEC" value="-0.013294" />
+        <param name="DEC" value="0.013294" />
         <param name="Slope" value="3.0" />
       </conditional>
       <assert_stdout>
