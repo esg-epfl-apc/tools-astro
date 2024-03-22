@@ -55,6 +55,9 @@ E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
 Emax = 30  # http://odahub.io/ontology#Energy_TeV
 Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
 
+norm_cm2_TeV_s = 1e-12  # http://odahub.io/ontology#Float
+norm_energy = 1.0  # http://odahub.io/ontology#Energy_TeV
+
 _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
@@ -162,12 +165,25 @@ dataset = maker.run(empty, observation)
 Path("event_sampling").mkdir(exist_ok=True)
 dataset.write("./event_sampling/dataset.fits", overwrite=True)
 
-def GetBinSpectralModel(E, bins_per_decade=20, norm=1):
-    amplitude = 1e-12 * u.Unit("cm-2 s-1") * norm
+def GetBinSpectralModel(
+    E, bins_per_decade=20, amplitude=1e-12 * u.Unit("cm-2 s-1")
+):
+    # amplitude=1e-12 * u.Unit("cm-2 s-1") * norm
     from gammapy.modeling.models import GaussianSpectralModel
 
     sigma = (10 ** (1 / bins_per_decade) - 1) * E
     return GaussianSpectralModel(mean=E, sigma=sigma, amplitude=amplitude)
+
+from gammapy.modeling.models import GaussianSpectralModel
+
+meanE = 1 * u.TeV
+bins_per_decade = 20
+sigma = (10 ** (1 / bins_per_decade) - 1) * meanE
+amplitude = 1 * u.Unit("cm-2 s-1")
+gm = GaussianSpectralModel(mean=meanE, sigma=sigma, amplitude=amplitude)
+ax = gm.plot(energy_bounds=(0.1, 100) * u.TeV)
+ax.set_yscale("linear")
+gm.integral(meanE - 3 * sigma, meanE + 3 * sigma)
 
 spec = cube_map.get_spectrum()
 spec
@@ -178,29 +194,44 @@ spec.data.shape, spec.data[spec.data.shape[0] // 2, 0, 0]
 
 energy_bins = cube_map.geom.axes["energy"].center
 len(energy_bins), float(np.max(energy_bins) / u.TeV)
+norm_bin = 0
+for i, E in enumerate(energy_bins):
+    if E > norm_energy * u.TeV:
+        norm_bin = i
+        break
+assert norm_bin > 0
+norm_bin
 
-Npart = 5000  # TODO update
-n_events_reduction_factor = 1  # suppress flux factor
+norm_bin_width = cube_map.geom.axes["energy"].bin_width[norm_bin]
+norm_bin_width
+
+# Npart=5000 # TODO update
+# n_events_reduction_factor = 1 # suppress flux factor
 
 int_bin_flux = (
     spec.data.flatten()
-)  # we don't have to multiply by energy_bins /u.TeV since spectrum is in already multiplied by E (see above)
-int_bin_flux /= (
-    Npart
-    / 200000
-    * np.max(int_bin_flux)
-    * n_events_reduction_factor
-    * 20
-    / len(energy_bins)
-)  # roughly 100 events
+)  # we don't have to multiply by energy_bins /u.TeV since spectrum is already multiplied by E (see above)
+norm_flux = int_bin_flux[norm_bin] / norm_bin_width
+norm_flux
+# int_bin_flux /= (Npart/200000 * np.max(int_bin_flux) * n_events_reduction_factor * 20/len(energy_bins)) # roughly 100 events
+# int_bin_flux
+
+mult = norm_cm2_TeV_s * u.Unit("cm-2 s-1 TeV-1") / norm_flux  # .decompose()
+mult
+
+int_bin_flux = mult * int_bin_flux
+
 int_bin_flux
 
 bin_models = []
 for i, (flux, E) in enumerate(zip(int_bin_flux, energy_bins)):
+    # print(i)
     if flux == 0:
+        print("skipping bin ", i)
         continue
+    # print(flux)
     spectral_model_delta = GetBinSpectralModel(
-        E, norm=flux
+        E, amplitude=flux
     )  # normalizing here
     spacial_template_model = TemplateSpatialModel(
         cube_map.slice_by_idx({"energy": i}),

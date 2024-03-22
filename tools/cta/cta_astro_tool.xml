@@ -33,6 +33,8 @@
         <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
         <param name="Emax" type="integer" value="30" label="Emax (unit: TeV)" />
         <param name="Emin" type="float" value="0.1" label="Emin (unit: TeV)" />
+        <param name="norm_cm2_TeV_s" type="float" value="1e-12" label="norm_cm2_TeV_s" />
+        <param name="norm_energy" type="float" value="1.0" label="norm_energy (unit: TeV)" />
       </when>
       <when value="Simulate_pointing">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -93,12 +95,14 @@
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/b8b346a8ed0483466317eeae38e03efebf9f8517/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/5cd39d0a81d0d5e9806335608de5c8f5a9b3e029/3d.fits" />
         <param name="file_url" value="" />
         <param name="F0" value="4e-13" />
         <param name="E0" value="1.0" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
+        <param name="norm_cm2_TeV_s" value="1e-12" />
+        <param name="norm_energy" value="1.0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
