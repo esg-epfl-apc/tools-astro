@@ -27,7 +27,11 @@ from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import Models
-from oda_api.data_products import ImageDataProduct, PictureProduct
+from oda_api.data_products import (
+    BinaryProduct,
+    ImageDataProduct,
+    PictureProduct,
+)
 from regions import CircleSkyRegion
 
 # from gammapy.irf import load_cta_irfs
@@ -246,7 +250,7 @@ plt.xlabel("RA")
 plt.ylabel("Dec")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 
-fits_events = ImageDataProduct.from_fits_file("events.fits")
+fits_events = BinaryProduct.from_file("events.fits")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")
 bin_image = PictureProduct.from_file("Image.png")
 
