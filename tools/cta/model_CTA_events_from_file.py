@@ -11,7 +11,6 @@ from pathlib import Path
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-import wget
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
@@ -34,6 +33,7 @@ from gammapy.modeling.models import (
 from numpy import cos, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
+from utils import download_file
 
 get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
 
@@ -70,9 +70,9 @@ for vn, vv in inp_pdic.items():
 
 if len(file_url) > 0:
     if file_url.startswith("file://"):
-        file_path = fileurl[len("file://") :]
+        file_path = file_url[len("file://") :]
     else:
-        file_path = wget.download(file_url)
+        file_path = download_file(file_url)
 file_path
 
 cube_map = Map.read(file_path)

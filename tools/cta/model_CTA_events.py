@@ -38,7 +38,7 @@ get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # 
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
+    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\npython  ../unzip.py cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
 )
 
 # We simulate point source in wobble observaiton,
@@ -80,6 +80,17 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
+
+# make sure float params have float type (sometimes int may be passed)
+F0 = float(F0)
+E0 = float(E0)
+Gamma = float(Gamma)
+sigma = float(sigma)
+Texp = float(Texp)
+RA = float(RA)
+DEC = float(DEC)
+# debug print
+print(F0, E0, Gamma, sigma, Texp, RA, DEC)
 
 # We use "cube" model filled with counts
 # this is experimentally established version of
@@ -169,6 +180,9 @@ Z_ps = Gauss(Xg, Yg, A, x0, y0, sigma / cdec, sigma)
 cube = np.zeros((n_Ebins, Npix, Npix))
 for i in range(n_Ebins):
     cube[i] = norm_ps * Z_ps * (E[i]) ** (-(Gamma - 1)) * exp(-tau_s[i])
+
+# just test if the map is valid
+Map.read("3d.fits")
 
 hdul = fits.open("3d.fits", mode="update")
 hdul[0].header["CRVAL1"] = RA
