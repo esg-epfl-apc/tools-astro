@@ -37,7 +37,22 @@ from gammapy.modeling.models import (
 )
 from numpy import cos, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
-from utils import download_file
+
+# import requests
+
+# def download_file(url, local_filename=None):
+#     if local_filename is None:
+#         local_filename = url.split('/')[-1]
+#     # NOTE the stream=True parameter below
+#     with requests.get(url, stream=True) as r:
+#         r.raise_for_status()
+#         with open(local_filename, 'wb') as f:
+#             for chunk in r.iter_content(chunk_size=8192):
+#                 # If you have chunk encoded response uncomment if
+#                 # and set chunk_size parameter to None.
+#                 #if chunk:
+#                 f.write(chunk)
+#     return local_filename
 
 get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
 
@@ -49,12 +64,12 @@ Texp = 2.4  # http://odahub.io/ontology#TimeIntervalHours
 
 file_path = "3d.fits"  # http://odahub.io/ontology#POSIXPath
 
-file_url = ""  # http://odahub.io/ontology#String
+# file_url='' # http://odahub.io/ontology#String
 
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
 # TODO: implement flux normalisation for fits input
-F0 = 4e-13  # http://odahub.io/ontology#Float
-E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
+# F0=4e-13 # http://odahub.io/ontology#Float
+# E0=1. # http://odahub.io/ontology#Energy_TeV
 
 Emax = 30  # http://odahub.io/ontology#Energy_TeV
 Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
@@ -75,11 +90,11 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-if len(file_url) > 0:
-    if file_url.startswith("file://"):
-        file_path = file_url[len("file://") :]
-    else:
-        file_path = download_file(file_url)
+# if len(file_url) > 0:
+#     if file_url.startswith('file://'):
+#         file_path = file_url[len('file://'):]
+#     else:
+#         file_path = download_file(file_url)
 file_path
 
 cube_map = Map.read(file_path)
