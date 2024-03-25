@@ -6,6 +6,11 @@
 import json
 import os
 import shutil
+import sys
+
+from oda_api.json import CustomJSONEncoder
+
+sys.path.append(".")
 from pathlib import Path
 
 import astropy.units as u
@@ -32,7 +37,6 @@ from gammapy.modeling.models import (
 )
 from numpy import cos, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
-from oda_api.json import CustomJSONEncoder
 from utils import download_file
 
 get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
