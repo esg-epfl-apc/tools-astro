@@ -38,21 +38,11 @@ from gammapy.modeling.models import (
 from numpy import cos, pi, sqrt
 from oda_api.data_products import NumpyDataProduct, PictureProduct
 
-# import requests
-
-# def download_file(url, local_filename=None):
-#     if local_filename is None:
-#         local_filename = url.split('/')[-1]
-#     # NOTE the stream=True parameter below
-#     with requests.get(url, stream=True) as r:
-#         r.raise_for_status()
-#         with open(local_filename, 'wb') as f:
-#             for chunk in r.iter_content(chunk_size=8192):
-#                 # If you have chunk encoded response uncomment if
-#                 # and set chunk_size parameter to None.
-#                 #if chunk:
-#                 f.write(chunk)
-#     return local_filename
+get_ipython().run_cell_magic(   # noqa: F821
+    "bash",
+    "",
+    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
+)
 
 # not for run on Galaxy
 # %%bash
@@ -93,13 +83,6 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-# if len(file_url) > 0:
-#     if file_url.startswith('file://'):
-#         file_path = file_url[len('file://'):]
-#     else:
-#         file_path = download_file(file_url)
-file_path
-
 cube_map = Map.read(file_path)
 cube_map.geom
 
@@ -122,7 +105,10 @@ pointing = FixedPointingInfo(fixed_icrs=pnt, mode=PointingMode.POINTING)
 location = observatory_locations["cta_south"]
 
 # irfs = load_irf_dict_from_file(path / irf_filename)
-filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+# filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+filename = (
+    "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+)
 irfs = load_irf_dict_from_file(filename)
 
 livetime = Texp * u.hr
