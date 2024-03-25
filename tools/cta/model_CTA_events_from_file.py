@@ -54,7 +54,10 @@ from oda_api.data_products import NumpyDataProduct, PictureProduct
 #                 f.write(chunk)
 #     return local_filename
 
-get_ipython().run_cell_magic("bash", "", "git lfs install\ngit lfs pull\n")   # noqa: F821
+# not for run on Galaxy
+# %%bash
+# git lfs install
+# git lfs pull
 
 # We simulate point source in wobble observaiton,
 # 0.4 degree off-axis
