@@ -1282,7 +1282,7 @@ class FileHandler:
                 try:
                     file_output.write(str(url[access_url]) + ',')
                 except Exception:
-                    error_message = "url field "+access_url+" not found for url"
+                    error_message = f"url field {access_url} not found for url"
                     Logger.create_action_log(
                         Logger.ACTION_ERROR,
                         Logger.ACTION_TYPE_WRITE_URL,
