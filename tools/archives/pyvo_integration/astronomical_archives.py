@@ -780,8 +780,8 @@ class ToolRunner:
 
                     if archive.access_url in ARCHIVES_TIMEOUT_BYPASS:
                         archive.get_resources = \
-                            timeout(40)(TapArchive.get_resources.__get__(archive))
-                    
+                            timeout(40)(TapArchive.get_resources.__get__(archive))  # noqa: E501
+
                     _file_url, error_message = archive.get_resources(
                         self._adql_query,
                         self._number_of_files,
@@ -1337,8 +1337,7 @@ class Utils:
 
     @staticmethod
     def is_valid_url(url: str) -> bool:
-        regex_url = re.compile('^https?://(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(?::\d+)?(?:/[^\s]*)?$')
-        
+        regex_url = re.compile(r'^https?://(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(?::\d+)?(?:/[^\s]*)?$')  # noqa: E501
         return re.match(regex_url, url) is not None
 
 
