@@ -50,7 +50,7 @@
             </when>
             <when value="custom">
               <param name="access_url" type="text" label="TAP archive access url">
-                <validator type="regex" message="URL seems invalid">^https?://[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.[A-Za-z]{2,6}(:\d+)?(/[^\s]*)?$</validator>
+                <validator type="regex" message="URL seems invalid">^https?://[A-Za-z0-9]([A-Za-z0-9-\.]{0,61}[A-Za-z0-9])?\.[A-Za-z]{2,6}(:\d+)?(/[^\s]*)?$</validator>
               </param>
             </when>
         </conditional>
@@ -500,7 +500,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-The MAST Archive at STScI TAP end point for the TESS Input Catalog.  The TIC is used to help identify two-minute cadence target selection for the TESS mission, and to calculate physical and observational properties of planet candidates. It is for use by both the TESS science team and the public, and it is periodically updated – the current version is TIC-8. TIC-8 uses the GAIA DR2 catalog as a base and merges a large number of other photometric catalogs, including 2MASS, UCAC4, APASS, SDSS, WISE, etc. There are roughly 1.5 billion stellar and extended sources in TIC-8, containing compiled magnitudes including B, V, u, g, r, i, z, J, H, K, W1-W4, and G.
+The MAST Archive at STScI TAP end point for the TESS Input Catalog.The TIC is used to help identify two-minute cadence target selection for the TESS mission, and to calculate physical and observational properties of planet candidates. It is for use by both the TESS science team and the public, and it is periodically updated – the current version is TIC-8. TIC-8 uses the GAIA DR2 catalog as a base and merges a large number of other photometric catalogs, including 2MASS, UCAC4, APASS, SDSS, WISE, etc. There are roughly 1.5 billion stellar and extended sources in TIC-8, containing compiled magnitudes including B, V, u, g, r, i, z, J, H, K, W1-W4, and G.
 The TIC can be directly accessed through the Mikulski Archive for Space Telescopes (MAST), using either queries or bulk download.
 
 The Table Access Protocol (TAP) lets you execute queries against our database tables, and inspect various metadata.  Upload is not currently supported.
