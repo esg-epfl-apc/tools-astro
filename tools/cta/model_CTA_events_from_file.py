@@ -6,9 +6,12 @@
 import json
 import os
 import shutil
-import sys
 
 from oda_api.json import CustomJSONEncoder
+
+get_ipython().run_cell_magic("bash", "", "git rev-parse HEAD\n")   # noqa: F821
+
+import sys
 
 sys.path.append(".")
 from pathlib import Path
