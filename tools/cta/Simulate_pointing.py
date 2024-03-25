@@ -12,7 +12,7 @@ from oda_api.json import CustomJSONEncoder
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    'git rev-parse HEAD\nrm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
+    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
 )
 
 import astropy.units as u
@@ -27,6 +27,7 @@ from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import Models
+from oda_api.api import ProgressReporter
 from oda_api.data_products import (
     BinaryProduct,
     ImageDataProduct,
@@ -67,6 +68,8 @@ for vn, vv in inp_pdic.items():
 
 Texp = Texp * 3600.0
 pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=10.0)
 
 get_ipython().system(   # noqa: F821
     "ls IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
@@ -163,11 +166,12 @@ for m in dataset.models[:-1]:
     print(
         f"This is the spatial separation of {m.name} from the pointing direction: {sep}"
     )
-
+pr.report_progress(stage="Progress", progress=50.0)
 print("Simulate...")
 sampler = MapDatasetEventSampler()
 events = sampler.run(dataset, observation)
 
+pr.report_progress(stage="Progress", progress=90.0)
 print(f"Save events ...")
 primary_hdu = fits.PrimaryHDU()
 hdu_evt = fits.BinTableHDU(events.table)
@@ -253,6 +257,7 @@ plt.savefig("Image.png", format="png", bbox_inches="tight")
 fits_events = BinaryProduct.from_file("events.fits")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")
 bin_image = PictureProduct.from_file("Image.png")
+pr.report_progress(stage="Progress", progress=100.0)
 
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 image = fits_image  # http://odahub.io/ontology#Image

@@ -21,7 +21,6 @@
       <param name="_selector" type="select" label="Data Product">
         <option value="model_CTA_events_from_file" selected="true">model_CTA_events_from_file</option>
         <option value="Simulate_pointing" selected="false">Simulate_pointing</option>
-        <option value="model_CTA_events" selected="false">model_CTA_events</option>
       </param>
       <when value="model_CTA_events_from_file">
         <param name="Texp" type="float" value="2.4" label="Texp (unit: hour)" />
@@ -47,19 +46,6 @@
         <param name="RA_pnt" type="float" value="167.113809" label="RA_pnt (unit: deg)" />
         <param name="DEC_pnt" type="float" value="38.208833" label="DEC_pnt (unit: deg)" />
       </when>
-      <when value="model_CTA_events">
-        <param name="src_name" type="text" value="Mrk 421" label="src_name" />
-        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
-        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
-        <param name="Texp" type="float" value="50.0" label="Texp (unit: hour)" />
-        <param name="z" type="float" value="0.1" label="z" />
-        <param name="F0" type="float" value="4e-13" label="F0" />
-        <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
-        <param name="Gamma" type="float" value="1.75" label="Gamma" />
-        <param name="sigma" type="float" value="0.0" label="sigma" />
-      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -78,22 +64,13 @@
     <data label="${tool.name} -&gt; Simulate_pointing event_list" name="out_Simulate_pointing_event_list" format="auto" from_work_dir="event_list_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_pointing'</filter>
     </data>
-    <data label="${tool.name} -&gt; model_CTA_events theta2" name="out_model_CTA_events_theta2" format="auto" from_work_dir="theta2_galaxy.output">
-      <filter>_data_product['_selector'] == 'model_CTA_events'</filter>
-    </data>
-    <data label="${tool.name} -&gt; model_CTA_events spectrum" name="out_model_CTA_events_spectrum" format="auto" from_work_dir="spectrum_galaxy.output">
-      <filter>_data_product['_selector'] == 'model_CTA_events'</filter>
-    </data>
-    <data label="${tool.name} -&gt; model_CTA_events events_fits" name="out_model_CTA_events_events_fits" format="auto" from_work_dir="events_fits_galaxy.output">
-      <filter>_data_product['_selector'] == 'model_CTA_events'</filter>
-    </data>
   </outputs>
   <tests>
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/4add33e1f3cc08f10ddbf5ae9a1715ab74f223be/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/6c8b1e33505a8ec3078fb73653023e3ecd999dc5/3d.fits" />
         <param name="file_url" value="" />
         <param name="F0" value="4e-13" />
         <param name="E0" value="1.0" />
@@ -120,25 +97,6 @@
         <param name="sigma" value="0.0" />
         <param name="RA_pnt" value="167.113809" />
         <param name="DEC_pnt" value="38.208833" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
-    <test expect_num_outputs="3">
-      <conditional name="_data_product">
-        <param name="_selector" value="model_CTA_events" />
-        <param name="src_name" value="Mrk 421" />
-        <param name="RA" value="166.113809" />
-        <param name="DEC" value="38.208833" />
-        <param name="T1" value="2000-10-09T13:16:00.0" />
-        <param name="T2" value="2022-10-10T13:16:00.0" />
-        <param name="Texp" value="50.0" />
-        <param name="z" value="0.1" />
-        <param name="F0" value="4e-13" />
-        <param name="E0" value="1.0" />
-        <param name="Gamma" value="1.75" />
-        <param name="sigma" value="0.0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
