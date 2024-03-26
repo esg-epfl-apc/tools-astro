@@ -10,6 +10,7 @@ import shutil
 import numpy as np
 import scipy.stats
 from matplotlib import pyplot as plt
+from oda_api.api import ProgressReporter
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
@@ -60,12 +61,20 @@ ana = create_analysis(cfg=cfg, datasets=datasets, source=source)
 events_list = [data.exp for data in ana.data_list]
 ana.initialize_trial(events_list)
 
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=5.0)
+
 rss = RandomStateService(seed=1)
 (ts, x, status) = ana.unblind(minimizer_rss=rss)
 
 print(f"TS = {ts:.3f}")
 print(f'ns = {x["ns"]:.2f}')
 print(f'gamma = {x["gamma"]:.2f}')
+
+chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
+chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
+chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
+chi2_68_quantile, chi2_90_quantile, chi2_95_quantile
 
 if Spectrum_type == "Fixed_slope":
     chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=1)
@@ -133,6 +142,7 @@ if Spectrum_type == "Free_slope":
     n_best = 0
     c_ul = np.zeros(len(Slopes))
     for i, Slope in enumerate(Slopes):
+        pr.report_progress(stage="Progress", progress=(i / len(Slopes)))
         for j, n in enumerate(counts):
             TS_map[i, j] = 2 * ana.llhratio.evaluate([n, Slope])[0]
             if TS_map[i, j] > tsbest:

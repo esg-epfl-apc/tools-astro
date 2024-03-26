@@ -13,6 +13,7 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from matplotlib import pyplot as plt
 from numpy import cos, pi
+from oda_api.api import ProgressReporter
 from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
@@ -103,6 +104,9 @@ def process_pixel1(index):
 
 # process_pixel(3)
 
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=5.0)
+
 tsbest = 0
 ibest = 0
 jbest = 0
@@ -123,6 +127,7 @@ else:
     #    res=pool.map(process_pixel, range(Npix**2))
     tsbest = 0
     for i, RRa in enumerate(RA_grid):
+        pr.report_progress(stage="Progress", progress=(i / len(RA_grid)))
         for j, DDec in enumerate(DEC_grid):
             ind = i * Npix + j
             r, d, TS_map[i, j], ns_map[i, j], gamma_map[i, j] = process_pixel(
@@ -146,7 +151,8 @@ plt.imshow(
     aspect=1 / cdec,
 )
 plt.colorbar(label="TS")
-plt.scatter([RA_grid[ibest]], [DEC_grid[jbest]], marker="x", color="red")
+plt.scatter([RA_grid[ibest]], [DEC_grid[jbest]], marker="x", color="white")
+plt.scatter([RA], [DEC], marker="+", color="red")
 plt.xlabel("Right Ascension, degrees")
 plt.ylabel("Declination, degrees")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
