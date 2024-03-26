@@ -1,0 +1,157 @@
+<tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="6.0">unzip</requirement>
+    <requirement type="package" version="8.22.2">ipython</requirement>
+    <requirement type="package" version="6.0.0">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.12.0">scipy</requirement>
+    <requirement type="package" version="2.25.2">iminuit</requirement>
+    <requirement type="package" version="3.8.3">matplotlib</requirement>
+    <requirement type="package" version="24.1.0">skyllh</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="0.70.16">multiprocess</requirement>
+    <requirement type="package" version="1.2.15">oda-api</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="_data_product">
+      <param name="_selector" type="select" label="Data Product">
+        <option value="Image" selected="true">Image</option>
+        <option value="Spectrum" selected="false">Spectrum</option>
+        <option value="Lightcurve" selected="false">Lightcurve</option>
+      </param>
+      <when value="Image">
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
+        <param name="Radius" type="float" value="1.0" label="Radius (unit: deg)" />
+        <param name="pixel_size" type="float" value="0.2" label="pixel_size (unit: deg)" />
+        <param name="TSmap_type" type="select" label="TSmap_type">
+          <option value="Fixed_slope" selected="true">Fixed_slope</option>
+          <option value="Free_slope">Free_slope</option>
+        </param>
+        <param name="Slope" type="float" value="3.0" label="Slope" />
+      </when>
+      <when value="Spectrum">
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="10.013294" label="DEC (unit: deg)" />
+        <param name="Spectrum_type" type="select" label="Spectrum_type">
+          <option value="Fixed_slope">Fixed_slope</option>
+          <option value="Free_slope" selected="true">Free_slope</option>
+        </param>
+        <param name="Slope" type="float" value="3.0" label="Slope" />
+      </when>
+      <when value="Lightcurve">
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" />
+        <param name="Slope" type="float" value="3.0" label="Slope" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; Image picture" name="out_Image_picture" format="auto" from_work_dir="picture_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Image image" name="out_Image_image" format="auto" from_work_dir="image_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum spectrum_png" name="out_Spectrum_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum spectrum_table" name="out_Spectrum_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Lightcurve lightcurve_png" name="out_Lightcurve_lightcurve_png" format="auto" from_work_dir="lightcurve_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Lightcurve'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Lightcurve lightcurve_table" name="out_Lightcurve_lightcurve_table" format="auto" from_work_dir="lightcurve_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'Lightcurve'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="Image" />
+        <param name="RA" value="40.669622" />
+        <param name="DEC" value="-0.013294" />
+        <param name="Radius" value="1.0" />
+        <param name="pixel_size" value="0.2" />
+        <param name="TSmap_type" value="Fixed_slope" />
+        <param name="Slope" value="3.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="Spectrum" />
+        <param name="RA" value="40.669622" />
+        <param name="DEC" value="10.013294" />
+        <param name="Spectrum_type" value="Free_slope" />
+        <param name="Slope" value="3.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="Lightcurve" />
+        <param name="RA" value="40.669622" />
+        <param name="DEC" value="0.013294" />
+        <param name="Slope" value="3.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>| This service provides analysis of publicly available data of IceCube
+  neutrino telescope, described by `IceCube Collaboration
+  (2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__.
+| Three types of data products are generated: sky images, source
+  lightcurves and spectra.
+
+The image that will be produced is a Test Statistic (TS) value map
+around the reference source position. The TS values will be computed for
+the powerlaw spectral model of a source placed at the center of each
+pixel. It is possible to either fix the slope of the spectrum or leave
+it free, using a ``Fixed_slope`` / ``Free_slope`` switch. For the
+``Fixed slope`` choice, it is possible to set the spectral slope setting
+the ``Slope`` parameter.
+
+Similar to the Image, the spectrum can be requested either for a fixed
+spectral slope, or leaving the slope free in the spectral fitting, using
+the ``Fixed_slope`` / ``Free_slope`` switch. For the fixed spectral
+slope, the analysis builds a likelihood profile to find the best-fit
+number of counts from the source and the error intervals (defined as the
+boundaries of the interval in which the TS value decreases by 1 with
+respect to the maximum, the 90% upper bound is defined at the upper
+boundary of the interval at which the TS value decreases by 2.7). The
+counts are converted to the flux normalisation using the
+*calculate_fluxmodel_scaling_factor* funciton of skyllh. In the case of
+``Free Slope`` choice, TS values are calculated as a function of the
+source counts and spectral slope and 68% confidence contours are defined
+as the level at which TS decreases by 2.3 with respect to the maximal
+value. If the maximal TS value exceeds 6, the best-fit spectrum is
+plotted together with the 68% confidence range &#8220;butterfly&#8221;. Otherwise,
+an upper limit on the powerlaw type spectra is shown. This upper limit
+is shown as a curve that is a tangent to the maximal possible powerlaw
+spectrum (at 90% confidence level) for each spectral slope in the range
+between 1 and 5.
+
+For the lightcurve, the entire ten-year time span of IceCube public data
+is divided into intevals corresponding to the IceCube observational
+periods (from IC40 to IC86-VII). For each period, the source flux is
+extracted assuming fixed spectral slope.
+</help>
+  <citations>
+    <citation type="doi">10.21234/CPKQ-K003</citation>
+  </citations>
+</tool>
