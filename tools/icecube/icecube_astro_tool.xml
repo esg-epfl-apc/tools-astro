@@ -151,4 +151,7 @@ is divided into intevals corresponding to the IceCube observational
 periods (from IC40 to IC86-VII). For each period, the source flux is
 extracted assuming fixed spectral slope.
 </help>
+  <citations>
+    <citation type="doi">10.21234/CPKQ-K003</citation>
+  </citations>
 </tool>
