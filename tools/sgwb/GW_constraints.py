@@ -390,7 +390,7 @@ def Bturb(T_star, alpha, beta_H, v_w, epsilon_turb):
 
 # PTA data loading (approximation of constraints as ellipses)
 
-DATA = np.loadtxt("Documents/PPTA_15.txt")
+DATA = np.loadtxt("PPTA_15.txt")
 print(DATA)
 
 u_ell3_PPTA = DATA[0][0]
@@ -424,6 +424,625 @@ b_ell_PPTA = (
 ) ** (1 / 2)
 print(b_ell_PPTA)
 theta_PPTA = -0.32
+
+DATA = np.loadtxt("nano_15.txt")
+print(DATA)
+
+u_ell3_nano = DATA[0][0]
+v_ell3_nano = DATA[1][1]
+a_ell3_nano = (
+    (DATA[4][0] - u_ell3_nano) ** 2 + (DATA[4][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(a_ell3_nano)
+b_ell3_nano = (
+    (DATA[10][0] - u_ell3_nano) ** 2 + (DATA[10][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(b_ell3_nano)
+u_ell2_nano = DATA[0][0]
+v_ell2_nano = DATA[1][1]
+a_ell2_nano = (
+    (DATA[3][0] - u_ell3_nano) ** 2 + (DATA[3][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(a_ell2_nano)
+b_ell2_nano = (
+    (DATA[9][0] - u_ell3_nano) ** 2 + (DATA[9][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(b_ell2_nano)
+u_ell_nano = DATA[0][0]
+v_ell_nano = DATA[1][1]
+a_ell_nano = (
+    (DATA[2][0] - u_ell3_nano) ** 2 + (DATA[2][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(a_ell_nano)
+b_ell_nano = (
+    (DATA[8][0] - u_ell3_nano) ** 2 + (DATA[8][1] - v_ell3_nano) ** 2
+) ** (1 / 2)
+print(b_ell_nano)
+theta_nano = -0.38
+
+DATA = np.loadtxt("EPTA_15.txt")
+print(DATA)
+
+u_ell3_EPTA = DATA[0][0]
+v_ell3_EPTA = DATA[1][1]
+a_ell3_EPTA = (
+    (DATA[4][0] - u_ell3_EPTA) ** 2 + (DATA[4][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(a_ell3_EPTA)
+b_ell3_EPTA = (
+    (DATA[10][0] - u_ell3_EPTA) ** 2 + (DATA[10][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(b_ell3_EPTA)
+u_ell2_EPTA = DATA[0][0]
+v_ell2_EPTA = DATA[1][1]
+a_ell2_EPTA = (
+    (DATA[3][0] - u_ell3_EPTA) ** 2 + (DATA[3][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(a_ell2_EPTA)
+b_ell2_EPTA = (
+    (DATA[9][0] - u_ell3_EPTA) ** 2 + (DATA[9][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(b_ell2_EPTA)
+u_ell_EPTA = DATA[0][0]
+v_ell_EPTA = DATA[1][1]
+a_ell_EPTA = (
+    (DATA[2][0] - u_ell3_EPTA) ** 2 + (DATA[2][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(a_ell_EPTA)
+b_ell_EPTA = (
+    (DATA[8][0] - u_ell3_EPTA) ** 2 + (DATA[8][1] - v_ell3_EPTA) ** 2
+) ** (1 / 2)
+print(b_ell_EPTA)
+theta_EPTA = -0.38
+
+# turb and sound waves together + constraints on A + range on epsilon turb
+
+# taille=[1,100,100,100]
+
+valuesbool_nano = np.zeros(taille)
+valuesbool2_nano = np.zeros(taille)
+valuesbool3_nano = np.zeros(taille)
+
+valuesbool_PPTA = np.zeros(taille)
+valuesbool2_PPTA = np.zeros(taille)
+valuesbool3_PPTA = np.zeros(taille)
+
+valuesbool_EPTA = np.zeros(taille)
+valuesbool2_EPTA = np.zeros(taille)
+valuesbool3_EPTA = np.zeros(taille)
+
+valuesbool_CPTA = np.zeros(taille)
+
+valuesboolCMB = np.zeros(taille)
+
+valuesL3_nano = np.zeros(taille)
+valuesL2_nano = np.zeros(taille)
+valuesL_nano = np.zeros(taille)
+valuesL3_PPTA = np.zeros(taille)
+valuesL2_PPTA = np.zeros(taille)
+valuesL_PPTA = np.zeros(taille)
+valuesL3_EPTA = np.zeros(taille)
+valuesL2_EPTA = np.zeros(taille)
+valuesL_EPTA = np.zeros(taille)
+
+valuesB3_nano = np.zeros(taille)
+valuesB2_nano = np.zeros(taille)
+valuesB_nano = np.zeros(taille)
+valuesB3_PPTA = np.zeros(taille)
+valuesB2_PPTA = np.zeros(taille)
+valuesB_PPTA = np.zeros(taille)
+valuesB3_EPTA = np.zeros(taille)
+valuesB2_EPTA = np.zeros(taille)
+valuesB_EPTA = np.zeros(taille)
+
+valuesmat = np.zeros(taille)
+valuesA = np.zeros(taille)
+
+# coordinates of the ellipses depending of the reference
+
+"""
+vlist=np.linspace(0.99,1,taille[0])
+alphalist=np.logspace(2,3,taille[2])
+betalist=np.logspace(0,4,taille[3])
+Templist=np.logspace(-3,2,taille[1])
+"""
+
+critere2list = []
+criterelist = []
+
+for e in range(1):
+    epsilon_turb = 0.1
+    for v in range(len(vlist)):
+        for t in range(len(Templist)):
+            for a in range(len(alphalist)):
+                for b in range(len(betalist)):
+                    checkpoint1 = GW_turb1(
+                        10 ** (-7.75) * u.Hz,
+                        Templist[t] * u.GeV,
+                        alphalist[a],
+                        betalist[b],
+                        vlist[v],
+                        epsilon_turb,
+                    ) + GW_sound2(
+                        10 ** (-7.75) * u.Hz,
+                        Templist[t] * u.GeV,
+                        alphalist[a],
+                        betalist[b],
+                        vlist[v],
+                    )
+                    checkpoint2 = GW_turb1(
+                        10 ** (-8.75) * u.Hz,
+                        Templist[t] * u.GeV,
+                        alphalist[a],
+                        betalist[b],
+                        vlist[v],
+                        epsilon_turb,
+                    ) + GW_sound2(
+                        10 ** (-8.75) * u.Hz,
+                        Templist[t] * u.GeV,
+                        alphalist[a],
+                        betalist[b],
+                        vlist[v],
+                    )
+                    critere = np.log10(checkpoint1 / checkpoint2)
+                    critere = 5 - critere
+                    critere2 = (
+                        (
+                            GW_turb1(
+                                3.2 * 10 ** (-8) * u.Hz,
+                                Templist[t] * u.GeV,
+                                alphalist[a],
+                                betalist[b],
+                                vlist[v],
+                                epsilon_turb,
+                            )
+                            + GW_sound2(
+                                3.2 * 10 ** (-8) * u.Hz,
+                                Templist[t] * u.GeV,
+                                alphalist[a],
+                                betalist[b],
+                                vlist[v],
+                            )
+                        )
+                        * 3
+                        * 5.14
+                        * 10 ** (-36)
+                        / (2 * pi**2 * (3.2 * 10 ** (-8)) ** 2)
+                    ) ** (1 / 2)
+                    critere2 = np.log10(critere2)
+                    # if critere2>10**(-14):
+                    # print(critere2)
+                    if (
+                        (critere - u_ell3_nano) * cos(theta_nano)
+                        + (critere2 - v_ell3_nano) * sin(theta_nano)
+                    ) ** 2 / a_ell3_nano**2 + (
+                        (critere - u_ell3_nano) * sin(theta_nano)
+                        - (critere2 - v_ell3_nano) * cos(theta_nano)
+                    ) ** 2 / b_ell3_nano**2 < 1:
+                        valuesbool3_nano[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL3_nano[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB3_nano[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell2_nano) * cos(theta_nano)
+                        + (critere2 - v_ell2_nano) * sin(theta_nano)
+                    ) ** 2 / a_ell2_nano**2 + (
+                        (critere - u_ell2_nano) * sin(theta_nano)
+                        - (critere2 - v_ell2_nano) * cos(theta_nano)
+                    ) ** 2 / b_ell2_nano**2 < 1:
+                        valuesbool2_nano[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL2_nano[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB2_nano[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell_nano) * cos(theta_nano)
+                        + (critere2 - v_ell_nano) * sin(theta_nano)
+                    ) ** 2 / a_ell_nano**2 + (
+                        (critere - u_ell_nano) * sin(theta_nano)
+                        - (critere2 - v_ell_nano) * cos(theta_nano)
+                    ) ** 2 / b_ell_nano**2 < 1:
+                        valuesbool_nano[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL_nano[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB_nano[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell3_PPTA) * cos(theta_PPTA)
+                        + (critere2 - v_ell3_PPTA) * sin(theta_PPTA)
+                    ) ** 2 / a_ell3_PPTA**2 + (
+                        (critere - u_ell3_PPTA) * sin(theta_PPTA)
+                        - (critere2 - v_ell3_PPTA) * cos(theta_PPTA)
+                    ) ** 2 / b_ell3_PPTA**2 < 1:
+                        valuesbool3_PPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL3_PPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB3_PPTA[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell2_PPTA) * cos(theta_PPTA)
+                        + (critere2 - v_ell2_PPTA) * sin(theta_PPTA)
+                    ) ** 2 / a_ell2_PPTA**2 + (
+                        (critere - u_ell2_PPTA) * sin(theta_PPTA)
+                        - (critere2 - v_ell2_PPTA) * cos(theta_PPTA)
+                    ) ** 2 / b_ell2_PPTA**2 < 1:
+                        valuesbool2_PPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL2_PPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB2_PPTA[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell_PPTA) * cos(theta_PPTA)
+                        + (critere2 - v_ell_PPTA) * sin(theta_PPTA)
+                    ) ** 2 / a_ell_PPTA**2 + (
+                        (critere - u_ell_PPTA) * sin(theta_PPTA)
+                        - (critere2 - v_ell_PPTA) * cos(theta_PPTA)
+                    ) ** 2 / b_ell_PPTA**2 < 1:
+                        valuesbool_PPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL_PPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB_PPTA[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell3_EPTA) * cos(theta_EPTA)
+                        + (critere2 - v_ell3_EPTA) * sin(theta_EPTA)
+                    ) ** 2 / a_ell3_EPTA**2 + (
+                        (critere - u_ell3_EPTA) * sin(theta_EPTA)
+                        - (critere2 - v_ell3_EPTA) * cos(theta_EPTA)
+                    ) ** 2 / b_ell3_EPTA**2 < 1:
+                        valuesbool3_EPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL3_EPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB3_EPTA[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell2_EPTA) * cos(theta_EPTA)
+                        + (critere2 - v_ell2_EPTA) * sin(theta_EPTA)
+                    ) ** 2 / a_ell2_EPTA**2 + (
+                        (critere - u_ell2_EPTA) * sin(theta_EPTA)
+                        - (critere2 - v_ell2_EPTA) * cos(theta_EPTA)
+                    ) ** 2 / b_ell2_EPTA**2 < 1:
+                        valuesbool2_EPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL2_EPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB2_EPTA[v, t, a, b] = float(tmp[0] / u.G)
+                    if (
+                        (critere - u_ell_EPTA) * cos(theta_EPTA)
+                        + (critere2 - v_ell_EPTA) * sin(theta_EPTA)
+                    ) ** 2 / a_ell_EPTA**2 + (
+                        (critere - u_ell_EPTA) * sin(theta_EPTA)
+                        - (critere2 - v_ell_EPTA) * cos(theta_EPTA)
+                    ) ** 2 / b_ell_EPTA**2 < 1:
+                        valuesbool_EPTA[v, t, a, b] = 1.0
+                        # print("hit")
+                        tmp = Bturb(
+                            Templist[t] * u.GeV,
+                            alphalist[a],
+                            betalist[b],
+                            vlist[v],
+                            epsilon_turb,
+                        )
+                        valuesL_EPTA[v, t, a, b] = float(tmp[1] / u.Mpc)
+                        valuesB_EPTA[v, t, a, b] = float(tmp[0] / u.G)
+                        # print("hit")
+            print(t)
+        print(v)
+
+valuesbool_PPTA_PBH = np.copy(valuesbool_PPTA)
+valuesbool2_PPTA_PBH = np.copy(valuesbool2_PPTA)
+valuesbool3_PPTA_PBH = np.copy(valuesbool3_PPTA)
+
+# *********************************************************************************************************
+# correction of valuesbool by PBH
+for k in range(len(alphalist)):
+    for i in range(len(Templist)):
+        for j in range(len(betalist)):
+            if PBH(alphalist[k]) != 0:
+                if betalist[j] < PBH(alphalist[k]):
+                    valuesbool_PPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool2_PPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool3_PPTA_PBH[0, i, k, j] = 0.0
+# ***********************************************************************************************************
+
+valuesbool_nano_PBH = np.copy(valuesbool_nano)
+valuesbool2_nano_PBH = np.copy(valuesbool2_nano)
+valuesbool3_nano_PBH = np.copy(valuesbool3_nano)
+# *********************************************************************************************************
+# correction of valuesbool by PBH
+for k in range(len(alphalist)):
+    for i in range(len(Templist)):
+        for j in range(len(betalist)):
+            if PBH(alphalist[k]) != 0:
+                if betalist[j] < PBH(alphalist[k]):
+                    valuesbool_nano_PBH[0, i, k, j] = 0.0
+                    valuesbool2_nano_PBH[0, i, k, j] = 0.0
+                    valuesbool3_nano_PBH[0, i, k, j] = 0.0
+# ***********************************************************************************************************
+
+valuesbool_EPTA_PBH = np.copy(valuesbool_EPTA)
+valuesbool2_EPTA_PBH = np.copy(valuesbool2_EPTA)
+valuesbool3_EPTA_PBH = np.copy(valuesbool3_EPTA)
+
+# *********************************************************************************************************
+# correction of valuesbool by PBH
+for k in range(len(alphalist)):
+    for i in range(len(Templist)):
+        for j in range(len(betalist)):
+            if PBH(alphalist[k]) != 0:
+                if betalist[j] < PBH(alphalist[k]):
+                    valuesbool_EPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool2_EPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool3_EPTA_PBH[0, i, k, j] = 0.0
+# ***********************************************************************************************************
+
+valuesbool_tot_alpha = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha3 = np.zeros([taille[1], taille[1]])
+
+for k in range(len(alphalist)):
+    valuesbool_tot_alpha = np.minimum(
+        valuesbool_EPTA_PBH[0, :, k, :] + valuesbool_tot_alpha,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha2 = np.minimum(
+        valuesbool2_EPTA_PBH[0, :, k, :] + valuesbool_tot_alpha2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha3 = np.minimum(
+        valuesbool3_EPTA_PBH[0, :, k, :] + valuesbool_tot_alpha3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(alphalist)):
+    valuesbool_tot_alpha_PBH = np.minimum(
+        valuesbool3_EPTA[0, :, k, :] + valuesbool_tot_alpha_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha = (
+    valuesbool_tot_alpha2 + valuesbool_tot_alpha3 + valuesbool_tot_alpha
+)
+x = np.log10(Templist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_alpha)
+z2 = np.transpose(valuesbool_tot_alpha_PBH)
+
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "limegreen", "forestgreen", "darkgreen"],
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.3,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(0.0, 2.0)
+plt.xlim(-3, 1)
+plt.grid()
+# plt.savefig('Documents//EPTA_max'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axvline(log10(0.2),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+plt.show()
+
+valuesbool_tot_alpha = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha3 = np.zeros([taille[1], taille[1]])
+
+for k in range(len(alphalist)):
+    valuesbool_tot_alpha = np.minimum(
+        valuesbool_PPTA_PBH[0, :, k, :] + valuesbool_tot_alpha,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha2 = np.minimum(
+        valuesbool2_PPTA_PBH[0, :, k, :] + valuesbool_tot_alpha2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha3 = np.minimum(
+        valuesbool3_PPTA_PBH[0, :, k, :] + valuesbool_tot_alpha3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(alphalist)):
+    valuesbool_tot_alpha_PBH = np.minimum(
+        valuesbool3_PPTA[0, :, k, :] + valuesbool_tot_alpha_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha = (
+    valuesbool_tot_alpha2 + valuesbool_tot_alpha3 + valuesbool_tot_alpha
+)
+x = np.log10(Templist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_alpha)
+z2 = np.transpose(valuesbool_tot_alpha_PBH)
+
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "yellow", "orange", "red"],
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.3,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(0.0, 2.0)
+plt.xlim(-3, 1)
+plt.grid()
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axvline(log10(0.2),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//PPTA_max'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_alpha = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_alpha3 = np.zeros([taille[1], taille[1]])
+
+for k in range(len(alphalist)):
+    valuesbool_tot_alpha = np.minimum(
+        valuesbool_nano_PBH[0, :, k, :] + valuesbool_tot_alpha,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha2 = np.minimum(
+        valuesbool2_nano_PBH[0, :, k, :] + valuesbool_tot_alpha2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_alpha3 = np.minimum(
+        valuesbool3_nano_PBH[0, :, k, :] + valuesbool_tot_alpha3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_alpha_PBH = np.minimum(
+        valuesbool3_nano[0, :, k, :] + valuesbool_tot_alpha_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_alpha = (
+    valuesbool_tot_alpha2 + valuesbool_tot_alpha3 + valuesbool_tot_alpha
+)
+x = np.log10(Templist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_alpha)
+z2 = np.transpose(valuesbool_tot_alpha_PBH)
+
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "blue", "mediumblue", "darkblue"],
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.3,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(0.0, 2.0)
+plt.xlim(-3, 1)
+plt.grid()
+# plt.pcolor(X, Y, z)
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axvline(log10(0.2),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//nano_max'+'.jpeg')
+# plt.colorbar()
+plt.show()
 
 # output gathering
 _galaxy_meta_data = {}
