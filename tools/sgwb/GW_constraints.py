@@ -53,7 +53,7 @@ v_w = 0.99  # terminal velocity of bubbles
 h = 0.7  # dimensionless Hubble Constant
 c_s = 3 ** (-0.5)  # speed of sound
 
-taille = [1, 30, 30, 30]
+taille = [1, 100, 100, 100]
 taille_old = taille
 
 vlist = np.linspace(0.99, 1, taille[0])
@@ -423,7 +423,8 @@ b_ell_PPTA = (
     (DATA[8][0] - u_ell3_PPTA) ** 2 + (DATA[8][1] - v_ell3_PPTA) ** 2
 ) ** (1 / 2)
 print(b_ell_PPTA)
-theta_PPTA = -0.32
+theta_PPTA = (DATA[4][1] - v_ell3_PPTA) / (DATA[4][0] - u_ell3_PPTA)
+print(theta_PPTA)
 
 DATA = np.loadtxt("nano_15.txt")
 print(DATA)
@@ -458,7 +459,8 @@ b_ell_nano = (
     (DATA[8][0] - u_ell3_nano) ** 2 + (DATA[8][1] - v_ell3_nano) ** 2
 ) ** (1 / 2)
 print(b_ell_nano)
-theta_nano = -0.38
+theta_nano = (DATA[4][1] - v_ell3_nano) / (DATA[4][0] - u_ell3_nano)
+print(theta_nano)
 
 DATA = np.loadtxt("EPTA_15.txt")
 print(DATA)
@@ -493,7 +495,8 @@ b_ell_EPTA = (
     (DATA[8][0] - u_ell3_EPTA) ** 2 + (DATA[8][1] - v_ell3_EPTA) ** 2
 ) ** (1 / 2)
 print(b_ell_EPTA)
-theta_EPTA = -0.38
+theta_EPTA = (DATA[4][1] - v_ell3_EPTA) / (DATA[4][0] - u_ell3_EPTA)
+print(theta_EPTA)
 
 # turb and sound waves together + constraints on A + range on epsilon turb
 
@@ -778,6 +781,16 @@ for e in range(1):
             print(t)
         print(v)
 
+valuesbool_EPTA = np.load("EPTA.npy")
+valuesbool2_EPTA = np.load("EPTA2.npy")
+valuesbool3_EPTA = np.load("EPTA3.npy")
+valuesbool_PPTA = np.load("PPTA.npy")
+valuesbool2_PPTA = np.load("PPTA2.npy")
+valuesbool3_PPTA = np.load("PPTA3.npy")
+valuesbool_nano = np.load("nano.npy")
+valuesbool2_nano = np.load("nano2.npy")
+valuesbool3_nano = np.load("nano3.npy")
+
 valuesbool_PPTA_PBH = np.copy(valuesbool_PPTA)
 valuesbool2_PPTA_PBH = np.copy(valuesbool2_PPTA)
 valuesbool3_PPTA_PBH = np.copy(valuesbool3_PPTA)
@@ -1041,6 +1054,452 @@ y = [-1, log10(3.8), log10(3.8), -1]
 # plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
 # plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
 # plt.savefig('Documents//nano_max'+'.jpeg')
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_beta = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta3 = np.zeros([taille[1], taille[1]])
+
+valuesbool_tot_beta_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_beta_PBH = np.minimum(
+        valuesbool3_nano[0, :, :, k] + valuesbool_tot_beta_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+for k in range(len(betalist)):
+    valuesbool_tot_beta = np.minimum(
+        valuesbool_nano_PBH[0, :, :, k] + valuesbool_tot_beta,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta2 = np.minimum(
+        valuesbool2_nano_PBH[0, :, :, k] + valuesbool_tot_beta2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta3 = np.minimum(
+        valuesbool3_nano_PBH[0, :, :, k] + valuesbool_tot_beta3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_beta = (
+    valuesbool_tot_beta2 + valuesbool_tot_beta3 + valuesbool_tot_beta
+)
+
+x = np.log10(Templist)
+y = np.log10(alphalist)
+z = np.transpose(valuesbool_tot_beta)
+z2 = np.transpose(valuesbool_tot_beta_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "blue", "mediumblue", "darkblue"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\alpha$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(-1, 1.5)
+plt.xlim(-2, 1)
+plt.grid()
+# plt.axvline(log10(0.15),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//nano_max_beta'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_beta = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta3 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta_PBH = np.zeros([taille[1], taille[1]])
+
+valuesbool_tot_beta_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_beta_PBH = np.minimum(
+        valuesbool3_PPTA[0, :, :, k] + valuesbool_tot_beta_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+for k in range(len(betalist)):
+    valuesbool_tot_beta = np.minimum(
+        valuesbool_PPTA_PBH[0, :, :, k] + valuesbool_tot_beta,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta2 = np.minimum(
+        valuesbool2_PPTA_PBH[0, :, :, k] + valuesbool_tot_beta2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta3 = np.minimum(
+        valuesbool3_PPTA_PBH[0, :, :, k] + valuesbool_tot_beta3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_beta = (
+    valuesbool_tot_beta2 + valuesbool_tot_beta3 + valuesbool_tot_beta
+)
+
+x = np.log10(Templist)
+y = np.log10(alphalist)
+z = np.transpose(valuesbool_tot_beta)
+z2 = np.transpose(valuesbool_tot_beta_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "yellow", "orange", "red"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\alpha$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(-1, 1.5)
+plt.xlim(-2, 1)
+plt.grid()
+# plt.axvline(log10(0.15),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//PPTA_max_beta'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_beta = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta3 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_beta_PBH = np.zeros([taille[1], taille[1]])
+
+valuesbool_tot_beta_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_beta_PBH = np.minimum(
+        valuesbool3_EPTA[0, :, :, k] + valuesbool_tot_beta_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+for k in range(len(betalist)):
+    valuesbool_tot_beta = np.minimum(
+        valuesbool_EPTA_PBH[0, :, :, k] + valuesbool_tot_beta,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta2 = np.minimum(
+        valuesbool2_EPTA_PBH[0, :, :, k] + valuesbool_tot_beta2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_beta3 = np.minimum(
+        valuesbool3_EPTA_PBH[0, :, :, k] + valuesbool_tot_beta3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_beta = (
+    valuesbool_tot_beta2 + valuesbool_tot_beta3 + valuesbool_tot_beta
+)
+
+x = np.log10(Templist)
+y = np.log10(alphalist)
+z = np.transpose(valuesbool_tot_beta)
+z2 = np.transpose(valuesbool_tot_beta_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "limegreen", "forestgreen", "darkgreen"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# print("alpha = ", alphalist[indicealpha])
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\alpha$)")
+plt.xlabel("log(T in GeV)")
+plt.ylim(-1, 1.5)
+plt.xlim(-2, 1)
+plt.grid()
+# plt.axvline(log10(0.15),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.axvline(log10(0.1),linestyle='dashed',color='purple',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//EPTA_max_beta'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_T = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T3 = np.zeros([taille[1], taille[1]])
+
+valuesbool_tot_T_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_T_PBH = np.minimum(
+        valuesbool3_EPTA[0, k, :, :] + valuesbool_tot_T_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+for k in range(len(betalist)):
+    valuesbool_tot_T = np.minimum(
+        valuesbool_EPTA_PBH[0, k, :, :] + valuesbool_tot_T,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T2 = np.minimum(
+        valuesbool2_EPTA_PBH[0, k, :, :] + valuesbool_tot_T2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T3 = np.minimum(
+        valuesbool3_EPTA_PBH[0, k, :, :] + valuesbool_tot_T3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_T = valuesbool_tot_T2 + valuesbool_tot_T3 + valuesbool_tot_T
+
+x = np.log10(alphalist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_T)
+z2 = np.transpose(valuesbool_tot_T_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "limegreen", "forestgreen", "darkgreen"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel(r"log($\alpha$)")
+plt.ylim(-1, 1.5)
+plt.xlim(-1, 2)
+plt.grid()
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//EPTA_max_T'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_T = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T3 = np.zeros([taille[1], taille[1]])
+
+valuesbool_PPTA_PBH = np.copy(valuesbool_PPTA)
+valuesbool2_PPTA_PBH = np.copy(valuesbool2_PPTA)
+valuesbool3_PPTA_PBH = np.copy(valuesbool3_PPTA)
+
+# *********************************************************************************************************
+# correction of valuesbool by PBH
+for k in range(len(alphalist)):
+    for i in range(len(Templist)):
+        for j in range(len(betalist)):
+            if PBH(alphalist[k]) != 0:
+                if betalist[j] < PBH(alphalist[k]):
+                    valuesbool_PPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool2_PPTA_PBH[0, i, k, j] = 0.0
+                    valuesbool3_PPTA_PBH[0, i, k, j] = 0.0
+# ***********************************************************************************************************
+valuesbool_tot_T_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_T_PBH = np.minimum(
+        valuesbool3_PPTA[0, k, :, :] + valuesbool_tot_T_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+for k in range(len(betalist)):
+    valuesbool_tot_T = np.minimum(
+        valuesbool_PPTA_PBH[0, k, :, :] + valuesbool_tot_T,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T2 = np.minimum(
+        valuesbool2_PPTA_PBH[0, k, :, :] + valuesbool_tot_T2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T3 = np.minimum(
+        valuesbool3_PPTA_PBH[0, k, :, :] + valuesbool_tot_T3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_T = valuesbool_tot_T2 + valuesbool_tot_T3 + valuesbool_tot_T
+
+x = np.log10(alphalist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_T)
+z2 = np.transpose(valuesbool_tot_T_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "yellow", "orange", "red"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel(r"log($\alpha$)")
+plt.ylim(-1, 1.5)
+plt.xlim(-1, 2)
+plt.grid()
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//PPTA_max_T'+'.jpeg')
+# plt.pcolor(X, Y, z)
+# plt.colorbar()
+plt.show()
+
+valuesbool_tot_T = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T2 = np.zeros([taille[1], taille[1]])
+valuesbool_tot_T3 = np.zeros([taille[1], taille[1]])
+
+valuesbool_nano_PBH = np.copy(valuesbool_nano)
+valuesbool2_nano_PBH = np.copy(valuesbool2_nano)
+valuesbool3_nano_PBH = np.copy(valuesbool3_nano)
+
+# *********************************************************************************************************
+# correction of valuesbool by PBH
+for k in range(len(alphalist)):
+    for i in range(len(Templist)):
+        for j in range(len(betalist)):
+            if PBH(alphalist[k]) != 0:
+                if betalist[j] < PBH(alphalist[k]):
+                    valuesbool_nano_PBH[0, i, k, j] = 0.0
+                    valuesbool2_nano_PBH[0, i, k, j] = 0.0
+                    valuesbool3_nano_PBH[0, i, k, j] = 0.0
+# ***********************************************************************************************************
+valuesbool_tot_T_PBH = np.zeros([taille[1], taille[1]])
+for k in range(len(betalist)):
+    valuesbool_tot_T_PBH = np.minimum(
+        valuesbool3_nano[0, k, :, :] + valuesbool_tot_T_PBH,
+        np.ones([taille[1], taille[1]]),
+    )
+
+for k in range(len(betalist)):
+    valuesbool_tot_T = np.minimum(
+        valuesbool_nano_PBH[0, k, :, :] + valuesbool_tot_T,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T2 = np.minimum(
+        valuesbool2_nano_PBH[0, k, :, :] + valuesbool_tot_T2,
+        np.ones([taille[1], taille[1]]),
+    )
+    valuesbool_tot_T3 = np.minimum(
+        valuesbool3_nano_PBH[0, k, :, :] + valuesbool_tot_T3,
+        np.ones([taille[1], taille[1]]),
+    )
+
+valuesbool_tot_T = valuesbool_tot_T2 + valuesbool_tot_T3 + valuesbool_tot_T
+
+x = np.log10(alphalist)
+y = np.log10(betalist)
+z = np.transpose(valuesbool_tot_T)
+z2 = np.transpose(valuesbool_tot_T_PBH)
+X, Y = np.meshgrid(x, y)
+
+# plt.pcolor(X, Y, z,vmin=2.7,vmax=3.75,cmap='twilight')
+plt.contourf(
+    X,
+    Y,
+    z2,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "grey"],
+    alpha=0.6,
+)
+plt.contourf(
+    X,
+    Y,
+    z,
+    levels=[-1, 0, 1, 2, 3],
+    linestyles="dashed",
+    colors=["white", "blue", "mediumblue", "darkblue"],
+    alpha=0.6,
+)  # ,np.array([2.7,3.4]))
+
+# plt.loglog()
+# plt.legend()
+plt.ylabel(r"log($\beta$)")
+plt.xlabel(r"log($\alpha$)")
+plt.ylim(-1, 1.5)
+plt.xlim(-1, 2)
+plt.grid()
+x = [-5, -5, 2, 2]
+y = [-1, log10(3.8), log10(3.8), -1]
+# plt.fill(x,y,color='black',alpha=0.3)
+# plt.axhline(log10(3.8),linestyle='dashed',color='black',label=r'$c/\lambda_*$')
+# plt.savefig('Documents//nano_max_T'+'.jpeg')
+# plt.pcolor(X, Y, z)
 # plt.colorbar()
 plt.show()
 
