@@ -83,11 +83,13 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+print("loading " + file_path)
 cube_map = Map.read(file_path)
 cube_map.geom
 
 cube_map.geom.center_skydir
 
+print("locating source")
 # source = SkyCoord.from_name(src_name, frame='icrs', parse=False, cache=True)
 source = cube_map.geom.center_skydir
 DEC = float(source.dec / u.deg)
@@ -104,13 +106,16 @@ pointing = FixedPointingInfo(fixed_icrs=pnt, mode=PointingMode.POINTING)
 
 location = observatory_locations["cta_south"]
 
+print("loading IRFs")
+
 # irfs = load_irf_dict_from_file(path / irf_filename)
 # filename = "data/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-filename = (
+irfs_filename = (
     "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
 )
-irfs = load_irf_dict_from_file(filename)
+irfs = load_irf_dict_from_file(irfs_filename)
 
+print("Creating observation")
 livetime = Texp * u.hr
 observation = Observation.create(
     obs_id=1001,
@@ -121,13 +126,25 @@ observation = Observation.create(
 )
 print(observation)
 
-mid_energy = cube_map.data.shape[0] // 2
-map0 = cube_map.slice_by_idx({"energy": mid_energy})
-map0.plot()
-plt.show()
+# print('Sowing map')
+# mid_energy = cube_map.data.shape[0]//2
+# map0 = cube_map.slice_by_idx({"energy": mid_energy})
+# map0.plot()
+# plt.show()
 
+def GetBinSpectralModel(
+    E, bins_per_decade=20, amplitude=1e-12 * u.Unit("cm-2 s-1")
+):
+    # amplitude=1e-12 * u.Unit("cm-2 s-1") * norm
+    from gammapy.modeling.models import GaussianSpectralModel
+
+    sigma = (10 ** (1 / bins_per_decade) - 1) * E
+    return GaussianSpectralModel(mean=E, sigma=sigma, amplitude=amplitude)
+
+print("Calculate energy range")
+
+# selected_n_bins_per_decade = 20 # n bins per decade
 max_rel_energy_error = 3
-selected_n_bins_per_decade = 20  # n bins per decade
 
 energy_axis = cube_map.geom.axes["energy"]
 EminMap = energy_axis.edges[0]
@@ -137,6 +154,8 @@ nbins_per_decade = int(np.round(np.log(10) / np.log(stepE)))
 Emin = EminMap / max_rel_energy_error
 Emax = EmaxMap * max_rel_energy_error
 nbins_per_decade, Emin, Emax
+
+print("Create empty dataset")
 
 # energy_axis = MapAxis.from_energy_bounds(max_rel_energy_error*Emin*u.TeV, Emax*u.TeV, nbin=selected_n_bins_per_decade, per_decade=True)
 energy_axis_true = MapAxis.from_energy_bounds(
@@ -153,14 +172,6 @@ migra_axis = MapAxis.from_bounds(
 
 geom = cube_map.geom
 
-# WcsGeom.create(
-#     skydir=pointing.fixed_icrs,
-#     width=(2, 2),
-#     binsz=0.02,
-#     frame="icrs",
-#     axes=[energy_axis],
-# )
-
 empty = MapDataset.create(
     geom,
     energy_axis_true=energy_axis_true,
@@ -173,15 +184,7 @@ dataset = maker.run(empty, observation)
 Path("event_sampling").mkdir(exist_ok=True)
 dataset.write("./event_sampling/dataset.fits", overwrite=True)
 
-def GetBinSpectralModel(
-    E, bins_per_decade=20, amplitude=1e-12 * u.Unit("cm-2 s-1")
-):
-    # amplitude=1e-12 * u.Unit("cm-2 s-1") * norm
-    from gammapy.modeling.models import GaussianSpectralModel
-
-    sigma = (10 ** (1 / bins_per_decade) - 1) * E
-    return GaussianSpectralModel(mean=E, sigma=sigma, amplitude=amplitude)
-
+print("Plotting GaussianSpectralModel")
 from gammapy.modeling.models import GaussianSpectralModel
 
 meanE = 1 * u.TeV
@@ -193,12 +196,16 @@ ax = gm.plot(energy_bounds=(0.1, 100) * u.TeV)
 ax.set_yscale("linear")
 gm.integral(meanE - 3 * sigma, meanE + 3 * sigma)
 
+print("cube_map.get_spectrum()")
 spec = cube_map.get_spectrum()
 spec
 
+print("spec.plot()")
 spec.plot()  # this plot shows dN/dE * E
 
-spec.data.shape, spec.data[spec.data.shape[0] // 2, 0, 0]
+# spec.data.shape, spec.data[spec.data.shape[0]//2,0,0]
+
+print("Find norm bin")
 
 energy_bins = cube_map.geom.axes["energy"].center
 len(energy_bins), float(np.max(energy_bins) / u.TeV)
@@ -210,9 +217,11 @@ for i, E in enumerate(energy_bins):
 assert norm_bin > 0
 norm_bin
 
+print("obtain norm_bin_width")
 norm_bin_width = cube_map.geom.axes["energy"].bin_width[norm_bin]
 norm_bin_width
 
+print("find norm_flux")
 # Npart=5000 # TODO update
 # n_events_reduction_factor = 1 # suppress flux factor
 
@@ -224,12 +233,16 @@ norm_flux
 # int_bin_flux /= (Npart/200000 * np.max(int_bin_flux) * n_events_reduction_factor * 20/len(energy_bins)) # roughly 100 events
 # int_bin_flux
 
+print("find mult")
 mult = norm_cm2_TeV_s * u.Unit("cm-2 s-1 TeV-1") / norm_flux  # .decompose()
 mult
 
+print("find int_bin_flux")
 int_bin_flux = mult * int_bin_flux
 
 int_bin_flux
+
+print("Creating bin_models")
 
 bin_models = []
 for i, (flux, E) in enumerate(zip(int_bin_flux, energy_bins)):
@@ -253,13 +266,16 @@ for i, (flux, E) in enumerate(zip(int_bin_flux, energy_bins)):
     )
     bin_models.append(sky_bin_model)
 
+print("Creating bkg_model")
 bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
 models = Models(bin_models + [bkg_model])
 
+print("dataset.models = models")
 dataset.models = models
-# print(dataset.models)
 
+print("Creating sampler")
 sampler = MapDatasetEventSampler(random_state=0)
+print("Running sampler")
 events = sampler.run(dataset, observation)
 
 print(f"Source events: {(events.table['MC_ID'] > 0).sum()}")
@@ -270,6 +286,7 @@ for i in range(1, len(bin_models) + 1):
     if n > 1:
         print(f"\tmodel {i}: {n} events")
 
+print("building event spectrum")
 E = events.energy / u.TeV
 ras = events.radec.ra.deg
 decs = events.radec.dec.deg
@@ -285,6 +302,7 @@ plt.yscale("log")
 plt.legend(loc="upper right")
 plt.savefig("event_spectrum.png", format="png")
 
+print("building event map image")
 ROI = 1.0
 pixsize = 0.02
 Npix = int(2 * ROI / pixsize) + 1
@@ -310,10 +328,12 @@ hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
 hdu_all.writeto(f"./events.fits", overwrite=True)
 ####################
 
+print("reading events.fits")
 hdul = fits.open("events.fits")
 T_exp = hdul["EVENTS"].header["ONTIME"]
 events = hdul["EVENTS"].data
 
+print("reading events.fits step 2")
 coords_s = SkyCoord(RA, DEC, unit="degree")
 RA_bkg = pnt_RA - (RA - pnt_RA)
 DEC_bkg = pnt_DEC - (DEC - pnt_DEC)
@@ -327,9 +347,9 @@ seps_s = coords.separation(coords_s).deg
 seps_b = coords.separation(coords_b).deg
 coords_s = SkyCoord(RA, DEC, unit="degree")
 
-hdul = fits.open(
-    "Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-)
+print("manually parse irfs fits file")
+hdul = fits.open(irfs_filename)
+
 Aeff = hdul["EFFECTIVE AREA"].data
 th_min = Aeff["THETA_LO"]
 th_min
@@ -340,6 +360,7 @@ Emin_irf
 Ebins_irf = np.concatenate((Emin_irf, [Emax_irf[-1]]))
 A = Aeff["EFFAREA"][0, 0]
 
+print("Plot event histogram in energy")
 th_cut = 0.3
 mask = seps_s < th_cut
 E_s = Es[mask]
@@ -380,6 +401,7 @@ print(Src, Src_err)
 # plt.ylim(1e-14,1e-9)
 # plt.savefig('spectrum.png',format='png')
 
+print("Plot event histogram in zenith angle")
 # theta2 plot
 thbin = 0.1
 nb = int(1 / thbin**2)
