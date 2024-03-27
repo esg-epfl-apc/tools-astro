@@ -200,8 +200,8 @@ print("cube_map.get_spectrum()")
 spec = cube_map.get_spectrum()
 spec
 
-print("spec.plot()")
-spec.plot()  # this plot shows dN/dE * E
+# print('spec.plot()')
+# spec.plot() # this plot shows dN/dE * E
 
 # spec.data.shape, spec.data[spec.data.shape[0]//2,0,0]
 
