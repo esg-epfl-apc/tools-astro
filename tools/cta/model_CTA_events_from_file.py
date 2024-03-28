@@ -321,6 +321,7 @@ cube_map.geom.center_skydir
 Radius = float(min(cube_map.geom.width / 2 / u.degree).decompose())
 
 print(f"Building event image ...")
+plt.close()
 from matplotlib.colors import LogNorm
 
 cube_map.geom.width[0]
@@ -343,6 +344,7 @@ plt.xlabel("RA")
 plt.ylabel("Dec")
 
 print(f"Building event image 2 ...")
+plt.close()
 # Create a new WCS object.  The number of axes must be set
 # from the start
 w = wcs.WCS(naxis=2)
@@ -393,6 +395,7 @@ plt.ylabel("Dec")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 
 print("building event spectrum")
+plt.close()
 E = (events.energy / u.TeV).decompose()
 ras = events.radec.ra.deg
 decs = events.radec.dec.deg
@@ -442,6 +445,7 @@ Ebins_irf = np.concatenate((Emin_irf, [Emax_irf[-1]]))
 A = Aeff["EFFAREA"][0, 0]
 
 print("Plot event histogram in energy")
+plt.close()
 th_cut = 0.3
 mask = seps_s < th_cut
 E_s = Es[mask]
@@ -483,6 +487,7 @@ print(Src, Src_err)
 # plt.savefig('spectrum.png',format='png')
 
 print("Plot event histogram in zenith angle")
+plt.close()
 # theta2 plot
 thbin = 0.1
 nb = int(1 / thbin**2)
