@@ -187,6 +187,7 @@ en = ev["ENERGY"]
 
 from matplotlib.colors import LogNorm
 
+plt.close()
 pixsize = 0.1
 Nbins = 2 * int(Radius / pixsize) + 1
 ra0 = np.mean(ra)
@@ -207,6 +208,7 @@ plt.ylabel("Dec")
 
 # Create a new WCS object.  The number of axes must be set
 # from the start
+plt.close()
 w = wcs.WCS(naxis=2)
 
 w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
