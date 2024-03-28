@@ -17,6 +17,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy import units as u
+from astropy import wcs
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from gammapy.data import (
@@ -36,7 +37,11 @@ from gammapy.modeling.models import (
     TemplateSpatialModel,
 )
 from numpy import cos, pi, sqrt
-from oda_api.data_products import NumpyDataProduct, PictureProduct
+from oda_api.data_products import (
+    BinaryProduct,
+    ImageDataProduct,
+    PictureProduct,
+)
 
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
@@ -70,6 +75,10 @@ Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
 norm_cm2_TeV_s = 1e-12  # http://odahub.io/ontology#Float
 norm_energy = 1.0  # http://odahub.io/ontology#Energy_TeV
 
+pointing_shift = 0.2  # http://odahub.io/ontology#AngleDegrees
+
+pixsize = 0.1  # http://odahub.io/ontology#AngleDegrees
+
 _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
@@ -97,9 +106,9 @@ RA = float(source.ra / u.deg)
 
 # telescope pointing will be shifted slightly
 cdec = cos(DEC * pi / 180.0)
-pnt_RA = RA - 0.4 / cdec
-pnt_DEC = DEC
-pnt = SkyCoord(pnt_RA, pnt_DEC, unit="degree")
+RA_pnt = RA - pointing_shift / cdec
+DEC_pnt = DEC
+pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
 
 # telescope is pointing at a fixed position in ICRS for the observation
 pointing = FixedPointingInfo(fixed_icrs=pnt, mode=PointingMode.POINTING)
@@ -286,8 +295,105 @@ for i in range(1, len(bin_models) + 1):
     if n > 1:
         print(f"\tmodel {i}: {n} events")
 
+print(f"Save events ...")
+primary_hdu = fits.PrimaryHDU()
+hdu_evt = fits.BinTableHDU(events.table)
+hdu_gti = fits.BinTableHDU(dataset.gti.table, name="GTI")
+hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
+hdu_all.writeto(f"./events.fits", overwrite=True)
+
+print(f"Reading events ...")
+hdul = fits.open("events.fits")
+ev = hdul["EVENTS"].data
+ra = ev["RA"]
+dec = ev["DEC"]
+en = ev["ENERGY"]
+
+cube_map.geom
+
+[cube_map.geom.center_coord[i] / cube_map.geom.data_shape[i] for i in (0, 1)]
+
+ra_bins, dec_bins = (int(2 * x) for x in cube_map.geom.center_pix[:2])
+ra_bins, dec_bins
+
+cube_map.geom.center_skydir
+
+Radius = float(min(cube_map.geom.width / 2 / u.degree).decompose())
+
+print(f"Building event image ...")
+from matplotlib.colors import LogNorm
+
+cube_map.geom.width[0]
+
+Nbins = 2 * int(Radius / pixsize) + 1
+ra0 = np.mean(ra)
+dec0 = np.mean(dec)
+from numpy import cos, pi
+
+cdec = cos(DEC_pnt * pi / 180.0)
+ra_bins = np.linspace(
+    RA_pnt - Radius / cdec, RA_pnt + Radius / cdec, Nbins + 1
+)
+dec_bins = np.linspace(DEC_pnt - Radius, DEC_pnt + Radius, Nbins + 1)
+
+h = plt.hist2d(ra, dec, bins=[ra_bins, dec_bins], norm=LogNorm())
+image = h[0]
+plt.colorbar()
+plt.xlabel("RA")
+plt.ylabel("Dec")
+
+print(f"Building event image 2 ...")
+# Create a new WCS object.  The number of axes must be set
+# from the start
+w = wcs.WCS(naxis=2)
+
+w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
+# we need a Plate carrée (CAR) projection since histogram is binned by ra-dec
+# the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
+# also, we will follow convention of RA increasing from right to left (CDELT1<0, need to flip an input image)
+# otherwise, aladin-lite doesn't show it
+w.wcs.crval = [RA_pnt, 0]
+w.wcs.crpix = [Nbins / 2.0 + 0.5, 1 - dec_bins[0] / pixsize]
+w.wcs.cdelt = np.array([-pixsize / cdec, pixsize])
+
+header = w.to_header()
+
+hdu = fits.PrimaryHDU(np.flip(image.T, axis=1), header=header)
+hdu.writeto("Image.fits", overwrite=True)
+hdu = fits.open("Image.fits")
+im = hdu[0].data
+wcs1 = wcs.WCS(hdu[0].header)
+ax = plt.subplot(projection=wcs1)
+lon = ax.coords["ra"]
+lon.set_major_formatter("d.dd")
+lat = ax.coords["dec"]
+lat.set_major_formatter("d.dd")
+plt.imshow(im, origin="lower")
+plt.colorbar(label="Counts")
+
+plt.scatter(
+    [RA_pnt],
+    [DEC_pnt],
+    marker="x",
+    color="white",
+    alpha=0.5,
+    transform=ax.get_transform("world"),
+)
+plt.scatter(
+    [RA],
+    [DEC],
+    marker="+",
+    color="red",
+    alpha=0.5,
+    transform=ax.get_transform("world"),
+)
+plt.grid(color="white", ls="solid")
+plt.xlabel("RA")
+plt.ylabel("Dec")
+plt.savefig("Image.png", format="png", bbox_inches="tight")
+
 print("building event spectrum")
-E = events.energy / u.TeV
+E = (events.energy / u.TeV).decompose()
 ras = events.radec.ra.deg
 decs = events.radec.dec.deg
 # plt.hist(E,bins=np.logspace(-2,2,41))
@@ -296,52 +402,27 @@ mask = events.table["MC_ID"] > 0
 plt.hist(E[mask], bins=np.logspace(-2, 2, 41), alpha=0.5, label="source")
 mask = events.table["MC_ID"] == 0
 plt.hist(E[mask], bins=np.logspace(-2, 2, 41), alpha=0.5, label="background")
+plt.xlabel("E, TeV")
 
 plt.xscale("log")
 plt.yscale("log")
 plt.legend(loc="upper right")
 plt.savefig("event_spectrum.png", format="png")
 
-print("building event map image")
-ROI = 1.0
-pixsize = 0.02
-Npix = int(2 * ROI / pixsize) + 1
-
-mask = np.where(E > 1)
-print(len(E[mask]), len(ras[mask]), len(decs[mask]))
-
-plt.hist2d(
-    ras[mask],
-    decs[mask],
-    bins=[
-        np.linspace(pnt_RA - ROI / cdec, pnt_RA + ROI / cdec, Npix),
-        np.linspace(DEC - ROI, DEC + ROI, Npix),
-    ],
-)
-plt.colorbar()
-
-print(f"Save events ...")
-primary_hdu = fits.PrimaryHDU()
-hdu_evt = fits.BinTableHDU(events.table)
-hdu_gti = fits.BinTableHDU(dataset.gti.table, name="GTI")
-hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
-hdu_all.writeto(f"./events.fits", overwrite=True)
-####################
-
 print("reading events.fits")
 hdul = fits.open("events.fits")
 T_exp = hdul["EVENTS"].header["ONTIME"]
-events = hdul["EVENTS"].data
+saved_events = hdul["EVENTS"].data
 
 print("reading events.fits step 2")
 coords_s = SkyCoord(RA, DEC, unit="degree")
-RA_bkg = pnt_RA - (RA - pnt_RA)
-DEC_bkg = pnt_DEC - (DEC - pnt_DEC)
+RA_bkg = RA_pnt - (RA - RA_pnt)
+DEC_bkg = DEC_pnt - (DEC - DEC_pnt)
 coords_b = SkyCoord(RA_bkg, DEC_bkg, unit="degree")
 
-Es = events["ENERGY"]
-ras = events["RA"]
-decs = events["DEC"]
+Es = saved_events["ENERGY"]
+ras = saved_events["RA"]
+decs = saved_events["DEC"]
 coords = SkyCoord(ras, decs, unit="degree")
 seps_s = coords.separation(coords_s).deg
 seps_b = coords.separation(coords_b).deg
@@ -420,19 +501,51 @@ plt.text(0.15, max(h1[0][:10]), "S/N=" + str(SN))
 
 plt.savefig("theta2.png", format="png")
 
-events_fits = NumpyDataProduct.from_fits_file("events.fits")
-# spectrum_png = PictureProduct.from_file('spectrum.png')
+fits_events = BinaryProduct.from_file("events.fits")
+fits_image = ImageDataProduct.from_fits_file("Image.fits")
+bin_image = PictureProduct.from_file("Image.png")
+spec_image = PictureProduct.from_file("event_spectrum.png")
 theta2_png = PictureProduct.from_file("theta2.png")
 
-theta2 = theta2_png  # http://odahub.io/ontology#ODAPictureProduct
-# spectrum = spectrum_png # http://odahub.io/ontology#ODAPictureProduct
-events_fits = events_fits  # https://odahub.io/ontology/#Spectrum
+spectrum_plot = spec_image  # http://odahub.io/ontology#ODAPictureProduct
+theta_plot = theta2_png  # http://odahub.io/ontology#ODAPictureProduct
+picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+image = fits_image  # http://odahub.io/ontology#Image
+event_list = fits_events  # http://odahub.io/ontology#ODABinaryProduct
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_model_CTA_events_from_file_theta2", "theta2_galaxy.output", theta2)
+    (
+        "out_model_CTA_events_from_file_spectrum_plot",
+        "spectrum_plot_galaxy.output",
+        spectrum_plot,
+    )
+)
+_oda_outs.append(
+    (
+        "out_model_CTA_events_from_file_theta_plot",
+        "theta_plot_galaxy.output",
+        theta_plot,
+    )
+)
+_oda_outs.append(
+    (
+        "out_model_CTA_events_from_file_picture",
+        "picture_galaxy.output",
+        picture,
+    )
+)
+_oda_outs.append(
+    ("out_model_CTA_events_from_file_image", "image_galaxy.output", image)
+)
+_oda_outs.append(
+    (
+        "out_model_CTA_events_from_file_event_list",
+        "event_list_galaxy.output",
+        event_list,
+    )
 )
 
 for _outn, _outfn, _outv in _oda_outs:
@@ -450,29 +563,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-_simple_outs = []
-_simple_outs.append(
-    (
-        "out_model_CTA_events_from_file_events_fits",
-        "events_fits_galaxy.output",
-        events_fits,
-    )
-)
-_numpy_available = True
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)

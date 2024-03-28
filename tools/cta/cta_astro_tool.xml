@@ -32,6 +32,8 @@
         <param name="Emin" type="float" value="0.1" label="Emin (unit: TeV)" />
         <param name="norm_cm2_TeV_s" type="float" value="1e-12" label="norm_cm2_TeV_s" />
         <param name="norm_energy" type="float" value="1.0" label="norm_energy (unit: TeV)" />
+        <param name="pointing_shift" type="float" value="0.2" label="pointing_shift (unit: deg)" />
+        <param name="pixsize" type="float" value="0.1" label="pixsize (unit: deg)" />
       </when>
       <when value="Simulate_pointing">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -49,10 +51,19 @@
     </conditional>
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; model_CTA_events_from_file theta2" name="out_model_CTA_events_from_file_theta2" format="auto" from_work_dir="theta2_galaxy.output">
+    <data label="${tool.name} -&gt; model_CTA_events_from_file spectrum_plot" name="out_model_CTA_events_from_file_spectrum_plot" format="auto" from_work_dir="spectrum_plot_galaxy.output">
       <filter>_data_product['_selector'] == 'model_CTA_events_from_file'</filter>
     </data>
-    <data label="${tool.name} -&gt; model_CTA_events_from_file events_fits" name="out_model_CTA_events_from_file_events_fits" format="auto" from_work_dir="events_fits_galaxy.output">
+    <data label="${tool.name} -&gt; model_CTA_events_from_file theta_plot" name="out_model_CTA_events_from_file_theta_plot" format="auto" from_work_dir="theta_plot_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_CTA_events_from_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_CTA_events_from_file picture" name="out_model_CTA_events_from_file_picture" format="auto" from_work_dir="picture_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_CTA_events_from_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_CTA_events_from_file image" name="out_model_CTA_events_from_file_image" format="auto" from_work_dir="image_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_CTA_events_from_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_CTA_events_from_file event_list" name="out_model_CTA_events_from_file_event_list" format="auto" from_work_dir="event_list_galaxy.output">
       <filter>_data_product['_selector'] == 'model_CTA_events_from_file'</filter>
     </data>
     <data label="${tool.name} -&gt; Simulate_pointing picture" name="out_Simulate_pointing_picture" format="auto" from_work_dir="picture_galaxy.output">
@@ -66,15 +77,17 @@
     </data>
   </outputs>
   <tests>
-    <test expect_num_outputs="2">
+    <test expect_num_outputs="5">
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/d456ca4a686593154ddef231706f8a3eb1c96ec5/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/db091e1141a9fa000eae2db06439f6274786661c/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />
         <param name="norm_energy" value="1.0" />
+        <param name="pointing_shift" value="0.2" />
+        <param name="pixsize" value="0.1" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
