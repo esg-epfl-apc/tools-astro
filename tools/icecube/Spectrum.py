@@ -272,7 +272,8 @@ if Spectrum_type == "Free_slope":
     plt.legend(loc="upper right")
     plt.xlabel("$E$, TeV")
     plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$s), all flavours")
-    plt.ylim(1e-14, 3e-10)
+    plt.ylim(1e-14, 3e-9)
+    plt.xlim(1e-1, 1e6)
     plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 bin_image = PictureProduct.from_file("Spectrum.png")
