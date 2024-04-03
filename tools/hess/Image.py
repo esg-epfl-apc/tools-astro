@@ -23,7 +23,7 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     )
     get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
 
-# src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
+src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
@@ -150,8 +150,19 @@ hdu.writeto("Image.fits", overwrite=True)
 hdu = fits.open("Image.fits")
 im = hdu[0].data
 wcs1 = wcs.WCS(hdu[0].header)
-plt.subplot(projection=wcs1)
+ax = plt.subplot(projection=wcs1)
 plt.imshow(im, origin="lower")
+plt.colorbar(label="Counts per pixel")
+plt.scatter(
+    [RA], [DEC], marker="x", color="white", transform=ax.get_transform("world")
+)
+plt.text(
+    RA,
+    DEC + 0.5 * pixsize,
+    src_name,
+    color="white",
+    transform=ax.get_transform("world"),
+)
 
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
@@ -160,14 +171,14 @@ plt.ylabel("Dec")
 bin_image = PictureProduct.from_file("Image.png")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-image = fits_image  # http://odahub.io/ontology#Image
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+fits = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Image_picture", "picture_galaxy.output", picture))
-_oda_outs.append(("out_Image_image", "image_galaxy.output", image))
+_oda_outs.append(("out_Image_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
