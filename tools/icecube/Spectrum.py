@@ -167,7 +167,9 @@ if Spectrum_type == "Free_slope":
     n_best = 0
     c_ul = np.zeros(len(Slopes))
     for i, Slope in enumerate(Slopes):
-        pr.report_progress(stage="Progress", progress=(i / len(Slopes)))
+        pr.report_progress(
+            stage="Progress", progress=5 + 95.0 * (i / len(Slopes))
+        )
         for j, n in enumerate(counts):
             TS_map[i, j] = 2 * ana.llhratio.evaluate([n, Slope])[0]
             if TS_map[i, j] > tsbest:
