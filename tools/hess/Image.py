@@ -14,8 +14,12 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from numpy import cos, pi
+from oda_api.api import ProgressReporter
 from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
+
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=5.0)
 
 if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     get_ipython().system(   # noqa: F821
@@ -168,6 +172,7 @@ plt.text(
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
+pr.report_progress(stage="Progress", progress=100.0)
 
 bin_image = PictureProduct.from_file("Image.png")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")

@@ -21,6 +21,10 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
         "wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz"
     )
     get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
+from oda_api.api import ProgressReporter
+
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=0.0)
 
 # src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
 # RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
@@ -260,6 +264,7 @@ Norm_best = Norm_min
 Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
+    pr.report_progress(stage="Progress", progress=5 + 45 * i / Norm_bins)
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]
         if chi2_map[i, j] < chi2_best:
@@ -297,6 +302,7 @@ Norm_best = Norm_min
 Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
+    pr.report_progress(stage="Progress", progress=50 + 50 * i / Norm_bins)
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]
         if chi2_map[i, j] < chi2_best:
@@ -395,7 +401,7 @@ names = (
 )
 spec = ODAAstropyTable(Table(data, names=names))
 
-data = [Gam_best, gammas], [[Norm_best, norms]]
+data = [[Gam_best, gammas], [Norm_best, norms]]
 names = ["Gamma", "Norm_1TeV[1/(TeV cm2 s)]"]
 error_ellipse = ODAAstropyTable(Table(data, names=names))
 

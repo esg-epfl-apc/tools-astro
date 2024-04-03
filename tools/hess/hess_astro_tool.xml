@@ -56,13 +56,13 @@
         <param name="src_name" type="text" value="Crab" label="src_name" />
         <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
-        <param name="T1" type="text" value="2003-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2005-10-10T13:16:00.0" label="T2" />
+        <param name="T1" type="text" value="2004-11-20T13:16:00.0" label="T1" />
+        <param name="T2" type="text" value="2004-12-20T13:16:00.0" label="T2" />
         <param name="Radius" type="float" value="2.5" label="Radius (unit: deg)" />
         <param name="R_s" type="float" value="0.2" label="R_s (unit: deg)" />
-        <param name="Emin" type="float" value="100.0" label="Emin (unit: GeV)" />
-        <param name="Emax" type="float" value="10000.0" label="Emax (unit: GeV)" />
-        <param name="NTbins" type="integer" value="10" label="NTbins" />
+        <param name="Emin" type="integer" value="1" label="Emin (unit: TeV)" />
+        <param name="Emax" type="float" value="100.0" label="Emax (unit: TeV)" />
+        <param name="NTbins" type="integer" value="30" label="NTbins" />
       </when>
     </conditional>
   </inputs>
@@ -82,10 +82,10 @@
     <data label="${tool.name} -&gt; Spectrum table_spectrum" name="out_Spectrum_table_spectrum" format="auto" from_work_dir="table_spectrum_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; Lightcurve picture" name="out_Lightcurve_picture" format="auto" from_work_dir="picture_galaxy.output">
+    <data label="${tool.name} -&gt; Lightcurve png" name="out_Lightcurve_png" format="auto" from_work_dir="png_galaxy.output">
       <filter>_data_product['_selector'] == 'Lightcurve'</filter>
     </data>
-    <data label="${tool.name} -&gt; Lightcurve lightcurve_astropy_table" name="out_Lightcurve_lightcurve_astropy_table" format="auto" from_work_dir="lightcurve_astropy_table_galaxy.output">
+    <data label="${tool.name} -&gt; Lightcurve table" name="out_Lightcurve_table" format="auto" from_work_dir="table_galaxy.output">
       <filter>_data_product['_selector'] == 'Lightcurve'</filter>
     </data>
   </outputs>
@@ -133,13 +133,13 @@
         <param name="src_name" value="Crab" />
         <param name="RA" value="83.6287" />
         <param name="DEC" value="22.0147" />
-        <param name="T1" value="2003-10-09T13:16:00.0" />
-        <param name="T2" value="2005-10-10T13:16:00.0" />
+        <param name="T1" value="2004-11-20T13:16:00.0" />
+        <param name="T2" value="2004-12-20T13:16:00.0" />
         <param name="Radius" value="2.5" />
         <param name="R_s" value="0.2" />
-        <param name="Emin" value="100.0" />
-        <param name="Emax" value="10000.0" />
-        <param name="NTbins" value="10" />
+        <param name="Emin" value="1" />
+        <param name="Emax" value="100.0" />
+        <param name="NTbins" value="30" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
