@@ -22,12 +22,12 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     )
     get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
-# src_name='PKS 2155-304' #http://odahub.io/ontology#AstrophysicalObject
-# RA = 329.716938  # http://odahub.io/ontology#PointOfInterestRA
-# DEC = -30.225588 # http://odahub.io/ontology#PointOfInterestDEC
+# src_name='Crab' #http://odahub.io/ontology#AstrophysicalObject
+# RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+# DEC = 22.014700 # http://odahub.io/ontology#PointOfInterestDEC
+src_name = "PKS 2155-304"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 329.716938  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -30.225588  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
@@ -38,7 +38,7 @@ Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
 Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
 NEbins = 30  # http://odahub.io/ontology#Integer
 
-Efit_min = 0.5  # http://odahub.io/ontology#Energy_TeV
+Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV
 Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV
 
 _galaxy_wd = os.getcwd()
@@ -284,11 +284,11 @@ gammas = cont[:, 0]
 norms = cont[:, 1]
 
 # 2) refine with 68% contour calculation within the initial 90% countour
-Norm_max = max(norms)
-Norm_min = min(norms)
+Norm_max = max(1.1 * norms)
+Norm_min = min(0.9 * norms)
 Norm_bins = 50
-Gam_min = min(gammas)
-Gam_max = max(gammas)
+Gam_min = min(gammas - 0.2)
+Gam_max = max(gammas + 0.2)
 Gam_bins = 50
 Ns = np.linspace(Norm_min, Norm_max, Norm_bins)
 Gams = np.linspace(Gam_min, Gam_max, Gam_bins)
@@ -395,7 +395,7 @@ names = (
 )
 spec = ODAAstropyTable(Table(data, names=names))
 
-data = [gammas, norms]
+data = [Gam_best, gammas], [[Norm_best, norms]]
 names = ["Gamma", "Norm_1TeV[1/(TeV cm2 s)]"]
 error_ellipse = ODAAstropyTable(Table(data, names=names))
 

@@ -32,8 +32,8 @@ Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
 pixsize = (
     0.05  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
 )
-Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
-Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
+Emin = 1  # http://odahub.io/ontology#Energy_TeV
+Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
 
 _galaxy_wd = os.getcwd()
 
@@ -111,7 +111,8 @@ for f in OBSlist:
     ev_dec = ev["DEC"]
     ev_en = ev["ENERGY"]
     ev_time = ev["TIME"]
-    h = np.histogram2d(ev_ra, ev_dec, bins=[RA_bins, DEC_bins])
+    mask = (ev_en > Emin) & (ev_en < Emax)
+    h = np.histogram2d(ev_ra[mask], ev_dec[mask], bins=[RA_bins, DEC_bins])
     image += h[0]
     hdul.close()
 
