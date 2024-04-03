@@ -114,19 +114,20 @@
       </assert_stdout>
     </test>
   </tests>
-  <help>| This service provides analysis of publicly available data of IceCube
-  neutrino telescope, described by `IceCube Collaboration
-  (2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__.
-| Three types of data products are generated: sky images, source
-  lightcurves and spectra.
+  <help>This service provides analysis of publicly available data of IceCube
+neutrino telescope, described by `IceCube Collaboration
+(2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__, using the
+`SkyLLH &lt;https://icecube.github.io/skyllh/master/html/index.html&gt;`__
+data analysis package. Three types of data products are generated: sky
+images, source lightcurves and spectra.
 
 The image that will be produced is a Test Statistic (TS) value map
-around the reference source position. The TS values will be computed for
-the powerlaw spectral model of a source placed at the center of each
-pixel. It is possible to either fix the slope of the spectrum or leave
-it free, using a ``Fixed_slope`` / ``Free_slope`` switch. For the
-``Fixed slope`` choice, it is possible to set the spectral slope setting
-the ``Slope`` parameter.
+around the reference source position. The TS values is computed for the
+powerlaw spectral model of a source placed at the center of each pixel.
+It is possible to either fix the slope of the spectrum or leave it free,
+using a ``Fixed_slope`` / ``Free_slope`` switch. For the ``Fixed slope``
+choice, it is possible to set the spectral slope setting the ``Slope``
+parameter.
 
 Similar to the Image, the spectrum can be requested either for a fixed
 spectral slope, or leaving the slope free in the spectral fitting, using
@@ -137,7 +138,7 @@ boundaries of the interval in which the TS value decreases by 1 with
 respect to the maximum, the 90% upper bound is defined at the upper
 boundary of the interval at which the TS value decreases by 2.7). The
 counts are converted to the flux normalisation using the
-*calculate_fluxmodel_scaling_factor* funciton of skyllh. In the case of
+*calculate_fluxmodel_scaling_factor* funciton of SkyLLH. In the case of
 ``Free Slope`` choice, TS values are calculated as a function of the
 source counts and spectral slope and 68% confidence contours are defined
 as the level at which TS decreases by 2.3 with respect to the maximal
