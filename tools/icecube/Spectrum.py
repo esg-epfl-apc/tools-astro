@@ -9,14 +9,17 @@ import shutil
 
 import numpy as np
 import scipy.stats
+from astropy.time import Time
 from matplotlib import pyplot as plt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
-# src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
+src_name = "NGC 1068"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 10.013294  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = 0.013294  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2014-01-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2017-04-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Spectrum_type = "Free_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
@@ -39,6 +42,53 @@ from skyllh.core.random import RandomStateService
 from skyllh.core.source_model import PointLikeSource
 from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
+T1 = Time(T1, format="isot", scale="utc").mjd
+T2 = Time(T2, format="isot", scale="utc").mjd
+
+Tstarts = [
+    "2008-04-06T00:00:00.0",
+    "2009-05-20T00:00:00.0",
+    "2010-06-01T00:00:00.0",
+    "2011-05-13T00:00:00.0",
+    "2012-04-26T00:00:00.0",
+    "2013-05-02T00:00:00.0",
+    "2014-04-10T00:00:00.0",
+    "2015-04-24T00:00:00.0",
+    "2016-05-20T00:00:00.0",
+    "2017-05-18T00:00:00.0",
+]
+Tstops = [
+    "2009-05-20T00:00:00.0",
+    "2010-05-31T00:00:00.0",
+    "2011-05-13T00:00:00.0",
+    "2012-05-15T00:00:00.0",
+    "2013-05-02T00:00:00.0",
+    "2014-05-06T00:00:00.0",
+    "2015-05-18T00:00:00.0",
+    "2016-05-20T00:00:00.0",
+    "2017-05-18T00:00:00.0",
+    "2018-07-08T00:00:00.0",
+]
+periods = [
+    "IC40",
+    "IC59",
+    "IC79",
+    "IC86_I",
+    "IC86_II",
+    "IC86_III",
+    "IC86_IV",
+    "IC86_V",
+    "IC86_VI",
+    "IC86_VII",
+]
+Tstarts = Time(Tstarts, format="isot", scale="utc").mjd
+Tstops = Time(Tstops, format="isot", scale="utc").mjd
+mask = T1 > Tstarts
+ind_start = len(Tstarts[mask])
+mask = T2 > Tstarts
+ind_stop = len(Tstarts[mask])
+periods[ind_start:ind_stop]
+
 cfg = Config()
 
 if os.path.exists("20210126_PS-IC40-IC86_VII.zip") == False:
@@ -52,7 +102,8 @@ data_dir = os.getcwd() + "/icecube_10year_ps/"
 dsc = create_dataset_collection(cfg=cfg, base_path=data_dir)
 dsc.dataset_names
 
-datasets = dsc["IC86_I", "IC86_II-VII"]
+datasets = dsc[periods[ind_start:ind_stop]]
+datasets
 
 source = PointLikeSource(ra=np.deg2rad(RA), dec=np.deg2rad(DEC))
 
@@ -240,9 +291,13 @@ if Spectrum_type == "Free_slope":
 
     ybest = 3 * Fbest * (x / 1.0) ** (-slope_best) * x**2 * 1e3
     if np.amax(TS_map) > chi2_95_quantile:
-        plt.fill_between(x, ymin_68, ymax_68, alpha=0.5, label="68% error")
+        plt.fill_between(
+            x, ymin_68, ymax_68, alpha=0.5, label=src_name + " 68% error"
+        )
         plt.plot(x, ybest, color="black")
-    plt.plot(x, ymax_90, color="black", linewidth=4, label="90% UL")
+    plt.plot(
+        x, ymax_90, color="black", linewidth=4, label=src_name + " 90% UL"
+    )
 
     plt.xscale("log")
     plt.yscale("log")
@@ -265,22 +320,14 @@ names = (
 )
 spec_params = ODAAstropyTable(Table(data, names=names))
 
-spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-spectrum_table = spec_params  # http://odahub.io/ontology#ODAAstropyTable
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+table = spec_params  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(
-    ("out_Spectrum_spectrum_png", "spectrum_png_galaxy.output", spectrum_png)
-)
-_oda_outs.append(
-    (
-        "out_Spectrum_spectrum_table",
-        "spectrum_table_galaxy.output",
-        spectrum_table,
-    )
-)
+_oda_outs.append(("out_Spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Spectrum_table", "table_galaxy.output", table))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)

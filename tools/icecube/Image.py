@@ -11,20 +11,23 @@ import numpy as np
 from astropy import wcs
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
+from astropy.time import Time
 from matplotlib import pyplot as plt
 from numpy import cos, pi
 from oda_api.api import ProgressReporter
 from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
-# src_name='NGC 1068' #http://odahub.io/ontology#AstrophysicalObject
+src_name = "NGC 1068"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
 DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
 # RA=308.65 # http://odahub.io/ontology#PointOfInterestRA
 # DEC=40.9 # http://odahub.io/ontology#PointOfInterestDEC
 # sigma=0.7  #http://odahub.io/ontology#AngleDegrees
+T1 = "2014-01-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2017-04-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
-pixel_size = 0.2  # http://odahub.io/ontology#AngleDegrees
+pixel_size = 0.5  # http://odahub.io/ontology#AngleDegrees
 TSmap_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
@@ -47,6 +50,53 @@ from skyllh.core.random import RandomStateService
 from skyllh.core.source_model import PointLikeSource
 from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
+T1 = Time(T1, format="isot", scale="utc").mjd
+T2 = Time(T2, format="isot", scale="utc").mjd
+
+Tstarts = [
+    "2008-04-06T00:00:00.0",
+    "2009-05-20T00:00:00.0",
+    "2010-06-01T00:00:00.0",
+    "2011-05-13T00:00:00.0",
+    "2012-04-26T00:00:00.0",
+    "2013-05-02T00:00:00.0",
+    "2014-04-10T00:00:00.0",
+    "2015-04-24T00:00:00.0",
+    "2016-05-20T00:00:00.0",
+    "2017-05-18T00:00:00.0",
+]
+Tstops = [
+    "2009-05-20T00:00:00.0",
+    "2010-05-31T00:00:00.0",
+    "2011-05-13T00:00:00.0",
+    "2012-05-15T00:00:00.0",
+    "2013-05-02T00:00:00.0",
+    "2014-05-06T00:00:00.0",
+    "2015-05-18T00:00:00.0",
+    "2016-05-20T00:00:00.0",
+    "2017-05-18T00:00:00.0",
+    "2018-07-08T00:00:00.0",
+]
+periods = [
+    "IC40",
+    "IC59",
+    "IC79",
+    "IC86_I",
+    "IC86_II",
+    "IC86_III",
+    "IC86_IV",
+    "IC86_V",
+    "IC86_VI",
+    "IC86_VII",
+]
+Tstarts = Time(Tstarts, format="isot", scale="utc").mjd
+Tstops = Time(Tstops, format="isot", scale="utc").mjd
+mask = T1 > Tstarts
+ind_start = len(Tstarts[mask])
+mask = T2 > Tstarts
+ind_stop = len(Tstarts[mask])
+periods[ind_start:ind_stop]
+
 cfg = Config()
 coords_s = SkyCoord(RA, DEC, unit="degree")
 cdec = cos(DEC * pi / 180.0)
@@ -68,6 +118,9 @@ data_dir = os.getcwd() + "/icecube_10year_ps/"
 
 dsc = create_dataset_collection(cfg=cfg, base_path=data_dir)
 dsc.dataset_names
+
+datasets = dsc[periods[ind_start:ind_stop]]
+datasets
 
 datasets = dsc["IC86_I", "IC86_II-VII"]
 rss = RandomStateService(seed=1)
@@ -151,11 +204,11 @@ plt.imshow(
     aspect=1 / cdec,
 )
 plt.colorbar(label="TS")
-plt.scatter([RA_grid[ibest]], [DEC_grid[jbest]], marker="x", color="white")
-plt.scatter([RA], [DEC], marker="+", color="red")
+# plt.scatter([RA_grid[ibest]],[DEC_grid[jbest]],marker='x',color='white')
+plt.scatter([RA], [DEC], marker="x", color="white")
+plt.text(RA, DEC + 0.5 * pixel_size, src_name, color="white")
 plt.xlabel("Right Ascension, degrees")
 plt.ylabel("Declination, degrees")
-plt.savefig("Image.png", format="png", bbox_inches="tight")
 print(max(RA_grid), min(RA_grid), min(DEC_grid), max(DEC_grid))
 
 # Create a new WCS object.  The number of axes must be set
@@ -186,22 +239,34 @@ lat.set_major_formatter("d.dd")
 plt.imshow(im, origin="lower")
 plt.colorbar(label="TS")
 
+plt.scatter(
+    [RA], [DEC], marker="x", color="white", transform=ax.get_transform("world")
+)
+plt.text(
+    RA,
+    DEC + 0.5 * pixel_size,
+    src_name,
+    color="white",
+    transform=ax.get_transform("world"),
+)
+
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
+plt.savefig("Image.png", format="png", bbox_inches="tight")
 
 fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
 bin_image = PictureProduct.from_file("Image.png")
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-image = fits_image  # http://odahub.io/ontology#Image
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+fits = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Image_picture", "picture_galaxy.output", picture))
-_oda_outs.append(("out_Image_image", "image_galaxy.output", image))
+_oda_outs.append(("out_Image_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
