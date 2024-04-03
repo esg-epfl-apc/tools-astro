@@ -55,8 +55,8 @@
         <param name="IC86_I" type="boolean" value="True" label="IC86_I" />
         <param name="IC86_II_VII" type="boolean" value="True" label="IC86_II_VII" />
         <param name="Spectrum_type" type="select" label="Spectrum_type">
-          <option value="Fixed_slope">Fixed_slope</option>
-          <option value="Free_slope" selected="true">Free_slope</option>
+          <option value="Fixed_slope" selected="true">Fixed_slope</option>
+          <option value="Free_slope">Free_slope</option>
         </param>
         <param name="Slope" type="float" value="3.0" label="Slope" />
       </when>
@@ -119,7 +119,7 @@
         <param name="IC79" value="False" />
         <param name="IC86_I" value="True" />
         <param name="IC86_II_VII" value="True" />
-        <param name="Spectrum_type" value="Free_slope" />
+        <param name="Spectrum_type" value="Fixed_slope" />
         <param name="Slope" value="3.0" />
       </conditional>
       <assert_stdout>

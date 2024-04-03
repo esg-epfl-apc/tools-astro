@@ -22,7 +22,7 @@ IC59 = False  # oda:Boolean
 IC79 = False  # oda:Boolean
 IC86_I = True  # oda:Boolean
 IC86_II_VII = True  # oda:Boolean
-Spectrum_type = "Free_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
+Spectrum_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
@@ -139,8 +139,14 @@ if Spectrum_type == "Fixed_slope":
 
     if np.amax(TS_profile) > chi2_95_quantile:
         plt.fill_between(x, ymin_68, ymax_68, alpha=0.5, label="68% error")
-        plt.plot(x, ybest, color="black")
+    plt.plot(x, ybest, color="black")
     plt.plot(x, ymax_90, color="black", linewidth=4, label="90% UL")
+    plt.annotate(
+        "",
+        xy=(x[4], ymax_90[4] / 2.0),
+        xytext=(x[4], ymax_90[4]),
+        arrowprops=dict(facecolor="black", shrink=0.05),
+    )
 
     plt.xscale("log")
     plt.yscale("log")
@@ -265,6 +271,12 @@ if Spectrum_type == "Free_slope":
         plt.plot(x, ybest, color="black")
     plt.plot(
         x, ymax_90, color="black", linewidth=4, label=src_name + " 90% UL"
+    )
+    plt.annotate(
+        "",
+        xy=(x[4], ymax_90[4] / 2.0),
+        xytext=(x[4], ymax_90[4]),
+        arrowprops=dict(facecolor="black", shrink=0.05),
     )
 
     plt.xscale("log")
