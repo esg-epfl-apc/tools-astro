@@ -151,7 +151,11 @@ powerlaw spectral model of a source placed at the center of each pixel.
 It is possible to either fix the slope of the spectrum or leave it free,
 using a ``Fixed_slope`` / ``Free_slope`` switch. For the ``Fixed slope``
 choice, it is possible to set the spectral slope setting the ``Slope``
-parameter.
+parameter. It is possible to adjust the time interval of the analysis by
+including or excluding fixed observation periods onto which the IceCube
+dataset is divided (see `IceCube Collaboration
+(2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__ for the time bounds of the
+periods, between 2008 and 2018).
 
 Similar to the Image, the spectrum can be requested either for a fixed
 spectral slope, or leaving the slope free in the spectral fitting, using
