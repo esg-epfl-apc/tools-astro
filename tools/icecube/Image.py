@@ -11,7 +11,6 @@ import numpy as np
 from astropy import wcs
 from astropy.coordinates import SkyCoord
 from astropy.io import fits
-from astropy.time import Time
 from matplotlib import pyplot as plt
 from numpy import cos, pi
 from oda_api.api import ProgressReporter
@@ -24,8 +23,12 @@ DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
 # RA=308.65 # http://odahub.io/ontology#PointOfInterestRA
 # DEC=40.9 # http://odahub.io/ontology#PointOfInterestDEC
 # sigma=0.7  #http://odahub.io/ontology#AngleDegrees
-T1 = "2014-01-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2017-04-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+IC40 = True  # oda:Boolean
+IC59 = True  # oda:Boolean
+IC79 = True  # oda:Boolean
+IC86_I = True  # oda:Boolean
+IC86_II_VII = True  # oda:Boolean
+
 Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
 pixel_size = 0.5  # http://odahub.io/ontology#AngleDegrees
 TSmap_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
@@ -50,52 +53,18 @@ from skyllh.core.random import RandomStateService
 from skyllh.core.source_model import PointLikeSource
 from skyllh.datasets.i3.PublicData_10y_ps import create_dataset_collection
 
-T1 = Time(T1, format="isot", scale="utc").mjd
-T2 = Time(T2, format="isot", scale="utc").mjd
-
-Tstarts = [
-    "2008-04-06T00:00:00.0",
-    "2009-05-20T00:00:00.0",
-    "2010-06-01T00:00:00.0",
-    "2011-05-13T00:00:00.0",
-    "2012-04-26T00:00:00.0",
-    "2013-05-02T00:00:00.0",
-    "2014-04-10T00:00:00.0",
-    "2015-04-24T00:00:00.0",
-    "2016-05-20T00:00:00.0",
-    "2017-05-18T00:00:00.0",
-]
-Tstops = [
-    "2009-05-20T00:00:00.0",
-    "2010-05-31T00:00:00.0",
-    "2011-05-13T00:00:00.0",
-    "2012-05-15T00:00:00.0",
-    "2013-05-02T00:00:00.0",
-    "2014-05-06T00:00:00.0",
-    "2015-05-18T00:00:00.0",
-    "2016-05-20T00:00:00.0",
-    "2017-05-18T00:00:00.0",
-    "2018-07-08T00:00:00.0",
-]
-periods = [
-    "IC40",
-    "IC59",
-    "IC79",
-    "IC86_I",
-    "IC86_II",
-    "IC86_III",
-    "IC86_IV",
-    "IC86_V",
-    "IC86_VI",
-    "IC86_VII",
-]
-Tstarts = Time(Tstarts, format="isot", scale="utc").mjd
-Tstops = Time(Tstops, format="isot", scale="utc").mjd
-mask = T1 > Tstarts
-ind_start = len(Tstarts[mask])
-mask = T2 > Tstarts
-ind_stop = len(Tstarts[mask])
-periods[ind_start:ind_stop]
+periods = []
+if IC40 == True:
+    periods.append("IC40")
+if IC59 == True:
+    periods.append("IC59")
+if IC79 == True:
+    periods.append("IC79")
+if IC86_I == True:
+    periods.append("IC86_I")
+if IC86_II_VII == True:
+    periods.append("IC86_II-VII")
+periods
 
 cfg = Config()
 coords_s = SkyCoord(RA, DEC, unit="degree")
@@ -117,12 +86,10 @@ if os.path.exists("20210126_PS-IC40-IC86_VII.zip") == False:
 data_dir = os.getcwd() + "/icecube_10year_ps/"
 
 dsc = create_dataset_collection(cfg=cfg, base_path=data_dir)
-dsc.dataset_names
 
-datasets = dsc[periods[ind_start:ind_stop]]
+datasets = dsc[periods]
 datasets
 
-datasets = dsc["IC86_I", "IC86_II-VII"]
 rss = RandomStateService(seed=1)
 
 def process_pixel(index):
