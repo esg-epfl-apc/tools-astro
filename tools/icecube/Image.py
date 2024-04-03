@@ -147,7 +147,9 @@ else:
     #    res=pool.map(process_pixel, range(Npix**2))
     tsbest = 0
     for i, RRa in enumerate(RA_grid):
-        pr.report_progress(stage="Progress", progress=(i / len(RA_grid)))
+        pr.report_progress(
+            stage="Progress", progress=5 + 95 * (i / len(RA_grid))
+        )
         for j, DDec in enumerate(DEC_grid):
             ind = i * Npix + j
             r, d, TS_map[i, j], ns_map[i, j], gamma_map[i, j] = process_pixel(
