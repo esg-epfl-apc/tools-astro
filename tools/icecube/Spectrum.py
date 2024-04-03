@@ -22,7 +22,7 @@ IC59 = False  # oda:Boolean
 IC79 = False  # oda:Boolean
 IC86_I = True  # oda:Boolean
 IC86_II_VII = True  # oda:Boolean
-Spectrum_type = "Fixed_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
+Spectrum_type = "Free_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
@@ -274,8 +274,8 @@ if Spectrum_type == "Free_slope":
     )
     plt.annotate(
         "",
-        xy=(x[4], ymax_90[4] / 2.0),
-        xytext=(x[4], ymax_90[4]),
+        xy=(x[24], ymax_90[24] / 4.0),
+        xytext=(x[24], ymax_90[24]),
         arrowprops=dict(facecolor="black", shrink=0.05),
     )
 
