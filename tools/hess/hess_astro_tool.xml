@@ -167,22 +167,16 @@ region of the radius ``R_s`` (in degrees) around the source position
 done by dividing by the exposure time and effective area that is
 extracted from the Instrument Response Functions (IRF).
 
-For the spectra, two alternative tools are considered. The service
-``Spectrum`` performs histogramming of the events in energy, in the
-number ``NEbins`` of energy bins homogeneously spaces in logarithm of
-energy, beterrn ``Emin`` and ``Emax``. Conversion of the counts to the
-physical flux units is done by dividing by the exposure time and
-effective area that is extracted from the IRF. This method does not take
-into account the energy bias and can result in a wrong spectral shape at
-the low-energy threshold where the bias is strongest.
-
-An alternative spectral extraction is done using
-`Gammapy &lt;https://gammapy.org/&gt;`__, following the script `Spectrum
-Analysis &lt;https://docs.gammapy.org/0.18.2/tutorials/spectrum_analysis.html&gt;`__.
-It performs forward folding of the spectral model (a cut-off powerlaw by
-default) with the IRF and fits the folded model to the binned count data
-in the energy range between ``Emin`` and ``Emax`` in ``NEbins``
-logarithmically spaced energy bins.
+For the spectra, the analysis performs histogramming of events in
+energy, in the number ``NEbins`` of energy bins homogeneously spaces in
+logarithm of energy, beterrn ``Emin`` and ``Emax``. Conversion of the
+counts to the physical flux units is done by dividing by the exposure
+time and effective area that is extracted from the IRF. The result is
+shown with black data points. This simple estimate of flux in energy
+bins does not take into account the event energy estimation errors. To
+the contrary, a powerlaw fit to the spectrum is done using forward
+folding method, properly taking into account the error of energy
+estimation.
 </help>
   <citations>
     <citation type="doi">10.5281/zenodo.1421098</citation>
