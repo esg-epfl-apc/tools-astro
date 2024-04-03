@@ -133,7 +133,6 @@ plt.xlim(*plt.xlim()[::-1])
 
 plt.xlabel("RA, degrees")
 plt.ylabel("DEC,degrees")
-plt.savefig("Image.png", format="png")
 
 # Create a new WCS object.  The number of axes must be set
 # from the start
@@ -173,6 +172,7 @@ plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
 pr.report_progress(stage="Progress", progress=100.0)
+plt.savefig("Image.png", format="png")
 
 bin_image = PictureProduct.from_file("Image.png")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")

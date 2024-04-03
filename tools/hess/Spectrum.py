@@ -383,9 +383,7 @@ col2 = fits.Column(name="ENERG_HI", format="E", unit="TeV", array=ENERG_HI)
 cols = fits.ColDefs([col1, col2])
 hdu = fits.BinTableHDU.from_columns(cols, name="Etrue_BOUNDS")
 new_hdul.append(hdu)
-new_hdul.writeto("Spectra.fits", overwrite=True)
-
-new_hdul.info()
+# new_hdul.writeto('Spectra.fits',overwrite=True)
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Contour.png")
