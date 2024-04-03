@@ -216,7 +216,7 @@ if Spectrum_type == "Free_slope":
                 norms_90[i], [norms_90[i], gammas_90[i]]
             )
         )
-    plt.plot(gammas_90, F_norms_90)
+    # plt.plot(gammas_90,F_norms_90)
     F_norms_90 = []
     for i in range(len(Slopes)):
         F_norms_90.append(
@@ -225,15 +225,15 @@ if Spectrum_type == "Free_slope":
             )
         )
 
-    plt.figure()
-    plt.plot(Slopes, F_norms_90)
-    print(F_norms_90)
-    plt.plot(gammas_68, F_norms_68)
-    plt.yscale("log")
-    plt.ylabel("Flux normalisation at 1 TeV, 1/(GeV s cm$^2$)")
-    plt.scatter([slope_best], [Fbest], marker="x")
-    plt.xlabel("Slope")
-    plt.savefig("Confidence_range.png", format="png", bbox_inches="tight")
+    # plt.figure()
+    # plt.plot(Slopes,F_norms_90)
+    # print(F_norms_90)
+    # plt.plot(gammas_68,F_norms_68)
+    # plt.yscale('log')
+    # plt.ylabel('Flux normalisation at 1 TeV, 1/(GeV s cm$^2$)')
+    # plt.scatter([slope_best],[Fbest],marker='x')
+    # plt.xlabel('Slope')
+    # plt.savefig('Confidence_range.png',format='png',bbox_inches='tight')
 
 if Spectrum_type == "Free_slope":
     x = np.logspace(-1, 6, 50)
