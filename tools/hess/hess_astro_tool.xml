@@ -158,25 +158,37 @@ that can be set by adjusting the ``Emin`` and ``Emax`` parameters and in
 the time range that can be adjusted setting the ``T1`` (start time) and
 ``T2`` (stop time) parameters.
 
-The lightcurves are produced by hystrogramming of the events in time, in
-the number ``NTbins`` of time intervals of equalt time width between
-``T1`` (start time) and ``T2`` (stop time). The events are selected in a
-desired energy range between ``Emin`` and ``Emax`` from a circular
-region of the radius ``R_s`` (in degrees) around the source position
-``RA``,\ ``DEC``. Conversion of the counts to the physical flux units is
-done by dividing by the exposure time and effective area that is
-extracted from the Instrument Response Functions (IRF).
-
 For the spectra, the analysis performs histogramming of events in
 energy, in the number ``NEbins`` of energy bins homogeneously spaces in
 logarithm of energy, beterrn ``Emin`` and ``Emax``. Conversion of the
 counts to the physical flux units is done by dividing by the exposure
-time and effective area that is extracted from the IRF. The result is
-shown with black data points. This simple estimate of flux in energy
-bins does not take into account the event energy estimation errors. To
-the contrary, a powerlaw fit to the spectrum is done using forward
-folding method, properly taking into account the error of energy
-estimation.
+time and effective area that is extracted from the Instrument Response
+Functions (IRF). The result is shown with black data points. This simple
+estimate of flux in energy bins does not take into account the event
+energy estimation errors.
+
+The source signal is extracted from a circular region of the radius
+``R_s``\ (adjustable parameter) around the source posiiton. The
+background estimate is done using the &#8220;wobble&#8221; method, from a position
+opposite with respect to the signal extraction region in the camera,
+with respect to the center of the telescope field-of-view.
+
+A powerlaw fit to the spectrum is done using forward folding method,
+properly taking into account the error of energy estimation. The results
+of the spectral fitting include the 68% confidence contour for the
+spectral parameters (slope and normalisaiton of the powerlaw spectrum).
+The first entry in the &#8220;contour&#8221; table is the best-fit value of the fit.
+The energy range of fitting can be adjusted with the ``Efit_min``,
+``Efit_max`` parameters.
+
+The lightcurves are produced by hystrogramming of the events in time, in
+the number ``NTbins`` of time intervals of equalt time width between
+``T1`` (start time) and ``T2`` (stop time). The events are selected in a
+desired energy range between ``Emin`` and ``Emax``. The source and
+backgorund counts are computed in the same way as for the spectral
+fitting. Conversion of the counts to the physical flux units is done by
+dividing by the exposure time and effective area that is extracted from
+the IRF.
 </help>
   <citations>
     <citation type="doi">10.5281/zenodo.1421098</citation>
