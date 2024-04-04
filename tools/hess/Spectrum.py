@@ -327,6 +327,7 @@ plt.xlabel("Slope")
 plt.ylabel(r"Norm, 1/(TeV cm$^2$ s)")
 plt.savefig("Contour.png", format="png", bbox_inches="tight")
 
+plt.figure(figsize=(10, 7))
 x = np.logspace(-0.5, 1.5, 10)
 ymax = np.zeros(10)
 ymin = np.ones(10)
