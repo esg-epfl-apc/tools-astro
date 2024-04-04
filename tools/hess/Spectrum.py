@@ -401,18 +401,30 @@ names = (
 )
 spec = ODAAstropyTable(Table(data, names=names))
 
-data = [[Gam_best, gammas], [Norm_best, norms]]
+data = [
+    np.concatenate(([Gam_best], gammas)),
+    np.concatenate(([Norm_best], norms)),
+]
 names = ["Gamma", "Norm_1TeV[1/(TeV cm2 s)]"]
 error_ellipse = ODAAstropyTable(Table(data, names=names))
-# table_confidence_contour = error_ellipse # http://odahub.io/ontology#ODAAstropyTable
 
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+table_confidence_contour = (
+    error_ellipse  # http://odahub.io/ontology#ODAAstropyTable
+)
 table_spectrum = spec  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(("out_Spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(
+    (
+        "out_Spectrum_table_confidence_contour",
+        "table_confidence_contour_galaxy.output",
+        table_confidence_contour,
+    )
+)
 _oda_outs.append(
     (
         "out_Spectrum_table_spectrum",

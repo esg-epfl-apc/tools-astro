@@ -76,6 +76,9 @@
     <data label="${tool.name} -&gt; Spectrum png" name="out_Spectrum_png" format="auto" from_work_dir="png_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
+    <data label="${tool.name} -&gt; Spectrum table_confidence_contour" name="out_Spectrum_table_confidence_contour" format="auto" from_work_dir="table_confidence_contour_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
     <data label="${tool.name} -&gt; Spectrum table_spectrum" name="out_Spectrum_table_spectrum" format="auto" from_work_dir="table_spectrum_galaxy.output">
       <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
@@ -104,7 +107,7 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="2">
+    <test expect_num_outputs="3">
       <conditional name="_data_product">
         <param name="_selector" value="Spectrum" />
         <param name="src_name" value="PKS 2155-304" />
