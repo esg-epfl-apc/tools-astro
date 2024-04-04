@@ -358,6 +358,7 @@ plt.xlabel("$E$, TeV")
 plt.ylabel("$E^2 dN/dE$, TeV/(cm$^2$ s)")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
+print("Here")
 new_hdul = fits.HDUList()
 form = str(len(ENERG)) + "E"
 
@@ -385,6 +386,7 @@ hdu = fits.BinTableHDU.from_columns(cols, name="Etrue_BOUNDS")
 new_hdul.append(hdu)
 # new_hdul.writeto('Spectra.fits',overwrite=True)
 
+print("and here")
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Contour.png")
 from astropy.table import Table
