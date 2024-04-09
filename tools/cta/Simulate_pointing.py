@@ -38,7 +38,7 @@ from regions import CircleSkyRegion
 # from gammapy.irf import load_cta_irfs
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = -38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
@@ -52,6 +52,10 @@ Gamma = 1.75  # http://odahub.io/ontology#Float
 sigma = 0.0  # http://odahub.io/ontology#Float
 RA_pnt = 167.113809  # http://odahub.io/ontology#RightAscensionDegrees
 DEC_pnt = 38.208833  # http://odahub.io/ontology#DeclinationDegrees
+Site = "South"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
+LSTs = True  # http://odahub.io/ontology#Boolean
+MSTs = True  # http://odahub.io/ontology#Boolean
+SSTs = False  # http://odahub.io/ontology#Boolean
 
 _galaxy_wd = os.getcwd()
 
@@ -71,12 +75,60 @@ pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
 pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
 
+CTA_south_lat = -25.0
+CTA_north_lat = 18.0
+if Site == "North":
+    Zd = abs(DEC - CTA_north_lat)
+    if Zd < 30.0:
+        Zd = "20deg-"
+    elif Zd < 50:
+        Zd = "40deg-"
+    elif Zd < 70.0:
+        Zd = "60deg-"
+    else:
+        print("Source not visible from " + Site)
+    if DEC > CTA_north_lat:
+        N_S = "NorthAz-"
+    else:
+        N_S = "SouthAz-"
+    if LSTs:
+        tel = "4LSTs"
+    if MSTs:
+        tel += "09MSTs"
+    filename = "IRFS/fits/Prod5-North-" + Zd + N_S + tel
+else:
+    Zd = abs(DEC - CTA_south_lat)
+    if Zd < 30.0:
+        Zd = "20deg-"
+    elif Zd < 50:
+        Zd = "40deg-"
+    elif Zd < 70.0:
+        Zd = "60deg-"
+    else:
+        print("Source not visible from " + Site)
+    if DEC > CTA_south_lat:
+        N_S = "NorthAz-"
+    else:
+        N_S = "SouthAz-"
+    if MSTs:
+        tel = "14MSTs"
+    if SSTs:
+        tel += "37MSTs"
+    filename = "IRFS/fits/Prod5-South-" + Zd + N_S + tel
+
+if Texp < 1800:
+    filename += ".1800s-v0.1.fits.gz"
+elif Texp < 18000:
+    filename += ".18000s-v0.1.fits.gz"
+else:
+    filename += ".180000s-v0.1.fits.gz"
+print(filename)
+get_ipython().system("ls {filename}")   # noqa: F821
+
 get_ipython().system(   # noqa: F821
-    "ls IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
+    "ls IRFS/fits/Prod5-North-40deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
 )
-filename = (
-    "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-)
+# filename = "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
 IRFS = load_irf_dict_from_file(filename)
 dic = {
     "components": [
