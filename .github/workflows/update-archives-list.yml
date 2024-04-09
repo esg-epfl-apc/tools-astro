@@ -1,0 +1,36 @@
+name: update-archives-list
+run-name: Updating archives list
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 0'
+jobs:
+  run-archive-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+
+      - name: install python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: install pyvo and required dependencies
+        run: | 
+          python -m ensurepip --upgrade
+          pip install astropy
+          pip install requests
+          pip install pyvo
+
+      - name: run archives script
+        run: python fetch_archives.py
+
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "updated archives file"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
