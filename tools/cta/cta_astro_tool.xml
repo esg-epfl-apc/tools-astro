@@ -82,16 +82,13 @@
     <data label="${tool.name} -&gt; Simulate_pointing event_list_fits" name="out_Simulate_pointing_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_pointing'</filter>
     </data>
-    <data label="${tool.name} -&gt; Simulate_pointing irf_fits" name="out_Simulate_pointing_irf_fits" format="auto" from_work_dir="irf_fits_galaxy.output">
-      <filter>_data_product['_selector'] == 'Simulate_pointing'</filter>
-    </data>
   </outputs>
   <tests>
     <test expect_num_outputs="5">
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/eb5e32f759da0d8591ee173a5d4840114f3e1290/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/83c77cd93286a9331e1b8089df48c58d4f0d6561/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />
@@ -103,7 +100,7 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="5">
+    <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="Simulate_pointing" />
         <param name="RA" value="166.113809" />

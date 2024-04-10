@@ -29,11 +29,7 @@ from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import FoVBackgroundModel, Models
 from numpy import exp, sqrt
 from oda_api.api import ProgressReporter
-from oda_api.data_products import (
-    BinaryProduct,
-    ImageDataProduct,
-    PictureProduct,
-)
+from oda_api.data_products import BinaryProduct, PictureProduct
 from regions import CircleSkyRegion
 
 # from gammapy.irf import load_cta_irfs
@@ -140,6 +136,8 @@ EFFAREA = aeff["EFFAREA"][0]
 print(offaxis)
 ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
 EFAREA = EFFAREA[ind_offaxis]
+HDU_EFFAREA = hdul["EFFECTIVE AREA"]
+HDU_RMF = hdul["ENERGY DISPERSION"]
 
 E = np.logspace(-2, 2, 20)
 
@@ -256,7 +254,7 @@ print(f"Save events ...")
 primary_hdu = fits.PrimaryHDU()
 hdu_evt = fits.BinTableHDU(events.table)
 hdu_gti = fits.BinTableHDU(dataset.gti.table, name="GTI")
-hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
+hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti, HDU_EFFAREA, HDU_RMF])
 hdu_all.writeto(f"./events.fits", overwrite=True)
 
 hdul = fits.open("events.fits")
@@ -368,7 +366,6 @@ plt.ylabel("Dec")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 
 fits_events = BinaryProduct.from_file("events.fits")
-fits_irf = ImageDataProduct.from_fits_file(filename)
 bin_image1 = PictureProduct.from_file("Image.png")
 bin_image2 = PictureProduct.from_file("Theta2_plot.png")
 bin_image3 = PictureProduct.from_file("Count_spectrum.png")
@@ -378,7 +375,6 @@ image_png = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
 theta2_png = bin_image2  # http://odahub.io/ontology#ODAPictureProduct
 spectrum_png = bin_image3  # http://odahub.io/ontology#ODAPictureProduct
 event_list_fits = fits_events  # http://odahub.io/ontology#ODABinaryProduct
-irf_fits = fits_irf  # http://odahub.io/ontology#ODABinaryProduct
 
 # output gathering
 _galaxy_meta_data = {}
@@ -406,9 +402,6 @@ _oda_outs.append(
         "event_list_fits_galaxy.output",
         event_list_fits,
     )
-)
-_oda_outs.append(
-    ("out_Simulate_pointing_irf_fits", "irf_fits_galaxy.output", irf_fits)
 )
 
 for _outn, _outfn, _outv in _oda_outs:
