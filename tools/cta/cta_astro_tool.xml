@@ -123,7 +123,7 @@
         <param name="LSTs" value="True" />
         <param name="MSTs" value="True" />
         <param name="SSTs" value="False" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/f30ac33c28aab378132f337dde4a581e711fc7be/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/f5dff70bc27959489bc770c96c14e5d5ac081ba5/3d.fits" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
@@ -179,4 +179,7 @@ spectral analysis tools.
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5499840.svg
    :target: https://doi.org/10.5281/zenodo.5499840
 </help>
+  <citations>
+    <citation type="doi">10.1007/s10686-011-9247-0</citation>
+  </citations>
 </tool>
