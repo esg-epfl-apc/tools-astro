@@ -307,7 +307,7 @@ plt.savefig("Theta2_plot.png")
 
 # Create a new WCS object.  The number of axes must be set
 # from the start
-plt.close()
+plt.figure()
 w = wcs.WCS(naxis=2)
 
 w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
