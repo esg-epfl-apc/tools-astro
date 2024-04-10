@@ -523,31 +523,35 @@ _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     (
-        "out_model_CTA_events_from_file_spectrum_plot",
+        "out_Simulate_pointing_using_model_cube_file_spectrum_plot",
         "spectrum_plot_galaxy.output",
         spectrum_plot,
     )
 )
 _oda_outs.append(
     (
-        "out_model_CTA_events_from_file_theta_plot",
+        "out_Simulate_pointing_using_model_cube_file_theta_plot",
         "theta_plot_galaxy.output",
         theta_plot,
     )
 )
 _oda_outs.append(
     (
-        "out_model_CTA_events_from_file_picture",
+        "out_Simulate_pointing_using_model_cube_file_picture",
         "picture_galaxy.output",
         picture,
     )
 )
 _oda_outs.append(
-    ("out_model_CTA_events_from_file_image", "image_galaxy.output", image)
+    (
+        "out_Simulate_pointing_using_model_cube_file_image",
+        "image_galaxy.output",
+        image,
+    )
 )
 _oda_outs.append(
     (
-        "out_model_CTA_events_from_file_event_list",
+        "out_Simulate_pointing_using_model_cube_file_event_list",
         "event_list_galaxy.output",
         event_list,
     )
