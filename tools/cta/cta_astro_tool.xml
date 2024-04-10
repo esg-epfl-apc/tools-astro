@@ -123,7 +123,7 @@
         <param name="LSTs" value="True" />
         <param name="MSTs" value="True" />
         <param name="SSTs" value="False" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/fd029be5e2ea447eb7fc483beed2ed5528c62895/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/1e22bdb59c475ba9ecf2454a7d939b913d753733/3d.fits" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
