@@ -109,7 +109,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="Simulate_using_model_cube_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/bf65e4dd785f502e0fdd49ccaea823bb051b3df9/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/a491af46e18f1ca638986a19d903ee73b9025f12/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />
@@ -125,49 +125,42 @@
   <help>This service provides simulaiton of observations with `Cherenkov
 Telescope Array (CTA) &lt;https://www.cta-observatory.org/&gt;`__ observatory
 (now in construction), based on the Instrument Response Funcitons (IRF)
-from Monte-Carlo Production 5: |DOI| analysis of publicly available data
-of IceCube neutrino telescope, described by `IceCube Collaboration
-(2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__, using the
-`SkyLLH &lt;https://icecube.github.io/skyllh/master/html/index.html&gt;`__
-data analysis package. Three types of data products are generated: sky
-images, source lightcurves and spectra.
+from Monte-Carlo Production 5: |DOI|. The simulation is done using
+`Gammapy &lt;https://gammapy.org/&gt;`__ package.
 
-The image that will be produced is a Test Statistic (TS) value map
-around the reference source position. The TS values is computed for the
-powerlaw spectral model of a source placed at the center of each pixel.
-It is possible to either fix the slope of the spectrum or leave it free,
-using a ``Fixed_slope`` / ``Free_slope`` switch. For the ``Fixed slope``
-choice, it is possible to set the spectral slope setting the ``Slope``
-parameter. It is possible to adjust the time interval of the analysis by
-including or excluding fixed observation periods, IC40, IC59, IC79,
-IC86-I, IC86-II-VII, onto which the IceCube dataset is divided (see
-`IceCube Collaboration (2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__ for
-the time bounds of the periods, between 2008 and 2018).
+Two possibilities for defining the sky model are available:
+``Simulate_pointing_using_pre-defined_model`` and
+``Simulate_pointing_using_model_cube_file``. The &#8220;pre-defined model&#8221;
+option provides a possibility to simulate a source with a power-law
+spectrum, ``dN/dE=F0 (E/E0)^{-\Gamma}``, considering also the effect of
+absorption on the Extragalactic Backgorund Light (EBL, based on
+`Franceschini et al.&#160;(2017) &lt;https://arxiv.org/abs/1705.10256&gt;`__ model.
 
-Similar to the Image, the spectrum can be requested either for a fixed
-spectral slope, or leaving the slope free in the spectral fitting, using
-the ``Fixed_slope`` / ``Free_slope`` switch. For the fixed spectral
-slope, the analysis builds a likelihood profile to find the best-fit
-number of counts from the source and the error intervals (defined as the
-boundaries of the interval in which the TS value decreases by 1 with
-respect to the maximum, the 90% upper bound is defined at the upper
-boundary of the interval at which the TS value decreases by 2.7). The
-counts are converted to the flux normalisation using the
-*calculate_fluxmodel_scaling_factor* funciton of SkyLLH. In the case of
-``Free Slope`` choice, TS values are calculated as a function of the
-source counts and spectral slope and 68% confidence contours are defined
-as the level at which TS decreases by 2.3 with respect to the maximal
-value. If the maximal TS value exceeds 6, the best-fit spectrum is
-plotted together with the 68% confidence range &#8220;butterfly&#8221;. Otherwise,
-an upper limit on the powerlaw type spectra is shown. This upper limit
-is shown as a curve that is a tangent to the maximal possible powerlaw
-spectrum (at 90% confidence level) for each spectral slope in the range
-between 1 and 5.
+Parameters that can be adjusted are the source position (``RA``,
+``DEC``), the off-axis angle in the telescope field-of-view, ``R_s``,
+Radius of the sky image around the source position, ``Radius`` (used in
+the image preview), the exposure time in hours, ``Texp``, source
+redshift ``z``, the powerlaw flux normalisation ``F0`` and the reference
+energy of normalisation ``E0`` (in TeV), the slope of the powerlaw
+spectrum ``Gamma``, radius of the spectral extraction region ``R_s``
+used in the count-spectrum preview.
 
-For the lightcurve, the entire ten-year time span of IceCube public data
-is divided into intevals corresponding to the IceCube observational
-periods (from IC40 to IC86-VII). For each period, the source flux is
-extracted assuming fixed spectral slope.
+For the sources visible from both South and North CTA sites, it is
+possible to choose between ``South`` and ``North`` sites. It is also
+possible to simulate observations with different CTA sub-arrays: Large
+Size Telescopes (LST), Medium Size Telescopes (MST), Small Size
+Telescopes (SST). Note that in the &#8220;Production 5&#8221; Monte-Carlo
+simulations of the telescope responses it was assumed that the Northern
+site will host only LST and MST sub-arrays (no SST available), while the
+Southern site will have MST and SST sub-arrays (no LST available).
+
+Four data products are generated: the Data Level 3 (DL3) event list (a
+FITS file), a sky image, a &#8220;theta-square plot&#8221; showsing distribution of
+gamma-like events around the the source position, and the count-spectrum
+showing the excess counts as a funciton of energy. The image, spectrum
+and theta-square plot are for &#8220;preview&#8221; of the event set, further
+analysis of the simulated events can be done with deticated imaging and
+spectral analysis tools.
 
 .. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5499840.svg
    :target: https://doi.org/10.5281/zenodo.5499840
