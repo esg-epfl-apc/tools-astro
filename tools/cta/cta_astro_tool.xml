@@ -123,7 +123,7 @@
         <param name="LSTs" value="True" />
         <param name="MSTs" value="True" />
         <param name="SSTs" value="False" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/edb411d5f9e932080296431e4b26666dd1feaacf/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/fd029be5e2ea447eb7fc483beed2ed5528c62895/3d.fits" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
@@ -139,10 +139,16 @@ from Monte-Carlo Production 5: |DOI|. The simulation is done using
 Two possibilities for defining the sky model are available:
 ``Simulate_pointing_using_pre-defined_model`` and
 ``Simulate_pointing_using_model_cube_file``. The &#8220;pre-defined model&#8221;
-option provides a possibility to simulate a source with a power-law
-spectrum, ``dN/dE=F0 (E/E0)^{-\Gamma}``, considering also the effect of
-absorption on the Extragalactic Backgorund Light (EBL, based on
-`Franceschini et al.&#160;(2017) &lt;https://arxiv.org/abs/1705.10256&gt;`__ model.
+option provides a possibility to simulate a source at sky position
+``RA``, ``DEC``, with a power-law spectrum,
+``dN/dE=F0 (E/E0)^{-\Gamma}``, considering also the effect of absorption
+on the Extragalactic Backgorund Light (EBL, based on `Franceschini et
+al.&#160;(2017) &lt;https://arxiv.org/abs/1705.10256&gt;`__ model. In the &#8220;model
+cube file&#8221; approach, the sky model is loaded from a datacube file (to be
+uploaded from an URL to be given in the parameter box). The model cube
+describes source counts as a function of ``RA``, ``DEC`` and energy
+``E``. Hence, both the source position on the sky and the model source
+spectrum are encoded directly in the data cube.
 
 Parameters that can be adjusted are the source position (``RA``,
 ``DEC``), the off-axis angle in the telescope field-of-view, ``R_s``,
