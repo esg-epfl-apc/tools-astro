@@ -6,9 +6,16 @@
 import json
 import os
 import shutil
-import sys
 
 from oda_api.json import CustomJSONEncoder
+
+get_ipython().run_cell_magic(   # noqa: F821
+    "bash",
+    "",
+    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
+)
+
+import sys
 
 sys.path.append(".")
 from pathlib import Path
@@ -43,12 +50,6 @@ from oda_api.data_products import (
     PictureProduct,
 )
 
-get_ipython().run_cell_magic(   # noqa: F821
-    "bash",
-    "",
-    'rm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits\nfor fn in *.gz ; do tar -zxvf $fn; done \n',
-)
-
 # not for run on Galaxy
 # %%bash
 # git lfs install
@@ -57,27 +58,24 @@ get_ipython().run_cell_magic(   # noqa: F821
 # We simulate point source in wobble observaiton,
 # 0.4 degree off-axis
 
+OffAxis_angle = 0.78  # http://odahub.io/ontology#AngleDegrees
+Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
-Texp = 2.4  # http://odahub.io/ontology#TimeIntervalHours
+Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
+# Source redshift
+z = 0.03  # http://odahub.io/ontology#Float
+# Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
+F0 = 1e-11  # http://odahub.io/ontology#Float
+E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
+Gamma = 2.0  # http://odahub.io/ontology#Float
+# source extension in degrees
+R_s = 0.2  # http://odahub.io/ontology#Float
+Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
+LSTs = True  # http://odahub.io/ontology#Boolean
+MSTs = True  # http://odahub.io/ontology#Boolean
+SSTs = False  # http://odahub.io/ontology#Boolean
 
 file_path = "3d.fits"  # http://odahub.io/ontology#POSIXPath
-
-# file_url='' # http://odahub.io/ontology#String
-
-# Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
-# TODO: implement flux normalisation for fits input
-# F0=4e-13 # http://odahub.io/ontology#Float
-# E0=1. # http://odahub.io/ontology#Energy_TeV
-
-Emax = 30  # http://odahub.io/ontology#Energy_TeV
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
-
-norm_cm2_TeV_s = 1e-12  # http://odahub.io/ontology#Float
-norm_energy = 1.0  # http://odahub.io/ontology#Energy_TeV
-
-pointing_shift = 0.2  # http://odahub.io/ontology#AngleDegrees
-
-pixsize = 0.1  # http://odahub.io/ontology#AngleDegrees
 
 _galaxy_wd = os.getcwd()
 
@@ -92,11 +90,11 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+pixsize = 0.1
+
 print("loading " + file_path)
 cube_map = Map.read(file_path)
 cube_map.geom
-
-cube_map.geom.center_skydir
 
 print("locating source")
 # source = SkyCoord.from_name(src_name, frame='icrs', parse=False, cache=True)
@@ -104,9 +102,58 @@ source = cube_map.geom.center_skydir
 DEC = float(source.dec / u.deg)
 RA = float(source.ra / u.deg)
 
+CTA_south_lat = -25.0
+CTA_north_lat = 18.0
+if Site == "North":
+    Zd = abs(DEC - CTA_north_lat)
+    if Zd < 30.0:
+        Zd = "20deg-"
+    elif Zd < 50:
+        Zd = "40deg-"
+    elif Zd < 70.0:
+        Zd = "60deg-"
+    else:
+        print("Source not visible from " + Site)
+    if DEC > CTA_north_lat:
+        N_S = "NorthAz-"
+    else:
+        N_S = "SouthAz-"
+    if LSTs:
+        tel = "4LSTs"
+    if MSTs:
+        tel += "09MSTs"
+    filename = "IRFS/fits/Prod5-North-" + Zd + N_S + tel
+else:
+    Zd = abs(DEC - CTA_south_lat)
+    if Zd < 30.0:
+        Zd = "20deg-"
+    elif Zd < 50:
+        Zd = "40deg-"
+    elif Zd < 70.0:
+        Zd = "60deg-"
+    else:
+        print("Source not visible from " + Site)
+    if DEC > CTA_south_lat:
+        N_S = "NorthAz-"
+    else:
+        N_S = "SouthAz-"
+    if MSTs:
+        tel = "14MSTs"
+    if SSTs:
+        tel += "37MSTs"
+    filename = "IRFS/fits/Prod5-South-" + Zd + N_S + tel
+
+if Texp < 1800:
+    filename += ".1800s-v0.1.fits.gz"
+elif Texp < 18000:
+    filename += ".18000s-v0.1.fits.gz"
+else:
+    filename += ".180000s-v0.1.fits.gz"
+get_ipython().system("ls {filename}")   # noqa: F821
+
 # telescope pointing will be shifted slightly
 cdec = cos(DEC * pi / 180.0)
-RA_pnt = RA - pointing_shift / cdec
+RA_pnt = RA - OffAxis_angle / cdec
 DEC_pnt = DEC
 pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
 
@@ -134,12 +181,6 @@ observation = Observation.create(
     location=location,
 )
 print(observation)
-
-# print('Sowing map')
-# mid_energy = cube_map.data.shape[0]//2
-# map0 = cube_map.slice_by_idx({"energy": mid_energy})
-# map0.plot()
-# plt.show()
 
 def GetBinSpectralModel(
     E, bins_per_decade=20, amplitude=1e-12 * u.Unit("cm-2 s-1")
@@ -220,7 +261,7 @@ energy_bins = cube_map.geom.axes["energy"].center
 len(energy_bins), float(np.max(energy_bins) / u.TeV)
 norm_bin = 0
 for i, E in enumerate(energy_bins):
-    if E > norm_energy * u.TeV:
+    if E > E0 * u.TeV:
         norm_bin = i
         break
 assert norm_bin > 0
@@ -243,7 +284,7 @@ norm_flux
 # int_bin_flux
 
 print("find mult")
-mult = norm_cm2_TeV_s * u.Unit("cm-2 s-1 TeV-1") / norm_flux  # .decompose()
+mult = F0 * u.Unit("cm-2 s-1 TeV-1") / norm_flux  # .decompose()
 mult
 
 print("find int_bin_flux")

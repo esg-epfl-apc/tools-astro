@@ -42,14 +42,22 @@
         <param name="SSTs" type="boolean" value="False" label="SSTs" />
       </when>
       <when value="Simulate_using_model_cube_file">
-        <param name="Texp" type="float" value="2.4" label="Texp (unit: hour)" />
+        <param name="OffAxis_angle" type="float" value="0.78" label="OffAxis_angle (unit: deg)" />
+        <param name="Radius" type="float" value="2.5" label="Radius (unit: deg)" />
+        <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
+        <param name="z" type="float" value="0.03" label="z" />
+        <param name="F0" type="float" value="1e-11" label="F0" />
+        <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
+        <param name="Gamma" type="float" value="2.0" label="Gamma" />
+        <param name="R_s" type="float" value="0.2" label="R_s" />
+        <param name="Site" type="select" label="Site">
+          <option value="North" selected="true">North</option>
+          <option value="South">South</option>
+        </param>
+        <param name="LSTs" type="boolean" value="True" label="LSTs" />
+        <param name="MSTs" type="boolean" value="True" label="MSTs" />
+        <param name="SSTs" type="boolean" value="False" label="SSTs" />
         <param name="file_path" type="data" label="file_path" format="data" />
-        <param name="Emax" type="integer" value="30" label="Emax (unit: TeV)" />
-        <param name="Emin" type="float" value="0.1" label="Emin (unit: TeV)" />
-        <param name="norm_cm2_TeV_s" type="float" value="1e-12" label="norm_cm2_TeV_s" />
-        <param name="norm_energy" type="float" value="1.0" label="norm_energy (unit: TeV)" />
-        <param name="pointing_shift" type="float" value="0.2" label="pointing_shift (unit: deg)" />
-        <param name="pixsize" type="float" value="0.1" label="pixsize (unit: deg)" />
       </when>
     </conditional>
   </inputs>
@@ -108,14 +116,19 @@
     <test expect_num_outputs="5">
       <conditional name="_data_product">
         <param name="_selector" value="Simulate_using_model_cube_file" />
-        <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/d89bb7c72597d0acfdca0ade53543b309be3b606/3d.fits" />
-        <param name="Emax" value="30" />
-        <param name="Emin" value="0.1" />
-        <param name="norm_cm2_TeV_s" value="1e-12" />
-        <param name="norm_energy" value="1.0" />
-        <param name="pointing_shift" value="0.2" />
-        <param name="pixsize" value="0.1" />
+        <param name="OffAxis_angle" value="0.78" />
+        <param name="Radius" value="2.5" />
+        <param name="Texp" value="1.0" />
+        <param name="z" value="0.03" />
+        <param name="F0" value="1e-11" />
+        <param name="E0" value="1.0" />
+        <param name="Gamma" value="2.0" />
+        <param name="R_s" value="0.2" />
+        <param name="Site" value="North" />
+        <param name="LSTs" value="True" />
+        <param name="MSTs" value="True" />
+        <param name="SSTs" value="False" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/e37aca06cb94cb0ad79625c0868b3264fdd82264/3d.fits" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

@@ -68,8 +68,9 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 Texp = Texp * 3600.0
-RA_pnt = RA  # http://odahub.io/ontology#RightAscensionDegrees
-DEC_pnt = DEC + OffAxis_angle  # http://odahub.io/ontology#DeclinationDegrees
+DEC_pnt = DEC
+cdec = cos(DEC * pi / 180.0)
+RA_pnt = RA - OffAxis_angle / cdec
 
 pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
 coord_s = SkyCoord(RA, DEC, unit="deg", frame="icrs")
