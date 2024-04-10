@@ -27,6 +27,7 @@ from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import Models
+from numpy import sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import (
     BinaryProduct,
@@ -38,21 +39,21 @@ from regions import CircleSkyRegion
 # from gammapy.irf import load_cta_irfs
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
-DEC = -38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
 # Source redshift
 z = 0.1  # http://odahub.io/ontology#Float
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
-F0 = 4e-13  # http://odahub.io/ontology#Float
+F0 = 4e-12  # http://odahub.io/ontology#Float
 E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
 Gamma = 1.75  # http://odahub.io/ontology#Float
 # source extension in degrees
 sigma = 0.0  # http://odahub.io/ontology#Float
 RA_pnt = 167.113809  # http://odahub.io/ontology#RightAscensionDegrees
 DEC_pnt = 38.208833  # http://odahub.io/ontology#DeclinationDegrees
-Site = "South"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
+Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
 LSTs = True  # http://odahub.io/ontology#Boolean
 MSTs = True  # http://odahub.io/ontology#Boolean
 SSTs = False  # http://odahub.io/ontology#Boolean
@@ -72,6 +73,11 @@ for vn, vv in inp_pdic.items():
 
 Texp = Texp * 3600.0
 pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
+coord_s = SkyCoord(RA, DEC, unit="deg", frame="icrs")
+RA_bkg = RA_pnt - (RA - RA_pnt)
+DEC_bkg = DEC_pnt - (DEC - DEC_pnt)
+coord_b = SkyCoord(RA_bkg, DEC_bkg, unit="deg", frame="icrs")
+offaxis = coord_s.separation(pointing).deg
 pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
 
@@ -124,6 +130,17 @@ else:
     filename += ".180000s-v0.1.fits.gz"
 print(filename)
 get_ipython().system("ls {filename}")   # noqa: F821
+
+hdul = fits.open(filename)
+aeff = hdul["EFFECTIVE AREA"].data
+ENERG_LO = aeff["ENERG_LO"][0]
+ENERG_HI = aeff["ENERG_HI"][0]
+THETA_LO = aeff["THETA_LO"][0]
+THETA_HI = aeff["THETA_HI"][0]
+EFFAREA = aeff["EFFAREA"][0]
+print(offaxis)
+ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
+EFAREA = EFFAREA[ind_offaxis]
 
 get_ipython().system(   # noqa: F821
     "ls IRFS/fits/Prod5-North-40deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
@@ -235,6 +252,7 @@ hdul = fits.open("events.fits")
 ev = hdul["EVENTS"].data
 ra = ev["RA"]
 dec = ev["DEC"]
+coords = SkyCoord(ra, dec, unit="degree")
 en = ev["ENERGY"]
 
 from matplotlib.colors import LogNorm
@@ -257,6 +275,35 @@ image = h[0]
 plt.colorbar()
 plt.xlabel("RA")
 plt.ylabel("Dec")
+
+plt.figure()
+R_s = 0.2
+ev_src = en[coords.separation(coord_s).deg < R_s]
+ev_bkg = en[coords.separation(coord_b).deg < R_s]
+ENERG_BINS = np.concatenate((ENERG_LO, [ENERG_HI[-1]]))
+ENERG = sqrt(ENERG_LO * ENERG_HI)
+h1 = np.histogram(ev_src, bins=ENERG_BINS)
+h2 = np.histogram(ev_bkg, bins=ENERG_BINS)
+cts_s = h1[0]
+cts_b = h2[0]
+src = cts_s - cts_b
+src_err = sqrt(cts_s + cts_b)
+plt.errorbar(ENERG, src, src_err)
+plt.axhline(0, linestyle="dashed", color="black")
+plt.xscale("log")
+plt.xlabel(r"$E$, TeV")
+plt.ylabel("Counts")
+plt.savefig("Count_spectrum.png")
+
+plt.figure()
+sep_s = coords.separation(coord_s).deg
+sep_b = coords.separation(coord_b).deg
+plt.hist(sep_s**2, bins=np.linspace(0, 0.5, 50))
+plt.hist(sep_b**2, bins=np.linspace(0, 0.5, 50))
+plt.axvline(R_s**2, color="black", linestyle="dashed")
+plt.xlabel(r"$\theta^2$, degrees")
+plt.ylabel("Counts")
+plt.savefig("Theta2_plot.png")
 
 # Create a new WCS object.  The number of axes must be set
 # from the start
@@ -309,27 +356,47 @@ plt.ylabel("Dec")
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 
 fits_events = BinaryProduct.from_file("events.fits")
-fits_image = ImageDataProduct.from_fits_file("Image.fits")
-bin_image = PictureProduct.from_file("Image.png")
+fits_irf = ImageDataProduct.from_fits_file(filename)
+bin_image1 = PictureProduct.from_file("Image.png")
+bin_image2 = PictureProduct.from_file("Theta2_plot.png")
+bin_image3 = PictureProduct.from_file("Count_spectrum.png")
 pr.report_progress(stage="Progress", progress=100.0)
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-image = fits_image  # http://odahub.io/ontology#Image
-event_list = fits_events  # http://odahub.io/ontology#ODABinaryProduct
+image_png = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
+theta2_png = bin_image2  # http://odahub.io/ontology#ODAPictureProduct
+spectrum_png = bin_image3  # http://odahub.io/ontology#ODAPictureProduct
+event_list_fits = fits_events  # http://odahub.io/ontology#ODABinaryProduct
+irf_fits = fits_irf  # http://odahub.io/ontology#ODABinaryProduct
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_Simulate_pointing_picture", "picture_galaxy.output", picture)
+    ("out_Simulate_pointing_image_png", "image_png_galaxy.output", image_png)
 )
-_oda_outs.append(("out_Simulate_pointing_image", "image_galaxy.output", image))
 _oda_outs.append(
     (
-        "out_Simulate_pointing_event_list",
-        "event_list_galaxy.output",
-        event_list,
+        "out_Simulate_pointing_theta2_png",
+        "theta2_png_galaxy.output",
+        theta2_png,
     )
+)
+_oda_outs.append(
+    (
+        "out_Simulate_pointing_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Simulate_pointing_event_list_fits",
+        "event_list_fits_galaxy.output",
+        event_list_fits,
+    )
+)
+_oda_outs.append(
+    ("out_Simulate_pointing_irf_fits", "irf_fits_galaxy.output", irf_fits)
 )
 
 for _outn, _outfn, _outv in _oda_outs:
