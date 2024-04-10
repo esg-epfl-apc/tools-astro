@@ -44,11 +44,7 @@ from gammapy.modeling.models import (
     TemplateSpatialModel,
 )
 from numpy import cos, pi, sqrt
-from oda_api.data_products import (
-    BinaryProduct,
-    ImageDataProduct,
-    PictureProduct,
-)
+from oda_api.data_products import BinaryProduct, PictureProduct
 
 # not for run on Galaxy
 # %%bash
@@ -67,7 +63,6 @@ z = 0.03  # http://odahub.io/ontology#Float
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
 F0 = 1e-11  # http://odahub.io/ontology#Float
 E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
-Gamma = 2.0  # http://odahub.io/ontology#Float
 # source extension in degrees
 R_s = 0.2  # http://odahub.io/ontology#Float
 Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
@@ -328,19 +323,23 @@ sampler = MapDatasetEventSampler(random_state=0)
 print("Running sampler")
 events = sampler.run(dataset, observation)
 
-print(f"Source events: {(events.table['MC_ID'] > 0).sum()}")
-print(f"Background events: {(events.table['MC_ID'] == 0).sum()}")
-
-for i in range(1, len(bin_models) + 1):
-    n = (events.table["MC_ID"] == i).sum()
-    if n > 1:
-        print(f"\tmodel {i}: {n} events")
+hdul = fits.open(filename)
+aeff = hdul["EFFECTIVE AREA"].data
+ENERG_LO = aeff["ENERG_LO"][0]
+ENERG_HI = aeff["ENERG_HI"][0]
+THETA_LO = aeff["THETA_LO"][0]
+THETA_HI = aeff["THETA_HI"][0]
+EFFAREA = aeff["EFFAREA"][0]
+ind_offaxis = len(THETA_LO[THETA_LO < OffAxis_angle] - 1)
+EFAREA = EFFAREA[ind_offaxis]
+HDU_EFFAREA = hdul["EFFECTIVE AREA"]
+HDU_RMF = hdul["ENERGY DISPERSION"]
 
 print(f"Save events ...")
 primary_hdu = fits.PrimaryHDU()
 hdu_evt = fits.BinTableHDU(events.table)
 hdu_gti = fits.BinTableHDU(dataset.gti.table, name="GTI")
-hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti])
+hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti, HDU_EFFAREA, HDU_RMF])
 hdu_all.writeto(f"./events.fits", overwrite=True)
 
 print(f"Reading events ...")
@@ -350,14 +349,10 @@ ra = ev["RA"]
 dec = ev["DEC"]
 en = ev["ENERGY"]
 
-cube_map.geom
-
 [cube_map.geom.center_coord[i] / cube_map.geom.data_shape[i] for i in (0, 1)]
 
 ra_bins, dec_bins = (int(2 * x) for x in cube_map.geom.center_pix[:2])
 ra_bins, dec_bins
-
-cube_map.geom.center_skydir
 
 Radius = float(min(cube_map.geom.width / 2 / u.degree).decompose())
 
@@ -373,10 +368,8 @@ dec0 = np.mean(dec)
 from numpy import cos, pi
 
 cdec = cos(DEC_pnt * pi / 180.0)
-ra_bins = np.linspace(
-    RA_pnt - Radius / cdec, RA_pnt + Radius / cdec, Nbins + 1
-)
-dec_bins = np.linspace(DEC_pnt - Radius, DEC_pnt + Radius, Nbins + 1)
+ra_bins = np.linspace(RA - Radius / cdec, RA + Radius / cdec, Nbins + 1)
+dec_bins = np.linspace(DEC - Radius, DEC + Radius, Nbins + 1)
 
 h = plt.hist2d(ra, dec, bins=[ra_bins, dec_bins], norm=LogNorm())
 image = h[0]
@@ -385,7 +378,7 @@ plt.xlabel("RA")
 plt.ylabel("Dec")
 
 print(f"Building event image 2 ...")
-plt.close()
+plt.figure()
 # Create a new WCS object.  The number of axes must be set
 # from the start
 w = wcs.WCS(naxis=2)
@@ -453,144 +446,81 @@ plt.yscale("log")
 plt.legend(loc="upper right")
 plt.savefig("event_spectrum.png", format="png")
 
-print("reading events.fits")
-hdul = fits.open("events.fits")
-T_exp = hdul["EVENTS"].header["ONTIME"]
-saved_events = hdul["EVENTS"].data
-
-print("reading events.fits step 2")
-coords_s = SkyCoord(RA, DEC, unit="degree")
+coord_s = SkyCoord(RA, DEC, unit="degree")
 RA_bkg = RA_pnt - (RA - RA_pnt)
 DEC_bkg = DEC_pnt - (DEC - DEC_pnt)
-coords_b = SkyCoord(RA_bkg, DEC_bkg, unit="degree")
+coord_b = SkyCoord(RA_bkg, DEC_bkg, unit="degree")
+coords = SkyCoord(ra, dec, unit="degree")
 
-Es = saved_events["ENERGY"]
-ras = saved_events["RA"]
-decs = saved_events["DEC"]
-coords = SkyCoord(ras, decs, unit="degree")
-seps_s = coords.separation(coords_s).deg
-seps_b = coords.separation(coords_b).deg
-coords_s = SkyCoord(RA, DEC, unit="degree")
-
-print("manually parse irfs fits file")
-hdul = fits.open(irfs_filename)
-
-Aeff = hdul["EFFECTIVE AREA"].data
-th_min = Aeff["THETA_LO"]
-th_min
-Emin_irf = Aeff["ENERG_LO"][0]
-Emax_irf = Aeff["ENERG_HI"][0]
-E_irf = sqrt(Emin_irf * Emax_irf)
-Emin_irf
-Ebins_irf = np.concatenate((Emin_irf, [Emax_irf[-1]]))
-A = Aeff["EFFAREA"][0, 0]
-
-print("Plot event histogram in energy")
-plt.close()
-th_cut = 0.3
-mask = seps_s < th_cut
-E_s = Es[mask]
-h1 = plt.hist(E_s, bins=Ebins_irf, alpha=0.5)
-mask = seps_b < th_cut
-E_b = Es[mask]
-h2 = plt.hist(E_b, bins=Ebins_irf, alpha=0.5)
+plt.figure()
+ev_src = en[coords.separation(coord_s).deg < R_s]
+ev_bkg = en[coords.separation(coord_b).deg < R_s]
+ENERG_BINS = np.concatenate((ENERG_LO, [ENERG_HI[-1]]))
+ENERG = sqrt(ENERG_LO * ENERG_HI)
+h1 = np.histogram(ev_src, bins=ENERG_BINS)
+h2 = np.histogram(ev_bkg, bins=ENERG_BINS)
+cts_s = h1[0]
+cts_b = h2[0]
+src = cts_s - cts_b
+src_err = sqrt(cts_s + cts_b)
+plt.errorbar(ENERG, src, src_err)
+plt.axhline(0, linestyle="dashed", color="black")
 plt.xscale("log")
+plt.xlabel(r"$E$, TeV")
+plt.ylabel("Counts")
 plt.yscale("log")
-Ns = h1[0]
-Nb = h2[0]
-Src = Ns - Nb
-Src_err = sqrt(Ns + Nb)
-print(Src, Src_err)
+plt.ylim(0.1, 2 * max(src))
+plt.savefig("Count_spectrum.png")
 
-# EE=E_irf[4:-3]
-# Flux=Src/(Emax_irf-Emin_irf)*E_irf**2/(A*1e4)/T_exp
-# Flux_err=Src_err/(Emax_irf-Emin_irf)*E_irf**2/(A*1e4)/T_exp
-# Flux_err=Flux_err+100*(Flux_err==0)
-# FFlux=Flux[4:-3]
-# FFlux_err=Flux_err[4:-3]
-
-# from scipy.optimize import curve_fit
-# def PL(x,Norm):
-#     return Norm*(x/E0)**(2-Gamma)*exp(-tau(x))
-
-# plt.errorbar(EE,FFlux,yerr=FFlux_err)
-
-# popt, pcov = curve_fit(PL, EE, FFlux, sigma=FFlux_err)
-# F0_best=popt[0]
-# y=F0_best*(EE/E0)**(2-Gamma)*exp(-tau(EE))
-# plt.yscale('log')
-# plt.xscale('log')
-# F0_err=sqrt(pcov[0,0])
-# SN=F0_best/F0_err
-# plt.plot(EE,y,label='S/N='+str(SN))
-# plt.legend(loc='upper right')
-# plt.ylim(1e-14,1e-9)
-# plt.savefig('spectrum.png',format='png')
-
-print("Plot event histogram in zenith angle")
-plt.close()
-# theta2 plot
-thbin = 0.1
-nb = int(1 / thbin**2)
-print(nb)
-bins = np.linspace(0, 1, nb)
-h1 = plt.hist(seps_s**2, bins=bins, alpha=0.5)
-h2 = plt.hist(seps_b**2, bins=bins, alpha=0.5)
-plt.axvline(th_cut**2)
-plt.xlim(0, 0.3)
-
-cts_s = sum(h1[0][:10])
-cts_b = sum(h2[0][:10])
-SN = (cts_s - cts_b) / sqrt(cts_b)
-print((cts_s - cts_b) / sqrt(cts_b))
-plt.text(0.15, max(h1[0][:10]), "S/N=" + str(SN))
-
-plt.savefig("theta2.png", format="png")
+plt.figure()
+sep_s = coords.separation(coord_s).deg
+sep_b = coords.separation(coord_b).deg
+plt.hist(sep_s**2, bins=np.linspace(0, 0.5, 50))
+plt.hist(sep_b**2, bins=np.linspace(0, 0.5, 50))
+plt.axvline(R_s**2, color="black", linestyle="dashed")
+plt.xlabel(r"$\theta^2$, degrees")
+plt.ylabel("Counts")
+plt.savefig("Theta2_plot.png")
 
 fits_events = BinaryProduct.from_file("events.fits")
-fits_image = ImageDataProduct.from_fits_file("Image.fits")
 bin_image = PictureProduct.from_file("Image.png")
-spec_image = PictureProduct.from_file("event_spectrum.png")
-theta2_png = PictureProduct.from_file("theta2.png")
+spec_image = PictureProduct.from_file("Count_spectrum.png")
+theta2_png = PictureProduct.from_file("Theta2_plot.png")
 
-spectrum_plot = spec_image  # http://odahub.io/ontology#ODAPictureProduct
-theta_plot = theta2_png  # http://odahub.io/ontology#ODAPictureProduct
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-image = fits_image  # http://odahub.io/ontology#Image
-event_list = fits_events  # http://odahub.io/ontology#ODABinaryProduct
+spectrum_png = spec_image  # http://odahub.io/ontology#ODAPictureProduct
+theta2_png = theta2_png  # http://odahub.io/ontology#ODAPictureProduct
+image_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+event_list_fits = fits_events  # http://odahub.io/ontology#ODABinaryProduct
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     (
-        "out_Simulate_using_model_cube_file_spectrum_plot",
-        "spectrum_plot_galaxy.output",
-        spectrum_plot,
+        "out_Simulate_using_model_cube_file_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
     )
 )
 _oda_outs.append(
     (
-        "out_Simulate_using_model_cube_file_theta_plot",
-        "theta_plot_galaxy.output",
-        theta_plot,
+        "out_Simulate_using_model_cube_file_theta2_png",
+        "theta2_png_galaxy.output",
+        theta2_png,
     )
 )
 _oda_outs.append(
     (
-        "out_Simulate_using_model_cube_file_picture",
-        "picture_galaxy.output",
-        picture,
+        "out_Simulate_using_model_cube_file_image_png",
+        "image_png_galaxy.output",
+        image_png,
     )
 )
 _oda_outs.append(
-    ("out_Simulate_using_model_cube_file_image", "image_galaxy.output", image)
-)
-_oda_outs.append(
     (
-        "out_Simulate_using_model_cube_file_event_list",
-        "event_list_galaxy.output",
-        event_list,
+        "out_Simulate_using_model_cube_file_event_list_fits",
+        "event_list_fits_galaxy.output",
+        event_list_fits,
     )
 )
 

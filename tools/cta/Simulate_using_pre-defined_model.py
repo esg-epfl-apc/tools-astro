@@ -27,7 +27,7 @@ from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import FoVBackgroundModel, Models
-from numpy import exp, sqrt
+from numpy import cos, exp, pi, sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import BinaryProduct, PictureProduct
 from regions import CircleSkyRegion

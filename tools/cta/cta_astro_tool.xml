@@ -48,7 +48,6 @@
         <param name="z" type="float" value="0.03" label="z" />
         <param name="F0" type="float" value="1e-11" label="F0" />
         <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
-        <param name="Gamma" type="float" value="2.0" label="Gamma" />
         <param name="R_s" type="float" value="0.2" label="R_s" />
         <param name="Site" type="select" label="Site">
           <option value="North" selected="true">North</option>
@@ -74,19 +73,16 @@
     <data label="${tool.name} -&gt; Simulate_using_pre-defined_model event_list_fits" name="out_Simulate_using_pre-defined_model_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_using_pre-defined_model'</filter>
     </data>
-    <data label="${tool.name} -&gt; Simulate_using_model_cube_file spectrum_plot" name="out_Simulate_using_model_cube_file_spectrum_plot" format="auto" from_work_dir="spectrum_plot_galaxy.output">
+    <data label="${tool.name} -&gt; Simulate_using_model_cube_file spectrum_png" name="out_Simulate_using_model_cube_file_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_using_model_cube_file'</filter>
     </data>
-    <data label="${tool.name} -&gt; Simulate_using_model_cube_file theta_plot" name="out_Simulate_using_model_cube_file_theta_plot" format="auto" from_work_dir="theta_plot_galaxy.output">
+    <data label="${tool.name} -&gt; Simulate_using_model_cube_file theta2_png" name="out_Simulate_using_model_cube_file_theta2_png" format="auto" from_work_dir="theta2_png_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_using_model_cube_file'</filter>
     </data>
-    <data label="${tool.name} -&gt; Simulate_using_model_cube_file picture" name="out_Simulate_using_model_cube_file_picture" format="auto" from_work_dir="picture_galaxy.output">
+    <data label="${tool.name} -&gt; Simulate_using_model_cube_file image_png" name="out_Simulate_using_model_cube_file_image_png" format="auto" from_work_dir="image_png_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_using_model_cube_file'</filter>
     </data>
-    <data label="${tool.name} -&gt; Simulate_using_model_cube_file image" name="out_Simulate_using_model_cube_file_image" format="auto" from_work_dir="image_galaxy.output">
-      <filter>_data_product['_selector'] == 'Simulate_using_model_cube_file'</filter>
-    </data>
-    <data label="${tool.name} -&gt; Simulate_using_model_cube_file event_list" name="out_Simulate_using_model_cube_file_event_list" format="auto" from_work_dir="event_list_galaxy.output">
+    <data label="${tool.name} -&gt; Simulate_using_model_cube_file event_list_fits" name="out_Simulate_using_model_cube_file_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'Simulate_using_model_cube_file'</filter>
     </data>
   </outputs>
@@ -113,7 +109,7 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="5">
+    <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="Simulate_using_model_cube_file" />
         <param name="OffAxis_angle" value="0.78" />
@@ -122,13 +118,12 @@
         <param name="z" value="0.03" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
-        <param name="Gamma" value="2.0" />
         <param name="R_s" value="0.2" />
         <param name="Site" value="North" />
         <param name="LSTs" value="True" />
         <param name="MSTs" value="True" />
         <param name="SSTs" value="False" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/e37aca06cb94cb0ad79625c0868b3264fdd82264/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/3ca28efe2f50832c78cbf5d866de9d96c66e8710/3d.fits" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
