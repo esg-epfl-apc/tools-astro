@@ -37,11 +37,11 @@
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
         <param name="Radius" type="float" value="2.5" label="Radius (unit: deg)" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
-        <param name="z" type="float" value="0.1" label="z" />
-        <param name="F0" type="float" value="4e-12" label="F0" />
+        <param name="z" type="float" value="0.03" label="z" />
+        <param name="F0" type="float" value="1e-11" label="F0" />
         <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
-        <param name="Gamma" type="float" value="1.75" label="Gamma" />
-        <param name="sigma" type="float" value="0.0" label="sigma" />
+        <param name="Gamma" type="float" value="2.0" label="Gamma" />
+        <param name="R_s" type="float" value="0.2" label="R_s" />
         <param name="RA_pnt" type="float" value="167.113809" label="RA_pnt (unit: deg)" />
         <param name="DEC_pnt" type="float" value="38.208833" label="DEC_pnt (unit: deg)" />
         <param name="Site" type="select" label="Site">
@@ -91,7 +91,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/913bd93c2aec50a48143df95bada6995a94282d3/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/abcb3c0a7166f8131aeab35239b4ee09164f3ef2/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />
@@ -110,11 +110,11 @@
         <param name="DEC" value="38.208833" />
         <param name="Radius" value="2.5" />
         <param name="Texp" value="1.0" />
-        <param name="z" value="0.1" />
-        <param name="F0" value="4e-12" />
+        <param name="z" value="0.03" />
+        <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
-        <param name="Gamma" value="1.75" />
-        <param name="sigma" value="0.0" />
+        <param name="Gamma" value="2.0" />
+        <param name="R_s" value="0.2" />
         <param name="RA_pnt" value="167.113809" />
         <param name="DEC_pnt" value="38.208833" />
         <param name="Site" value="North" />

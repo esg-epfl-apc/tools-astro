@@ -27,7 +27,7 @@ from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
 from gammapy.modeling.models import FoVBackgroundModel, Models
-from numpy import sqrt
+from numpy import exp, sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import (
     BinaryProduct,
@@ -44,13 +44,13 @@ Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
 # Source redshift
-z = 0.1  # http://odahub.io/ontology#Float
+z = 0.03  # http://odahub.io/ontology#Float
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
-F0 = 4e-12  # http://odahub.io/ontology#Float
+F0 = 1e-11  # http://odahub.io/ontology#Float
 E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
-Gamma = 1.75  # http://odahub.io/ontology#Float
+Gamma = 2.0  # http://odahub.io/ontology#Float
 # source extension in degrees
-sigma = 0.0  # http://odahub.io/ontology#Float
+R_s = 0.2  # http://odahub.io/ontology#Float
 RA_pnt = 167.113809  # http://odahub.io/ontology#RightAscensionDegrees
 DEC_pnt = 38.208833  # http://odahub.io/ontology#DeclinationDegrees
 Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
@@ -128,7 +128,6 @@ elif Texp < 18000:
     filename += ".18000s-v0.1.fits.gz"
 else:
     filename += ".180000s-v0.1.fits.gz"
-print(filename)
 get_ipython().system("ls {filename}")   # noqa: F821
 
 hdul = fits.open(filename)
@@ -142,15 +141,25 @@ print(offaxis)
 ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
 EFAREA = EFFAREA[ind_offaxis]
 
-def powerlaw(E):
-    return F0 * (E / E0) ** (-Gamma)
+E = np.logspace(-2, 2, 20)
 
-E = np.logspace(0.01, 100, 20)
-F = powerlaw(E)
+d = np.genfromtxt("Franceschini.txt")
+ee = d[:, 0]
+z_grid = np.array([0.01, 0.03, 0.1, 0.3, 0.5, 1.0, 1.5, 2.0, 3.0])
+ind = len(z_grid[z > z_grid]) - 1
+coeff = (z - z_grid[ind]) / (z_grid[ind + 1] - z_grid[ind])
+tau = d[:, ind + 1] + coeff * d[:, ind + 2]
+tau_interp = np.interp(E, ee, tau)
 
-get_ipython().system(   # noqa: F821
-    "ls IRFS/fits/Prod5-North-40deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-)
+def powerlaw_EBL():
+    return F0 * (E / E0) ** (-Gamma) * exp(-tau_interp)
+
+F = powerlaw_EBL()
+plt.plot(E, E**2 * F)
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(1e-14, 1e-10)
+
 # filename = "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
 IRFS = load_irf_dict_from_file(filename)
 dic = {
@@ -189,10 +198,6 @@ dic = {
 }
 modelsky = Models.from_dict(dic)
 
-file = open("model.yaml", "w")
-yaml.dump(dic, file)
-file.close()
-modelsky = Models.read("model.yaml")
 bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
 
 observation = Observation.create(
@@ -263,7 +268,7 @@ en = ev["ENERGY"]
 
 from matplotlib.colors import LogNorm
 
-plt.close()
+plt.figure()
 pixsize = 0.1
 Nbins = 2 * int(Radius / pixsize) + 1
 ra0 = np.mean(ra)
@@ -283,7 +288,6 @@ plt.xlabel("RA")
 plt.ylabel("Dec")
 
 plt.figure()
-R_s = 0.2
 ev_src = en[coords.separation(coord_s).deg < R_s]
 ev_bkg = en[coords.separation(coord_b).deg < R_s]
 ENERG_BINS = np.concatenate((ENERG_LO, [ENERG_HI[-1]]))
@@ -299,6 +303,8 @@ plt.axhline(0, linestyle="dashed", color="black")
 plt.xscale("log")
 plt.xlabel(r"$E$, TeV")
 plt.ylabel("Counts")
+plt.yscale("log")
+plt.ylim(0.1, 2 * max(src))
 plt.savefig("Count_spectrum.png")
 
 plt.figure()
