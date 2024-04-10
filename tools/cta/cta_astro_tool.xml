@@ -109,7 +109,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="Simulate_using_model_cube_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/a491af46e18f1ca638986a19d903ee73b9025f12/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/25ca45f439737879326f477e848ebf2fcd3eb3dc/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />

@@ -144,7 +144,7 @@ HDU_RMF = hdul["ENERGY DISPERSION"]
 
 E = np.logspace(-2, 2, 20)
 
-d = np.genfromtxt("Franceschini.txt")
+d = np.genfromtxt("Franceschini17.txt")
 ee = d[:, 0]
 z_grid = np.array([0.01, 0.03, 0.1, 0.3, 0.5, 1.0, 1.5, 2.0, 3.0])
 ind = len(z_grid[z > z_grid]) - 1
