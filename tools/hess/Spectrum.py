@@ -327,8 +327,8 @@ plt.xlabel("Slope")
 plt.ylabel(r"Norm, 1/(TeV cm$^2$ s)")
 plt.savefig("Contour.png", format="png", bbox_inches="tight")
 
-plt.figure(figsize=(10, 7))
-x = np.logspace(-0.5, 1.5, 10)
+plt.figure(figsize=(8, 6))
+x = np.logspace(log10(Efit_min), log10(Efit_max), 10)
 ymax = np.zeros(10)
 ymin = np.ones(10)
 for i in range(len(gammas)):
@@ -349,8 +349,8 @@ plt.errorbar(
     linewidth=2,
 )
 
-plt.axvspan(0, Efit_min, alpha=0.2, color="black")
-plt.axvspan(Efit_max, 1000, alpha=0.2, color="black")
+# plt.axvspan(0, Efit_min, alpha=0.2, color='black')
+# plt.axvspan(Efit_max, 1000, alpha=0.2, color='black')
 
 plt.xscale("log")
 plt.yscale("log")
