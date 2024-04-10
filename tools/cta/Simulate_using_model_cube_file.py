@@ -85,7 +85,7 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-pixsize = 0.1
+pr.report_progress(stage="Progress", progress=10.0)
 
 print("loading " + file_path)
 cube_map = Map.read(file_path)
@@ -248,7 +248,7 @@ spec
 # print('spec.plot()')
 # spec.plot() # this plot shows dN/dE * E
 
-# spec.data.shape, spec.data[spec.data.shape[0]//2,0,0]
+pr.report_progress(stage="Progress", progress=20.0)
 
 print("Find norm bin")
 
@@ -286,6 +286,8 @@ print("find int_bin_flux")
 int_bin_flux = mult * int_bin_flux
 
 int_bin_flux
+
+pr.report_progress(stage="Progress", progress=30.0)
 
 print("Creating bin_models")
 
@@ -334,6 +336,8 @@ ind_offaxis = len(THETA_LO[THETA_LO < OffAxis_angle] - 1)
 EFAREA = EFFAREA[ind_offaxis]
 HDU_EFFAREA = hdul["EFFECTIVE AREA"]
 HDU_RMF = hdul["ENERGY DISPERSION"]
+
+pr.report_progress(stage="Progress", progress=80.0)
 
 print(f"Save events ...")
 primary_hdu = fits.PrimaryHDU()
@@ -481,6 +485,8 @@ plt.axvline(R_s**2, color="black", linestyle="dashed")
 plt.xlabel(r"$\theta^2$, degrees")
 plt.ylabel("Counts")
 plt.savefig("Theta2_plot.png")
+
+pr.report_progress(stage="Progress", progress=100.0)
 
 fits_events = BinaryProduct.from_file("events.fits")
 bin_image = PictureProduct.from_file("Image.png")
