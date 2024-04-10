@@ -35,6 +35,7 @@
       <when value="Simulate_pointing">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
+        <param name="OffAxis_angle" type="float" value="0.78" label="OffAxis_angle (unit: deg)" />
         <param name="Radius" type="float" value="2.5" label="Radius (unit: deg)" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
         <param name="z" type="float" value="0.03" label="z" />
@@ -42,8 +43,6 @@
         <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
         <param name="Gamma" type="float" value="2.0" label="Gamma" />
         <param name="R_s" type="float" value="0.2" label="R_s" />
-        <param name="RA_pnt" type="float" value="167.113809" label="RA_pnt (unit: deg)" />
-        <param name="DEC_pnt" type="float" value="38.208833" label="DEC_pnt (unit: deg)" />
         <param name="Site" type="select" label="Site">
           <option value="North" selected="true">North</option>
           <option value="South">South</option>
@@ -88,7 +87,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/8e5ea4abfe283a33a57e204fcd2278834be5906a/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/824de063f21a3243c9e243dfb754e659739b623f/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />
@@ -105,6 +104,7 @@
         <param name="_selector" value="Simulate_pointing" />
         <param name="RA" value="166.113809" />
         <param name="DEC" value="38.208833" />
+        <param name="OffAxis_angle" value="0.78" />
         <param name="Radius" value="2.5" />
         <param name="Texp" value="1.0" />
         <param name="z" value="0.03" />
@@ -112,8 +112,6 @@
         <param name="E0" value="1.0" />
         <param name="Gamma" value="2.0" />
         <param name="R_s" value="0.2" />
-        <param name="RA_pnt" value="167.113809" />
-        <param name="DEC_pnt" value="38.208833" />
         <param name="Site" value="North" />
         <param name="LSTs" value="True" />
         <param name="MSTs" value="True" />

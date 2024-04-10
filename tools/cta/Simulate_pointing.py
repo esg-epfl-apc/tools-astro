@@ -36,6 +36,8 @@ from regions import CircleSkyRegion
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+
+OffAxis_angle = 0.78  # http://odahub.io/ontology#AngleDegrees
 Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
@@ -47,8 +49,6 @@ E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
 Gamma = 2.0  # http://odahub.io/ontology#Float
 # source extension in degrees
 R_s = 0.2  # http://odahub.io/ontology#Float
-RA_pnt = 167.113809  # http://odahub.io/ontology#RightAscensionDegrees
-DEC_pnt = 38.208833  # http://odahub.io/ontology#DeclinationDegrees
 Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
 LSTs = True  # http://odahub.io/ontology#Boolean
 MSTs = True  # http://odahub.io/ontology#Boolean
@@ -68,6 +68,9 @@ for vn, vv in inp_pdic.items():
         globals()[vn] = type(globals()[vn])(vv)
 
 Texp = Texp * 3600.0
+RA_pnt = RA  # http://odahub.io/ontology#RightAscensionDegrees
+DEC_pnt = DEC + OffAxis_angle  # http://odahub.io/ontology#DeclinationDegrees
+
 pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
 coord_s = SkyCoord(RA, DEC, unit="deg", frame="icrs")
 RA_bkg = RA_pnt - (RA - RA_pnt)
