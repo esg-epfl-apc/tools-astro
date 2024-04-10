@@ -91,7 +91,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="model_CTA_events_from_file" />
         <param name="Texp" value="2.4" />
-        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/183fc9bd1c293d0d4764d55543c1d334283f2c5e/3d.fits" />
+        <param name="file_path" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/913bd93c2aec50a48143df95bada6995a94282d3/3d.fits" />
         <param name="Emax" value="30" />
         <param name="Emin" value="0.1" />
         <param name="norm_cm2_TeV_s" value="1e-12" />

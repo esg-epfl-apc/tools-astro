@@ -26,7 +26,7 @@ from gammapy.datasets import MapDataset, MapDatasetEventSampler
 from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
-from gammapy.modeling.models import Models
+from gammapy.modeling.models import FoVBackgroundModel, Models
 from numpy import sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import (
@@ -142,6 +142,12 @@ print(offaxis)
 ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
 EFAREA = EFFAREA[ind_offaxis]
 
+def powerlaw(E):
+    return F0 * (E / E0) ** (-Gamma)
+
+E = np.logspace(0.01, 100, 20)
+F = powerlaw(E)
+
 get_ipython().system(   # noqa: F821
     "ls IRFS/fits/Prod5-North-40deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
 )
@@ -153,16 +159,10 @@ dic = {
             "name": "Source1",
             "type": "SkyModel",
             "spectral": {
-                "type": "PowerLawSpectralModel",
-                "parameters": [
-                    {"name": "index", "value": Gamma},
-                    {
-                        "name": "amplitude",
-                        "value": F0,
-                        "unit": "TeV-1 s-1 cm-2",
-                    },
-                    {"name": "reference", "value": E0, "unit": "TeV"},
-                ],
+                "type": "TemplateSpectralModel",
+                "parameters": [{"name": "norm", "value": 1.0}],
+                "energy": {"data": E.tolist(), "unit": "TeV"},
+                "values": {"data": F.tolist(), "unit": "1 / (cm2 TeV s)"},
             },
             "spatial": {
                 "type": "PointSpatialModel",
@@ -188,6 +188,12 @@ dic = {
     ]
 }
 modelsky = Models.from_dict(dic)
+
+file = open("model.yaml", "w")
+yaml.dump(dic, file)
+file.close()
+modelsky = Models.read("model.yaml")
+bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
 
 observation = Observation.create(
     obs_id="0", pointing=pointing, livetime=str(Texp) + " s", irfs=IRFS
