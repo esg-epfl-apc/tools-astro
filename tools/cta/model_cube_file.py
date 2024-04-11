@@ -105,6 +105,7 @@ RA = float(source.ra / u.deg)
 
 CTA_south_lat = -25.0
 CTA_north_lat = 18.0
+filename = ""
 if Site == "North":
     Zd = abs(DEC - CTA_north_lat)
     if Zd < 30.0:
@@ -150,7 +151,13 @@ elif Texp < 18000:
     filename += ".18000s-v0.1.fits.gz"
 else:
     filename += ".180000s-v0.1.fits.gz"
-get_ipython().system("ls {filename}")   # noqa: F821
+
+import os
+
+print(filename)
+if os.path.exists(filename) == False:
+    raise RuntimeError("No reponse function found")
+    message = "No reponse function found!"
 
 # telescope pointing will be shifted slightly
 cdec = cos(DEC * pi / 180.0)

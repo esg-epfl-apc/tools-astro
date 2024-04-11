@@ -135,7 +135,12 @@ elif Texp < 18000:
     filename += ".18000s-v0.1.fits.gz"
 else:
     filename += ".180000s-v0.1.fits.gz"
-get_ipython().system("ls {filename}")   # noqa: F821
+import os
+
+print(filename)
+if os.path.exists(filename) == False:
+    raise RuntimeError("No reponse function found")
+    message = "No reponse function found!"
 
 hdul = fits.open(filename)
 aeff = hdul["EFFECTIVE AREA"].data
