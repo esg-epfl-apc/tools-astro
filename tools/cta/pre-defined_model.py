@@ -396,25 +396,25 @@ event_list_fits = fits_events  # http://odahub.io/ontology#ODABinaryProduct
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_pre-defined_model_image_png", "image_png_galaxy.output", image_png)
+    ("out_pre_defined_model_image_png", "image_png_galaxy.output", image_png)
 )
 _oda_outs.append(
     (
-        "out_pre-defined_model_theta2_png",
+        "out_pre_defined_model_theta2_png",
         "theta2_png_galaxy.output",
         theta2_png,
     )
 )
 _oda_outs.append(
     (
-        "out_pre-defined_model_spectrum_png",
+        "out_pre_defined_model_spectrum_png",
         "spectrum_png_galaxy.output",
         spectrum_png,
     )
 )
 _oda_outs.append(
     (
-        "out_pre-defined_model_event_list_fits",
+        "out_pre_defined_model_event_list_fits",
         "event_list_fits_galaxy.output",
         event_list_fits,
     )
