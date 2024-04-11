@@ -48,7 +48,7 @@
         <param name="data_cube" type="data" label="data_cube" format="data" />
         <param name="F0" type="float" value="1e-11" label="F0" />
         <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
-        <param name="OffAxis_angle" type="float" value="0.78" label="OffAxis_angle (unit: deg)" />
+        <param name="OffAxis_angle" type="float" value="0.4" label="OffAxis_angle (unit: deg)" />
         <param name="Radius_spectal_extraction" type="float" value="0.2" label="Radius_spectal_extraction (unit: deg)" />
         <param name="Radius_sky_image" type="float" value="2.5" label="Radius_sky_image (unit: deg)" />
         <param name="Site" type="select" label="Site">
@@ -59,7 +59,6 @@
         <param name="Telescopes_MST" type="boolean" value="True" label="Telescopes_MST" />
         <param name="Telescopes_SST" type="boolean" value="False" label="Telescopes_SST" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
-        <param name="z" type="float" value="0.03" label="z" />
       </when>
     </conditional>
   </inputs>
@@ -115,10 +114,10 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/c1ec83edc4aed8f5cca66af1893059ad879dd782/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/61e916839ae5e25ee0160d59f66b7931d34fd45a/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
-        <param name="OffAxis_angle" value="0.78" />
+        <param name="OffAxis_angle" value="0.4" />
         <param name="Radius_spectal_extraction" value="0.2" />
         <param name="Radius_sky_image" value="2.5" />
         <param name="Site" value="North" />
@@ -126,7 +125,6 @@
         <param name="Telescopes_MST" value="True" />
         <param name="Telescopes_SST" value="False" />
         <param name="Texp" value="1.0" />
-        <param name="z" value="0.03" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

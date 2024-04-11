@@ -58,7 +58,7 @@ data_cube = "3d.fits"  # http://odahub.io/ontology#POSIXPath
 F0 = 1e-11  # http://odahub.io/ontology#Float
 E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
 
-OffAxis_angle = 0.78  # http://odahub.io/ontology#AngleDegrees
+OffAxis_angle = 0.4  # http://odahub.io/ontology#AngleDegrees
 
 Radius_spectal_extraction = 0.2  # http://odahub.io/ontology#AngleDegrees
 Radius_sky_image = 2.5  # http://odahub.io/ontology#AngleDegrees
@@ -69,8 +69,6 @@ Telescopes_MST = True  # http://odahub.io/ontology#Boolean
 Telescopes_SST = False  # http://odahub.io/ontology#Boolean
 
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
-
-z = 0.03  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
 
