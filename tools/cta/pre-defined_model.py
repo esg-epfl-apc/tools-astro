@@ -38,7 +38,6 @@ RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 
 OffAxis_angle = 0.78  # http://odahub.io/ontology#AngleDegrees
-Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 # Exposure time in hours
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
 # Source redshift
@@ -47,12 +46,14 @@ z = 0.03  # http://odahub.io/ontology#Float
 F0 = 1e-11  # http://odahub.io/ontology#Float
 E0 = 1.0  # http://odahub.io/ontology#Energy_TeV
 Gamma = 2.0  # http://odahub.io/ontology#Float
-# source extension in degrees
-R_s = 0.2  # http://odahub.io/ontology#Float
+
+Radius_spectal_extraction = 0.2  # http://odahub.io/ontology#Float
+Radius_sky_image = 2.5  # http://odahub.io/ontology#AngleDegrees
+
 Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
-LSTs = True  # http://odahub.io/ontology#Boolean
-MSTs = True  # http://odahub.io/ontology#Boolean
-SSTs = False  # http://odahub.io/ontology#Boolean
+Telescope_LST = True  # http://odahub.io/ontology#Boolean
+Telescope_MST = True  # http://odahub.io/ontology#Boolean
+Telescope_SST = False  # http://odahub.io/ontology#Boolean
 
 _galaxy_wd = os.getcwd()
 
@@ -67,10 +68,16 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+LSTs = Telescope_LST
+MSTs = Telescope_MST
+SSTs = Telescope_SST
+
 Texp = Texp * 3600.0
 DEC_pnt = DEC
 cdec = cos(DEC * pi / 180.0)
 RA_pnt = RA - OffAxis_angle / cdec
+Radius = Radius_sky_image
+R_s = Radius_spectal_extraction
 
 pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
 coord_s = SkyCoord(RA, DEC, unit="deg", frame="icrs")
@@ -384,29 +391,25 @@ event_list_fits = fits_events  # http://odahub.io/ontology#ODABinaryProduct
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    (
-        "out_Simulate_using_pre-defined_model_image_png",
-        "image_png_galaxy.output",
-        image_png,
-    )
+    ("out_pre-defined_model_image_png", "image_png_galaxy.output", image_png)
 )
 _oda_outs.append(
     (
-        "out_Simulate_using_pre-defined_model_theta2_png",
+        "out_pre-defined_model_theta2_png",
         "theta2_png_galaxy.output",
         theta2_png,
     )
 )
 _oda_outs.append(
     (
-        "out_Simulate_using_pre-defined_model_spectrum_png",
+        "out_pre-defined_model_spectrum_png",
         "spectrum_png_galaxy.output",
         spectrum_png,
     )
 )
 _oda_outs.append(
     (
-        "out_Simulate_using_pre-defined_model_event_list_fits",
+        "out_pre-defined_model_event_list_fits",
         "event_list_fits_galaxy.output",
         event_list_fits,
     )
