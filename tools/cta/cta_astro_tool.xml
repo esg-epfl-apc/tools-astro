@@ -52,9 +52,9 @@
           <option value="North" selected="true">North</option>
           <option value="South">South</option>
         </param>
-        <param name="LSTs" type="boolean" checked="true" label="LSTs" />
-        <param name="MSTs" type="boolean" checked="true" label="MSTs" />
-        <param name="SSTs" type="boolean" label="SSTs" />
+        <param name="Telescopes_LST" type="boolean" checked="true" label="Telescopes_LST" />
+        <param name="Telescopes_MST" type="boolean" checked="true" label="Telescopes_MST" />
+        <param name="Telescopes_SST" type="boolean" label="Telescopes_SST" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
       </when>
     </conditional>
@@ -111,16 +111,16 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/d696f2ccfa268ff53ce21ea635ab78126acc5ac4/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/895ac9dd49bd883e6e6afe2a45d284d09aa6196d/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />
         <param name="Radius_spectal_extraction" value="0.2" />
         <param name="Radius_sky_image" value="2.5" />
         <param name="Site" value="North" />
-        <param name="LSTs" value="True" />
-        <param name="MSTs" value="True" />
-        <param name="SSTs" value="False" />
+        <param name="Telescopes_LST" value="True" />
+        <param name="Telescopes_MST" value="True" />
+        <param name="Telescopes_SST" value="False" />
         <param name="Texp" value="1.0" />
       </conditional>
       <assert_stdout>

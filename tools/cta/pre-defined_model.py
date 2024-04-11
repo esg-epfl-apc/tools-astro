@@ -108,6 +108,8 @@ if Site == "North":
         tel = "4LSTs"
     if MSTs:
         tel += "09MSTs"
+    if SSTs:
+        raise RuntimeError("No SSTs on the North site")
     filename = "IRFS/fits/Prod5-North-" + Zd + N_S + tel
 else:
     Zd = abs(DEC - CTA_south_lat)
@@ -127,6 +129,8 @@ else:
         tel = "14MSTs"
     if SSTs:
         tel += "37MSTs"
+    if LSTs:
+        raise RuntimeError("No LSTs on the South site")
     filename = "IRFS/fits/Prod5-South-" + Zd + N_S + tel
 
 if Texp < 1800:

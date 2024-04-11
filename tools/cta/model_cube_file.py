@@ -64,9 +64,9 @@ Radius_spectal_extraction = 0.2  # http://odahub.io/ontology#AngleDegrees
 Radius_sky_image = 2.5  # http://odahub.io/ontology#AngleDegrees
 
 Site = "North"  # http://odahub.io/ontology#String ; oda:allowed_value "North","South"
-LSTs = True  # http://odahub.io/ontology#Boolean
-MSTs = True  # http://odahub.io/ontology#Boolean
-SSTs = False  # http://odahub.io/ontology#Boolean
+Telescopes_LST = True  # http://odahub.io/ontology#Boolean
+Telescopes_MST = True  # http://odahub.io/ontology#Boolean
+Telescopes_SST = False  # http://odahub.io/ontology#Boolean
 
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
 
@@ -85,9 +85,9 @@ for vn, vv in inp_pdic.items():
 
 R_s = Radius_spectal_extraction
 Radius = Radius_sky_image
-# LSTs=Telescopes_LST
-# MSTs=Telescopes_MST
-# SSTs=Telescopes_SST
+LSTs = Telescopes_LST
+MSTs = Telescopes_MST
+SSTs = Telescopes_SST
 file_path = data_cube
 
 pr = ProgressReporter()
@@ -124,6 +124,8 @@ if Site == "North":
         tel = "4LSTs"
     if MSTs:
         tel += "09MSTs"
+    if SSTs:
+        raise RuntimeError("No SSTs on the North site")
     filename = "IRFS/fits/Prod5-North-" + Zd + N_S + tel
 else:
     Zd = abs(DEC - CTA_south_lat)
@@ -143,6 +145,8 @@ else:
         tel = "14MSTs"
     if SSTs:
         tel += "37MSTs"
+    if LSTs:
+        raise RuntimeError("No LSTs on the South site")
     filename = "IRFS/fits/Prod5-South-" + Zd + N_S + tel
 
 if Texp < 1800:
