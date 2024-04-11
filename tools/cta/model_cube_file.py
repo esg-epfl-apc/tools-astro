@@ -44,6 +44,7 @@ from gammapy.modeling.models import (
     TemplateSpatialModel,
 )
 from numpy import cos, pi, sqrt
+from oda_api.api import ProgressReporter
 from oda_api.data_products import BinaryProduct, PictureProduct
 
 # not for run on Galaxy
@@ -91,6 +92,7 @@ MSTs = Telescopes_MST
 SSTs = Telescopes_SST
 file_path = file_URL
 
+pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
 
 print("loading " + file_path)
