@@ -111,7 +111,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/e4deb5d1158be9f2fc7304d476529243158e4a6f/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/29ab850e0f625d2b8bfc7708c477d05fef1e0114/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />
