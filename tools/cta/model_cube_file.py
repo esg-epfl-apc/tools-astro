@@ -370,6 +370,7 @@ Radius = float(min(cube_map.geom.width / 2 / u.degree).decompose())
 
 print(f"Building event image ...")
 plt.close()
+pixsize = 0.1
 from matplotlib.colors import LogNorm
 
 cube_map.geom.width[0]
