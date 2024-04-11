@@ -52,7 +52,7 @@ from oda_api.data_products import BinaryProduct, PictureProduct
 # git lfs install
 # git lfs pull
 
-file_URL = "3d.fits"  # http://odahub.io/ontology#POSIXPath
+data_cube = "3d.fits"  # http://odahub.io/ontology#POSIXPath
 
 # Source flux normalisaiton F0 in 1/(TeV cm2 s) at reference energy E0
 F0 = 1e-11  # http://odahub.io/ontology#Float
@@ -90,7 +90,7 @@ Radius = Radius_sky_image
 LSTs = Telescopes_LST
 MSTs = Telescopes_MST
 SSTs = Telescopes_SST
-file_path = file_URL
+file_path = data_cube
 
 pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
