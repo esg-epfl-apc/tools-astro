@@ -115,7 +115,7 @@ if Site == "North":
     elif Zd < 70.0:
         Zd = "60deg-"
     else:
-        print("Source not visible from " + Site)
+        raise RuntimeError("Source not visible from " + Site)
     if DEC > CTA_north_lat:
         N_S = "NorthAz-"
     else:
@@ -136,7 +136,7 @@ else:
     elif Zd < 70.0:
         Zd = "60deg-"
     else:
-        print("Source not visible from " + Site)
+        raise RuntimeError("Source not visible from " + Site)
     if DEC > CTA_south_lat:
         N_S = "NorthAz-"
     else:
