@@ -17,11 +17,11 @@ from oda_api.json import CustomJSONEncoder
 src_name = "NGC 1068"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 40.669622  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 0.013294  # http://odahub.io/ontology#PointOfInterestDEC
-IC40 = False  # oda:Boolean
-IC59 = False  # oda:Boolean
-IC79 = False  # oda:Boolean
-IC86_I = True  # oda:Boolean
-IC86_II_VII = True  # oda:Boolean
+IC40 = False  # http://odahub.io/ontology#Boolean
+IC59 = False  # http://odahub.io/ontology#Boolean
+IC79 = False  # http://odahub.io/ontology#Boolean
+IC86_I = True  # http://odahub.io/ontology#Boolean
+IC86_II_VII = True  # http://odahub.io/ontology#Boolean
 Spectrum_type = "Free_slope"  # http://odahub.io/ontology#String ; oda:allowed_value "Fixed_slope","Free_slope"
 Slope = 3.0  # http://odahub.io/ontology#Float
 

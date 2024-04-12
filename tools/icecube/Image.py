@@ -23,9 +23,9 @@ DEC = -0.013294  # http://odahub.io/ontology#PointOfInterestDEC
 # RA=308.65 # http://odahub.io/ontology#PointOfInterestRA
 # DEC=40.9 # http://odahub.io/ontology#PointOfInterestDEC
 # sigma=0.7  #http://odahub.io/ontology#AngleDegrees
-IC40 = True  # oda:Boolean
-IC59 = True  # oda:Boolean
-IC79 = True  # oda:Boolean
+IC40 = False  # oda:Boolean
+IC59 = False  # oda:Boolean
+IC79 = False  # oda:Boolean
 IC86_I = True  # oda:Boolean
 IC86_II_VII = True  # oda:Boolean
 
