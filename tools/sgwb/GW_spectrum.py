@@ -9,7 +9,7 @@ import shutil
 
 import matplotlib.pyplot as plt
 
-# we first load necessary packages
+# Loading necessary packages
 import numpy as np
 from oda_api.json import CustomJSONEncoder
 
@@ -22,23 +22,23 @@ from oda_api.data_products import ODAAstropyTable, PictureProduct
 
 # Parameters of the phase transition
 # Temperature in GeV
-T_star = 0.3  # http://odahub.io/ontology#Energy_GeV
+T_star = 0.178  # http://odahub.io/ontology#Energy_GeV
 
 # Numbers of relativistic degrees of freedom
-g_star = 50  # http://odahub.io/ontology#Integer
-# g_star_s=50 # http://odahub.io/ontology#Integer
+g_star = 20  # http://odahub.io/ontology#Integer
+
+# ratio of the energy density deposited in the bubbles to the radiation energy density
+alpha = 1.0  # http://odahub.io/ontology#Float
 
 # beta/H : rate of the phase transition compared to Hubble rate
 beta_H = 1.0
 
-# ratio of the energy density deposited in the bubbles to the radiation energy density
-alpha = 1  # http://odahub.io/ontology#Float
-
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
-epsilon_turb = 1.0  # http://odahub.io/ontology#Float
+epsilon_turb = 0.1  # http://odahub.io/ontology#Float
 
 # terminal velocity of bubbles
-v_w = 0.99  # http://odahub.io/ontology#Float
+v_w = 0.999  # http://odahub.io/ontology#Float
+h = 0.7  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
 
@@ -53,16 +53,11 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
-# Theo, please specify the units of $H_0$ in the cell below
-
-T_star = T_star * u.GeV
-T0 = 2.73  # Temperature of the universe now in Kelvin
-conversion = 8.617 * 10 ** (-9 - 5)  # conversion factor from kelvin to GeV
-H0 = 3.086 * 10 ** (22)  # current Hubble rate
-h = 0.7  # dimensionless Hubble Constant
 c_s = 3 ** (-0.5)  # speed of sound
+F0_GW = 1.64e-5 / h**2 * (100 / g_star) ** (1 / 3.0)
 
 # Eq.20 of arXiv:1512.06239, corrected according to Appendix A of arXiv:1004.4187
+
 def ka_v(alpha_v, v):
     zeta = ((2.0 / 3.0 * alpha_v + alpha_v**2) ** 0.5 + (1 / 3.0) ** 0.5) / (
         1 + alpha_v
@@ -113,7 +108,6 @@ def ka_v(alpha_v, v):
 
 kappa_v = ka_v(alpha, v_w)
 kappa_therm = 1 - kappa_v
-print("Bubble wall limiting velocity:", v_w)
 print(
     "Fraction of released energy in bulk motion:",
     kappa_v,
@@ -124,8 +118,7 @@ Omega_star = (kappa_v) * alpha / (1 + alpha)
 print("Omega in bulk motion:", Omega_star)
 
 # Comoving Hubble rate at the phase transition Eq. 11 of arXiv:1512.06239
-
-def H_star_bis(T_star):
+def H_star(T_star):
     return (
         16.5e-6
         * (T_star / (100.0 * u.GeV))
@@ -133,158 +126,41 @@ def H_star_bis(T_star):
         * u.Hz
     )
 
-# With factor of 2pi with definition of scale factor and Hubble rate
-def H_star(T_star):
-    scale = T0 * conversion * u.GeV / (T_star * (g_star) ** (1 / 3.0))
-    Hexp = (
-        (4.7 * 10 ** (-42) * g_star) ** (1 / 2)
-        * (T_star / (conversion * u.GeV)) ** 2
-    ) * u.Hz
-    return scale * Hexp / (2 * pi)
+Hstar = H_star(T_star * u.GeV)
+logHstar = np.log10(Hstar / u.Hz)
 
-R_H_star = (const.c / H_star(T_star)).to(u.Mpc)
-
-print("Reference frequency:", H_star(T_star), ", Horizon size:", R_H_star)
-
-lambda_star = (
-    (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * H_star(T_star)) * c
-)  # size of bubbles at percolation in units of Hubble scale
-# there are different distance scales that we can define
-
-R_star = (
-    lambda_star  # size of bubbles at percolation (?) in units of Hubble scale
-)
-Delta_w = (
-    sqrt((v_w - c_s) ** 2) / v_w
-)  # <1, the width of the bubble wall in units of R_star
-R_peak = (
-    Delta_w * R_star
-)  # the GW spectrum peaks ad the frequency correspoding to the bubble wall width
-print(
-    "light crossing distance on for the duration of phase transition:",
-    lambda_star,
-    ", bubble size at percolation:",
-    R_star,
-)
-
-# Ellis definition of GW_spectrum with broken power law
-
-def GW_old(f, T_star, alpha, beta_H, v_w):
-    A = 5.1 * 10 ** (-2)
-    a = 2.4
-    b = 2.4
-    c = 4.0
-    delta = 1.0
-    scale = T0 * conversion * u.GeV / (T_star * (g_star) ** (1 / 3.0))
-    # Hubble rate from Friedman
-    Hexp = (
-        (4.7 * 10 ** (-42) * g_star) ** (1 / 2)
-        * (T_star / (conversion * u.GeV)) ** 2
-    ) * u.Hz
-    fH = Hexp * scale / (2 * pi)
-    Sh = (1 + (f / fH) ** ((-3 + a) / delta)) ** (-delta)
-    fp = 0.7 * fH * beta_H
-    factor = scale**4 * (Hexp / (70 * 10 ** (3) / (H0) * u.Hz)) ** 2
-    return (
-        (beta_H) ** 2
-        * A
-        * (a + b) ** c
-        * Sh
-        / (b * (f / fp) ** (-a / c) + a * (f / fp) ** (b / c)) ** c
-        * factor
-    )
+fmin = logHstar.value - 5
+fmax = logHstar.value + 5
+ff = np.logspace(fmin, fmax, 101)
 
 # HL model formula
-
-def GW_sound2(f, T_star, alpha, beta_H, v_w):
-    # f=f*u.Hz
-    (const.c / H_star(T_star)).to(u.Mpc)
+def GW_sound(f, T_star, alpha, beta_H, v_w):
     kappa_v = ka_v(alpha, v_w)
-    Omega_star = (kappa_v) * alpha / (1 + alpha)
-    Omega_gw_tilde = 10 ** (
-        -2
-    )  # new parameter (that comes from simulations apparently)
-    lambda_star = (
-        (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * H_star(T_star)) * c
-    )  # characteristic light-crossing distance scale
-    Delta_w = (
-        sqrt((v_w - c_s) ** 2) / v_w
-    )  # <1, the width of the bubble wall in units of R_star
-    s = (
-        Delta_w * lambda_star * f / c
-    )  # the GW spectrum peaks ad the frequency correspoding to the bubble wall width
-    # frequencies are measured in units of the peak frequency
+    K = kappa_v * alpha / (1 + alpha)
+    lambda_star = (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * Hstar) * c
+    Delta_w = sqrt((v_w - c_s) ** 2) / v_w
+    s2 = Delta_w * lambda_star * f / c
+    print((c / lambda_star).cgs, (c / (Delta_w * lambda_star)).cgs)
     s1 = lambda_star * f / c
-    r_b = Delta_w  # apparently, there are two different notations for the same
-    (9 * r_b**4 + 1) / (r_b**4 + 1)
     M = (
         16
-        * (1 + r_b ** (-3)) ** (2 / 3.0)
-        * (r_b * s1) ** 3
-        / ((1 + s1**3) ** (2.0 / 3.0) * (3 + s**2) ** 2)
+        * (1 + Delta_w ** (-3)) ** (2 / 3.0)
+        * (Delta_w * s1) ** 3
+        / ((1 + s1**3) ** (2.0 / 3.0) * (3 + s2**2) ** 2)
     )
-    mu = 4.78 - 6.27 * r_b + 3.34 * r_b**2
-    B_cursive = Omega_gw_tilde / mu  # new parameter
-    factor = (Omega_star * lambda_star * H_star(T_star) / c) ** 2 / (
-        Omega_star ** (1 / 2.0) + lambda_star * H_star(T_star) / c
-    )
-    old_factor = (
-        3
-        * B_cursive
-        * factor
-        * 1.64
-        * 10 ** (-5)
-        * (100 / g_star) ** (1 / 3.0)
-        * v_w
-        / h**2
-    )
-    return (old_factor * M).cgs
-
-#   SSM model formula
-
-def GW_sound1(f, T_star, alpha, beta_H, v_w):
-    # f=f*u.Hz
-    (const.c / H_star(T_star)).to(u.Mpc)
-    kappa_v = ka_v(alpha, v_w)
-    Omega_star = (kappa_v) * alpha / (1 + alpha)
-    Omega_gw_tilde = 10 ** (
-        -2
-    )  # new parameter (that comes from simulations apparently)
-    lambda_star = (
-        (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * H_star(T_star)) * c
-    )  # characteristic light-crossing distance scale
-    Delta_w = (
-        sqrt((v_w - c_s) ** 2) / v_w
-    )  # <1, the width of the bubble wall in units of R_star
-    s = (
-        Delta_w * lambda_star * f / c
-    )  # the GW spectrum peaks ad the frequency correspoding to the bubble wall width                    # frequencies are measured in units of the peak frequency
-    m = (9 * Delta_w**4 + 1) / (Delta_w**4 + 1)
-    M = (
-        s**9
-        * ((Delta_w**4 + 1) / (Delta_w**4 + ((s) ** 4))) ** 2
-        * (5 / (5 - m + m * (s) ** 2)) ** (5.0 / 2.0)
+    factor = (K * lambda_star * Hstar) ** 2 / (
+        sqrt(K) + lambda_star * Hstar / c
     )
     mu = 4.78 - 6.27 * Delta_w + 3.34 * Delta_w**2
-    B_cursive = Omega_gw_tilde / mu  # new parameter
-    factor = (Omega_star * lambda_star * H_star(T_star) / c) ** 2 / (
-        Omega_star ** (1 / 2.0) + lambda_star * H_star(T_star) / c
-    )
-    old_factor = (
-        3
-        * B_cursive
-        * factor
-        * 1.64
-        * 10 ** (-5)
-        * (100 / g_star) ** (1 / 3.0)
-        * v_w
-        / h**2
-    )
-    return (old_factor * M).cgs
+    ff = f / u.Hz
+    dlnf = (ff[1] - ff[0]) / ff[0]
+    mu = sum(M) * dlnf
+    B = 1e-2 / mu
+    return (3 * B * factor / c**2 * F0_GW * M).cgs
 
 # Eq 1 of the new Overleaf, from Alberto
 
-def GW_turb1(f, T_star, alpha, beta_H, v_w, epsilon_turb):
+def GW_turb_Theo(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     (const.c / H_star(T_star)).to(u.Mpc)
     kappa_v = ka_v(alpha, v_w)
     Omega_star = (kappa_v) * alpha / (1 + alpha)
@@ -326,63 +202,78 @@ def GW_turb1(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     )
     return res * M
 
-# Range of frequencies used
+def GW_turb_Andrii(f, T_star, alpha, beta_H, v_w, epsilon_turb):
 
-f = np.logspace(-10, -2, 50) * u.Hz
+    # Eq. 1 of 2307.10744
+    lambda_star = (
+        (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * Hstar)
+    ) * c  # characteristic light-crossing distance scale
 
-lambda_star = (
-    (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * H_star(T_star)) * c
+    kappa_v = ka_v(alpha, v_w)
+    K = kappa_v * alpha / (1 + alpha)
+
+    # Eq. 10 of 2307.10744
+    Omega_star = epsilon_turb * K
+
+    # Eq. 13 of 2307.10744 and text after it
+    u_star = sqrt(0.75 * Omega_star)
+    dt_fin = 2 * lambda_star / u_star / c
+    s3 = dt_fin * f
+    s1 = f * lambda_star / c
+
+    # Eq. 15 of 2307.10744
+    T_GW = np.log(1 + Hstar * dt_fin / (2 * pi)) * (s3 < 1) + np.log(
+        1 + lambda_star * Hstar / c / (2 * pi * s1)
+    ) * (s3 >= 1)
+    T_GW = T_GW**2
+
+    # Eq. 17 of 2307.10744
+    alpha_pi = 2.15
+    s_pi = 2.2
+    P_pi = (1 + (s1 / s_pi) ** alpha_pi) ** (-11 / (3 * alpha_pi))
+
+    # Eq 18,19,20 of 2307.10744
+    A = 2e-3 * 1.4 * 0.6
+
+    # Eq. 14 of 2307.10744
+    Sturb = (
+        4
+        * pi**2
+        * s1**3
+        * T_GW
+        / (lambda_star * Hstar / c) ** 2
+        * P_pi
+        / 1.4
+        / 0.6
+    )
+
+    # Eq 9 of 2307.10744
+    res = (
+        3 * A * Omega_star**2 * (lambda_star * Hstar / c) ** 2 * F0_GW * Sturb
+    )
+    return res
+
+GW_t = GW_turb_Theo(
+    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
 )
-kappa_v = ka_v(alpha, v_w)  # kappa_therm=(1-kappa_v)
-Omega_star = (kappa_v) * alpha / (1 + alpha)
-u_star = sqrt(0.75 * epsilon_turb * Omega_star)  # alfven velocity
-dt_fin = 2 * lambda_star / u_star / c
-Delta_w = sqrt((v_w - c_s) ** 2) / v_w
-delta = 1.0
-scale = T0 * conversion * u.GeV / (T_star * (g_star ** (1 / 3.0)))
-Hexp = (
-    (4.7 * 10 ** (-42) * g_star) ** (1 / 2)
-    * (T_star / (conversion * u.GeV)) ** 2
-) * u.Hz
-fH = Hexp * scale / (2 * pi)
-fp = 0.7 * fH * beta_H
-
-# Printing the spectrums
-
-spectrum_turb = GW_turb1(f, T_star, alpha, beta_H, v_w, epsilon_turb)
-plt.plot(
-    f,
-    spectrum_turb,
-    label="turbulence",
-    color="blue",
-    linewidth=4,
-    linestyle="dotted",
+# plt.plot(ff,GW_t,color='magenta')
+GW_t = GW_turb_Andrii(
+    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
 )
-spectrum_sound = GW_sound2(f, T_star, alpha, beta_H, v_w)
+plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
+GW_s = GW_sound(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w)
+plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
+GW = GW_s + GW_t
+plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
 
-spectrum_old = GW_old(f, T_star, alpha, beta_H, v_w)
-plt.plot(
-    f,
-    spectrum_sound,
-    label="sound waves",
-    color="red",
-    linewidth=4,
-    linestyle="dashed",
-)
-plt.plot(
-    f, spectrum_sound + spectrum_turb, color="grey", linewidth=4, label="total"
-)
-# plt.plot(f,spectrum_old,color='purple',linewidth=4,label='total')
-
-# plt.axvline(1/(dt_fin*u.Hz).cgs,linestyle='dashed',color='black',label=r'$dt_{fin}**(-1)$')
-# plt.axvline((c/lambda_star/u.Hz).cgs,linestyle='dotted',color='black',label=r'$c/\lambda_*$')
-# plt.axvline((c/(Delta_w*lambda_star)/u.Hz).cgs,linestyle='dashdot',color='black',label=r'$c/(\Delta_w \lambda_*)$')
-# plt.axvline(c/(R_peak*u.Hz),linestyle='dashed',color='blue',label='peak')
-
-plt.legend()
-
-# Butterfly of compatibility with the NANOgrav data
-
+maxGW = max(GW)
+ind = np.argmax(GW)
+fmax = ff[ind]
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(maxGW / 1e5, maxGW * 10)
+plt.xlim(fmax / 1e3, fmax * 1e3)
+plt.grid()
 butterfly2 = np.array(
     [
         [8.533691739758777e-8, 0.0000016780550400704105],
@@ -396,19 +287,75 @@ butterfly2 = np.array(
 plt.fill(butterfly2[:, 0], butterfly2[:, 1])
 plt.xscale("log")
 plt.yscale("log")
+plt.legend(loc="upper left")
 plt.xlabel("$f$, Hz")
-plt.ylabel("$h_0^2\Omega_{gw}(f)$")
+plt.ylabel("$\Omega_{gw}(f)$")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-data = [f, spectrum_sound, spectrum_turb]
-names = ("f[Hz]", "Omega_sound_waves[MJD]", "Omega_turbulence[MJD]")
+data = [ff, GW_s, GW_t]
+names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
 spectrum = ODAAstropyTable(Table(data, names=names))
 
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 spectrum_astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
+
+# Check: reference picture from 2307.10744:
+T_star = 100  # http://odahub.io/ontology#Energy_GeV
+g_star = 100  # http://odahub.io/ontology#Integer
+alpha = 0.5  # http://odahub.io/ontology#Float
+beta_H = 10.0
+epsilon_turb = 1  # http://odahub.io/ontology#Float
+v_w = 0.95  # http://odahub.io/ontology#Float
+h = 0.7  # http://odahub.io/ontology#Float
+
+Hstar = H_star(T_star * u.GeV)
+logHstar = np.log10(Hstar / u.Hz)
+
+fmin = logHstar.value - 5
+fmax = logHstar.value + 5
+ff = np.logspace(fmin, fmax, 101)
+
+GW_t = GW_turb_Theo(
+    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
+)
+plt.plot(ff, GW_t, color="magenta")
+GW_t = GW_turb_Andrii(
+    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
+)
+plt.plot(ff, h**2 * GW_t, color="blue", linestyle="dashed", label="turbulence")
+GW_s = GW_sound(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w)
+plt.plot(ff, h**2 * GW_s, color="red", linestyle="dotted", label="sound waves")
+GW = GW_s + GW_t
+plt.plot(ff, h**2 * GW, linewidth=4, color="black", alpha=0.5, label="total")
+
+maxGW = max(GW)
+ind = np.argmax(GW)
+fmax = ff[ind]
+plt.xscale("log")
+plt.yscale("log")
+plt.ylim(3e-15, 5e-9)
+plt.xlim(1e-6, 0.1)
+plt.grid()
+butterfly2 = np.array(
+    [
+        [8.533691739758777e-8, 0.0000016780550400704105],
+        [8.361136018023004e-8, 1.0740085826829729e-7],
+        [8.499066585218291e-9, 3.882820258009008e-9],
+        [1.029481229115365e-9, 3.6152599901104956e-11],
+        [1.0353166841868053e-9, 2.766052794917924e-10],
+        [7.3944540651210095e-9, 6.632930188159042e-9],
+    ]
+)
+plt.fill(butterfly2[:, 0], butterfly2[:, 1])
+plt.xscale("log")
+plt.yscale("log")
+plt.legend(loc="upper left")
+plt.xlabel("$f$, Hz")
+plt.ylabel("$h_0^2\Omega_{gw}(f)$")
+plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 # output gathering
 _galaxy_meta_data = {}
