@@ -14,6 +14,8 @@ import numpy as np
 from oda_api.json import CustomJSONEncoder
 
 get_ipython().run_line_magic("matplotlib", "inline")   # noqa: F821
+from random import random
+
 import astropy.constants as const
 import astropy.units as u
 from astropy.constants import c
@@ -135,12 +137,13 @@ ff = np.logspace(fmin, fmax, 101)
 
 # HL model formula
 def GW_sound(f, T_star, alpha, beta_H, v_w):
+    Hstar = H_star(T_star)
     kappa_v = ka_v(alpha, v_w)
     K = kappa_v * alpha / (1 + alpha)
     lambda_star = (8 * pi) ** (1 / 3) * max([v_w, c_s]) / (beta_H * Hstar) * c
     Delta_w = sqrt((v_w - c_s) ** 2) / v_w
     s2 = Delta_w * lambda_star * f / c
-    print((c / lambda_star).cgs, (c / (Delta_w * lambda_star)).cgs)
+    # print((c/lambda_star).cgs,(c/(Delta_w*lambda_star)).cgs)
     s1 = lambda_star * f / c
     M = (
         16
@@ -203,6 +206,7 @@ def GW_turb_Theo(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     return res * M
 
 def GW_turb_Andrii(f, T_star, alpha, beta_H, v_w, epsilon_turb):
+    Hstar = H_star(T_star)
 
     # Eq. 1 of 2307.10744
     lambda_star = (
@@ -220,7 +224,7 @@ def GW_turb_Andrii(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     dt_fin = 2 * lambda_star / u_star / c
     s3 = dt_fin * f
     s1 = f * lambda_star / c
-    print("u_star=", u_star, "lambda_star=", lambda_star.cgs)
+    # print('u_star=',u_star,'lambda_star=',lambda_star.cgs)
 
     # Eq. 15 of 2307.10744
     T_GW = np.log(1 + Hstar * dt_fin / (2 * pi)) * (s3 < 1) + np.log(
@@ -254,7 +258,21 @@ def GW_turb_Andrii(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     )
     return res
 
-Hstar
+H0 = 70 * (u.km / u.s) / u.Mpc
+
+d = np.genfromtxt("NANOGrav23.csv")
+gammas_nano = d[:, 0]
+As_nano = 10 ** d[:, 1]
+ps_nano = 5 - gammas_nano
+plt.plot(gammas_nano, As_nano)
+
+d = np.genfromtxt("EPTA.csv")
+gammas_epta = d[:, 0]
+As_epta = 10 ** d[:, 1]
+ps = 5 - gammas_epta
+plt.plot(gammas_epta, As_epta)
+
+plt.yscale("log")
 
 GW_t = GW_turb_Theo(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
@@ -290,10 +308,275 @@ butterfly2 = np.array(
 plt.fill(butterfly2[:, 0], butterfly2[:, 1], label="NANOGrav'23")
 plt.xscale("log")
 plt.yscale("log")
+plt.axvline(fref.cgs.value)
 plt.legend(loc="upper left")
 plt.xlabel("$f$, Hz")
 plt.ylabel("$\Omega_{gw}(f)$")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
+
+ind = len(ff[ff < fref.cgs.value])
+p_model = (GW[ind + 1] - GW[ind - 1]) / (ff[ind + 1] - ff[ind - 1]) / GW[
+    ind
+] * ff[ind] + 1
+GW_model = GW[ind]
+A_model = sqrt(GW_model / (2 * pi**2 / 3 / H0**2 * fref**2).cgs.value)
+g_model = 5 - p_model
+print(A_model, p_model)
+
+plt.plot(gammas_nano, As_nano)
+plt.scatter([g_model], [A_model])
+plt.yscale("log")
+
+# spec=(2*pi**2/3/H0**2*ff**2*As[i]**2).cgs.value
+
+lgfmin = np.log10(fref.cgs.value / 10)
+lgfmax = np.log10(fref.cgs.value / 2)
+
+fff = np.logspace(lgfmin, lgfmax, 10) * u.Hz
+GW_interp = np.interp(fff.value, ff, GW)
+# plt.plot(fff,GW_interp)
+fref = 1 / u.yr
+print(fref.cgs)
+spec_min = np.ones(len(fff))
+spec_max = np.zeros(len(fff))
+for i in range(len(As)):
+    spec = (
+        2
+        * pi**2
+        / 3
+        / H0**2
+        * fff**2
+        * As[i] ** 2
+        * (fff / fref) ** (3 - gammas[i])
+    ).cgs.value
+    spec_min = np.minimum(spec, spec_min)
+    spec_max = np.maximum(spec, spec_max)
+    # plt.plot(ff,spec)
+plt.plot(fff, spec_min, linewidth=4)
+plt.plot(fff, spec_max, linewidth=4)
+
+Tgrid = np.logspace(-3, 1, 31)
+agrid = np.logspace(-1, 2, 31)
+bgrid = np.logspace(0, 2, 31)
+Tgood = []
+agood = []
+bgood = []
+for T in Tgrid:
+    print(T)
+    for a in agrid:
+        for b in bgrid:
+            GW_t = GW_turb_Andrii(
+                ff * u.Hz, T * u.GeV, a, b, v_w, epsilon_turb
+            )
+            GW_s = GW_sound(ff * u.Hz, T * u.GeV, a, b, v_w)
+            GW = GW_s + GW_t
+            GW_interp = np.interp(fff.value, ff, GW)
+            if sum((GW_interp < spec_max) * (GW_interp > spec_min)) == len(
+                fff
+            ):
+                agood.append(a)
+                bgood.append(b)
+                Tgood.append(T)
+                plt.plot(fff, GW_interp)
+
+plt.xscale("log")
+plt.yscale("log")
+spec
+
+plt.scatter(agood, bgood)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.1, 100)
+plt.ylim(1, 100)
+
+from random import random
+
+Tgood_nano = []
+agood_nano = []
+bgood_nano = []
+
+nsamples = 20000
+for i in range(nsamples):
+    if i % 1000 == 0:
+        print(i, len(agood_nano))
+    T = 10.0 ** (-2 + 3 * random())
+    a = 10.0 ** (-1 + 3 * random())
+    b = 10.0 ** (0 + 2 * random())
+    GW_t = GW_turb_Andrii(ff * u.Hz, T * u.GeV, a, b, v_w, epsilon_turb)
+    GW_s = GW_sound(ff * u.Hz, T * u.GeV, a, b, v_w)
+    GW = GW_s + GW_t
+    GW_interp = np.interp(fff.value, ff, GW)
+    if sum((GW_interp < spec_max) * (GW_interp > spec_min)) == len(fff):
+        agood_nano.append(a)
+        bgood_nano.append(b)
+        Tgood_nano.append(T)
+        plt.plot(fff, GW_interp)
+
+print(len(agood_nano))
+plt.xscale("log")
+plt.yscale("log")
+
+plt.scatter(agood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.1, 100)
+plt.ylim(1, 100)
+
+plt.scatter(Tgood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.01, 10)
+plt.ylim(1, 100)
+
+from random import random
+
+Tgood_epta = []
+agood_epta = []
+bgood_epta = []
+
+nsamples = 20000
+for i in range(nsamples):
+    if i % 1000 == 0:
+        print(i, len(agood_epta))
+    T = 10.0 ** (-2 + 3 * random())
+    a = 10.0 ** (-1 + 3 * random())
+    b = 10.0 ** (0 + 2 * random())
+    GW_t = GW_turb_Andrii(ff * u.Hz, T * u.GeV, a, b, v_w, epsilon_turb)
+    GW_s = GW_sound(ff * u.Hz, T * u.GeV, a, b, v_w)
+    GW = GW_s + GW_t
+    GW_interp = np.interp(fff.value, ff, GW)
+    if sum((GW_interp < spec_max) * (GW_interp > spec_min)) == len(fff):
+        agood_epta.append(a)
+        bgood_epta.append(b)
+        Tgood_epta.append(T)
+        plt.plot(fff, GW_interp)
+
+print(len(agood_epta))
+plt.xscale("log")
+plt.yscale("log")
+
+plt.scatter(agood_epta, bgood_epta)
+plt.scatter(agood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.1, 100)
+plt.ylim(1, 100)
+
+plt.scatter(Tgood_epta, bgood_epta)
+plt.scatter(Tgood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.01, 10)
+plt.ylim(1, 100)
+
+d = np.genfromtxt("PPTA.csv")
+gammas_ppta = d[:, 0]
+As_ppta = 10 ** d[:, 1]
+ps_ppta = 5 - gammas_ppta
+H0 = 70 * (u.km / u.s) / u.Mpc
+plt.plot(gammas_ppta, As_ppta)
+plt.plot(gammas_epta, As_epta)
+
+plt.yscale("log")
+
+from random import random
+
+Tgood_ppta = []
+agood_ppta = []
+bgood_ppta = []
+
+nsamples = 20000
+for i in range(nsamples):
+    if i % 1000 == 0:
+        print(i, len(agood_ppta))
+    T = 10.0 ** (-2 + 3 * random())
+    a = 10.0 ** (-1 + 3 * random())
+    b = 10.0 ** (0 + 2 * random())
+    GW_t = GW_turb_Andrii(ff * u.Hz, T * u.GeV, a, b, v_w, epsilon_turb)
+    GW_s = GW_sound(ff * u.Hz, T * u.GeV, a, b, v_w)
+    GW = GW_s + GW_t
+    GW_interp = np.interp(fff.value, ff, GW)
+    if sum((GW_interp < spec_max) * (GW_interp > spec_min)) == len(fff):
+        agood_ppta.append(a)
+        bgood_ppta.append(b)
+        Tgood_ppta.append(T)
+        plt.plot(fff, GW_interp)
+
+print(len(agood_ppta))
+plt.xscale("log")
+plt.yscale("log")
+
+plt.scatter(agood_ppta, bgood_ppta)
+plt.scatter(agood_epta, bgood_epta)
+plt.scatter(agood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.1, 100)
+plt.ylim(1, 100)
+
+plt.scatter(Tgood_ppta, bgood_ppta)
+plt.scatter(Tgood_epta, bgood_epta)
+plt.scatter(Tgood_nano, bgood_nano)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.01, 10)
+plt.ylim(1, 100)
+
+fff = np.logspace(lgfmin, lgfmax, 10) * u.Hz
+GW_interp = np.interp(fff.value, ff, GW)
+# plt.plot(fff,GW_interp)
+fref = 1 / u.yr
+print(fref.cgs)
+spec_min = np.ones(len(fff))
+spec_max = np.zeros(len(fff))
+for i in range(len(As)):
+    spec = (
+        2
+        * pi**2
+        / 3
+        / H0**2
+        * fff**2
+        * As[i] ** 2
+        * (fff / fref) ** (3 - gammas[i])
+    ).cgs.value
+    spec_min = np.minimum(spec, spec_min)
+    spec_max = np.maximum(spec, spec_max)
+    # plt.plot(ff,spec)
+plt.plot(fff, spec_min, linewidth=4)
+plt.plot(fff, spec_max, linewidth=4)
+
+Tgrid = np.logspace(-3, 1, 31)
+agrid = np.logspace(-1, 2, 31)
+bgrid = np.logspace(0, 2, 31)
+Tgood = []
+agood = []
+bgood = []
+for T in Tgrid:
+    print(T)
+    for a in agrid:
+        for b in bgrid:
+            GW_t = GW_turb_Andrii(
+                ff * u.Hz, T * u.GeV, a, b, v_w, epsilon_turb
+            )
+            GW_s = GW_sound(ff * u.Hz, T * u.GeV, a, b, v_w)
+            GW = GW_s + GW_t
+            GW_interp = np.interp(fff.value, ff, GW)
+            if sum((GW_interp < spec_max) * (GW_interp > spec_min)) == len(
+                fff
+            ):
+                agood.append(a)
+                bgood.append(b)
+                Tgood.append(T)
+                plt.plot(fff, GW_interp)
+
+plt.xscale("log")
+plt.yscale("log")
+
+plt.scatter(agood, bgood)
+plt.xscale("log")
+plt.yscale("log")
+plt.xlim(0.1, 100)
+plt.ylim(1, 100)
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
@@ -305,21 +588,11 @@ spectrum = ODAAstropyTable(Table(data, names=names))
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
 
-# Check: reference picture from 2307.10744:
-T_star = 100  # http://odahub.io/ontology#Energy_GeV
-g_star = 100  # http://odahub.io/ontology#Integer
-alpha = 0.5  # http://odahub.io/ontology#Float
-beta_H = 10.0
-epsilon_turb = 1  # http://odahub.io/ontology#Float
-v_w = 0.95  # http://odahub.io/ontology#Float
-h = 0.7  # http://odahub.io/ontology#Float
+ffref = fref.cgs.value
+print(ffref)
+fgrid = np.array([ffref / 1.1, ffref, ffref * 1.1])
 
-Hstar = H_star(T_star * u.GeV)
-logHstar = np.log10(Hstar / u.Hz)
-
-fmin = logHstar.value - 5
-fmax = logHstar.value + 5
-ff = np.logspace(fmin, fmax, 101)
+print(GW_sound(ffref * np.ones(10), T_star * u.GeV, alpha, beta_H, v_w))
 
 GW_t = GW_turb_Theo(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
@@ -333,6 +606,8 @@ GW_s = GW_sound(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w)
 plt.plot(ff, h**2 * GW_s, color="red", linestyle="dotted", label="sound waves")
 GW = GW_s + GW_t
 plt.plot(ff, h**2 * GW, linewidth=4, color="black", alpha=0.5, label="total")
+
+print(GW_sound(fref, T_star * u.GeV, alpha, beta_H, v_w))
 
 maxGW = max(GW)
 ind = np.argmax(GW)
@@ -363,10 +638,10 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_GW_spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(("out_GW_limits_png", "png_galaxy.output", png))
 _oda_outs.append(
     (
-        "out_GW_spectrum_astropy_table",
+        "out_GW_limits_astropy_table",
         "astropy_table_galaxy.output",
         astropy_table,
     )

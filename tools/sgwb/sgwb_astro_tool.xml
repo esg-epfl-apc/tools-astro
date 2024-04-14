@@ -12,32 +12,77 @@
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
-  <command detect_errors="exit_code">ipython '$__tool_directory__/GW_spectrum.py'</command>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
   <inputs>
-    <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
-    <param name="g_star" type="integer" value="20" label="g_star" />
-    <param name="alpha" type="float" value="1.0" label="alpha" />
-    <param name="beta_H" type="float" value="3.3" label="beta_H" />
-    <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
-    <param name="v_w" type="float" value="0.999" label="v_w" />
-    <param name="h" type="float" value="0.7" label="h" />
+    <conditional name="_data_product">
+      <param name="_selector" type="select" label="Data Product">
+        <option value="GW_spectrum" selected="true">GW_spectrum</option>
+        <option value="GW_limits" selected="false">GW_limits</option>
+      </param>
+      <when value="GW_spectrum">
+        <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
+        <param name="g_star" type="integer" value="20" label="g_star" />
+        <param name="alpha" type="float" value="1.0" label="alpha" />
+        <param name="beta_H" type="float" value="3.3" label="beta_H" />
+        <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
+        <param name="v_w" type="float" value="0.999" label="v_w" />
+        <param name="h" type="float" value="0.7" label="h" />
+      </when>
+      <when value="GW_limits">
+        <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
+        <param name="g_star" type="integer" value="20" label="g_star" />
+        <param name="alpha" type="float" value="1.0" label="alpha" />
+        <param name="beta_H" type="float" value="3.3" label="beta_H" />
+        <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
+        <param name="v_w" type="float" value="0.999" label="v_w" />
+        <param name="h" type="float" value="0.7" label="h" />
+      </when>
+    </conditional>
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; GW_spectrum png" name="out_GW_spectrum_png" format="auto" from_work_dir="png_galaxy.output" />
-    <data label="${tool.name} -&gt; GW_spectrum astropy_table" name="out_GW_spectrum_astropy_table" format="auto" from_work_dir="astropy_table_galaxy.output" />
+    <data label="${tool.name} -&gt; GW_spectrum png" name="out_GW_spectrum_png" format="auto" from_work_dir="png_galaxy.output">
+      <filter>_data_product['_selector'] == 'GW_spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; GW_spectrum astropy_table" name="out_GW_spectrum_astropy_table" format="auto" from_work_dir="astropy_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'GW_spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; GW_limits png" name="out_GW_limits_png" format="auto" from_work_dir="png_galaxy.output">
+      <filter>_data_product['_selector'] == 'GW_limits'</filter>
+    </data>
+    <data label="${tool.name} -&gt; GW_limits astropy_table" name="out_GW_limits_astropy_table" format="auto" from_work_dir="astropy_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'GW_limits'</filter>
+    </data>
   </outputs>
   <tests>
     <test expect_num_outputs="2">
-      <param name="T_star" value="0.178" />
-      <param name="g_star" value="20" />
-      <param name="alpha" value="1.0" />
-      <param name="beta_H" value="3.3" />
-      <param name="epsilon_turb" value="1" />
-      <param name="v_w" value="0.999" />
-      <param name="h" value="0.7" />
+      <conditional name="_data_product">
+        <param name="_selector" value="GW_spectrum" />
+        <param name="T_star" value="0.178" />
+        <param name="g_star" value="20" />
+        <param name="alpha" value="1.0" />
+        <param name="beta_H" value="3.3" />
+        <param name="epsilon_turb" value="1" />
+        <param name="v_w" value="0.999" />
+        <param name="h" value="0.7" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="GW_limits" />
+        <param name="T_star" value="0.178" />
+        <param name="g_star" value="20" />
+        <param name="alpha" value="1.0" />
+        <param name="beta_H" value="3.3" />
+        <param name="epsilon_turb" value="1" />
+        <param name="v_w" value="0.999" />
+        <param name="h" value="0.7" />
+      </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
