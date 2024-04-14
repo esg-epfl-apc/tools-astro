@@ -31,10 +31,10 @@ g_star = 20  # http://odahub.io/ontology#Integer
 alpha = 1.0  # http://odahub.io/ontology#Float
 
 # beta/H : rate of the phase transition compared to Hubble rate
-beta_H = 1.0
+beta_H = 3.3
 
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
-epsilon_turb = 0.1  # http://odahub.io/ontology#Float
+epsilon_turb = 1  # http://odahub.io/ontology#Float
 
 # terminal velocity of bubbles
 v_w = 0.999  # http://odahub.io/ontology#Float
