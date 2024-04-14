@@ -299,8 +299,8 @@ data = [ff, GW_s, GW_t]
 names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
 spectrum = ODAAstropyTable(Table(data, names=names))
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-spectrum_astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
 
 # Check: reference picture from 2307.10744:
 T_star = 100  # http://odahub.io/ontology#Energy_GeV
@@ -360,12 +360,12 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_GW_spectrum_picture", "picture_galaxy.output", picture))
+_oda_outs.append(("out_GW_spectrum_png", "png_galaxy.output", png))
 _oda_outs.append(
     (
-        "out_GW_spectrum_spectrum_astropy_table",
-        "spectrum_astropy_table_galaxy.output",
-        spectrum_astropy_table,
+        "out_GW_spectrum_astropy_table",
+        "astropy_table_galaxy.output",
+        astropy_table,
     )
 )
 
