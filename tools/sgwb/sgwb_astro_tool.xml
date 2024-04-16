@@ -109,4 +109,15 @@ Timing Array gravitational wave detectors, reported by `Boyer &amp; Neronov
 (2024) &lt;https://arxiv.org/abs/2404.??????&gt;`__, including the estimate of
 the cosmological magnetic field induced by turbulence.
 </help>
+  <citations>
+    <citation type="bibtex">@article{RoperPol:2023bqa,
+			author = {Roper Pol, A. and Neronov, A. and Caprini, C. and Boyer, T. and Semikoz, D.},
+			title = {{LISA and $\gamma$-ray telescopes as multi-messenger probes of a first-order cosmological phase transition}},
+			eprint = {2307.10744},
+			archivePrefix = {arXiv},
+			primaryClass = {astro-ph.CO},
+			month = {7},
+			year = {2023}
+		}</citation>
+  </citations>
 </tool>
