@@ -85,8 +85,8 @@
   </tests>
   <help>This service provides a calculaiton of the power spectrum of Stochastic
 Gravitational Wave Backgorund (SGWB) from a first-order cosmological
-phase transition based on the parameterisztions described by `Roper Pol
-et al.&#160;(2023) &lt;https://arxiv.org/abs/2307.10744&gt;`__. The power spectrum
+phase transition based on the parameterisations of `Roper Pol et
+al.&#160;(2023) &lt;https://arxiv.org/abs/2307.10744&gt;`__. The power spectrum
 includes two components: from the sound waves excited by collisions of
 bubbles of the new phase and from the turbulence that is induced by
 these collisions.
@@ -101,5 +101,12 @@ parameters, :math:``alpha``, :math:``beta_H`` and
 :math:``epsilon_turb``, the latent heat, the ratio of the Hubble radius
 to the bubble size at percolation and the fraction of the energy otuput
 of the phase transition that goes into turbulence.
+
+The tool ``Model spectrum`` outputs the power spectrum for fixed values
+of these parameters. The tool ``Phase transition parameters`` reproduces
+the constraints on the phase transition parameters from the Pulsar
+Timing Array gravitational wave detectors, reported by `Boyer &amp; Neronov
+(2024) &lt;https://arxiv.org/abs/2404.??????&gt;`__, including the estimate of
+the cosmological magnetic field induced by turbulence.
 </help>
 </tool>
