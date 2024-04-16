@@ -34,11 +34,6 @@
       </when>
       <when value="Phase_transition_parameters">
         <param name="epsilon_turb" type="float" value="0.1" label="epsilon_turb" />
-        <param name="g_star" type="integer" value="20" label="g_star" />
-        <param name="Tmax_yrs" type="float" value="10.0" label="Tmax_yrs" />
-        <param name="Tmin_yrs" type="float" value="2.0" label="Tmin_yrs" />
-        <param name="v_w" type="float" value="0.999" label="v_w" />
-        <param name="h" type="float" value="0.7" label="h" />
       </when>
     </conditional>
   </inputs>
@@ -82,11 +77,6 @@
       <conditional name="_data_product">
         <param name="_selector" value="Phase_transition_parameters" />
         <param name="epsilon_turb" value="0.1" />
-        <param name="g_star" value="20" />
-        <param name="Tmax_yrs" value="10.0" />
-        <param name="Tmin_yrs" value="2.0" />
-        <param name="v_w" value="0.999" />
-        <param name="h" value="0.7" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

@@ -32,15 +32,6 @@ from oda_api.data_products import PictureProduct
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
 epsilon_turb = 0.1  # http://odahub.io/ontology#Float
 
-# Numbers of relativistic degrees of freedom
-g_star = 20  # http://odahub.io/ontology#Integer
-
-Tmax_yrs = 10.0  # http://odahub.io/ontology#Float
-Tmin_yrs = 2.0  # http://odahub.io/ontology#Float
-# terminal velocity of bubbles
-v_w = 0.999  # http://odahub.io/ontology#Float
-h = 0.7  # http://odahub.io/ontology#Float
-
 _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
@@ -53,6 +44,14 @@ else:
 for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
+
+Tmax_yrs = 10.0  # http://odahub.io/ontology#Float
+Tmin_yrs = 2.0  # http://odahub.io/ontology#Float
+# terminal velocity of bubbles
+v_w = 0.999  # http://odahub.io/ontology#Float
+h = 0.7  # http://odahub.io/ontology#Float
+# Numbers of relativistic degrees of freedom
+g_star = 20  # http://odahub.io/ontology#Integer
 
 c_s = 3 ** (-0.5)  # speed of sound
 F0_GW = 1.64e-5 / h**2 * (100 / g_star) ** (1 / 3.0)
