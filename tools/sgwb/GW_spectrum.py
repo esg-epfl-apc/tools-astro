@@ -287,6 +287,23 @@ def GW_Ellis(f, T_star, alpha, beta_H, v_w, epsilon_turb):
         B,
     )
 
+d = np.genfromtxt("NANOGrav23.csv")
+gammas_nano = d[:, 0]
+As_nano = 10 ** d[:, 1]
+ps_nano = 5 - gammas_nano
+
+d = np.genfromtxt("EPTA.csv")
+gammas_epta = d[:, 0]
+As_epta = 10 ** d[:, 1]
+ps_epta = 5 - gammas_epta
+
+d = np.genfromtxt("PPTA.csv")
+gammas_ppta = d[:, 0]
+As_ppta = 10 ** d[:, 1]
+ps_ppta = 5 - gammas_ppta
+
+H0 = 70 * (u.km / u.s) / u.Mpc
+
 GW_t = GW_turb_Theo(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
 )
@@ -308,6 +325,65 @@ else:
     plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
     plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
 
+fref = (1 / u.yr).cgs.value
+lgfmin = np.log10(fref / 10.0)
+lgfmax = np.log10(fref / 2.0)
+fff = np.logspace(lgfmin, lgfmax, 10) * u.Hz
+min_nano = np.ones(len(fff))
+max_nano = np.zeros(len(fff))
+for i in range(len(As_nano)):
+    spec = (
+        2
+        * pi**2
+        / 3
+        / H0**2
+        * fff**2
+        * As_nano[i] ** 2
+        * (fff / fref) ** (3 - gammas_nano[i])
+    ).cgs.value
+    min_nano = np.minimum(spec, min_nano)
+    max_nano = np.maximum(spec, max_nano)
+    # plt.plot(ff,spec)
+plt.fill_between(
+    fff.value, min_nano, max_nano, color="red", alpha=0.5, label="NANOGrav"
+)
+min_epta = np.ones(len(fff))
+max_epta = np.zeros(len(fff))
+for i in range(len(As_epta)):
+    spec = (
+        2
+        * pi**2
+        / 3
+        / H0**2
+        * fff**2
+        * As_epta[i] ** 2
+        * (fff / fref) ** (3 - gammas_epta[i])
+    ).cgs.value
+    min_epta = np.minimum(spec, min_epta)
+    max_epta = np.maximum(spec, max_epta)
+    # plt.plot(ff,spec)
+plt.fill_between(
+    fff.value, min_epta, max_epta, color="blue", alpha=0.5, label="EPTA"
+)
+min_ppta = np.ones(len(fff))
+max_ppta = np.zeros(len(fff))
+for i in range(len(As_ppta)):
+    spec = (
+        2
+        * pi**2
+        / 3
+        / H0**2
+        * fff**2
+        * As_ppta[i] ** 2
+        * (fff / fref) ** (3 - gammas_ppta[i])
+    ).cgs.value
+    min_ppta = np.minimum(spec, min_ppta)
+    max_ppta = np.maximum(spec, max_ppta)
+    # plt.plot(ff,spec)
+plt.fill_between(
+    fff.value, min_ppta, max_ppta, color="green", alpha=0.5, label="PPTA"
+)
+
 maxGW = max(GW)
 ind = np.argmax(GW)
 fmax = ff[ind]
@@ -316,17 +392,6 @@ plt.yscale("log")
 plt.ylim(maxGW / 1e5, maxGW * 10)
 plt.xlim(fmax / 1e3, fmax * 1e3)
 plt.grid()
-butterfly2 = np.array(
-    [
-        [8.533691739758777e-8, 0.0000016780550400704105],
-        [8.361136018023004e-8, 1.0740085826829729e-7],
-        [8.499066585218291e-9, 3.882820258009008e-9],
-        [1.029481229115365e-9, 3.6152599901104956e-11],
-        [1.0353166841868053e-9, 2.766052794917924e-10],
-        [7.3944540651210095e-9, 6.632930188159042e-9],
-    ]
-)
-plt.fill(butterfly2[:, 0], butterfly2[:, 1], label="NANOGrav'23")
 plt.xscale("log")
 plt.yscale("log")
 plt.legend(loc="upper left")
@@ -337,8 +402,12 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-data = [ff, GW_s, GW_t]
-names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
+if Parameterisation == "Lewicki2022":
+    data = [ff, GW1]
+    names = ("f[Hz]", "Omega_gw")
+else:
+    data = [ff, GW_s, GW_t]
+    names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
 spectrum = ODAAstropyTable(Table(data, names=names))
 
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
