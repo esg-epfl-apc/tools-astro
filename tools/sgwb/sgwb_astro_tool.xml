@@ -8,9 +8,9 @@
     <requirement type="package" version="5.19.0">plotly</requirement>
     <requirement type="package" version="1.13.0">scipy</requirement>
     <requirement type="package" version="1.2.15">oda-api</requirement>
-    <requirement type="package" version="7.16.3">nbconvert</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -30,6 +30,10 @@
         <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
         <param name="v_w" type="float" value="0.999" label="v_w" />
         <param name="h" type="float" value="0.7" label="h" />
+        <param name="Parameterisation" type="select" label="Parameterisation">
+          <option value="Lewicki2022">Lewicki2022</option>
+          <option value="RoperPol2023" selected="true">RoperPol2023</option>
+        </param>
       </when>
       <when value="GW_limits">
         <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
@@ -67,6 +71,7 @@
         <param name="epsilon_turb" value="1" />
         <param name="v_w" value="0.999" />
         <param name="h" value="0.7" />
+        <param name="Parameterisation" value="RoperPol2023" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

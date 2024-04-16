@@ -40,6 +40,8 @@ epsilon_turb = 1  # http://odahub.io/ontology#Float
 v_w = 0.999  # http://odahub.io/ontology#Float
 h = 0.7  # http://odahub.io/ontology#Float
 
+Parameterisation = "RoperPol2023"  # http://odahub.io/ontology#String ; oda:allowed_value "Lewicki2022","RoperPol2023"
+
 _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
@@ -254,7 +256,36 @@ def GW_turb_Andrii(f, T_star, alpha, beta_H, v_w, epsilon_turb):
     )
     return res
 
-Hstar
+# Eq 19 of 2308.08546
+def GW_Ellis(f, T_star, alpha, beta_H, v_w, epsilon_turb):
+    A = 5.1e-2
+    a = 2.4
+    b = 2.4
+    c = 4.0
+    Hstar = H_star(T_star).cgs
+    f_H = Hstar / 2 / pi
+    fp = 0.7 * beta_H * f_H
+    lambda_star = (2 * pi * 3e10 * u.cm / u.s / fp).cgs
+
+    SH = 1 / (1 + (f / f_H) ** (a - 3))
+    Omega_star = beta_H ** (-2) * alpha / (1 + alpha) * A
+    Omega_B = epsilon_turb * Omega_star / 2.0
+    Omega_gamma = 2 / g_star
+    B = 3e-6 * (Omega_B / Omega_gamma) ** 0.5
+    res = (
+        beta_H ** (-2)
+        * alpha
+        / (1 + alpha)
+        * A
+        * (a + b) ** c
+        / (b * (f / fp) ** (-a / c) + a * (f / fp) ** (b / c)) ** c
+        * SH
+    )
+    return (
+        1.6e-5 * (g_star / 100) ** (-1 / 3.0) * res / h**2,
+        lambda_star.cgs.value,
+        B,
+    )
 
 GW_t = GW_turb_Theo(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
@@ -263,11 +294,19 @@ GW_t = GW_turb_Theo(
 GW_t = GW_turb_Andrii(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
 )
-plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
 GW_s = GW_sound(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w)
-plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
 GW = GW_s + GW_t
-plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
+
+GW1 = GW_Ellis(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb)[0]
+
+if Parameterisation == "Lewicki2022":
+    plt.plot(
+        ff, GW1, color="magenta", alpha=0.5, linewidth=4, label="2208.11697"
+    )
+else:
+    plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
+    plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
+    plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
 
 maxGW = max(GW)
 ind = np.argmax(GW)
@@ -304,61 +343,6 @@ spectrum = ODAAstropyTable(Table(data, names=names))
 
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
-
-# Check: reference picture from 2307.10744:
-T_star = 100  # http://odahub.io/ontology#Energy_GeV
-g_star = 100  # http://odahub.io/ontology#Integer
-alpha = 0.5  # http://odahub.io/ontology#Float
-beta_H = 10.0
-epsilon_turb = 1  # http://odahub.io/ontology#Float
-v_w = 0.95  # http://odahub.io/ontology#Float
-h = 0.7  # http://odahub.io/ontology#Float
-
-Hstar = H_star(T_star * u.GeV)
-logHstar = np.log10(Hstar / u.Hz)
-
-fmin = logHstar.value - 5
-fmax = logHstar.value + 5
-ff = np.logspace(fmin, fmax, 101)
-
-GW_t = GW_turb_Theo(
-    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
-)
-plt.plot(ff, GW_t, color="magenta")
-GW_t = GW_turb_Andrii(
-    ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
-)
-plt.plot(ff, h**2 * GW_t, color="blue", linestyle="dashed", label="turbulence")
-GW_s = GW_sound(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w)
-plt.plot(ff, h**2 * GW_s, color="red", linestyle="dotted", label="sound waves")
-GW = GW_s + GW_t
-plt.plot(ff, h**2 * GW, linewidth=4, color="black", alpha=0.5, label="total")
-
-maxGW = max(GW)
-ind = np.argmax(GW)
-fmax = ff[ind]
-plt.xscale("log")
-plt.yscale("log")
-plt.ylim(3e-15, 5e-9)
-plt.xlim(1e-6, 0.1)
-plt.grid()
-butterfly2 = np.array(
-    [
-        [8.533691739758777e-8, 0.0000016780550400704105],
-        [8.361136018023004e-8, 1.0740085826829729e-7],
-        [8.499066585218291e-9, 3.882820258009008e-9],
-        [1.029481229115365e-9, 3.6152599901104956e-11],
-        [1.0353166841868053e-9, 2.766052794917924e-10],
-        [7.3944540651210095e-9, 6.632930188159042e-9],
-    ]
-)
-plt.fill(butterfly2[:, 0], butterfly2[:, 1])
-plt.xscale("log")
-plt.yscale("log")
-plt.legend(loc="upper left")
-plt.xlabel("$f$, Hz")
-plt.ylabel("$h_0^2\Omega_{gw}(f)$")
-plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 # output gathering
 _galaxy_meta_data = {}
