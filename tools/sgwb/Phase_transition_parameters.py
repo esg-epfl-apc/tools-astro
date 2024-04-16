@@ -30,7 +30,7 @@ from oda_api.data_products import PictureProduct
 # Parameters of the phase transition
 
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
-epsilon_turb = 0.1  # http://odahub.io/ontology#Float
+epsilon_turb = 1.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
 
@@ -474,47 +474,37 @@ ax.fill(lam_pptas_eps1, B_pptas_eps1, color="green", alpha=0.3, label="PPTA")
 ax.set_xscale("log")
 ax.set_yscale("log")
 
+lam_med = np.median(lam_nanos_eps1)
+B_med = np.median(B_nanos_eps1)
+lam_evol = np.logspace(np.log10(lam_med), np.log10(lam_med) + 10, 100)
+B_evol = B_med * (lam_evol / lam_med) ** (-5 / 4.0)
+mask = B_evol > 10 ** (-8.5) * lam_evol
+lam_evol = lam_evol[mask]
+B_evol = B_evol[mask]
+ax.annotate(
+    "",
+    xy=(lam_evol[-1], B_evol[-1]),
+    xytext=(lam_evol[0], B_evol[0]),
+    arrowprops={"arrowstyle": "->", "color": "black"},
+)
+
+lam_evol = np.logspace(np.log10(lam_med), np.log10(lam_med) + 10, 100)
+B_evol = B_med * (lam_evol / lam_med) ** (-5 / 2.0)
+mask = B_evol > 10 ** (-6.8) * lam_evol
+lam_evol = lam_evol[mask]
+B_evol = B_evol[mask]
+ax.annotate(
+    "",
+    xy=(lam_evol[-1], B_evol[-1]),
+    xytext=(lam_evol[0], B_evol[0]),
+    arrowprops={"arrowstyle": "->", "linestyle": "dashed", "color": "black"},
+)
+
 x = np.logspace(-8, 3, 10)
 y = 10 ** (-8.5) * x
 ax.plot(x, y, color="grey", linewidth=4, linestyle="dashed")
 y = 10 ** (-6.8) * x
 ax.plot(x, y, color="grey", linewidth=4)
-x = np.logspace(-6.5, -3.1, 10)
-y = 2e-6 * (x / x[0]) ** (-5 / 4.0)
-ax.annotate(
-    "",
-    xy=(x[-1], y[-1]),
-    xytext=(x[0], y[0]),
-    arrowprops={"arrowstyle": "->", "color": "black"},
-)
-x = np.logspace(-5.7, -2.4, 10)
-y = 7e-6 * (x / x[0]) ** (-5 / 4.0)
-ax.annotate(
-    "",
-    xy=(x[-1], y[-1]),
-    xytext=(x[0], y[0]),
-    arrowprops={"arrowstyle": "->", "color": "black"},
-)
-
-x = np.logspace(-6.5, -3.8, 10)
-y = 2e-6 * (x / x[0]) ** (-5 / 2.0)
-ax.annotate(
-    "",
-    xy=(x[-1], y[-1]),
-    xytext=(x[0], y[0]),
-    arrowprops={"arrowstyle": "->", "color": "black", "linestyle": "dashed"},
-)
-x = np.logspace(-5.7, -3.1, 10)
-y = 7e-6 * (x / x[0]) ** (-5 / 2.0)
-ax.annotate(
-    "",
-    xy=(x[-1], y[-1]),
-    xytext=(x[0], y[0]),
-    arrowprops={"arrowstyle": "->", "color": "black", "linestyle": "dashed"},
-)
-
-d = np.genfromtxt("RoperPol22.csv")
-ax.plot(d[:, 0], d[:, 1], color="black", linewidth=4, label="2201.05630")
 
 d = np.genfromtxt("MAGIC.csv")
 ax.fill_between(d[:, 0], np.zeros(len(d)), d[:, 1], color="grey", alpha=0.5)
@@ -562,19 +552,6 @@ ax.annotate(
 )
 plt.text(0.5, 1.1e-11, "CMB", color="olive")
 
-# inset axes....
-x1, x2, y1, y2 = 2e-7, 3e-6, 7e-7, 1e-5  # subregion of the original image
-axins = ax.inset_axes(
-    [0.5, 0.7, 0.47, 0.4], xlim=(x1, x2), ylim=(y1, y2)
-)  # xticklabels=[], yticklabels=[])
-# axins.imshow(Z2, extent=extent, origin="lower")
-axins.fill(lam_nanos_eps1, B_nanos_eps1, color="red", alpha=0.3, linewidth=0)
-axins.fill(lam_eptas_eps1, B_eptas_eps1, color="blue", alpha=0.3, linewidth=0)
-axins.fill(lam_pptas_eps1, B_pptas_eps1, color="green", alpha=0.3, linewidth=0)
-axins.set_xscale("log")
-axins.set_yscale("log")
-
-ax.indicate_inset_zoom(axins, edgecolor="black")
 plt.savefig("B_lambdaB.png", bbox_inches="tight")
 
 fig = plt.figure()

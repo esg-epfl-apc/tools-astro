@@ -33,7 +33,7 @@
         <param name="h" type="float" value="0.7" label="h" />
       </when>
       <when value="Phase_transition_parameters">
-        <param name="epsilon_turb" type="float" value="0.1" label="epsilon_turb" />
+        <param name="epsilon_turb" type="float" value="1.0" label="epsilon_turb" />
       </when>
     </conditional>
   </inputs>
@@ -76,7 +76,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="Phase_transition_parameters" />
-        <param name="epsilon_turb" value="0.1" />
+        <param name="epsilon_turb" value="1.0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
