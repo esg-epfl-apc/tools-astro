@@ -8,9 +8,9 @@
     <requirement type="package" version="5.19.0">plotly</requirement>
     <requirement type="package" version="1.13.0">scipy</requirement>
     <requirement type="package" version="1.2.15">oda-api</requirement>
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.3">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -36,11 +36,10 @@
         </param>
       </when>
       <when value="GW_limits">
-        <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
-        <param name="g_star" type="integer" value="20" label="g_star" />
-        <param name="alpha" type="float" value="1.0" label="alpha" />
-        <param name="beta_H" type="float" value="3.3" label="beta_H" />
         <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
+        <param name="g_star" type="integer" value="20" label="g_star" />
+        <param name="Tmax_yrs" type="float" value="10.0" label="Tmax_yrs" />
+        <param name="Tmin_yrs" type="float" value="2.0" label="Tmin_yrs" />
         <param name="v_w" type="float" value="0.999" label="v_w" />
         <param name="h" type="float" value="0.7" label="h" />
       </when>
@@ -53,7 +52,7 @@
     <data label="${tool.name} -&gt; GW_spectrum astropy_table" name="out_GW_spectrum_astropy_table" format="auto" from_work_dir="astropy_table_galaxy.output">
       <filter>_data_product['_selector'] == 'GW_spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; GW_limits png" name="out_GW_limits_png" format="auto" from_work_dir="png_galaxy.output">
+    <data label="${tool.name} -&gt; GW_limits B_lambdaB_png" name="out_GW_limits_B_lambdaB_png" format="auto" from_work_dir="B_lambdaB_png_galaxy.output">
       <filter>_data_product['_selector'] == 'GW_limits'</filter>
     </data>
     <data label="${tool.name} -&gt; GW_limits astropy_table" name="out_GW_limits_astropy_table" format="auto" from_work_dir="astropy_table_galaxy.output">
@@ -80,11 +79,10 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="GW_limits" />
-        <param name="T_star" value="0.178" />
-        <param name="g_star" value="20" />
-        <param name="alpha" value="1.0" />
-        <param name="beta_H" value="3.3" />
         <param name="epsilon_turb" value="1" />
+        <param name="g_star" value="20" />
+        <param name="Tmax_yrs" value="10.0" />
+        <param name="Tmin_yrs" value="2.0" />
         <param name="v_w" value="0.999" />
         <param name="h" value="0.7" />
       </conditional>
