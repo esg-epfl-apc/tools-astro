@@ -416,10 +416,10 @@ astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_GW_spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Model_spectrum_png", "png_galaxy.output", png))
 _oda_outs.append(
     (
-        "out_GW_spectrum_astropy_table",
+        "out_Model_spectrum_astropy_table",
         "astropy_table_galaxy.output",
         astropy_table,
     )

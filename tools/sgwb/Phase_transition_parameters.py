@@ -18,7 +18,7 @@ import astropy.units as u
 from astropy.constants import c
 from numpy import exp, log, pi, sqrt
 from oda_api.api import ProgressReporter
-from oda_api.data_products import ODAAstropyTable, PictureProduct
+from oda_api.data_products import PictureProduct
 
 # Parameters of the phase transition
 
@@ -624,72 +624,7 @@ plt.ylim(0.001, 10)
 plt.legend(loc="lower left")
 plt.savefig("T_Beta.png", bbox_inches="tight")
 
-fig = plt.figure(figsize=(10, 8))
-fig.tight_layout()
-fig.add_subplot(221)
-mask = amax_b_nano_eps1 > 0
-plt.fill_between(
-    bgrid[mask],
-    amin_b_nano_eps1[mask],
-    amax_b_nano_eps1[mask],
-    alpha=0.3,
-    color="red",
-)
-bpbh = PBH(agrid)
-x = [2, 3]
-y = [1, 1]
-y1 = [2, 2]
-plt.fill_between(x, y, y1, color="white", linewidth=0)
-plt.fill(bpbh, agrid, color="white")
-plt.tick_params(labelbottom=False, bottom=False)
-plt.xlim(0.8, 80)
-plt.ylim(0.2, 80)
-plt.xscale("log")
-plt.yscale("log")
-plt.ylabel(r"$\alpha$")
-
-fig.add_subplot(222)
-mask = amax_b_epta_eps1 > 0
-plt.fill_between(
-    bgrid[mask],
-    amin_b_epta_eps1[mask],
-    amax_b_epta_eps1[mask],
-    alpha=0.3,
-    color="blue",
-)
-plt.xscale("log")
-plt.yscale("log")
-plt.xlim(0.8, 80)
-plt.ylim(0.2, 80)
-plt.tick_params(
-    left=False, right=False, labelleft=False, labelbottom=False, bottom=False
-)
-bpbh = PBH(agrid)
-x = [2, 3]
-y = [1, 1]
-y1 = [2, 2]
-plt.fill_between(x, y, y1, color="white", linewidth=0)
-plt.fill(bpbh, agrid, color="white")
-plt.xlim(0.8, 80)
-plt.ylim(0.2, 80)
-
-fig.add_subplot(223)
-mask = amax_b_ppta_eps1 > 0
-plt.fill_between(
-    bgrid[mask],
-    amin_b_ppta_eps1[mask],
-    amax_b_ppta_eps1[mask],
-    alpha=0.6,
-    color="green",
-)
-plt.xscale("log")
-plt.yscale("log")
-plt.xlabel(r"$\beta/H$")
-plt.ylabel(r"$\alpha$")
-plt.xlim(0.8, 80)
-plt.ylim(0.2, 80)
-
-fig.add_subplot(224)
+fig = plt.figure()
 mask = amax_b_nano_eps1 > 0
 plt.fill_between(
     bgrid[mask],
@@ -728,64 +663,11 @@ plt.yscale("log")
 plt.xlim(0.8, 80)
 plt.ylim(0.2, 80)
 plt.xlabel(r"$\beta/H$")
-plt.tick_params(left=False, right=False, labelleft=False)
+plt.ylabel(r"$\alpha$")
 plt.legend(loc="upper left")
 plt.savefig("Alpha_Beta.png", bbox_inches="tight")
 
-fig = plt.figure(figsize=(10, 8))
-fig.tight_layout()
-fig.add_subplot(221)
-mask = amax_T_nano_eps1 > 0
-plt.fill_between(
-    Tgrid[mask],
-    amin_T_nano_eps1[mask],
-    amax_T_nano_eps1[mask],
-    alpha=0.3,
-    color="red",
-)
-plt.tick_params(labelbottom=False, bottom=False)
-plt.xlim(0.001, 10)
-plt.ylim(0.2, 80)
-plt.xscale("log")
-plt.yscale("log")
-plt.ylabel(r"$\alpha$")
-
-fig.add_subplot(222)
-mask = amax_T_epta_eps1 > 0
-plt.fill_between(
-    Tgrid[mask],
-    amin_T_epta_eps1[mask],
-    amax_T_epta_eps1[mask],
-    alpha=0.3,
-    color="blue",
-    linewidth=0,
-)
-plt.xscale("log")
-plt.yscale("log")
-plt.tick_params(
-    left=False, right=False, labelleft=False, labelbottom=False, bottom=False
-)
-plt.xlim(0.001, 10)
-plt.ylim(0.2, 80)
-
-fig.add_subplot(223)
-mask = amax_T_ppta_eps1 > 0
-plt.fill_between(
-    Tgrid[mask],
-    amin_T_ppta_eps1[mask],
-    amax_T_ppta_eps1[mask],
-    alpha=0.6,
-    color="green",
-    linewidth=0,
-)
-plt.xscale("log")
-plt.yscale("log")
-plt.xlabel(r"$T$ [GeV]")
-plt.ylabel(r"$\alpha$")
-plt.xlim(0.001, 10)
-plt.ylim(0.2, 80)
-
-fig.add_subplot(224)
+fig = plt.figure()
 mask = amax_T_nano_eps1 > 0
 plt.fill_between(
     Tgrid[mask],
@@ -831,36 +713,49 @@ plt.yscale("log")
 plt.xlim(0.001, 10)
 plt.ylim(0.2, 80)
 plt.xlabel(r"$T$ [GeV]")
-plt.tick_params(left=False, right=False, labelleft=False)
+plt.ylabel(r"$\alpha$")
 plt.legend(loc="upper left")
 plt.savefig("Alpha_T.png", bbox_inches="tight")
 
 bin_image1 = PictureProduct.from_file("B_lambdaB.png")
-bin_image2 = PictureProduct.from_file("B_lambdaB.png")
-from astropy.table import Table
-
-data = [ff, GW_s, GW_t]
-names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
-spectrum = ODAAstropyTable(Table(data, names=names))
+bin_image2 = PictureProduct.from_file("T_Beta.png")
+bin_image3 = PictureProduct.from_file("Alpha_Beta.png")
+bin_image4 = PictureProduct.from_file("Alpha_T.png")
 
 B_lambdaB_png = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
-astropy_table = spectrum  # http://odahub.io/ontology#ODAAstropyTable
+T_Beta_png = bin_image2  # http://odahub.io/ontology#ODAPictureProduct
+Alpha_Beta_png = bin_image3  # http://odahub.io/ontology#ODAPictureProduct
+Alpha_T_png = bin_image4  # http://odahub.io/ontology#ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     (
-        "out_GW_limits_B_lambdaB_png",
+        "out_Phase_transition_parameters_B_lambdaB_png",
         "B_lambdaB_png_galaxy.output",
         B_lambdaB_png,
     )
 )
 _oda_outs.append(
     (
-        "out_GW_limits_astropy_table",
-        "astropy_table_galaxy.output",
-        astropy_table,
+        "out_Phase_transition_parameters_T_Beta_png",
+        "T_Beta_png_galaxy.output",
+        T_Beta_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Phase_transition_parameters_Alpha_Beta_png",
+        "Alpha_Beta_png_galaxy.output",
+        Alpha_Beta_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Phase_transition_parameters_Alpha_T_png",
+        "Alpha_T_png_galaxy.output",
+        Alpha_T_png,
     )
 )
 
