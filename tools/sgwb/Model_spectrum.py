@@ -47,7 +47,7 @@ epsilon_turb = 1  # http://odahub.io/ontology#Float
 v_w = 0.999  # http://odahub.io/ontology#Float
 h = 0.7  # http://odahub.io/ontology#Float
 
-Parameterisation = "RoperPol2023"  # http://odahub.io/ontology#String ; oda:allowed_value "Lewicki2022","RoperPol2023"
+# Parameterisation='RoperPol2023' # http://odahub.io/ontology#String ; oda:allowed_value "Lewicki2022","RoperPol2023"
 
 _galaxy_wd = os.getcwd()
 
@@ -323,14 +323,12 @@ GW = GW_s + GW_t
 
 GW1 = GW_Ellis(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb)[0]
 
-if Parameterisation == "Lewicki2022":
-    plt.plot(
-        ff, GW1, color="magenta", alpha=0.5, linewidth=4, label="2208.11697"
-    )
-else:
-    plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
-    plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
-    plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
+# if(Parameterisation=='Lewicki2022'):
+#    plt.plot(ff,GW1,color='magenta',alpha=0.5,linewidth=4,label='2208.11697')
+# else:
+plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
+plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
+plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
 
 fref = (1 / u.yr).cgs.value
 lgfmin = np.log10(fref / 10.0)
@@ -409,12 +407,12 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-if Parameterisation == "Lewicki2022":
-    data = [ff, GW1]
-    names = ("f[Hz]", "Omega_gw")
-else:
-    data = [ff, GW_s, GW_t]
-    names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
+# if(Parameterisation=='Lewicki2022'):
+#    data=[ff,GW1]
+#    names=('f[Hz]','Omega_gw')
+# else:
+data = [ff, GW_s, GW_t]
+names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
 spectrum = ODAAstropyTable(Table(data, names=names))
 
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct

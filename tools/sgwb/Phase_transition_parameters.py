@@ -30,7 +30,7 @@ from oda_api.data_products import PictureProduct
 # Parameters of the phase transition
 
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
-epsilon_turb = 1  # http://odahub.io/ontology#Float
+epsilon_turb = 0.1  # http://odahub.io/ontology#Float
 
 # Numbers of relativistic degrees of freedom
 g_star = 20  # http://odahub.io/ontology#Integer
