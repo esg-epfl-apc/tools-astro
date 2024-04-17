@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+  become_user: root
+  vars:
+    dest_tools_dir: /srv/galaxy/staging_tools
+    dest_tools_conf: /srv/galaxy/server/config/staging_tool_conf.xml
+    pr_num: "{{ lookup('env', 'pr_num') }}"
+
+
+  tasks:
+    - name: Clean reference
+      lineinfile:
+        path: "{{ dest_tools_conf }}"
+        regexp: '^\s*<tool\s+file=".*_pr{{ pr_num }}/'
+        state: absent
+
+    - name: Restart Galaxy
+      command: galaxyctl restart
+      changed_when: true
+
+    - name: Remove tool dir
+      ansible.builtin.file:
+        path: "{{ dest_tools_dir }}/.*_pr{{ pr_num }}"
+        state: absent
+        mode: 0755
