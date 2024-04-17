@@ -26,7 +26,7 @@ jobs:
     steps:
     - uses: actions/setup-python@v4
       with:
-        python-version: "3.7"
+        python-version: "3.8"
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -63,7 +63,7 @@ jobs:
       run: |
         cd deploy-preview
 
-        dir_list=`for tl in $TOOL_LIST ; do echo $tl | awk -F '/' '{print $2}'; done | uniq`
+        dir_list=`for tl in $TOOL_LIST ; do echo $tl | awk -F '/' '{for(i=2;i<=(NF-1);i++) printf("%s%s",$i,i==(NF-1)?" ":FS)}'; done | uniq`
 
         for dr in $dir_list; do
           tools_list=`for tl in $TOOL_LIST; do if [[ "$tl" == *"$dr"*  ]] ; then basename $tl ; fi ; done`
