@@ -44,7 +44,6 @@
         path: "{{ dest_tools_conf }}"
         regexp: '^\s*<tool\s+file="{{ tool_dir }}_pr{{ pr_num }}/'
         state: absent
-      loop: "{{ tools_list }}"
 
     - name: Enable tools
       lineinfile:
