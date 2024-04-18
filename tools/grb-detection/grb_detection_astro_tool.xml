@@ -1,31 +1,24 @@
-<tool id="grb-detection_astro_tool" name="GRB detection" version="0.0.1+galaxy0" profile="23.0">
+<tool id="grb_detection_astro_tool" name="GRB detection" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.20.0">ipython</requirement>
-    <requirement type="package" version="1.26.3">numpy</requirement>
-    <requirement type="package" version="3.8.2">matplotlib</requirement>
-    <requirement type="package" version="5.3.4">astropy</requirement>
-    <requirement type="package" version="2.2.0">pandas</requirement>
-    <requirement type="package" version="5.18.0">plotly</requirement>
-    <requirement type="package" version="1.12.0">scipy</requirement>
-    <requirement type="package" version="1.2.7">oda-api</requirement>
-    <requirement type="package" version="7.14.2">nbconvert</requirement>
-    <requirement type="package" version="1.1">gammapy</requirement>
-    <requirement type="package" version="0.4.6">astroquery</requirement>
-    <requirement type="package" version="1.20.3">wget</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="6.0.1">astropy</requirement>
+    <requirement type="package" version="3.8.4">matplotlib</requirement>
+    <requirement type="package" version="1.2.15">oda-api</requirement>
     <!--Requirements string 'renku-aqs>=1.0.4
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="5.9.2">nbformat</requirement>
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
   </requirements>
-  <command detect_errors="exit_code">ipython '$__tool_directory__/detectgrb.py'</command>
+  <command detect_errors="exit_code">python '$__tool_directory__/detectgrb.py'</command>
   <configfiles>
-    <inputs name="inputs" filename="inputs.json" />
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
   <inputs>
     <param name="T1" type="text" value="2023-01-16T04:53:33.9" label="T1" />
     <param name="T2" type="text" value="2023-01-16T04:55:33.9" label="T2" />
     <param name="detection_time_scales" type="text" value="1,10" label="detection_time_scales" />
     <param name="lc_time_scale" type="float" value="0.1" label="lc_time_scale" />
-    <param name="background_age" type="integer" value="10" label="background_age Units: s" />
+    <param name="background_age" type="integer" value="10" label="background_age (unit: s)" />
     <param name="min_sn" type="integer" value="5" label="min_sn" />
   </inputs>
   <outputs>
