@@ -21,17 +21,21 @@ if os.path.exists("hess_dl3_dr1.tar.gz") == False:
         "wget https://zenodo.org/record/1421099/files/hess_dl3_dr1.tar.gz"
     )
     get_ipython().system("tar -zxvf hess_dl3_dr1.tar.gz")   # noqa: F821
+from oda_api.api import ProgressReporter
+
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=5.0)
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
-T1 = "2003-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2005-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+T1 = "2004-11-20T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2004-12-20T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
 R_s = 0.2  # http://odahub.io/ontology#AngleDegrees
-Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
-Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
-NTbins = 10  # http://odahub.io/ontology#Integer
+Emin = 1  # http://odahub.io/ontology#Energy_TeV
+Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
+NTbins = 30  # http://odahub.io/ontology#Integer
 
 _galaxy_wd = os.getcwd()
 
@@ -105,7 +109,12 @@ flux_err = np.zeros(NTbins)
 flux_b = np.zeros(NTbins)
 flux_b_err = np.zeros(NTbins)
 Expos = np.zeros(NTbins)
+src_cts = np.zeros(NTbins)
+bkg_cts = np.zeros(NTbins)
 for count, f in enumerate(OBSlist):
+    pr.report_progress(
+        stage="Progress", progress=5.0 + 95 * count / len(OBSlist)
+    )
     hdul = fits.open("data/" + f)
     RA_pnt = hdul[1].header["RA_PNT"]
     DEC_pnt = hdul[1].header["DEC_PNT"]
@@ -124,6 +133,7 @@ for count, f in enumerate(OBSlist):
     ev_dec = ev["DEC"]
     ev_en = ev["ENERGY"]
     ev_time = (ev["TIME"] - Trun_start) / 86400.0 + Tbegs[count]
+    Nevents = len(ev)
     print(ev_time[0])
     ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
     sep_s = ev_coords.separation(Coords_s).deg
@@ -138,18 +148,31 @@ for count, f in enumerate(OBSlist):
     Thmin = hdu["THETA_LO"][0]
     Thmax = hdu["THETA_HI"][0]
     ind = np.argmin((Thmin - dist) ** 2)
-    AA = AA[ind] * Texp * 1e4
-    mask = np.where((sep_s < R_s))
-    cts1 = np.histogram2d(ev_time[mask], ev_en[mask], bins=[Tbins, EEbins])[0]
-    mask = sep_b < R_s
-    cts2 = np.histogram2d(ev_time[mask], ev_en[mask], bins=[Tbins, EEbins])[0]
-    src = cts1 - cts2
-    src_err = sqrt(cts1 + cts2)
-    flux += np.sum(src / AA, axis=1)
-    flux_err += np.sum(src_err / AA, axis=1)
-    flux_b += np.sum(cts2 / AA, axis=1)
-    flux_b_err += np.sum(sqrt(cts2) / AA, axis=1)
+    mask = EE < Emin
+    ind_en = len(EE[mask])
+    Expos += np.histogram(
+        ev_time,
+        weights=AA[ind, ind_en] * Texp * 1e4 * np.ones(Nevents) / Nevents,
+        bins=Tbins,
+    )[0]
+    mask = np.where((sep_s < R_s) & (ev_en > Emin) & (ev_en < Emax))
+    src_cts += np.histogram(ev_time[mask], bins=Tbins)[0]
+    mask = np.where((sep_b < R_s) & (ev_en > Emin) & (ev_en < Emax))
+    bkg_cts += np.histogram(ev_time[mask], bins=Tbins)[0]
     hdul.close()
+print(src_cts)
+print(bkg_cts)
+print(Expos)
+src = src_cts - bkg_cts
+src_err = sqrt(src_cts + bkg_cts)
+flux = src / (Expos + 1)
+flux_err = src_err / (Expos + 1)
+flux_b = bkg_cts / (Expos + 1)
+flux_b_err = sqrt(bkg_cts) / (Expos + 1)
+# flux_err+=np.sum(src_err/AA,axis=1)
+# flux_b+=np.sum(cts2/AA,axis=1)
+# flux_b_err+=np.sum(sqrt(cts2)/AA,axis=1)
+print(flux)
 
 if message == "":
     plt.errorbar(
@@ -193,20 +216,14 @@ if message == "":
     )
     lc = ODAAstropyTable(Table(data, names=names))
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-lightcurve_astropy_table = lc  # http://odahub.io/ontology#ODAAstropyTable
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+table = lc  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Lightcurve_picture", "picture_galaxy.output", picture))
-_oda_outs.append(
-    (
-        "out_Lightcurve_lightcurve_astropy_table",
-        "lightcurve_astropy_table_galaxy.output",
-        lightcurve_astropy_table,
-    )
-)
+_oda_outs.append(("out_Lightcurve_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Lightcurve_table", "table_galaxy.output", table))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
