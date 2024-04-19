@@ -90,15 +90,11 @@ print(f"TS = {ts:.3f}")
 print(f'ns = {x["ns"]:.2f}')
 print(f'gamma = {x["gamma"]:.2f}')
 
-chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
-chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=2)
-chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=2)
-chi2_68_quantile, chi2_90_quantile, chi2_95_quantile
-
 if Spectrum_type == "Fixed_slope":
-    chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=1)
-    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=1)
-    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=1)
+    df = 1
+    chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=df)
+    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=df)
+    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=df)
     TS_profile = []
     counts = np.linspace(0, 200, 200)
     for n in counts:
@@ -156,9 +152,10 @@ if Spectrum_type == "Fixed_slope":
     plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 if Spectrum_type == "Free_slope":
-    chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=2)
-    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=1)
-    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=1)
+    df = 2
+    chi2_68_quantile = scipy.stats.chi2.ppf(0.68, df=df)
+    chi2_90_quantile = scipy.stats.chi2.ppf(0.90, df=df)
+    chi2_95_quantile = scipy.stats.chi2.ppf(0.95, df=df)
     TS_map = np.zeros((50, 100))
     counts = np.linspace(0, 200, 100)
     Slopes = np.linspace(1, 5, 50)
@@ -272,13 +269,13 @@ if Spectrum_type == "Free_slope":
         )
         plt.plot(x, ybest, color="black")
     plt.plot(
-        x, ymax_90, color="black", linewidth=4, label=src_name + " 90% UL"
+        x, ymax_90, color="black", linewidth=2, label=src_name + " 90% UL"
     )
     plt.annotate(
         "",
         xy=(x[24], ymax_90[24] / 4.0),
         xytext=(x[24], ymax_90[24]),
-        arrowprops=dict(facecolor="black", shrink=0.05),
+        arrowprops=dict(facecolor="black", shrink=0.05, width=2, headwidth=8),
     )
 
     plt.xscale("log")
