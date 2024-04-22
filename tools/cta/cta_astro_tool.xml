@@ -1,4 +1,4 @@
-<tool id="cta_astro_tool" name="CTA" version="0.0.1+galaxy0" profile="23.0">
+<tool id="cta_astro_tool" name="CTA" version="0.0.2+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="2.31.0">requests</requirement>
@@ -111,7 +111,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/b3f69b091ce942c05ad035220501ea078d54de26/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/900efbb6e6a32125a5dbc09b8a110716817c5f4f/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />
