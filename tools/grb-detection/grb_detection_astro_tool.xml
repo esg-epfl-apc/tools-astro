@@ -9,32 +9,103 @@
     <requirement type="package" version="7.16.3">nbconvert</requirement>
     <requirement type="package" version="5.10.4">nbformat</requirement>
   </requirements>
-  <command detect_errors="exit_code">python '$__tool_directory__/detectgrb.py'</command>
+  <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
   <inputs>
-    <param name="T1" type="text" value="2023-01-16T04:53:33.9" label="T1" />
-    <param name="T2" type="text" value="2023-01-16T04:55:33.9" label="T2" />
-    <param name="detection_time_scales" type="text" value="1,10" label="detection_time_scales" />
-    <param name="lc_time_scale" type="float" value="0.1" label="lc_time_scale" />
-    <param name="background_age" type="integer" value="10" label="background_age (unit: s)" />
-    <param name="min_sn" type="integer" value="5" label="min_sn" />
+    <conditional name="_data_product">
+      <param name="_selector" type="select" label="Data Product">
+        <option value="detectgrb" selected="true">detectgrb</option>
+        <option value="integralallsky" selected="false">integralallsky</option>
+      </param>
+      <when value="detectgrb">
+        <param name="T1" type="text" value="2023-01-16T04:53:33.9" label="T1" />
+        <param name="T2" type="text" value="2023-01-16T04:55:33.9" label="T2" />
+        <param name="detection_time_scales" type="text" value="1,10" label="detection_time_scales" />
+        <param name="lc_time_scale" type="float" value="0.1" label="lc_time_scale" />
+        <param name="background_age" type="integer" value="10" label="background_age (unit: s)" />
+        <param name="min_sn" type="integer" value="5" label="min_sn" />
+      </when>
+      <when value="integralallsky">
+        <param name="RA" type="float" value="293.732" label="RA" />
+        <param name="Dec" type="float" value="21.8967222" label="Dec" />
+        <param name="tstart_rel_mseconds" type="float" value="300.0" label="tstart_rel_mseconds" />
+        <param name="tstop_rel_seconds" type="float" value="300.0" label="tstop_rel_seconds" />
+        <param name="t0_utc" type="text" value="2023-06-27T01:53:37.000" label="t0_utc" />
+        <param name="required_completeness" type="float" value="0.3" label="required_completeness" />
+        <param name="mode" type="text" value="scw" label="mode" />
+        <param name="global_snr_threshold" type="float" value="3.0" label="global_snr_threshold" />
+        <param name="negative_excesses" type="integer" value="0" label="negative_excesses" />
+      </when>
+    </conditional>
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; detectgrb lc" name="out_detectgrb_lc" format="auto" from_work_dir="lc_galaxy.output" />
-    <data label="${tool.name} -&gt; detectgrb detection_comment" name="out_detectgrb_detection_comment" format="auto" from_work_dir="detection_comment_galaxy.output" />
-    <data label="${tool.name} -&gt; detectgrb image_output" name="out_detectgrb_image_output" format="auto" from_work_dir="image_output_galaxy.output" />
-    <data label="${tool.name} -&gt; detectgrb image_fits" name="out_detectgrb_image_fits" format="auto" from_work_dir="image_fits_galaxy.output" />
+    <data label="${tool.name} -&gt; detectgrb lc" name="out_detectgrb_lc" format="auto" from_work_dir="lc_galaxy.output">
+      <filter>_data_product['_selector'] == 'detectgrb'</filter>
+    </data>
+    <data label="${tool.name} -&gt; detectgrb detection_comment" name="out_detectgrb_detection_comment" format="auto" from_work_dir="detection_comment_galaxy.output">
+      <filter>_data_product['_selector'] == 'detectgrb'</filter>
+    </data>
+    <data label="${tool.name} -&gt; detectgrb image_output" name="out_detectgrb_image_output" format="auto" from_work_dir="image_output_galaxy.output">
+      <filter>_data_product['_selector'] == 'detectgrb'</filter>
+    </data>
+    <data label="${tool.name} -&gt; detectgrb image_fits" name="out_detectgrb_image_fits" format="auto" from_work_dir="image_fits_galaxy.output">
+      <filter>_data_product['_selector'] == 'detectgrb'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky acs_lc_png" name="out_integralallsky_acs_lc_png" format="auto" from_work_dir="acs_lc_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky acs_rt_lc_png" name="out_integralallsky_acs_rt_lc_png" format="auto" from_work_dir="acs_rt_lc_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky acs_rt_det_lc_png" name="out_integralallsky_acs_rt_det_lc_png" format="auto" from_work_dir="acs_rt_det_lc_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky ibis_veto_lc_png" name="out_integralallsky_ibis_veto_lc_png" format="auto" from_work_dir="ibis_veto_lc_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky excesses_mosaic_png" name="out_integralallsky_excesses_mosaic_png" format="auto" from_work_dir="excesses_mosaic_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky summary" name="out_integralallsky_summary" format="auto" from_work_dir="summary_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky reportable_excesses" name="out_integralallsky_reportable_excesses" format="auto" from_work_dir="reportable_excesses_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
+    <data label="${tool.name} -&gt; integralallsky excvar_summary" name="out_integralallsky_excvar_summary" format="auto" from_work_dir="excvar_summary_galaxy.output">
+      <filter>_data_product['_selector'] == 'integralallsky'</filter>
+    </data>
   </outputs>
   <tests>
     <test expect_num_outputs="4">
-      <param name="T1" value="2023-01-16T04:53:33.9" />
-      <param name="T2" value="2023-01-16T04:55:33.9" />
-      <param name="detection_time_scales" value="1,10" />
-      <param name="lc_time_scale" value="0.1" />
-      <param name="background_age" value="10" />
-      <param name="min_sn" value="5" />
+      <conditional name="_data_product">
+        <param name="_selector" value="detectgrb" />
+        <param name="T1" value="2023-01-16T04:53:33.9" />
+        <param name="T2" value="2023-01-16T04:55:33.9" />
+        <param name="detection_time_scales" value="1,10" />
+        <param name="lc_time_scale" value="0.1" />
+        <param name="background_age" value="10" />
+        <param name="min_sn" value="5" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="8">
+      <conditional name="_data_product">
+        <param name="_selector" value="integralallsky" />
+        <param name="RA" value="293.732" />
+        <param name="Dec" value="21.8967222" />
+        <param name="tstart_rel_mseconds" value="300.0" />
+        <param name="tstop_rel_seconds" value="300.0" />
+        <param name="t0_utc" value="2023-06-27T01:53:37.000" />
+        <param name="required_completeness" value="0.3" />
+        <param name="mode" value="scw" />
+        <param name="global_snr_threshold" value="3.0" />
+        <param name="negative_excesses" value="0" />
+      </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
