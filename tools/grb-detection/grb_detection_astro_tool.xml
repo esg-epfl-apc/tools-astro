@@ -4,10 +4,10 @@
     <requirement type="package" version="6.0.1">astropy</requirement>
     <requirement type="package" version="3.8.4">matplotlib</requirement>
     <requirement type="package" version="1.2.15">oda-api</requirement>
-    <!--Requirements string 'renku-aqs>=1.0.4
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="7.16.3">nbconvert</requirement>
     <requirement type="package" version="5.10.4">nbformat</requirement>
+    <!--Requirements string 'renku-aqs>=1.0.4
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
