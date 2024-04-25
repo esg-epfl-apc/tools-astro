@@ -14,8 +14,12 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from numpy import cos, pi
+from oda_api.api import ProgressReporter
 from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
+
+pr = ProgressReporter()
+pr.report_progress(stage="Progress", progress=5.0)
 
 if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     get_ipython().system(   # noqa: F821
@@ -28,12 +32,12 @@ RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 2.5  # http://odahub.io/ontology#AngleDegrees
+Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
 pixsize = (
-    0.1  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
+    0.05  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
 )
-Emin = 100.0  # http://odahub.io/ontology#Energy_GeV
-Emax = 10000.0  # http://odahub.io/ontology#Energy_GeV
+Emin = 1  # http://odahub.io/ontology#Energy_TeV
+Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
 
 _galaxy_wd = os.getcwd()
 
@@ -95,9 +99,14 @@ if len(OBSlist) == 0:
 message
 
 cdec = cos(DEC * pi / 180.0)
-Npix = int(4 * Radius / pixsize) + 1
-RA_bins = np.linspace(RA - Radius / cdec, RA + Radius / cdec, Npix + 1)
-DEC_bins = np.linspace(DEC - Radius, DEC + Radius, Npix + 1)
+Npix = int(2 * Radius / pixsize) + 1
+RA_bins = np.linspace(
+    RA - Npix * pixsize / cdec / 2, RA + Npix * pixsize / cdec / 2, Npix + 1
+)
+DEC_bins = np.linspace(
+    DEC - Npix * pixsize / 2, DEC + Npix * pixsize / 2, Npix + 1
+)
+
 image = np.zeros((Npix, Npix))
 for f in OBSlist:
     hdul = fits.open("data/" + f)
@@ -106,62 +115,76 @@ for f in OBSlist:
     ev_dec = ev["DEC"]
     ev_en = ev["ENERGY"]
     ev_time = ev["TIME"]
-    h = np.histogram2d(ev_ra, ev_dec, bins=[RA_bins, DEC_bins])
+    mask = (ev_en > Emin) & (ev_en < Emax)
+    h = np.histogram2d(ev_ra[mask], ev_dec[mask], bins=[RA_bins, DEC_bins])
     image += h[0]
     hdul.close()
 
+image = np.transpose(image)
+
 plt.imshow(
-    np.flip(image, axis=1),
-    extent=(RA_bins[-1], RA_bins[0], DEC_bins[0], DEC_bins[-1]),
+    image,
+    extent=(RA_bins[0], RA_bins[-1], DEC_bins[0], DEC_bins[-1]),
     origin="lower",
 )
 plt.colorbar()
 
+plt.xlim(*plt.xlim()[::-1])
+
 plt.xlabel("RA, degrees")
 plt.ylabel("DEC,degrees")
-plt.savefig("Image.png", format="png")
 
 # Create a new WCS object.  The number of axes must be set
 # from the start
 w = wcs.WCS(naxis=2)
 
-# Set up an "Airy's zenithal" projection
-# Vector properties may be set with Python lists, or Numpy arrays
-w.wcs.crpix = [Npix / 2.0, Npix / 2.0]
-w.wcs.cdelt = np.array([pixsize / cdec, pixsize])
-w.wcs.crval = [RA, DEC]
-w.wcs.ctype = ["RA---AIR", "DEC--AIR"]
-w.wcs.set_pv([(2, 1, 45.0)])
+w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
+# we need a Plate carrée (CAR) projection since histogram is binned by ra-dec
+# the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
+# also, we will follow convention of RA increasing from right to left (CDELT1<0, need to flip an input image)
+# otherwise, aladin-lite doesn't show it
+w.wcs.crval = [RA, 0]
+w.wcs.crpix = [Npix / 2.0 + 0.5, 0.5 - DEC_bins[0] / pixsize]
+w.wcs.cdelt = np.array([-pixsize / cdec, pixsize])
 
-# Now, write out the WCS object as a FITS header
 header = w.to_header()
 
-# header is an astropy.io.fits.Header object.  We can use it to create a new
-# PrimaryHDU and write it to a file.
-hdu = fits.PrimaryHDU(image, header=header)
+hdu = fits.PrimaryHDU(np.flip(image, axis=1), header=header)
 hdu.writeto("Image.fits", overwrite=True)
 hdu = fits.open("Image.fits")
 im = hdu[0].data
-from astropy.wcs import WCS
-
-wcs = WCS(hdu[0].header)
-plt.subplot(projection=wcs)
+wcs1 = wcs.WCS(hdu[0].header)
+ax = plt.subplot(projection=wcs1)
 plt.imshow(im, origin="lower")
+plt.colorbar(label="Counts per pixel")
+plt.scatter(
+    [RA], [DEC], marker="x", color="white", transform=ax.get_transform("world")
+)
+plt.text(
+    RA,
+    DEC + 0.5 * pixsize,
+    src_name,
+    color="white",
+    transform=ax.get_transform("world"),
+)
+
 plt.grid(color="white", ls="solid")
 plt.xlabel("RA")
 plt.ylabel("Dec")
+pr.report_progress(stage="Progress", progress=100.0)
+plt.savefig("Image.png", format="png")
 
 bin_image = PictureProduct.from_file("Image.png")
 fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-image = fits_image  # http://odahub.io/ontology#Image
+png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+fits = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Image_picture", "picture_galaxy.output", picture))
-_oda_outs.append(("out_Image_image", "image_galaxy.output", image))
+_oda_outs.append(("out_Image_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
