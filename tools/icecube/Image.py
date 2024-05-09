@@ -228,6 +228,8 @@ fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
 bin_image = PictureProduct.from_file("Image.png")
 
+get_ipython().system(" rm -rfv {data_dir}")   # noqa: F821
+
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 fits = fits_image  # http://odahub.io/ontology#Image
 

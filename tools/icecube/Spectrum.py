@@ -300,6 +300,8 @@ names = (
 )
 spec_params = ODAAstropyTable(Table(data, names=names))
 
+get_ipython().system(" rm -rfv {data_dir}")   # noqa: F821
+
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 table = spec_params  # http://odahub.io/ontology#ODAAstropyTable
 

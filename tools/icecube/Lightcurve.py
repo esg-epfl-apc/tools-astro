@@ -185,6 +185,8 @@ names = (
 )
 lightcurve = ODAAstropyTable(Table(data, names=names))
 
+get_ipython().system(" rm -rfv {data_dir}")   # noqa: F821
+
 lightcurve_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 lightcurve_table = lightcurve  # http://odahub.io/ontology#ODAAstropyTable
 
