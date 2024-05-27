@@ -12,6 +12,12 @@
 
 
   tasks:
+    - name: Create tool dir
+      ansible.builtin.file:
+        path: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}"
+        state: directory
+        mode: 0755
+
     - name: Sync tool dir
       ansible.posix.synchronize:
         src: "{{ src_tools_dir }}/{{ tool_dir }}/"
@@ -29,8 +35,8 @@
     - name: Make name unique
       replace:
         path: "{{ dest_tools_dir }}/{{ tool_dir }}_pr{{ pr_num }}/{{ item }}"
-        regexp: '<tool(.*)name="([a-z0-9_]+)"'
-        replace: '<tool\1name="\2_pr{{ pr_num }}"'
+        regexp: '<tool(.*)name="([^"]+)"'
+        replace: '<tool\1name="\2 (PR {{ pr_num }})"'
       loop: "{{ tools_list }}"
 
     - name: Clean previous references
@@ -38,7 +44,6 @@
         path: "{{ dest_tools_conf }}"
         regexp: '^\s*<tool\s+file="{{ tool_dir }}_pr{{ pr_num }}/'
         state: absent
-      loop: "{{ tools_list }}"
 
     - name: Enable tools
       lineinfile:
@@ -47,3 +52,7 @@
         insertafter: '<section id="astro_staging"'
         line: '    <tool file="{{ tool_dir }}_pr{{ pr_num }}/{{ item }}" />'
       loop: "{{ tools_list }}"
+
+    - name: Restart Galaxy
+      command: galaxyctl restart
+      changed_when: true
