@@ -1,12 +1,35 @@
 <tool id="grb_detection_astro_tool" name="GRB detection" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="1.26.4">numpy</requirement>
-    <requirement type="package" version="6.0.1">astropy</requirement>
+    <requirement type="package" version="0.4.7">astroquery</requirement>
+    <requirement type="package" version="2.2.2">pandas</requirement>
+    <requirement type="package" version="7.0.0">rdflib</requirement>
+    <requirement type="package" version="4.12.3">beautifulsoup4</requirement>
+    <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
+    <requirement type="package" version="3.3">networkx</requirement>
     <requirement type="package" version="3.8.4">matplotlib</requirement>
-    <requirement type="package" version="1.2.15">oda-api</requirement>
-    <requirement type="package" version="7.16.3">nbconvert</requirement>
-    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="1.13.1">scipy</requirement>
+    <requirement type="package" version="6.1.0">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.2.20">oda-api</requirement>
     <!--Requirements string 'renku-aqs>=1.0.4
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.4">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.3">gcn-kafka</requirement>
+    <requirement type="package" version="0.13.0">xmltodict</requirement>
+    <requirement type="package" version="0.9.0">hop-client</requirement>
+    <!--Requirements string 'integral-client
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <!--Requirements string 'isdc-client
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <!--Requirements string 'astropy_healpix
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <!--Requirements string 'integral-visibility
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="2.0.1">ligo.skymap</requirement>
+    <!--Requirements string 'git+https://github.com/volodymyrss/oda-function.git
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <!--Requirements string 'matrix-client
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
