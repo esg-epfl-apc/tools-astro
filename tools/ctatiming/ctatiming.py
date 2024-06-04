@@ -8,7 +8,7 @@ import os
 import shutil
 
 event_file = "events.fits"  # oda:POSIXPath
-tbin_s = 1000  # oda:Float
+tbin_s = 1000.0  # oda:Float
 
 _galaxy_wd = os.getcwd()
 
