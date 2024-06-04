@@ -8,6 +8,7 @@ import os
 import shutil
 
 from astropy.table import Table
+from oda_api.data_products import ODAAstropyTable
 from oda_api.json import CustomJSONEncoder
 from pipeline_predict_sensitivity import predict_sensitivity
 from pipeline_source_classes import detect_source_classes
@@ -57,11 +58,11 @@ df_cla = detect_source_classes(
 )
 df_in, df_pred = predict_sensitivity(model_file, df_tel, first_type="single")
 
-t_tel = Table.from_pandas(df_tel.map(str))
-t_sor = Table.from_pandas(df_sor.map(str))
-t_cla = Table.from_pandas(df_cla.map(str))
-t_in = Table.from_pandas(df_in.map(str))
-t_pred = Table.from_pandas(df_pred.map(str))
+t_tel = ODAAstropyTable(Table.from_pandas(df_tel.map(str)))
+t_sor = ODAAstropyTable(Table.from_pandas(df_sor.map(str)))
+t_cla = ODAAstropyTable(Table.from_pandas(df_cla.map(str)))
+t_in = ODAAstropyTable(Table.from_pandas(df_in.map(str)))
+t_pred = ODAAstropyTable(Table.from_pandas(df_pred.map(str)))
 
 telescope_astropy_table = t_tel  # http://odahub.io/ontology#ODAAstropyTable
 source_astropy_table = t_sor  # http://odahub.io/ontology#ODAAstropyTable

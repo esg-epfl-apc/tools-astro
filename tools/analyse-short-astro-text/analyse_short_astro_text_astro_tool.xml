@@ -3,13 +3,23 @@
     <requirement type="package" version="0.4.7">astroquery</requirement>
     <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="7.0.0">rdflib</requirement>
-    <!--Requirements string 'user_agent
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="4.12.3">beautifulsoup4</requirement>
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
     <requirement type="package" version="3.3">networkx</requirement>
     <requirement type="package" version="3.8.4">matplotlib</requirement>
     <requirement type="package" version="1.13.1">scipy</requirement>
+    <requirement type="package" version="6.1.0">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.2.20">oda-api</requirement>
+    <requirement type="package" version="7.16.4">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.3">gcn-kafka</requirement>
+    <requirement type="package" version="0.13.0">xmltodict</requirement>
+    <requirement type="package" version="0.9.0">hop-client</requirement>
+    <requirement type="package" version="2.0.1">ligo.skymap</requirement>
+    <requirement type="package" version="8.25.0">ipython</requirement>
+    <!--Requirements string 'user_agent
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'oda_api
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'nb2workflow
