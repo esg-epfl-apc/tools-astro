@@ -20,9 +20,9 @@ get_ipython().system("git lfs install ; git lfs pull")   # noqa: F821
 
 get_ipython().run_cell_magic("bash", "", "./install.sh\n")   # noqa: F821
 
-Gamma = 2.4  # http://odahub.io/ontology#Float
+Gamma = 2.6  # http://odahub.io/ontology#Float
 Emax = 1e15  # http://odahub.io/ontology#Float
-Ecut = 1e14  # http://odahub.io/ontology#Float
+Ecut = 1e15  # http://odahub.io/ontology#Float
 B = 1e4  # http://odahub.io/ontology#Float
 source_size_cm = 3.0856e13  # http://odahub.io/ontology#Float
 background_norm_mode = "density_cm3"  # http://odahub.io/ontology#String ; oda:allowed_value "absolute","density_cm3","energy_density_eV_cm3"
@@ -147,11 +147,56 @@ gam = d[:, 1]
 nu = d[:, 2]
 elec = d[:, 3]
 prot = d[:, 4]
-plt.plot(E, gam)
-plt.plot(E, nu)
+
+factor = 4
+plt.plot(E / 1e9, gam * factor)
+plt.plot(E / 1e9, elec * factor)
+plt.plot(E / 1e9, nu * factor)
+
+d = np.genfromtxt("NGC_1068_contour.csv")
+gam = d[:, 0]
+f = d[:, 1]
+x_nu = np.logspace(3, 5, 10)
+ymax = np.zeros(len(x_nu))
+ymin = np.ones(len(x_nu))
+for i in range(len(gam)):
+    y = 3 * f[i] * 1e-11 * (x_nu / 1e3) ** (2 - gam[i])
+    ymax = np.maximum(y, ymax)
+    ymin = np.minimum(y, ymin)
+# plt.fill_between(x_nu,ymin,ymax,color='blue',alpha=0.5)
+
+d = np.genfromtxt("SED_1068.csv")
+nu = d[:, 0]
+nufnu = d[:, 1]
+en = 2 * pi * 6.6e-16 * nu / 1e9
+efe = nufnu * 1e-23 / 1.6
+# plt.scatter(en,efe)
+
+d = np.genfromtxt("Fermi_1068.csv")
+ee = d[:, 0]
+ff = d[:, 1]
+ff_max = d[:, 2]
+ff_min = d[:, 3]
+# plt.errorbar(ee,ff,yerr=[ff-ff_min,ff_max-ff])
+
+A = 7e43 / 1.6e-12 / 1e6 / log(10 / 2.0)  # 1/eV/s
+FX0 = A * 1e6 / 1e12 / 4 / pi / (16.3 * 3e24) ** 2
+print(FX0)
+x = [1e-6, 1e-4]
+y = [FX0, FX0]
+# plt.plot(x,y,color='black',linestyle='dashed')
+A = 4e43 / 1.6e-12 / 1e6 / log(10 / 2.0)  # 1/eV/s
+FX0 = A * 1e6 / 1e12 / 4 / pi / (16.3 * 3e24) ** 2
+A = 14e43 / 1.6e-12 / 1e6 / log(10 / 2.0)  # 1/eV/s
+FX1 = A * 1e6 / 1e12 / 4 / pi / (16.3 * 3e24) ** 2
+x = [1e-6, 1e-4, 1e-4, 1e-6]
+y = [FX1, FX1, FX0, FX0]
+# plt.fill(x,y,alpha=0.3,color='black',linestyle='none')
+
 plt.xscale("log")
-plt.yscale("log")
-plt.ylim(1e-20, 1e-8)
+# plt.yscale('log')
+plt.ylim(1e-14, 1e-8)
+plt.xlim(1e-12, 1e6)
 
 d = np.genfromtxt("NGC_1068_contour.csv")
 gam = d[:, 0]
