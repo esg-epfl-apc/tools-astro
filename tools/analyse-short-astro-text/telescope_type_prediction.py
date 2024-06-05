@@ -64,6 +64,12 @@ t_cla = ODAAstropyTable(Table.from_pandas(df_cla.map(str)))
 t_in = ODAAstropyTable(Table.from_pandas(df_in.map(str)))
 t_pred = ODAAstropyTable(Table.from_pandas(df_pred.map(str)))
 
+print(t_sor)
+print(t_tel)
+print(t_cla)
+print(t_in)
+print(t_pred)
+
 telescope_astropy_table = t_tel  # http://odahub.io/ontology#ODAAstropyTable
 source_astropy_table = t_sor  # http://odahub.io/ontology#ODAAstropyTable
 source_class_astropy_table = t_cla  # http://odahub.io/ontology#ODAAstropyTable
