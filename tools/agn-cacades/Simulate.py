@@ -53,7 +53,7 @@ electron_distance_Mpc = 100 * distance_Mpc  # electrons propagate longer
 min_step_Mpc = distance_Mpc / min_steps
 electron_min_step_Mpc = electron_distance_Mpc / min_steps
 
-fname = "pp_a" + str(Gamma) + "_" + str(f"{Ecut:.2e}") + "_" + str(B)
+# fname='pp_a'+str(Gamma)+'_'+str(f"{Ecut:.2e}")+'_'+str(B)
 fname = "run"
 get_ipython().system(   # noqa: F821
     "cp propagation/pp_a2.4_E1e14.xsw propagation/{fname}.xsw"
@@ -115,7 +115,7 @@ get_ipython().system(   # noqa: F821
 )
 
 get_ipython().system(   # noqa: F821
-    "python propagation/replacePar L_short_distance_test {str(electron_distance_Mpc)} propagation/step3e_template.xsw"
+    "python propagation/replacePar L_short_distance_test {str(electron_distance_Mpc)} propagation/step?e_template.xsw"
 )
 get_ipython().system(   # noqa: F821
     "python propagation/getPar L_short_distance_test propagation/step3e_template.xsw"
@@ -129,7 +129,7 @@ get_ipython().system(   # noqa: F821
 )
 
 get_ipython().system(   # noqa: F821
-    "python propagation/replacePar microStep {str(electron_min_step_Mpc)} propagation/step3e_template.xsw"
+    "python propagation/replacePar microStep {str(electron_min_step_Mpc)} propagation/step?e_template.xsw"
 )
 get_ipython().system(   # noqa: F821
     "python propagation/getPar microStep propagation/step3e_template.xsw"
@@ -139,9 +139,9 @@ get_ipython().run_cell_magic(   # noqa: F821
     "bash", "", "cd propagation\n./run_all.sh run.xsw\n"
 )
 
-get_ipython().system("cat 'propagation/results/run_step4g/fin/tot'")   # noqa: F821
+get_ipython().system("cat propagation/results/run_final/tot")   # noqa: F821
 
-d = np.genfromtxt("propagation/results/run_step4g/fin/tot")
+d = np.genfromtxt("propagation/results/run_final/tot")
 E = d[:, 0]
 gam = d[:, 1]
 nu = d[:, 2]
@@ -238,7 +238,7 @@ x = [1e-6, 1e-4, 1e-4, 1e-6]
 y = [FX1, FX1, FX0, FX0]
 plt.fill(x, y, alpha=0.3, color="black", linestyle="none")
 
-spec_file = "propagation/results/run_step4g/fin/tot"
+spec_file = "propagation/results/run_final/tot"
 d = np.genfromtxt(spec_file)
 E = d[:, 0] * 1e-9
 gam = d[:, 1]  # for original format d[:,3]

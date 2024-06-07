@@ -1,6 +1,6 @@
 <tool id="agn_cacades_astro_tool" name="AGN cacades" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="3.29.4">cmake</requirement>
+    <requirement type="package" version="3.29.5">cmake</requirement>
     <requirement type="package" version="12.3.0">gfortran</requirement>
     <requirement type="package" version="2.7">gsl</requirement>
     <requirement type="package" version="1.7.0">compilers</requirement>
