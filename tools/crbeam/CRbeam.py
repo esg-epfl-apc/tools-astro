@@ -44,6 +44,12 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+get_ipython().run_cell_magic(   # noqa: F821
+    "bash",
+    "",
+    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
+)
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.nddata import StdDevUncertainty
