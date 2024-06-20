@@ -1,4 +1,4 @@
-name: update-archives-list
+name: update-archives-list-pr
 run-name: Updating archives list
 on:
   workflow_dispatch:
@@ -24,6 +24,25 @@ jobs:
           pip install requests
           pip install pyvo
 
+      - name: get current date
+        id: date
+        run: |
+          DATE=$(date +'%Y%m%d')
+          echo "::set-output name=date::$DATE"
+
+      - name: set temp branch name
+        id: branch_name
+        run: |
+          DATE=${{ steps.date.outputs.date }}
+          BRANCH_NAME="archives-update-pr-${DATE}"
+          echo "::set-output name=branch_name::$BRANCH_NAME"
+      
+      - name: create temp PR branch
+        run: | 
+          BRANCH_NAME=${{ steps.date.outputs.branch_name }}
+          git checkout -b $BRANCH_NAME
+          git push origin $BRANCH_NAME
+
       - name: run archives script
         run: python fetch_archives.py
 
@@ -31,6 +50,8 @@ jobs:
         run: ls -la
 
       - name: create pull request
-        run: gh pr create -B main -H archives-tool-githubaction-archives-list-update --title 'Archives list update' --body 'Automated pull request for archives list update'
+        run: |
+          BRANCH_NAME=${{ steps.date.outputs.branch_name }}
+          gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
