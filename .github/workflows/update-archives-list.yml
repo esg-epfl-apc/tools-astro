@@ -23,23 +23,11 @@ jobs:
           pip install astropy
           pip install requests
           pip install pyvo
-
-      - name: get current date
-        id: date
-        run: |
-          DATE=$(date +'%Y%m%d')
-          echo "::set-output name=date::$DATE"
-
-      - name: set temp branch name
-        id: branch_name
-        run: |
-          DATE=${{ steps.date.outputs.date }}
-          BRANCH_NAME="archives-update-pr-${DATE}"
-          echo "::set-output name=branch_name::$BRANCH_NAME"
       
       - name: create temp PR branch
         run: | 
-          BRANCH_NAME=${{ steps.date.outputs.branch_name }}
+          DATE=$(date +'%Y%m%d')
+          BRANCH_NAME="archives-update-pr-${DATE}"
           git checkout -b $BRANCH_NAME
           git push origin $BRANCH_NAME
 
@@ -51,7 +39,8 @@ jobs:
 
       - name: create pull request
         run: |
-          BRANCH_NAME=${{ steps.date.outputs.branch_name }}
+          DATE=$(date +'%Y%m%d')
+          BRANCH_NAME="archives-update-pr-${DATE}"
           gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
