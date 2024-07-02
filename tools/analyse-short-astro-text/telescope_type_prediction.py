@@ -52,9 +52,7 @@ simbad_node_file = f"{data_path}/simbad_otypes_nodes.csv"
 df_tel = rule_based_telescope_detector(
     atel_, atel_text, telescope_ontology, file_dict_uri_int
 )
-df_sor = rule_based_source_detector(
-    atel_, atel_text.lower(), data_path, dict_path
-)
+df_sor = rule_based_source_detector(atel_, atel_text, data_path, dict_path)
 df_cla = detect_source_classes(
     atel_, atel_text.lower(), df_sor, simbad_node_file
 )
