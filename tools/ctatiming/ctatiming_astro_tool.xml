@@ -1,18 +1,10 @@
 <tool id="ctatiming_astro_tool" name="ctatiming" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="2.2.2">pandas</requirement>
-    <requirement type="package" version="1.2.20">oda-api</requirement>
-    <requirement type="package" version="3.9.0">matplotlib</requirement>
-    <requirement type="package" version="2.32.3">requests</requirement>
-    <requirement type="package" version="0.4.7">astroquery</requirement>
-    <requirement type="package" version="7.0.0">rdflib</requirement>
-    <requirement type="package" version="4.12.3">beautifulsoup4</requirement>
-    <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
-    <requirement type="package" version="3.3">networkx</requirement>
-    <requirement type="package" version="1.14.0">scipy</requirement>
     <requirement type="package" version="8.26.0">ipython</requirement>
-    <requirement type="package" version="6.1.1">astropy</requirement>
-    <requirement type="package" version="2.0.0">numpy</requirement>
+    <requirement type="package" version="3.9.1">matplotlib</requirement>
+    <requirement type="package" version="6.1.2">astropy</requirement>
+    <requirement type="package" version="2.0.1">numpy</requirement>
+    <requirement type="package" version="1.2.20">oda-api</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/ctatiming.py'</command>
   <configfiles>
@@ -27,7 +19,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="1">
-      <param name="event_file" location="https://gitlab.renkulab.io/astronomy/mmoda/ctatiming/-/raw/e094b8c647f18640335081cde55fc4cef7a03876/events.fits" />
+      <param name="event_file" location="https://gitlab.renkulab.io/astronomy/mmoda/ctatiming/-/raw/dfaacd7a4e52ed428170c35f0cbe4bf549e9c5ff/events.fits" />
       <param name="tbin_s" value="1000.0" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
