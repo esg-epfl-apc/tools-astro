@@ -3,6 +3,7 @@
     <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="8.26.0">ipython</requirement>
     <requirement type="package" version="1.2.21">oda-api</requirement>
+    <requirement type="package" version="2.0.1">numpy</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/compute_new_column.py'</command>
   <configfiles>
@@ -19,7 +20,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="1">
-      <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/ff6becb55920bec362a8b1357bd5da9d6adb1767/testfile.tsv" />
+      <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/9f26f2e8a3e8deaad044da7290cb2ddb1ed6c416/testfile.tsv" />
       <param name="new_column" value="sum" />
       <param name="expression" value="c1 + c2" />
       <param name="sep" value="comma" />
