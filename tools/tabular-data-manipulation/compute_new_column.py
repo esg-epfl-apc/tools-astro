@@ -48,11 +48,10 @@ df
 
 df.to_csv("outfile.tsv", sep=sep, index=False)
 
-from oda_api.data_products import BinaryProduct
+# from oda_api.data_products import BinaryProduct, PictureProduct
+# bin_data = BinaryProduct.from_file("outfile.tsv")
 
-bin_data = BinaryProduct.from_file("outfile.tsv")
-
-outputfile = bin_data  # http://odahub.io/ontology#ODABinaryProduct
+outputfile = "outfile.tsv"  # http://odahub.io/ontology#ODABinaryProduct
 
 # output gathering
 _galaxy_meta_data = {}
