@@ -20,7 +20,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="1">
-      <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/698dea1f4f47291485512c997f1a6f2ea6a4d865/testfile.tsv" />
+      <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/c36d68fc8799cb7a3f6280fb475b59958b4bd02c/testfile.tsv" />
       <param name="new_column" value="sum" />
       <param name="expression" value="c1 + c2" />
       <param name="sep" value="comma" />

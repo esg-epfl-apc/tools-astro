@@ -7,8 +7,6 @@ import json
 import os
 import shutil
 
-from oda_api.json import CustomJSONEncoder
-
 fn = "testfile.tsv"  # oda:POSIXPath
 new_column = "sum"
 expression = "c1 + c2"
@@ -27,6 +25,7 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+import numpy as np
 import pandas as pd
 
 if sep == "tab":
@@ -51,34 +50,33 @@ df.to_csv("outfile.tsv", sep=sep, index=False)
 # from oda_api.data_products import BinaryProduct, PictureProduct
 # bin_data = BinaryProduct.from_file("outfile.tsv")
 
-outputfile = "outfile.tsv"  # http://odahub.io/ontology#ODABinaryProduct
+outputfile = "outfile.tsv"  # http://odahub.io/ontology#test
 
 # output gathering
 _galaxy_meta_data = {}
-_oda_outs = []
-_oda_outs.append(
+_simple_outs = []
+_simple_outs.append(
     (
         "out_compute_new_column_outputfile",
         "outputfile_galaxy.output",
         outputfile,
     )
 )
+_numpy_available = True
 
-for _outn, _outfn, _outv in _oda_outs:
+for _outn, _outfn, _outv in _simple_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
     if isinstance(_outv, str) and os.path.isfile(_outv):
         shutil.move(_outv, _galaxy_outfile_name)
         _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif getattr(_outv, "write_fits_file", None):
-        _outv.write_fits_file(_galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "fits"}
-    elif getattr(_outv, "write_file", None):
-        _outv.write_file(_galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif _numpy_available and isinstance(_outv, np.ndarray):
+        with open(_galaxy_outfile_name, "wb") as fd:
+            np.savez(fd, _outv)
+        _galaxy_meta_data[_outn] = {"ext": "npz"}
     else:
         with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd, cls=CustomJSONEncoder)
-        _galaxy_meta_data[_outn] = {"ext": "json"}
+            json.dump(_outv, fd)
+        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
