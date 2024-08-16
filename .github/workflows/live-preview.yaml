@@ -7,6 +7,8 @@ on:
       - opened
       - labeled
       - synchronize
+      - unlabeled
+      - closed
     paths-ignore:
       - '.github/**'
       - 'deprecated/**'
@@ -18,7 +20,7 @@ env:
 
 jobs:
   setup:
-    if: contains( github.event.pull_request.labels.*.name, 'test-live')
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') && github.event.action != 'closed'
     name: Determine changed repositories
     runs-on: ubuntu-latest
     outputs:
@@ -26,7 +28,7 @@ jobs:
     steps:
     - uses: actions/setup-python@v4
       with:
-        python-version: "3.7"
+        python-version: "3.8"
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
@@ -63,7 +65,7 @@ jobs:
       run: |
         cd deploy-preview
 
-        dir_list=`for tl in $TOOL_LIST ; do echo $tl | awk -F '/' '{print $2}'; done | uniq`
+        dir_list=`for tl in $TOOL_LIST ; do echo $tl | awk -F '/' '{for(i=2;i<=(NF-1);i++) printf("%s%s",$i,i==(NF-1)?" ":FS)}'; done | uniq`
 
         for dr in $dir_list; do
           tools_list=`for tl in $TOOL_LIST; do if [[ "$tl" == *"$dr"*  ]] ; then basename $tl ; fi ; done`
@@ -73,3 +75,24 @@ jobs:
 
           ansible-playbook deploy.yml
         done
+
+  uninstall:
+    name: Uninstall
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') == false || github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install requirenments
+        run: sudo apt-get install -y ansible
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Uninstall tools
+        env: 
+          pr_num: ${{ github.event.pull_request.number }}
+        run: |
+          cd deploy-preview
+          ansible-playbook remove.yml
