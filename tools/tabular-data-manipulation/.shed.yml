@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: Tabular Data Manipulation
+homepage_url: null
+long_description: Tabular Data Manipulation
+name: tabular_data_manipulation_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
