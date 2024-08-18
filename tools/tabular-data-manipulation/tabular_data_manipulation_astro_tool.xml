@@ -3,6 +3,9 @@
     <requirement type="package" version="8.26.0">ipython</requirement>
     <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="2.0.1">numpy</requirement>
+    <requirement type="package" version="1.2.21">oda-api</requirement>
+    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="6.1.2">astropy</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -54,7 +57,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="histogram_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/e906d84ef5706056558f043fb8386408e64b11e6/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/7797d14f85c270c17408802d7c9088379757c7ae/testfile.tsv" />
         <param name="sep" value="comma" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -80,7 +83,7 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/e906d84ef5706056558f043fb8386408e64b11e6/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/7797d14f85c270c17408802d7c9088379757c7ae/testfile.tsv" />
         <param name="new_column" value="sum" />
         <param name="expression" value="c1 + c2" />
         <param name="sep" value="comma" />
