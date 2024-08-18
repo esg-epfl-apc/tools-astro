@@ -20,7 +20,6 @@ import json
 import os
 
 fn = "testfile.tsv"  # oda:POSIXPath
-new_column = "sum"
 expression = "c1 > 1e3"
 sep = "comma"
 
