@@ -40,7 +40,7 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/640da3ee517144246edbfc31612181f417bb1195/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/52f216d65195d8fa29fd1a08a3ed8d9f30cb4da3/testfile.tsv" />
         <param name="new_column" value="sum" />
         <param name="expression" value="c1 + c2" />
         <param name="sep" value="comma" />
