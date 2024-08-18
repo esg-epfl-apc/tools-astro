@@ -6,7 +6,6 @@
     <requirement type="package" version="1.7.0">compilers</requirement>
     <requirement type="package" version="17.0.0">pyarrow</requirement>
     <requirement type="package" version="6.0">unzip</requirement>
-    <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="8.26.0">ipython</requirement>
     <requirement type="package" version="1.2.21">oda-api</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
@@ -14,7 +13,7 @@
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="7.16.4">nbconvert</requirement>
     <requirement type="package" version="0.13.2">seaborn</requirement>
-    <requirement type="package" version="7.2.7">minio</requirement>
+    <requirement type="package" version="7.2.8">minio</requirement>
     <requirement type="package" version="1.16.0">specutils</requirement>
     <requirement type="package" version="1.11.4">scipy</requirement>
     <requirement type="package" version="1.2">gammapy</requirement>
@@ -31,6 +30,8 @@
         <option value="Generate_events" selected="true">Generate_events</option>
         <option value="CRbeam" selected="false">CRbeam</option>
         <option value="model_CTA_events" selected="false">model_CTA_events</option>
+        <option value="filter_table" selected="false">filter_table</option>
+        <option value="compute_new_column" selected="false">compute_new_column</option>
       </param>
       <when value="Generate_events">
         <param name="src_name" type="text" value="1ES 1215+303" label="src_name" />
@@ -119,6 +120,17 @@
           <option value="Stecker 2016 upper limit">Stecker 2016 upper limit</option>
         </param>
       </when>
+      <when value="filter_table">
+        <param name="fn" type="data" label="fn" format="data" />
+        <param name="expression" type="text" value="c1 &gt; 1e3" label="expression" />
+        <param name="sep" type="text" value="comma" label="sep" />
+      </when>
+      <when value="compute_new_column">
+        <param name="fn" type="data" label="fn" format="data" />
+        <param name="new_column" type="text" value="sum" label="new_column" />
+        <param name="expression" type="text" value="c1 + c2" label="expression" />
+        <param name="sep" type="text" value="comma" label="sep" />
+      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -157,6 +169,12 @@
     </data>
     <data label="${tool.name} -&gt; model_CTA_events events_fits_fits" name="out_model_CTA_events_events_fits_fits" format="auto" from_work_dir="events_fits_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'model_CTA_events'</filter>
+    </data>
+    <data label="${tool.name} -&gt; filter_table outputfile" name="out_filter_table_outputfile" format="auto" from_work_dir="outputfile_galaxy.output">
+      <filter>_data_product['_selector'] == 'filter_table'</filter>
+    </data>
+    <data label="${tool.name} -&gt; compute_new_column outputfile" name="out_compute_new_column_outputfile" format="auto" from_work_dir="outputfile_galaxy.output">
+      <filter>_data_product['_selector'] == 'compute_new_column'</filter>
     </data>
   </outputs>
   <tests>
@@ -227,6 +245,29 @@
         <param name="window_size_DEC" value="1.0" />
         <param name="livetime" value="0.1" />
         <param name="EBL" value="Franceschini 2017" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="_data_product">
+        <param name="_selector" value="filter_table" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/ad562471af29c282a035333eed969320d2e230b2/testfile.tsv" />
+        <param name="expression" value="c1 &gt; 1e3" />
+        <param name="sep" value="comma" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="_data_product">
+        <param name="_selector" value="compute_new_column" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/ad562471af29c282a035333eed969320d2e230b2/testfile.tsv" />
+        <param name="new_column" value="sum" />
+        <param name="expression" value="c1 + c2" />
+        <param name="sep" value="comma" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
