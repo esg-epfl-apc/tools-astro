@@ -28,6 +28,7 @@
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
         <option value="Generate_events" selected="true">Generate_events</option>
+        <option value="histogram_column" selected="false">histogram_column</option>
         <option value="CRbeam" selected="false">CRbeam</option>
         <option value="model_CTA_events" selected="false">model_CTA_events</option>
         <option value="filter_table" selected="false">filter_table</option>
@@ -61,6 +62,21 @@
           <option value="Stecker 2016 lower limit">Stecker 2016 lower limit</option>
           <option value="Stecker 2016 upper limit">Stecker 2016 upper limit</option>
         </param>
+      </when>
+      <when value="histogram_column">
+        <param name="fn" type="data" label="fn" format="data" />
+        <param name="sep" type="text" value="comma" label="sep" />
+        <param name="column" type="text" value="c0" label="column" />
+        <param name="weights" type="text" value="c1" label="weights" />
+        <param name="binning" type="select" label="binning">
+          <option value="linear">linear</option>
+          <option value="logarithmic" selected="true">logarithmic</option>
+        </param>
+        <param name="minval" type="float" value="10000000000.0" label="minval" />
+        <param name="maxval" type="float" value="10000000000000.0" label="maxval" />
+        <param name="nbins" type="integer" value="15" label="nbins" />
+        <param name="xlabel" type="text" value="Energy, eV" label="xlabel" />
+        <param name="ylabel" type="text" value="Ncounts" label="ylabel" />
       </when>
       <when value="CRbeam">
         <param name="src_name" type="text" value="NGC 1365" label="src_name" />
@@ -137,6 +153,12 @@
     <data label="${tool.name} -&gt; Generate_events Event_file" name="out_Generate_events_Event_file" format="auto" from_work_dir="Event_file_galaxy.output">
       <filter>_data_product['_selector'] == 'Generate_events'</filter>
     </data>
+    <data label="${tool.name} -&gt; histogram_column histogram_data" name="out_histogram_column_histogram_data" format="auto" from_work_dir="histogram_data_galaxy.output">
+      <filter>_data_product['_selector'] == 'histogram_column'</filter>
+    </data>
+    <data label="${tool.name} -&gt; histogram_column histogram_picture" name="out_histogram_column_histogram_picture" format="auto" from_work_dir="histogram_picture_galaxy.output">
+      <filter>_data_product['_selector'] == 'histogram_column'</filter>
+    </data>
     <data label="${tool.name} -&gt; CRbeam spectrum_png" name="out_CRbeam_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
       <filter>_data_product['_selector'] == 'CRbeam'</filter>
     </data>
@@ -202,6 +224,24 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="histogram_column" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/a3f7d7622d6762a01fc41bbcdd2cd61786f7ad41/testfile.tsv" />
+        <param name="sep" value="comma" />
+        <param name="column" value="c0" />
+        <param name="weights" value="c1" />
+        <param name="binning" value="logarithmic" />
+        <param name="minval" value="10000000000.0" />
+        <param name="maxval" value="10000000000000.0" />
+        <param name="nbins" value="15" />
+        <param name="xlabel" value="Energy, eV" />
+        <param name="ylabel" value="Ncounts" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
     <test expect_num_outputs="9">
       <conditional name="_data_product">
         <param name="_selector" value="CRbeam" />
@@ -253,7 +293,7 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="filter_table" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/ad562471af29c282a035333eed969320d2e230b2/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/a3f7d7622d6762a01fc41bbcdd2cd61786f7ad41/testfile.tsv" />
         <param name="expression" value="c1 &gt; 1e3" />
         <param name="sep" value="comma" />
       </conditional>
@@ -264,7 +304,7 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/ad562471af29c282a035333eed969320d2e230b2/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/crbeam/-/raw/a3f7d7622d6762a01fc41bbcdd2cd61786f7ad41/testfile.tsv" />
         <param name="new_column" value="sum" />
         <param name="expression" value="c1 + c2" />
         <param name="sep" value="comma" />
