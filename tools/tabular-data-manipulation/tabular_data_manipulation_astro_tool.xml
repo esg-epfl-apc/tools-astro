@@ -4,6 +4,7 @@
     <requirement type="package" version="1.2.21">oda-api</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
     <requirement type="package" version="6.1.2">astropy</requirement>
+    <requirement type="package" version="8.26.0">ipython</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -13,7 +14,6 @@
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
         <option value="histogram_column" selected="true">histogram_column</option>
-        <option value="filter_table" selected="false">filter_table</option>
         <option value="compute_new_column" selected="false">compute_new_column</option>
       </param>
       <when value="histogram_column">
@@ -31,12 +31,11 @@
         <param name="xlabel" type="text" value="Energy, eV" label="xlabel" />
         <param name="ylabel" type="text" value="Ncounts" label="ylabel" />
       </when>
-      <when value="filter_table" />
       <when value="compute_new_column">
         <param name="fn" type="data" label="fn" format="data" />
         <param name="new_column" type="text" value="sum" label="new_column" />
-        <param name="expression" type="text" value="c1 + c2" label="expression" />
-        <param name="sep" type="text" value="tab" label="sep" />
+        <param name="expression" type="text" value="c1 __gt__ c2" label="expression" />
+        <param name="sep" type="text" value="comma" label="sep" />
         <param name="action" type="select" label="action">
           <option value="add" selected="true">add</option>
           <option value="filter">filter</option>
@@ -59,7 +58,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="histogram_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/269fceef0c212358bf507165aec8b1b7e165dfa6/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/f5aaa8e556ad0743033766218cef449b0d94f6bd/testfile.tsv" />
         <param name="sep" value="comma" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -74,21 +73,13 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="0">
-      <conditional name="_data_product">
-        <param name="_selector" value="filter_table" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/269fceef0c212358bf507165aec8b1b7e165dfa6/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/f5aaa8e556ad0743033766218cef449b0d94f6bd/testfile.tsv" />
         <param name="new_column" value="sum" />
-        <param name="expression" value="c1 + c2" />
-        <param name="sep" value="tab" />
+        <param name="expression" value="c1 __gt__ c2" />
+        <param name="sep" value="comma" />
         <param name="action" value="add" />
       </conditional>
       <assert_stdout>

@@ -9,8 +9,9 @@ import shutil
 
 fn = "testfile.tsv"  # oda:POSIXPath
 new_column = "sum"
-expression = "c1 + c2"
-sep = "tab"
+expression = "c1 __gt__ c2"
+# expression = "c1 + c2"
+sep = "comma"
 action = "add"  # oda:allowed_value "add", "filter"
 
 _galaxy_wd = os.getcwd()
@@ -26,6 +27,16 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+for k, v in [
+    ("X", "&"),
+    ("__gt__", ">"),
+    ("__lt__", "<"),
+]:
+    new_expression = expression.replace(k, v)
+    if new_expression != expression:
+        print(f"Replaced {k} with {v}")
+        expression = new_expression
+
 import numpy as np
 import pandas as pd
 
@@ -35,6 +46,7 @@ elif sep == "comma":
     sep = ","
 
 df = pd.read_csv(fn, sep=sep, index_col=False)
+df
 
 def filter_df(row):
     for i, c in enumerate(df.columns):
