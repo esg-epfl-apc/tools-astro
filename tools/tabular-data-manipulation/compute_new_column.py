@@ -10,7 +10,8 @@ import shutil
 fn = "testfile.tsv"  # oda:POSIXPath
 new_column = "sum"
 expression = "c1 + c2"
-sep = "comma"
+sep = "tab"
+action = "add"  # oda:allowed_value "add", "filter"
 
 _galaxy_wd = os.getcwd()
 
@@ -41,7 +42,12 @@ def filter_df(row):
 
     return eval(expression)
 
-df[new_column] = df.apply(filter_df, axis=1)
+v = df.apply(filter_df, axis=1)
+
+if action == "add":
+    df[new_column] = v
+elif action == "filter":
+    df = df[v.astype(bool)]
 
 df
 

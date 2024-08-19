@@ -1,8 +1,6 @@
 <tool id="tabular_data_manipulation_astro_tool" name="Tabular Data Manipulation" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.26.0">ipython</requirement>
     <requirement type="package" version="2.2.2">pandas</requirement>
-    <requirement type="package" version="2.0.1">numpy</requirement>
     <requirement type="package" version="1.2.21">oda-api</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
     <requirement type="package" version="6.1.2">astropy</requirement>
@@ -38,7 +36,11 @@
         <param name="fn" type="data" label="fn" format="data" />
         <param name="new_column" type="text" value="sum" label="new_column" />
         <param name="expression" type="text" value="c1 + c2" label="expression" />
-        <param name="sep" type="text" value="comma" label="sep" />
+        <param name="sep" type="text" value="tab" label="sep" />
+        <param name="action" type="select" label="action">
+          <option value="add" selected="true">add</option>
+          <option value="filter">filter</option>
+        </param>
       </when>
     </conditional>
   </inputs>
@@ -57,7 +59,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="histogram_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/7797d14f85c270c17408802d7c9088379757c7ae/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/269fceef0c212358bf507165aec8b1b7e165dfa6/testfile.tsv" />
         <param name="sep" value="comma" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -83,10 +85,11 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/7797d14f85c270c17408802d7c9088379757c7ae/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/269fceef0c212358bf507165aec8b1b7e165dfa6/testfile.tsv" />
         <param name="new_column" value="sum" />
         <param name="expression" value="c1 + c2" />
-        <param name="sep" value="comma" />
+        <param name="sep" value="tab" />
+        <param name="action" value="add" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
