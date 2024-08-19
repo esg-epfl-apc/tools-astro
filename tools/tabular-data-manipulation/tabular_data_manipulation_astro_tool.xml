@@ -18,7 +18,11 @@
       </param>
       <when value="histogram_column">
         <param name="fn" type="data" label="fn" format="data" />
-        <param name="sep" type="text" value="comma" label="sep" />
+        <param name="sep" type="select" label="sep">
+          <option value="auto" selected="true">auto</option>
+          <option value="comma">comma</option>
+          <option value="tab">tab</option>
+        </param>
         <param name="column" type="text" value="c0" label="column" />
         <param name="weights" type="text" value="c1" label="weights" />
         <param name="binning" type="select" label="binning">
@@ -35,7 +39,11 @@
         <param name="fn" type="data" label="fn" format="data" />
         <param name="new_column" type="text" value="sum" label="new_column" />
         <param name="expression" type="text" value="c1 __gt__ c2" label="expression" />
-        <param name="sep" type="text" value="comma" label="sep" />
+        <param name="sep" type="select" label="sep">
+          <option value="auto" selected="true">auto</option>
+          <option value="comma">comma</option>
+          <option value="tab">tab</option>
+        </param>
         <param name="action" type="select" label="action">
           <option value="add" selected="true">add</option>
           <option value="filter">filter</option>
@@ -58,8 +66,8 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="histogram_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/f5aaa8e556ad0743033766218cef449b0d94f6bd/testfile.tsv" />
-        <param name="sep" value="comma" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/e8cbb0e5e83a55ef20242de846c06f9af0ff42b5/testfile.tsv" />
+        <param name="sep" value="auto" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
         <param name="binning" value="logarithmic" />
@@ -76,10 +84,10 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="compute_new_column" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/f5aaa8e556ad0743033766218cef449b0d94f6bd/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/tabular-data-manipulation/-/raw/e8cbb0e5e83a55ef20242de846c06f9af0ff42b5/testfile.tsv" />
         <param name="new_column" value="sum" />
         <param name="expression" value="c1 __gt__ c2" />
-        <param name="sep" value="comma" />
+        <param name="sep" value="auto" />
         <param name="action" value="add" />
       </conditional>
       <assert_stdout>

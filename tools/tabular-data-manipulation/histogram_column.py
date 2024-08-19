@@ -10,7 +10,7 @@ import shutil
 from oda_api.json import CustomJSONEncoder
 
 fn = "testfile.tsv"  # oda:POSIXPath
-sep = "comma"
+sep = "auto"  # oda:allowed_value "auto", "comma", "tab"
 column = "c0"
 weights = "c1"
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
@@ -40,6 +40,20 @@ if sep == "tab":
     sep = "\t"
 elif sep == "comma":
     sep = ","
+elif sep == "auto":
+    for s in [",", "\t"]:
+        try:
+            df = pd.read_csv(fn, sep=s, index_col=False)
+            if len(df.columns) > 2:
+                sep = s
+                print("Detected separator: ", sep)
+                break
+        except Exception as e:
+            print("Separator ", s, " failed", e)
+    pd.read_csv(fn, sep=sep, index_col=False)
+
+    if sep == "auto":
+        raise Exception("Separator not detected")
 
 df = pd.read_csv(fn, sep=sep, index_col=False)
 

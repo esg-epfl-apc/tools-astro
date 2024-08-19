@@ -11,7 +11,7 @@ fn = "testfile.tsv"  # oda:POSIXPath
 new_column = "sum"
 expression = "c1 __gt__ c2"
 # expression = "c1 + c2"
-sep = "comma"
+sep = "auto"  # oda:allowed_value "auto", "comma", "tab"
 action = "add"  # oda:allowed_value "add", "filter"
 
 _galaxy_wd = os.getcwd()
@@ -27,6 +27,7 @@ for vn, vv in inp_pdic.items():
     if vn != "_selector":
         globals()[vn] = type(globals()[vn])(vv)
 
+# this is a patch due to some anomaly in the ODA bot
 for k, v in [
     ("X", "&"),
     ("__gt__", ">"),
@@ -44,9 +45,22 @@ if sep == "tab":
     sep = "\t"
 elif sep == "comma":
     sep = ","
+elif sep == "auto":
+    for s in [",", "\t"]:
+        try:
+            df = pd.read_csv(fn, sep=s, index_col=False)
+            if len(df.columns) > 2:
+                sep = s
+                print("Detected separator: ", sep)
+                break
+        except Exception as e:
+            print("Separator ", s, " failed", e)
+    pd.read_csv(fn, sep=sep, index_col=False)
+
+    if sep == "auto":
+        raise Exception("Separator not detected")
 
 df = pd.read_csv(fn, sep=sep, index_col=False)
-df
 
 def filter_df(row):
     for i, c in enumerate(df.columns):
@@ -63,7 +77,7 @@ elif action == "filter":
 
 df
 
-df.to_csv("outfile.tsv", sep=sep, index=False)
+df.to_csv("outfile.tsv", sep="\t", index=False)
 
 # from oda_api.data_products import BinaryProduct, PictureProduct
 # bin_data = BinaryProduct.from_file("outfile.tsv")
