@@ -9,7 +9,8 @@ import shutil
 
 fn = "testfile.tsv"  # oda:POSIXPath
 new_column = "sum"
-expression = "c1 __gt__ c2"
+expression = "c1 __gt__ (c2 + v0 - v1)"
+variables = "1 2"
 # expression = "c1 + c2"
 sep = "auto"  # oda:allowed_value "auto", "comma", "tab"
 action = "add"  # oda:allowed_value "add", "filter"
@@ -61,6 +62,9 @@ elif sep == "auto":
         raise Exception("Separator not detected")
 
 df = pd.read_csv(fn, sep=sep, index_col=False)
+
+for i, v in enumerate(variables.split()):
+    globals()[f"v{i}"] = float(v)
 
 def filter_df(row):
     for i, c in enumerate(df.columns):
