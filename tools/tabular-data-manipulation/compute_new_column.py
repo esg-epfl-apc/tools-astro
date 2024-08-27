@@ -40,6 +40,11 @@ for k, v in [
         print(f"Replaced {k} with {v}")
         expression = new_expression
 
+    new_variables = variables.replace(k, v)
+    if new_variables != variables:
+        print(f"Replaced {k} with {v}")
+        variables = new_variables
+
 import numpy as np
 import pandas as pd
 
