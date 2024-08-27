@@ -33,6 +33,7 @@ for k, v in [
     ("X", "&"),
     ("__gt__", ">"),
     ("__lt__", "<"),
+    ("__tc__", " "),
 ]:
     new_expression = expression.replace(k, v)
     if new_expression != expression:
