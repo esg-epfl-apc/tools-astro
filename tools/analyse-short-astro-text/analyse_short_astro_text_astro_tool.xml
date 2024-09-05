@@ -1,6 +1,6 @@
 <tool id="analyse_short_astro_text_astro_tool" name="analyse-short-astro-text" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.26.0">ipython</requirement>
+    <requirement type="package" version="8.27.0">ipython</requirement>
     <requirement type="package" version="0.4.7">astroquery</requirement>
     <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="7.0.0">rdflib</requirement>
@@ -9,8 +9,8 @@
     <requirement type="package" version="4.12.3">beautifulsoup4</requirement>
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
     <requirement type="package" version="3.3">networkx</requirement>
-    <requirement type="package" version="3.9.1">matplotlib</requirement>
-    <requirement type="package" version="1.14.0">scipy</requirement>
+    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="1.14.1">scipy</requirement>
     <!--Requirements string 'oda_api
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'nb2workflow
