@@ -4,19 +4,23 @@
     <requirement type="package" version="0.4.7">astroquery</requirement>
     <requirement type="package" version="2.2.2">pandas</requirement>
     <requirement type="package" version="7.0.0">rdflib</requirement>
-    <!--Requirements string 'user_agent
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="4.12.3">beautifulsoup4</requirement>
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
     <requirement type="package" version="3.3">networkx</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
     <requirement type="package" version="1.14.1">scipy</requirement>
+    <!--Requirements string 'user_agent
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'oda_api
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'nb2workflow
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'oda-knowledge-base[rdf,cwl,notebook]
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <!--Requirements string 'torch
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="0.33.0">accelerate</requirement>
+    <requirement type="package" version="4.43.2">transformers</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/telescope_type_prediction.py'</command>
   <configfiles>
@@ -30,12 +34,13 @@
     <data label="${tool.name} -&gt; telescope_type_prediction table_telescopes" name="out_telescope_type_prediction_table_telescopes" format="auto" from_work_dir="table_telescopes_galaxy.output" />
     <data label="${tool.name} -&gt; telescope_type_prediction table_sources" name="out_telescope_type_prediction_table_sources" format="auto" from_work_dir="table_sources_galaxy.output" />
     <data label="${tool.name} -&gt; telescope_type_prediction table_source_classes" name="out_telescope_type_prediction_table_source_classes" format="auto" from_work_dir="table_source_classes_galaxy.output" />
+    <data label="${tool.name} -&gt; telescope_type_prediction table_astrobert_results" name="out_telescope_type_prediction_table_astrobert_results" format="auto" from_work_dir="table_astrobert_results_galaxy.output" />
     <data label="${tool.name} -&gt; telescope_type_prediction table_atel_sensitivity" name="out_telescope_type_prediction_table_atel_sensitivity" format="auto" from_work_dir="table_atel_sensitivity_galaxy.output" />
     <data label="${tool.name} -&gt; telescope_type_prediction table_predicted_sensitivity" name="out_telescope_type_prediction_table_predicted_sensitivity" format="auto" from_work_dir="table_predicted_sensitivity_galaxy.output" />
     <data label="${tool.name} -&gt; telescope_type_prediction table_suggested_workflows" name="out_telescope_type_prediction_table_suggested_workflows" format="auto" from_work_dir="table_suggested_workflows_galaxy.output" />
   </outputs>
   <tests>
-    <test expect_num_outputs="6">
+    <test expect_num_outputs="7">
       <param name="text" value="We received an alert about a candidate fast transient from the FINK broker (Peloton, Ishida &amp; Moller et al.) on 2024-06-22 09:58:42.001 UTC, named ZTF24aasjjkf (https://fink-portal.org/ZTF24aasjjkf). This transient was classified by FINK on the same day with a 17 percent probability of being a fast transient. We triggered the TAROT-TCA and TRT-SRO telescopes for further investigation, observing in the R, r', and i' bands, and collecting data from 2024-06-23 around 04:55:14 UTC to 2024-06-24 01:00:00 UTC. Our results, along with public ZTF data, can be found here: https://skyportal-icare.ijclab.in2p3.fr/public/sources/ZTF24aasjjkf/version/07cf393bb53513abe80d3b7863938d8f TAROT-TCA telescope observations can be also labeled as generic in the plot. We utilized STDWeb (Karpov et al.) to perform our photometry, using the Pan-STARRS DR1 (PS1) catalog and subtracting the constant flux of background with a reference PS1 image. We note that in the TAROT-TCA data, we have slight contamination from other stars. However, we mitigated this effect by subtracting the PS1 reference image. According to the ZTF data in the r' band, both before and after our observations, as well as ATLAS data (in the orange band) and the Gaia Alert (2024LXA), the source might be 10 days old or more. Its multi-band light curve is not consistent with a fast transient like a kilonova (a decay rate of 0.15 per day in r-band) but resembles a supernova (also classified by FINK on 2024-06-24 at 08:00 UTC). The source has been independently classified by Jianlin Xu et al. as a CV. We thank the FINK team for their valuable collaboration with GRANDMA. GRANDMA is a worldwide telescope network (https://grandma.lal.in2p3.fr/) devoted to the observation of transients in the context of multi-messenger astrophysics (Antier et al. 2020 MNRAS 497, 5518). Kilonova-Catcher (KNC) is the citizen science program of GRANDMA (http://kilonovacatcher.in2p3.fr/)." />
       <param name="number" value="ATel #16672" />
       <assert_stdout>

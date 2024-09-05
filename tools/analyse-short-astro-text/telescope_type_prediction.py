@@ -10,6 +10,7 @@ import shutil
 from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
 from oda_api.json import CustomJSONEncoder
+from pipeline_astrobert import get_astroBERT_cleaned_result
 from pipeline_predict_sensitivity import predict_sensitivity
 from pipeline_provide_workflows import provide_workflows
 from pipeline_source_classes import detect_source_classes
@@ -56,12 +57,15 @@ df_sor = rule_based_source_detector(atel_, atel_text, data_path, dict_path)
 df_cla = detect_source_classes(
     atel_, atel_text.lower(), df_sor, simbad_node_file
 )
+df_astrobert = get_astroBERT_cleaned_result(atel_, atel_text)
+
 df_in, df_pred = predict_sensitivity(model_file, df_tel, first_type="single")
 df_workflows = provide_workflows(df_in, df_pred, df_sor, file_dict_sens_inst)
 
 t_tel = ODAAstropyTable(Table.from_pandas(df_tel.map(str)))
 t_sor = ODAAstropyTable(Table.from_pandas(df_sor.map(str)))
 t_cla = ODAAstropyTable(Table.from_pandas(df_cla.map(str)))
+t_astrobert = ODAAstropyTable(Table.from_pandas(df_astrobert.map(str)))
 t_in = ODAAstropyTable(Table.from_pandas(df_in.map(str)))
 t_pred = ODAAstropyTable(Table.from_pandas(df_pred.map(str)))
 t_workflows = ODAAstropyTable(Table.from_pandas(df_workflows.map(str)))
@@ -76,6 +80,9 @@ print(t_workflows)
 table_telescopes = t_tel  # http://odahub.io/ontology#ODAAstropyTable
 table_sources = t_sor  # http://odahub.io/ontology#ODAAstropyTable
 table_source_classes = t_cla  # http://odahub.io/ontology#ODAAstropyTable
+table_astrobert_results = (
+    t_astrobert  # http://odahub.io/ontology#ODAAstropyTable
+)
 table_atel_sensitivity = t_in  # http://odahub.io/ontology#ODAAstropyTable
 table_predicted_sensitivity = (
     t_pred  # http://odahub.io/ontology#ODAAstropyTable
@@ -106,6 +113,13 @@ _oda_outs.append(
         "out_telescope_type_prediction_table_source_classes",
         "table_source_classes_galaxy.output",
         table_source_classes,
+    )
+)
+_oda_outs.append(
+    (
+        "out_telescope_type_prediction_table_astrobert_results",
+        "table_astrobert_results_galaxy.output",
+        table_astrobert_results,
     )
 )
 _oda_outs.append(
