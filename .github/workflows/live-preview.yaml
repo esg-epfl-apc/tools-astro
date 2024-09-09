@@ -7,6 +7,8 @@ on:
       - opened
       - labeled
       - synchronize
+      - unlabeled
+      - closed
     paths-ignore:
       - '.github/**'
       - 'deprecated/**'
@@ -18,7 +20,7 @@ env:
 
 jobs:
   setup:
-    if: contains( github.event.pull_request.labels.*.name, 'test-live')
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') && github.event.action != 'closed'
     name: Determine changed repositories
     runs-on: ubuntu-latest
     outputs:
@@ -73,3 +75,24 @@ jobs:
 
           ansible-playbook deploy.yml
         done
+
+  uninstall:
+    name: Uninstall
+    if: contains( github.event.pull_request.labels.*.name, 'test-live') == false || github.event.action == 'closed'
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install requirenments
+        run: sudo apt-get install -y ansible
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Uninstall tools
+        env: 
+          pr_num: ${{ github.event.pull_request.number }}
+        run: |
+          cd deploy-preview
+          ansible-playbook remove.yml
