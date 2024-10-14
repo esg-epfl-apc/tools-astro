@@ -1,8 +1,7 @@
-name: update-archives-list-pr
+name: update-archives-list-pr-
 run-name: Updating archives list
 on:
   workflow_dispatch:
-  push:
   schedule:
     - cron: '0 0 * * 0'
 jobs:
@@ -30,17 +29,32 @@ jobs:
           BRANCH_NAME="archives-update-pr-${DATE}"
           git checkout -b $BRANCH_NAME
           git push origin $BRANCH_NAME
+          git push --set-upstream origin archives-update-pr-${DATE}
 
       - name: run archives script
-        run: python fetch_archives.py
+        run: |
+          python fetch_archives.py
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "updated archives file"
+          git push
 
       - name: List files after script execution
         run: ls -la
 
       - name: create pull request
         run: |
-          DATE=$(date +'%Y%m%d')
-          BRANCH_NAME="archives-update-pr-${DATE}"
-          gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
+          HAS_COMMITS=$(git rev-list --count HEAD ^origin/main)
+          if [ "$HAS_COMMITS" -gt 0 ]; then
+            python update_tool_version.py
+            git commit -m "updated tool version"
+            git add .
+            DATE=$(date +'%Y%m%d')
+            BRANCH_NAME="archives-update-pr-${DATE}"
+            gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
+          else
+            echo "No modifications in available archives"
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
