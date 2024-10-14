@@ -48,8 +48,8 @@ jobs:
           HAS_COMMITS=$(git rev-list --count HEAD ^origin/main)
           if [ "$HAS_COMMITS" -gt 0 ]; then
             python update_tool_version.py
-            git commit -m "updated tool version"
             git add .
+            git commit -m "updated tool version"
             DATE=$(date +'%Y%m%d')
             BRANCH_NAME="archives-update-pr-${DATE}"
             gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
