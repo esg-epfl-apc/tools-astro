@@ -15,12 +15,17 @@ def fetch_archives():
         f1.write(table_description)
         f1.write(column_description)
 
+        archive = archive_list[0]
+        archive_name = archive.res_title
+        access_url = archive.access_url
+        
+        f1.write(f'0\t{archive_name}\t{access_url}\n')
+        
         for i, archive in enumerate(archive_list):
             try:
                 archive_name = archive.res_title
                 access_url = archive.access_url
                 f.write(f'{i}\t{archive_name}\t{access_url}\n')
-                f1.write(f'{i}\t{archive_name}\t{access_url}\n')
             except Exception as e:
                 pass
 
