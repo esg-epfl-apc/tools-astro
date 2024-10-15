@@ -50,6 +50,7 @@ jobs:
             python update_tool_version.py
             git add .
             git commit -m "updated tool version"
+            git push
             DATE=$(date +'%Y%m%d')
             BRANCH_NAME="archives-update-pr-${DATE}"
             gh pr create -B main -H $BRANCH_NAME --title 'Archives list update' --body 'Automated pull request for archives list update'
