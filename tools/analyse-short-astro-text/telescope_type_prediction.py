@@ -3,6 +3,7 @@
 
 # flake8: noqa
 
+
 import json
 import os
 import shutil
@@ -37,7 +38,9 @@ atel_text = text
 atel_ = number
 ### Settings
 
-data_path = os.path.abspath("data/")
+data_path = os.path.dirname(__file__) + "/data/"
+
+print("data_path", data_path)
 
 model_file = f"{data_path}/probabilistic_models/first_single_second_single_with_tel_repetition.dat.npy"
 
