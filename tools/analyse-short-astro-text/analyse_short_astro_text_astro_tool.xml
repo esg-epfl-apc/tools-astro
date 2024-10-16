@@ -9,6 +9,7 @@
     <requirement type="package" version="3.3">networkx</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
     <requirement type="package" version="1.14.1">scipy</requirement>
+    <requirement type="package" version="1.2.28">oda-api</requirement>
     <!--Requirements string 'user_agent
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'oda_api
