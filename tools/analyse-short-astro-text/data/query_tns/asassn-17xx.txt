@@ -1,0 +1,492 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+  "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr">
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="Generator" content="Drupal 7 (http://drupal.org)" />
+<link rel="shortcut icon" href="https://www.wis-tns.org/sites/default/files/favicon.png" type="image/png" />
+  <title>Search | Transient Name Server</title>
+  <meta name="google-site-verification" content="B3eRpRLBn3soUGbFCdy8WY0YhA4m45f7_8fA1s_8rG0" />
+  <meta name="MobileOptimized" content="width">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="viewport" content="width=device-width">
+  <style type="text/css" media="all">
+@import url("https://www.wis-tns.org/modules/system/system.base.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/system/system.menus.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/system/system.messages.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/system/system.theme.css?sjcjm6");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.wis-tns.org/sites/all/modules/jquery_update/replace/ui/themes/base/minified/jquery.ui.core.min.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/jquery_update/replace/ui/themes/base/minified/jquery.ui.theme.min.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/jquery_update/replace/ui/themes/base/minified/jquery.ui.datepicker.min.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/date/date_popup/themes/jquery.timeentry.css?sjcjm6");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.wis-tns.org/modules/comment/comment.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/date/date_api/date.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/date/date_popup/themes/datepicker.1.7.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/field/theme/field.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/node/node.css?sjcjm6");
+@import url("https://www.wis-tns.org/modules/user/user.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/views/css/views.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/ckeditor/css/ckeditor.css?sjcjm6");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.wis-tns.org/sites/all/modules/ctools/css/ctools.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/modules/lightbox2/css/lightbox.css?sjcjm6");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.wis-tns.org/sites/all/themes/sn/css/layout.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/themes/sn/css/style.css?sjcjm6");
+@import url("https://www.wis-tns.org/sites/all/themes/sn/css/colors.css?sjcjm6");
+</style>
+<style type="text/css" media="print">
+@import url("https://www.wis-tns.org/sites/all/themes/sn/css/print.css?sjcjm6");
+</style>
+
+<!--[if lte IE 7]>
+<link type="text/css" rel="stylesheet" href="https://www.wis-tns.org/sites/all/themes/sn/css/ie.css?sjcjm6" media="all" />
+<![endif]-->
+
+<!--[if IE 6]>
+<link type="text/css" rel="stylesheet" href="https://www.wis-tns.org/sites/all/themes/sn/css/ie6.css?sjcjm6" media="all" />
+<![endif]-->
+  <script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/jquery_update/replace/jquery/1.12/jquery.min.js?v=1.12.4"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/jquery-extend-3.4.0.js?v=1.12.4"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/jquery-html-prefilter-3.5.0-backport.js?v=1.12.4"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/jquery.once.js?v=1.2"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/drupal.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/jquery_update/js/jquery_browser.js?v=0.0.1"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/jquery_update/replace/ui/ui/minified/jquery.ui.core.min.js?v=1.10.2"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/jquery_update/replace/ui/ui/minified/jquery.ui.datepicker.min.js?v=1.10.2"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/ui/jquery.ui.datepicker-1.13.0-backport.js?v=1.10.2"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/modules/locale/locale.datepicker.js?v=1.10.2"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/date/date_popup/jquery.timeentry.pack.js?v=1.4.7"></script>
+<script type="text/javascript" src="https://www.google.com/recaptcha/api.js?render=6Lc1YZ4aAAAAAEQJotvlPckhauunPIr3-v592Utv"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/form.js?v=7.98"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/form-single-submit.js?v=7.98"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/lightbox2/js/lightbox.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/supernova/scripts/supernova_search.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/supernova/scripts/purl.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/date/date_popup/date_popup.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/captcha/captcha.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/autocomplete.js?v=7.98"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/misc/collapse.js?v=7.98"></script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/google_analytics/googleanalytics.js?sjcjm6"></script>
+<script type="text/javascript" src="https://www.googletagmanager.com/gtag/js?id=G-SX9TJKE5MS"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments)};gtag("js", new Date());gtag("set", "developer_id.dMDhkMT", true);gtag("config", "G-SX9TJKE5MS", {"groups":"default"});
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/supernova/scripts/supernova.js?sjcjm6"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","setHasJsCookie":0,"ajaxPageState":{"theme":"sn","theme_token":"kk9X8vtkgG_Pl5kKmv0k-J0j9lf1VJ0qYDYAK2FGc40","js":{"sites\/all\/modules\/recaptcha_v3\/js\/recaptcha_v3.js":1,"sites\/all\/modules\/jquery_update\/replace\/jquery\/1.12\/jquery.min.js":1,"misc\/jquery-extend-3.4.0.js":1,"misc\/jquery-html-prefilter-3.5.0-backport.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/jquery_update\/js\/jquery_browser.js":1,"sites\/all\/modules\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.core.min.js":1,"sites\/all\/modules\/jquery_update\/replace\/ui\/ui\/minified\/jquery.ui.datepicker.min.js":1,"misc\/ui\/jquery.ui.datepicker-1.13.0-backport.js":1,"modules\/locale\/locale.datepicker.js":1,"sites\/all\/modules\/date\/date_popup\/jquery.timeentry.pack.js":1,"https:\/\/www.google.com\/recaptcha\/api.js?render=6Lc1YZ4aAAAAAEQJotvlPckhauunPIr3-v592Utv":1,"misc\/form.js":1,"misc\/form-single-submit.js":1,"sites\/all\/modules\/lightbox2\/js\/lightbox.js":1,"sites\/all\/modules\/supernova\/scripts\/supernova_search.js":1,"sites\/all\/modules\/supernova\/scripts\/purl.js":1,"sites\/all\/modules\/date\/date_popup\/date_popup.js":1,"sites\/all\/modules\/captcha\/captcha.js":1,"misc\/autocomplete.js":1,"misc\/collapse.js":1,"sites\/all\/modules\/google_analytics\/googleanalytics.js":1,"https:\/\/www.googletagmanager.com\/gtag\/js?id=G-SX9TJKE5MS":1,"0":1,"sites\/all\/modules\/supernova\/scripts\/supernova.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"misc\/ui\/jquery.ui.core.css":1,"misc\/ui\/jquery.ui.theme.css":1,"misc\/ui\/jquery.ui.datepicker.css":1,"sites\/all\/modules\/date\/date_popup\/themes\/jquery.timeentry.css":1,"modules\/comment\/comment.css":1,"sites\/all\/modules\/date\/date_api\/date.css":1,"sites\/all\/modules\/date\/date_popup\/themes\/datepicker.1.7.css":1,"modules\/field\/theme\/field.css":1,"modules\/node\/node.css":1,"modules\/user\/user.css":1,"sites\/all\/modules\/views\/css\/views.css":1,"sites\/all\/modules\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/lightbox2\/css\/lightbox.css":1,"sites\/all\/themes\/sn\/css\/layout.css":1,"sites\/all\/themes\/sn\/css\/style.css":1,"sites\/all\/themes\/sn\/css\/colors.css":1,"sites\/all\/themes\/sn\/css\/print.css":1,"sites\/all\/themes\/sn\/css\/ie.css":1,"sites\/all\/themes\/sn\/css\/ie6.css":1}},"lightbox2":{"rtl":0,"file_path":"\/(\\w\\w\/)public:\/","default_image":"\/sites\/all\/modules\/lightbox2\/images\/brokenimage.jpg","border_size":10,"font_color":"000","box_color":"fff","top_position":"","overlay_opacity":"0.8","overlay_color":"000","disable_close_click":true,"resize_sequence":0,"resize_speed":400,"fade_in_speed":400,"slide_down_speed":600,"use_alt_layout":false,"disable_resize":false,"disable_zoom":false,"force_show_nav":false,"show_caption":true,"loop_items":false,"node_link_text":"View Image Details","node_link_target":false,"image_count":"Image !current of !total","video_count":"Video !current of !total","page_count":"Page !current of !total","lite_press_x_close":"press \u003Ca href=\u0022#\u0022 onclick=\u0022hideLightbox(); return FALSE;\u0022\u003E\u003Ckbd\u003Ex\u003C\/kbd\u003E\u003C\/a\u003E to close","download_link_text":"","enable_login":false,"enable_contact":false,"keys_close":"c x 27","keys_previous":"p 37","keys_next":"n 39","keys_zoom":"z","keys_play_pause":"32","display_image_size":"original","image_node_sizes":"()","trigger_lightbox_classes":"","trigger_lightbox_group_classes":"","trigger_slideshow_classes":"","trigger_lightframe_classes":"","trigger_lightframe_group_classes":"","custom_class_handler":0,"custom_trigger_classes":"","disable_for_gallery_lists":true,"disable_for_acidfree_gallery_lists":true,"enable_acidfree_videos":true,"slideshow_interval":5000,"slideshow_automatic_start":true,"slideshow_automatic_exit":true,"show_play_pause":true,"pause_on_next_click":false,"pause_on_previous_click":true,"loop_slides":false,"iframe_width":600,"iframe_height":400,"iframe_border":1,"enable_video":false,"useragent":"Mozilla\/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/80.0.3987.132 Safari\/537.36"},"jquery":{"ui":{"datepicker":{"isRTL":false,"firstDay":"0"}}},"datePopup":{"edit-date-start-datepicker-popup-0":{"func":"datepicker","settings":{"changeMonth":true,"changeYear":true,"autoPopUp":"focus","closeAtTop":false,"speed":"immediate","firstDay":0,"dateFormat":"yy-mm-dd","yearRange":"-124:+0","fromTo":false,"defaultDate":"0y"}},"edit-date-end-datepicker-popup-0":{"func":"datepicker","settings":{"changeMonth":true,"changeYear":true,"autoPopUp":"focus","closeAtTop":false,"speed":"immediate","firstDay":0,"dateFormat":"yy-mm-dd","yearRange":"-124:+0","fromTo":false,"defaultDate":"0y"}}},"urlIsAjaxTrusted":{"\/search?\u0026discovered_period_value=10\u0026discovered_period_units=years\u0026unclassified_at=0\u0026classified_sne=0\u0026include_frb=0\u0026name=\u0026name_like=1\u0026isTNS_AT=all\u0026public=all\u0026ra=\u0026decl=\u0026radius=\u0026coords_unit=arcsec\u0026reporting_groupid%5B%5D=null\u0026groupid%5B%5D=null\u0026classifier_groupid%5B%5D=null\u0026objtype%5B%5D=null\u0026at_type%5B%5D=null\u0026date_start%5Bdate%5D=\u0026date_end%5Bdate%5D=\u0026discovery_mag_min=\u0026discovery_mag_max=\u0026internal_name=asassn-17xx\u0026discoverer=\u0026classifier=\u0026spectra_count=\u0026redshift_min=\u0026redshift_max=\u0026hostname=\u0026ext_catid=\u0026ra_range_min=\u0026ra_range_max=\u0026decl_range_min=\u0026decl_range_max=\u0026discovery_instrument%5B%5D=null\u0026classification_instrument%5B%5D=null\u0026associated_groups%5B%5D=null\u0026official_discovery=0\u0026official_classification=0\u0026at_rep_remarks=\u0026class_rep_remarks=\u0026frb_repeat=all\u0026frb_repeater_of_objid=\u0026frb_measured_redshift=0\u0026frb_dm_range_min=\u0026frb_dm_range_max=\u0026frb_rm_range_min=\u0026frb_rm_range_max=\u0026frb_snr_range_min=\u0026frb_snr_range_max=\u0026frb_flux_range_min=\u0026frb_flux_range_max=\u0026num_page=50\u0026display%5Bredshift%5D=1\u0026display%5Bhostname%5D=1\u0026display%5Bhost_redshift%5D=1\u0026display%5Bsource_group_name%5D=1\u0026display%5Bclassifying_source_group_name%5D=1\u0026display%5Bdiscovering_instrument_name%5D=0\u0026display%5Bclassifing_instrument_name%5D=0\u0026display%5Bprograms_name%5D=0\u0026display%5Binternal_name%5D=1\u0026display%5BisTNS_AT%5D=0\u0026display%5Bpublic%5D=1\u0026display%5Bend_pop_period%5D=0\u0026display%5Bspectra_count%5D=1\u0026display%5Bdiscoverymag%5D=1\u0026display%5Bdiscmagfilter%5D=1\u0026display%5Bdiscoverydate%5D=1\u0026display%5Bdiscoverer%5D=1\u0026display%5Bremarks%5D=0\u0026display%5Bsources%5D=0\u0026display%5Bbibcode%5D=0\u0026display%5Bext_catalogs%5D=0\u0026format=html\u0026edit%5Btype%5D=\u0026edit%5Bobjname%5D=\u0026edit%5Bid%5D=\u0026sort=asc\u0026order=name":true},"googleanalytics":{"account":["G-SX9TJKE5MS"],"trackOutbound":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc(x|m)?|dot(x|m)?|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt(x|m)?|pot(x|m)?|pps(x|m)?|ppam|sld(x|m)?|thmx|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls(x|m|b)?|xlt(x|m)|xlam|xml|z|zip"}});
+//--><!]]>
+</script>
+</head>
+<body class="html not-front not-logged-in no-sidebars page-search tns" >
+  <div id="skip-link">
+    <a href="#main-content" class="element-invisible element-focusable">Skip to main content</a>
+  </div>
+    <div class="loading-overlay hidden">
+  <div class="ajax-loader-wrapper"><img src="/sites/all/themes/sn/images/ajax_loader _clock.gif"></div>
+</div>
+<div id="page-wrapper"><div id="page">
+
+	<div class="overlay hidden">
+    <div class="overlay-wrapper">
+      <span class="close-overlay"></span>
+      <div class="overlay-content"></div>
+    </div>
+  </div>
+
+  <div id="header" class="without-secondary-menu">
+  	<div id="additional-image-warpper"><div id="additional-image"><div id="additional-image-inside"></div></div></div>
+  	<div class="section clearfix">
+
+        <a href="/" title="TNS" rel="home" class="header__logo" id="logo">
+            <img src="https://www.wis-tns.org/sites/all/themes/sn/tns_logo.jpg" alt="TNS" class="header__logo-image" />
+    </a>
+    <div id="top-red-bg"></div>
+    
+          <div id="main-menu" class="navigation">
+        <h2 class="element-invisible">Main menu</h2><ul id="main-menu-links" class="links clearfix"><li class="menu-363 active-trail first active"><a href="/search" title="" class="active-trail active">Search</a></li>
+<li class="menu-1074"><a href="/astronotes" title="">AstroNotes</a></li>
+<li class="menu-595"><a href="/bots">Bots</a></li>
+<li class="menu-956"><a href="/ligo/events" title="">LVK GW</a></li>
+<li class="menu-725"><a href="/content/tns-getting-started" title="">?</a></li>
+<li class="menu-747"><a href="/content/contact-us" title="">✉</a></li>
+<li class="menu-415 last"><a href="/user" title="">Login</a></li>
+</ul>
+              </div> <!-- /#main-menu -->
+    
+    <div id="iau-wrapper"><img width="129" height="114" alt="IAU" title="IAU Supernova Working Group" src="/sites/all/themes/sn/images/supernova_working_logo.png"/></div>
+    <div id="title-wrapper">
+	    <div class="mobile-only">
+	      <div class="mobile-menu-show"><span class="mobile-menu-icon"></span></div>
+	    </div>
+	    <h1 class="title" id="page-title">
+	      Search	    </h1>
+	  </div>
+
+  </div></div> <!-- /.section, /#header -->
+
+  <div class="title" id="page-title">
+    Search  </div>
+
+  
+  
+
+
+  <div id="main-wrapper" class="clearfix"><div id="main" class="clearfix">
+
+          <div class="tabs">
+              </div>
+    
+    <div id="content" class="column"><div class="section">
+            <a id="main-content"></a>
+
+                    <div class="region region-content">
+    <div id="block-system-main" class="block block-system">
+
+    
+  <div class="content">
+    <div class="form-overall-wrapper"><form action="/search?&amp;discovered_period_value=10&amp;discovered_period_units=years&amp;unclassified_at=0&amp;classified_sne=0&amp;include_frb=0&amp;name=&amp;name_like=1&amp;isTNS_AT=all&amp;public=all&amp;ra=&amp;decl=&amp;radius=&amp;coords_unit=arcsec&amp;reporting_groupid%5B%5D=null&amp;groupid%5B%5D=null&amp;classifier_groupid%5B%5D=null&amp;objtype%5B%5D=null&amp;at_type%5B%5D=null&amp;date_start%5Bdate%5D=&amp;date_end%5Bdate%5D=&amp;discovery_mag_min=&amp;discovery_mag_max=&amp;internal_name=asassn-17xx&amp;discoverer=&amp;classifier=&amp;spectra_count=&amp;redshift_min=&amp;redshift_max=&amp;hostname=&amp;ext_catid=&amp;ra_range_min=&amp;ra_range_max=&amp;decl_range_min=&amp;decl_range_max=&amp;discovery_instrument%5B%5D=null&amp;classification_instrument%5B%5D=null&amp;associated_groups%5B%5D=null&amp;official_discovery=0&amp;official_classification=0&amp;at_rep_remarks=&amp;class_rep_remarks=&amp;frb_repeat=all&amp;frb_repeater_of_objid=&amp;frb_measured_redshift=0&amp;frb_dm_range_min=&amp;frb_dm_range_max=&amp;frb_rm_range_min=&amp;frb_rm_range_max=&amp;frb_snr_range_min=&amp;frb_snr_range_max=&amp;frb_flux_range_min=&amp;frb_flux_range_max=&amp;num_page=50&amp;display%5Bredshift%5D=1&amp;display%5Bhostname%5D=1&amp;display%5Bhost_redshift%5D=1&amp;display%5Bsource_group_name%5D=1&amp;display%5Bclassifying_source_group_name%5D=1&amp;display%5Bdiscovering_instrument_name%5D=0&amp;display%5Bclassifing_instrument_name%5D=0&amp;display%5Bprograms_name%5D=0&amp;display%5Binternal_name%5D=1&amp;display%5BisTNS_AT%5D=0&amp;display%5Bpublic%5D=1&amp;display%5Bend_pop_period%5D=0&amp;display%5Bspectra_count%5D=1&amp;display%5Bdiscoverymag%5D=1&amp;display%5Bdiscmagfilter%5D=1&amp;display%5Bdiscoverydate%5D=1&amp;display%5Bdiscoverer%5D=1&amp;display%5Bremarks%5D=0&amp;display%5Bsources%5D=0&amp;display%5Bbibcode%5D=0&amp;display%5Bext_catalogs%5D=0&amp;format=html&amp;edit%5Btype%5D=&amp;edit%5Bobjname%5D=&amp;edit%5Bid%5D=&amp;sort=asc&amp;order=name" method="post" id="supernova-search-form" accept-charset="UTF-8"><div><div class="main-wrapper"><div class="discovered-period-value-wrapper"><div class="form-item form-type-textfield form-item-discovered-period-value">
+  <label for="edit-discovered-period-value">Reported Within The Last<br>(Clear field to relate to all) </label>
+ <input type="text" id="edit-discovered-period-value" name="discovered_period_value" value="10" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-select form-item-discovered-period-units">
+  <label for="edit-discovered-period-units">  </label>
+ <select id="edit-discovered-period-units" name="discovered_period_units" class="form-select"><option value="days">Days</option><option value="months">Months</option><option value="years" selected="selected">Years</option></select>
+</div>
+</div><div class="checkbox-wrapper"><div class="form-item form-type-checkbox form-item-unclassified-at">
+ <input type="checkbox" id="edit-unclassified-at" name="unclassified_at" value="1" class="form-checkbox" />  <label class="option" for="edit-unclassified-at">Limit to unclasssified ATs </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-classified-sne">
+ <input type="checkbox" id="edit-classified-sne" name="classified_sne" value="1" class="form-checkbox" />  <label class="option" for="edit-classified-sne">Limit to classified SNe </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-include-frb">
+ <input type="checkbox" id="edit-include-frb" name="include_frb" value="1" class="form-checkbox" />  <label class="option" for="edit-include-frb">Include FRBs </label>
+
+</div>
+</div><div class="clear"></div></div><div class="name-wrapper"><div class="form-item form-type-textfield form-item-name">
+  <label for="edit-name">Obj. Name </label>
+ <input type="text" id="edit-name" name="name" value="" size="12" maxlength="128" class="form-text form-autocomplete" /><input type="hidden" id="edit-name-autocomplete" value="https://www.wis-tns.org/index.php?q=autocomplete/obj" disabled="disabled" class="autocomplete" />
+</div>
+<div class="form-item form-type-checkbox form-item-name-like">
+ <input type="checkbox" id="edit-name-like" name="name_like" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-name-like">Exact Match </label>
+
+</div>
+<div class="form-item form-type-select form-item-isTNS-AT">
+  <label for="edit-istns-at">TNS AT </label>
+ <select id="edit-istns-at" name="isTNS_AT" class="form-select"><option value="yes">Yes</option><option value="no">No</option><option value="all" selected="selected">All</option></select>
+</div>
+<div class="form-item form-type-select form-item-public">
+  <label for="edit-public">Public </label>
+ <select id="edit-public" name="public" class="form-select"><option value="yes">Yes</option><option value="no">No</option><option value="all" selected="selected">All</option></select>
+</div>
+</div><div class="clear"></div></div><div class="coords-wrapper"><div class="form-item form-type-textfield form-item-ra">
+  <label for="edit-ra">RA </label>
+ <input type="text" id="edit-ra" name="ra" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (0..360, with decimal point) or sexagesimal: HH:MM:SS.SS / HH MM SS.SS</div>
+</div>
+<div class="form-item form-type-textfield form-item-decl">
+  <label for="edit-decl">DEC </label>
+ <input type="text" id="edit-decl" name="decl" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (-90..+90, with decimal point) or sexagesimal: ±DD:MM:SS.SS / ±DD MM SS.SS</div>
+</div>
+<div class="form-item form-type-textfield form-item-radius">
+  <label for="edit-radius">Search Radius </label>
+ <input type="text" id="edit-radius" name="radius" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-select form-item-coords-unit">
+ <select id="edit-coords-unit" name="coords_unit" class="form-select"><option value="arcsec" selected="selected">arcsec</option><option value="arcmin">arcmin</option><option value="deg">deg</option></select>
+</div>
+<div class="clear"></div></div><div class="thrd-row"><div class="form-item form-type-select form-item-reporting-groupid">
+  <label for="edit-reporting-groupid">Reporting Group </label>
+ <select multiple="multiple" name="reporting_groupid[]" id="edit-reporting-groupid" size="3" class="form-select"><option value="0">None</option><option value="138">1M2H</option><option value="79">adH0cc</option><option value="101">AHTS</option><option value="74">ALeRCE</option><option value="106">ALERT</option><option value="82">AMPEL</option><option value="115">ANTARES</option><option value="3">ASAS-SN</option><option value="50">ASO</option><option value="18">ATLAS</option><option value="26">ATS</option><option value="52">AZTEC</option><option value="60">BlackGEM</option><option value="7">BOSS</option><option value="54">BraTS</option><option value="73">BTDG</option><option value="72">C-SNAILS</option><option value="145">CET-3PO</option><option value="86">CHIMEFRB</option><option value="153">COIN</option><option value="155">CONGRESS</option><option value="58">CRAFT</option><option value="122">CRAFTS</option><option value="13">CRTS</option><option value="53">CSNS</option><option value="32">CSP</option><option value="9">DAO_OTS</option><option value="124">DEbass</option><option value="68">DECam-GROWTH</option><option value="88">Decameron</option><option value="92">DEHVILS</option><option value="15">DES</option><option value="71">DESGW</option><option value="136">DESI</option><option value="114">DESIRT</option><option value="30">DLT40</option><option value="80">DogsHeavenTS</option><option value="132">DSA-110</option><option value="104">DWF</option><option value="31">EHSSP</option><option value="120">ENGRAVE</option><option value="37">ePESSTO</option><option value="63">ePESSTO+</option><option value="148">Euclid STSWG</option><option value="130">F. D. Romanov</option><option value="70">FDST</option><option value="103">Fink</option><option value="99">FLEET</option><option value="91">FRBCAT</option><option value="24">GaiaAlerts</option><option value="67">Gattini</option><option value="93">GBNCC</option><option value="116">GEOTS</option><option value="143">GIT</option><option value="84">GLGW</option><option value="121">GLO</option><option value="38">Global SN Project</option><option value="59">GOTO</option><option value="75">GRAWITA</option><option value="40">GREAT</option><option value="55">GSNST</option><option value="135">GW-MMADS</option><option value="56">GWAC-ToP</option><option value="134">Hermes_group</option><option value="47">HETH</option><option value="97">HOLISMOKES</option><option value="35">HSC</option><option value="146">ILMT</option><option value="109">IMSNG</option><option value="2">iPTF</option><option value="27">ISSP</option><option value="108">J-VAR</option><option value="133">JADES</option><option value="44">JWST-ERS</option><option value="21">KEGS</option><option value="113">Kinder</option><option value="126">KNTraP</option><option value="62">KSP</option><option value="111">Lasair</option><option value="139">LAST</option><option value="11">LCOGT SN-KP</option><option value="125">LiONS</option><option value="8">LOSS</option><option value="20">LSQ</option><option value="36">MASTER</option><option value="61">MeerLICHT</option><option value="119">MeerTRAP</option><option value="129">Moonbase search SN South</option><option value="42">MUSSES</option><option value="117">NAOCToO</option><option value="28">NUTS</option><option value="17">OGLE</option><option value="29">OOICLE</option><option value="123">OxQUB</option><option value="16">Padova-Asiago</option><option value="118">PALEO</option><option value="102">PALFA</option><option value="4">Pan-STARRS</option><option value="1">PESSTO</option><option value="33">PIKA</option><option value="112">POISE</option><option value="6">POSS</option><option value="57">POTS</option><option value="39">PSH</option><option value="22">PTSS</option><option value="12">RANSSP</option><option value="98">REFITT</option><option value="110">RTSG</option><option value="147">SAAO IO</option><option value="66">SAGUARO</option><option value="94">SALT</option><option value="51">SCAT</option><option value="81">SGLF</option><option value="85">SIRAH</option><option value="5">SkyMapper</option><option value="41">SKYS</option><option value="95">SNAD</option><option value="14">SNHunt</option><option value="96">SOS</option><option value="100">StarDestroyers</option><option value="46">STARGATE</option><option value="131">STEP</option><option value="144">STSP</option><option value="34">SUNBIRD</option><option value="78">Swift</option><option value="127">SwiftXRT</option><option value="45">Swope SN Survey</option><option value="19">TAROT</option><option value="65">TCD</option><option value="43">TexSNs</option><option value="128">Tianlai</option><option value="69">TMTS</option><option value="152">TNS</option><option value="25">TNTS</option><option value="64">Tomo-e Gozen</option><option value="150">TRAPUM</option><option value="142">TRex</option><option value="77">UCSC</option><option value="76">ULL-ASTRO-MASTER</option><option value="140">ULTRASAT</option><option value="105">UTMOST</option><option value="90">VLA-realfast</option><option value="107">VLITE-Fast</option><option value="154">WFST</option><option value="151">WINTER</option><option value="137">WL-GW</option><option value="141">WOTS</option><option value="89">WTFU</option><option value="10">XOSS</option><option value="23">XTSS</option><option value="149">XYO</option><option value="83">YSE</option><option value="48">ZTF</option><option value="87">ZUDS</option></select>
+</div>
+<div class="form-item form-type-select form-item-groupid">
+  <label for="edit-groupid">Disc. Data Source </label>
+ <select multiple="multiple" name="groupid[]" id="edit-groupid" size="3" class="form-select"><option value="0">None</option><option value="138">1M2H</option><option value="79">adH0cc</option><option value="101">AHTS</option><option value="74">ALeRCE</option><option value="106">ALERT</option><option value="82">AMPEL</option><option value="115">ANTARES</option><option value="3">ASAS-SN</option><option value="50">ASO</option><option value="18">ATLAS</option><option value="26">ATS</option><option value="52">AZTEC</option><option value="60">BlackGEM</option><option value="7">BOSS</option><option value="54">BraTS</option><option value="73">BTDG</option><option value="72">C-SNAILS</option><option value="145">CET-3PO</option><option value="86">CHIMEFRB</option><option value="153">COIN</option><option value="155">CONGRESS</option><option value="58">CRAFT</option><option value="122">CRAFTS</option><option value="13">CRTS</option><option value="53">CSNS</option><option value="32">CSP</option><option value="9">DAO_OTS</option><option value="124">DEbass</option><option value="68">DECam-GROWTH</option><option value="88">Decameron</option><option value="92">DEHVILS</option><option value="15">DES</option><option value="71">DESGW</option><option value="136">DESI</option><option value="114">DESIRT</option><option value="30">DLT40</option><option value="80">DogsHeavenTS</option><option value="132">DSA-110</option><option value="104">DWF</option><option value="31">EHSSP</option><option value="120">ENGRAVE</option><option value="37">ePESSTO</option><option value="63">ePESSTO+</option><option value="148">Euclid STSWG</option><option value="130">F. D. Romanov</option><option value="70">FDST</option><option value="103">Fink</option><option value="99">FLEET</option><option value="91">FRBCAT</option><option value="24">GaiaAlerts</option><option value="67">Gattini</option><option value="93">GBNCC</option><option value="116">GEOTS</option><option value="143">GIT</option><option value="84">GLGW</option><option value="121">GLO</option><option value="38">Global SN Project</option><option value="59">GOTO</option><option value="75">GRAWITA</option><option value="40">GREAT</option><option value="55">GSNST</option><option value="135">GW-MMADS</option><option value="56">GWAC-ToP</option><option value="134">Hermes_group</option><option value="47">HETH</option><option value="97">HOLISMOKES</option><option value="35">HSC</option><option value="146">ILMT</option><option value="109">IMSNG</option><option value="2">iPTF</option><option value="27">ISSP</option><option value="108">J-VAR</option><option value="133">JADES</option><option value="44">JWST-ERS</option><option value="21">KEGS</option><option value="113">Kinder</option><option value="126">KNTraP</option><option value="62">KSP</option><option value="111">Lasair</option><option value="139">LAST</option><option value="11">LCOGT SN-KP</option><option value="125">LiONS</option><option value="8">LOSS</option><option value="20">LSQ</option><option value="36">MASTER</option><option value="61">MeerLICHT</option><option value="119">MeerTRAP</option><option value="129">Moonbase search SN South</option><option value="42">MUSSES</option><option value="117">NAOCToO</option><option value="28">NUTS</option><option value="17">OGLE</option><option value="29">OOICLE</option><option value="123">OxQUB</option><option value="16">Padova-Asiago</option><option value="118">PALEO</option><option value="102">PALFA</option><option value="4">Pan-STARRS</option><option value="1">PESSTO</option><option value="33">PIKA</option><option value="112">POISE</option><option value="6">POSS</option><option value="57">POTS</option><option value="39">PSH</option><option value="22">PTSS</option><option value="12">RANSSP</option><option value="98">REFITT</option><option value="110">RTSG</option><option value="147">SAAO IO</option><option value="66">SAGUARO</option><option value="94">SALT</option><option value="51">SCAT</option><option value="81">SGLF</option><option value="85">SIRAH</option><option value="5">SkyMapper</option><option value="41">SKYS</option><option value="95">SNAD</option><option value="14">SNHunt</option><option value="96">SOS</option><option value="100">StarDestroyers</option><option value="46">STARGATE</option><option value="131">STEP</option><option value="144">STSP</option><option value="34">SUNBIRD</option><option value="78">Swift</option><option value="127">SwiftXRT</option><option value="45">Swope SN Survey</option><option value="19">TAROT</option><option value="65">TCD</option><option value="43">TexSNs</option><option value="128">Tianlai</option><option value="69">TMTS</option><option value="152">TNS</option><option value="25">TNTS</option><option value="64">Tomo-e Gozen</option><option value="150">TRAPUM</option><option value="142">TRex</option><option value="77">UCSC</option><option value="76">ULL-ASTRO-MASTER</option><option value="140">ULTRASAT</option><option value="105">UTMOST</option><option value="90">VLA-realfast</option><option value="107">VLITE-Fast</option><option value="154">WFST</option><option value="151">WINTER</option><option value="137">WL-GW</option><option value="141">WOTS</option><option value="89">WTFU</option><option value="10">XOSS</option><option value="23">XTSS</option><option value="149">XYO</option><option value="83">YSE</option><option value="48">ZTF</option><option value="87">ZUDS</option></select>
+</div>
+<div class="form-item form-type-select form-item-classifier-groupid">
+  <label for="edit-classifier-groupid">Classifying Group </label>
+ <select multiple="multiple" name="classifier_groupid[]" id="edit-classifier-groupid" size="3" class="form-select"><option value="0">None</option><option value="138">1M2H</option><option value="79">adH0cc</option><option value="101">AHTS</option><option value="74">ALeRCE</option><option value="106">ALERT</option><option value="82">AMPEL</option><option value="115">ANTARES</option><option value="3">ASAS-SN</option><option value="50">ASO</option><option value="18">ATLAS</option><option value="26">ATS</option><option value="52">AZTEC</option><option value="60">BlackGEM</option><option value="7">BOSS</option><option value="54">BraTS</option><option value="73">BTDG</option><option value="72">C-SNAILS</option><option value="145">CET-3PO</option><option value="86">CHIMEFRB</option><option value="153">COIN</option><option value="155">CONGRESS</option><option value="58">CRAFT</option><option value="122">CRAFTS</option><option value="13">CRTS</option><option value="53">CSNS</option><option value="32">CSP</option><option value="9">DAO_OTS</option><option value="124">DEbass</option><option value="68">DECam-GROWTH</option><option value="88">Decameron</option><option value="92">DEHVILS</option><option value="15">DES</option><option value="71">DESGW</option><option value="136">DESI</option><option value="114">DESIRT</option><option value="30">DLT40</option><option value="80">DogsHeavenTS</option><option value="132">DSA-110</option><option value="104">DWF</option><option value="31">EHSSP</option><option value="120">ENGRAVE</option><option value="37">ePESSTO</option><option value="63">ePESSTO+</option><option value="148">Euclid STSWG</option><option value="130">F. D. Romanov</option><option value="70">FDST</option><option value="103">Fink</option><option value="99">FLEET</option><option value="91">FRBCAT</option><option value="24">GaiaAlerts</option><option value="67">Gattini</option><option value="93">GBNCC</option><option value="116">GEOTS</option><option value="143">GIT</option><option value="84">GLGW</option><option value="121">GLO</option><option value="38">Global SN Project</option><option value="59">GOTO</option><option value="75">GRAWITA</option><option value="40">GREAT</option><option value="55">GSNST</option><option value="135">GW-MMADS</option><option value="56">GWAC-ToP</option><option value="134">Hermes_group</option><option value="47">HETH</option><option value="97">HOLISMOKES</option><option value="35">HSC</option><option value="146">ILMT</option><option value="109">IMSNG</option><option value="2">iPTF</option><option value="27">ISSP</option><option value="108">J-VAR</option><option value="133">JADES</option><option value="44">JWST-ERS</option><option value="21">KEGS</option><option value="113">Kinder</option><option value="126">KNTraP</option><option value="62">KSP</option><option value="111">Lasair</option><option value="139">LAST</option><option value="11">LCOGT SN-KP</option><option value="125">LiONS</option><option value="8">LOSS</option><option value="20">LSQ</option><option value="36">MASTER</option><option value="61">MeerLICHT</option><option value="119">MeerTRAP</option><option value="129">Moonbase search SN South</option><option value="42">MUSSES</option><option value="117">NAOCToO</option><option value="28">NUTS</option><option value="17">OGLE</option><option value="29">OOICLE</option><option value="123">OxQUB</option><option value="16">Padova-Asiago</option><option value="118">PALEO</option><option value="102">PALFA</option><option value="4">Pan-STARRS</option><option value="1">PESSTO</option><option value="33">PIKA</option><option value="112">POISE</option><option value="6">POSS</option><option value="57">POTS</option><option value="39">PSH</option><option value="22">PTSS</option><option value="12">RANSSP</option><option value="98">REFITT</option><option value="110">RTSG</option><option value="147">SAAO IO</option><option value="66">SAGUARO</option><option value="94">SALT</option><option value="51">SCAT</option><option value="81">SGLF</option><option value="85">SIRAH</option><option value="5">SkyMapper</option><option value="41">SKYS</option><option value="95">SNAD</option><option value="14">SNHunt</option><option value="96">SOS</option><option value="100">StarDestroyers</option><option value="46">STARGATE</option><option value="131">STEP</option><option value="144">STSP</option><option value="34">SUNBIRD</option><option value="78">Swift</option><option value="127">SwiftXRT</option><option value="45">Swope SN Survey</option><option value="19">TAROT</option><option value="65">TCD</option><option value="43">TexSNs</option><option value="128">Tianlai</option><option value="69">TMTS</option><option value="152">TNS</option><option value="25">TNTS</option><option value="64">Tomo-e Gozen</option><option value="150">TRAPUM</option><option value="142">TRex</option><option value="77">UCSC</option><option value="76">ULL-ASTRO-MASTER</option><option value="140">ULTRASAT</option><option value="105">UTMOST</option><option value="90">VLA-realfast</option><option value="107">VLITE-Fast</option><option value="154">WFST</option><option value="151">WINTER</option><option value="137">WL-GW</option><option value="141">WOTS</option><option value="89">WTFU</option><option value="10">XOSS</option><option value="23">XTSS</option><option value="149">XYO</option><option value="83">YSE</option><option value="48">ZTF</option><option value="87">ZUDS</option></select>
+</div>
+<div class="form-item form-type-select form-item-objtype">
+  <label for="edit-objtype">Object Type </label>
+ <select multiple="multiple" name="objtype[]" id="edit-objtype" size="3" class="form-select"><option value="23">Afterglow</option><option value="29">AGN</option><option value="32">Blazar</option><option value="1003">Computed-Ia</option><option value="1014">Computed-IIb</option><option value="1021">Computed-IIn</option><option value="1011">Computed-IIP</option><option value="1020">Computed-PISN</option><option value="27">CV</option><option value="66">FBOT</option><option value="130">FRB</option><option value="30">Galaxy</option><option value="60">Gap</option><option value="61">Gap I</option><option value="62">Gap II</option><option value="25">ILRT</option><option value="99">Impostor-SN</option><option value="70">Kilonova</option><option value="24">LBV</option><option value="40">Light-Echo</option><option value="65">LRN</option><option value="210">M dwarf</option><option value="998">NA/Unknown</option><option value="26">Nova</option><option value="0">Other</option><option value="31">QSO</option><option value="18">SLSN-I</option><option value="19">SLSN-II</option><option value="20">SLSN-R</option><option value="1">SN</option><option value="2">SN I</option><option value="15">SN I-faint</option><option value="16">SN I-rapid</option><option value="3">SN Ia</option><option value="103">SN Ia-91bg-like</option><option value="104">SN Ia-91T-like</option><option value="118">SN Ia-Ca-rich</option><option value="106">SN Ia-CSM</option><option value="100">SN Ia-pec</option><option value="102">SN Ia-SC</option><option value="105">SN Iax[02cx-like]</option><option value="4">SN Ib</option><option value="115">SN Ib-Ca-rich</option><option value="107">SN Ib-pec</option><option value="6">SN Ib/c</option><option value="116">SN Ib/c-Ca-rich</option><option value="9">SN Ibn</option><option value="110">SN Ibn/Icn</option><option value="5">SN Ic</option><option value="7">SN Ic-BL</option><option value="117">SN Ic-Ca-rich</option><option value="108">SN Ic-pec</option><option value="109">SN Icn</option><option value="114">SN Ien</option><option value="10">SN II</option><option value="111">SN II-pec</option><option value="14">SN IIb</option><option value="12">SN IIL</option><option value="13">SN IIn</option><option value="112">SN IIn-pec</option><option value="11">SN IIP</option><option value="50">Std-spec</option><option value="120">TDE</option><option value="121">TDE-H</option><option value="123">TDE-H-He</option><option value="122">TDE-He</option><option value="28">Varstar</option><option value="200">WR</option><option value="202">WR-WC</option><option value="201">WR-WN</option><option value="203">WR-WO</option></select>
+</div>
+<div class="form-item form-type-select form-item-at-type">
+  <label for="edit-at-type">AT Type </label>
+ <select multiple="multiple" name="at_type[]" id="edit-at-type" size="3" class="form-select"><option value="0">Other - Undefined</option><option value="1">PSN - Possible SN</option><option value="2">PNV - Possible Nova</option><option value="3">AGN - Known AGN</option><option value="4">NUC - Possibly nuclear</option><option value="5">FRB - Fast Radio Burst event</option></select>
+</div>
+<div class="clear"></div></div><div class="fourth-row"><div class="date-wrapper"><div  class="container-inline-date"><div class="form-item form-type-date-popup form-item-date-start">
+  <label for="edit-date-start">Discovery Date Range </label>
+ <div id="edit-date-start"  class="date-padding"><div class="form-item form-type-textfield form-item-date-start-date">
+  <label class="element-invisible" for="edit-date-start-datepicker-popup-0">Date </label>
+ <input type="text" id="edit-date-start-datepicker-popup-0" name="date_start[date]" value="" size="12" maxlength="30" class="form-text" />
+<div class="description"> E.g., 2024-09-05</div>
+</div>
+</div>
+</div>
+</div><span class="to-span">to</span><div  class="container-inline-date"><div class="form-item form-type-date-popup form-item-date-end">
+ <div id="edit-date-end"  class="date-padding"><div class="form-item form-type-textfield form-item-date-end-date">
+  <label class="element-invisible" for="edit-date-end-datepicker-popup-0">Date </label>
+ <input type="text" id="edit-date-end-datepicker-popup-0" name="date_end[date]" value="" size="12" maxlength="30" class="form-text" />
+<div class="description"> E.g., 2024-09-05</div>
+</div>
+</div>
+</div>
+</div><div class="clear"></div></div><div class="discovery-mag-wrapper"><div class="form-item form-type-textfield form-item-discovery-mag-min">
+  <label for="edit-discovery-mag-min">Discovery Mag Range </label>
+ <input type="text" id="edit-discovery-mag-min" name="discovery_mag_min" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-discovery-mag-max">
+  <label for="edit-discovery-mag-max">to </label>
+ <input type="text" id="edit-discovery-mag-max" name="discovery_mag_max" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="clear"></div></div><div class="clear"></div></div><fieldset class="collapsible form-wrapper" id="edit-advance"><legend><span class="fieldset-legend">Advanced Search</span></legend><div class="fieldset-wrapper"><div class="form-item form-type-textfield form-item-internal-name">
+  <label for="edit-internal-name">Internal Name </label>
+ <input type="text" id="edit-internal-name" name="internal_name" value="asassn-17xx" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-discoverer">
+  <label for="edit-discoverer">Discoverer </label>
+ <input type="text" id="edit-discoverer" name="discoverer" value="" size="60" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-classifier">
+  <label for="edit-classifier">Classifier </label>
+ <input type="text" id="edit-classifier" name="classifier" value="" size="60" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-spectra-count">
+  <label for="edit-spectra-count">Min Spectra Num </label>
+ <input type="text" id="edit-spectra-count" name="spectra_count" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="clear"></div><div class="form-item form-type-textfield form-item-redshift-min">
+  <label for="edit-redshift-min">Redshift Range </label>
+ <input type="text" id="edit-redshift-min" name="redshift_min" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-redshift-max">
+  <label for="edit-redshift-max">to </label>
+ <input type="text" id="edit-redshift-max" name="redshift_max" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-hostname">
+  <label for="edit-hostname">Host Name </label>
+ <input type="text" id="edit-hostname" name="hostname" value="" size="5" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-select form-item-ext-catid">
+  <label for="edit-ext-catid">External Catalog: </label>
+ <select id="edit-ext-catid" name="ext_catid" size="1" class="form-select"><option value="" selected="selected">-Select-</option><option value="6">Systems of interest</option></select>
+</div>
+<div class="clear"></div><div class="advance-coords-range-row"><div class="ra-range-wrapper"><div class="form-item form-type-textfield form-item-ra-range-min">
+  <label for="edit-ra-range-min">RA Range </label>
+ <input type="text" id="edit-ra-range-min" name="ra_range_min" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (0..360, with decimal point) or sexagesimal: HH:MM:SS.SS / HH MM SS.SS</div>
+</div>
+<span class="to-span">to</span><div class="form-item form-type-textfield form-item-ra-range-max">
+ <input type="text" id="edit-ra-range-max" name="ra_range_max" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (0..360, with decimal point) or sexagesimal: HH:MM:SS.SS / HH MM SS.SS</div>
+</div>
+<div class="clear"></div></div><div class="decl-range-wrapper"><div class="form-item form-type-textfield form-item-decl-range-min">
+  <label for="edit-decl-range-min">DEC Range </label>
+ <input type="text" id="edit-decl-range-min" name="decl_range_min" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (-90..+90, with decimal point) or sexagesimal: HH:MM:SS.SS / HH MM SS.SS</div>
+</div>
+<span class="to-span">to</span><div class="form-item form-type-textfield form-item-decl-range-max">
+ <input type="text" id="edit-decl-range-max" name="decl_range_max" value="" size="10" maxlength="128" class="form-text" />
+<div class="description">Degrees (-90..+90, with decimal point) or sexagesimal: ±DD:MM:SS.SS / ±DD MM SS.SS</div>
+</div>
+<div class="clear"></div></div></div><div class="form-item form-type-select form-item-discovery-instrument">
+  <label for="edit-discovery-instrument">Discovery Instrument </label>
+ <select multiple="multiple" name="discovery_instrument[]" id="edit-discovery-instrument" class="form-select"><option value="236">AAT - AAOmega-2DF</option><option value="157">AAT - RGO</option><option value="115">ANU-2.3m - WiFeS</option><option value="141">APO-3.5m - APO-TSPEC</option><option value="201">APO-3.5m - ARCES</option><option value="70">APO-3.5m - DIS</option><option value="228">Arecibo - ALFA</option><option value="229">Arecibo - L-Wide</option><option value="153">ASASSN-1 - Brutus</option><option value="154">ASASSN-2 - Cassius</option><option value="191">ASASSN-3 - Paczynski</option><option value="192">ASASSN-4 - Leavitt</option><option value="195">ASASSN-5 - Payne-Gaposchkin</option><option value="235">ASKAP - 900MHz</option><option value="234">ASKAP - Coherent</option><option value="232">ASKAP - FlysEye</option><option value="233">ASKAP - Incoherent</option><option value="169">AST3 - AST3-Cam</option><option value="256">ATLAS-CHL - ATLAS-04</option><option value="159">ATLAS-HKO - ATLAS-02</option><option value="160">ATLAS-MLO - ATLAS-01</option><option value="255">ATLAS-STH - ATLAS-03</option><option value="167">BAO-0.6m - BATC</option><option value="77">BAO-0.85m - CCD</option><option value="80">BAO-2.16m - Cassegrain</option><option value="55">BAO-2.16m - Phot-spec</option><option value="215">BG2 - BlackGEM-Cam2</option><option value="216">BG3 - BlackGEM-Cam3</option><option value="217">BG4 - BlackGEM-Cam4</option><option value="68">Bok - BC-Bok</option><option value="131">BTA-6 - SCORPIO</option><option value="48">CA-2.2m - CAFOS</option><option value="60">CA-3.5m - MOSCA</option><option value="81">CA-3.5m - PMAS</option><option value="176">CA-3.5m - TWIN</option><option value="202">CFHT - MegaCam</option><option value="222">CHIME - FRB</option><option value="223">CHIME - PULSAR</option><option value="249">CMO-2.5m - TDS</option><option value="161">CNEOST - STA1600</option><option value="204">CrAO - AZT-8</option><option value="79">Crossley - PNS</option><option value="276">CSS-0.7m - CSS-0.7m-CCD</option><option value="205">CTIO-0.41 - CTIO-Photomultiplier</option><option value="88">CTIO-0.9 - CASS-DI</option><option value="206">CTIO-1.0 - CTIO-Other</option><option value="86">CTIO-1.5m - LORAL</option><option value="73">CTIO-1.5m - RC-Spec-1.5</option><option value="173">CTIO-4m - ARCoIRIS</option><option value="174">CTIO-4m - COSMOS</option><option value="172">CTIO-4m - DECAM</option><option value="87">CTIO-4m - IR-Spec</option><option value="72">CTIO-4m - RC-Spec-4</option><option value="45">Danish-1.54m - DFOSC</option><option value="53">DDO - Cass</option><option value="239">DSA-110 - DSA-10</option><option value="240">Effelsberg - PSRIX</option><option value="37">Ekar - AFOSC</option><option value="38">Ekar - BC-Ekar</option><option value="263">ElSauce-1m - LISA</option><option value="54">ESO-1.5m - BC-ESO</option><option value="158">ESO-1m - QUEST</option><option value="33">ESO-2.2m - EFOSC-2.2</option><option value="210">ESO-2.2m - GROND</option><option value="32">ESO-3.6m - EFOSC2-3.6</option><option value="31">ESO-NTT - EFOSC2-NTT</option><option value="30">ESO-NTT - EMMI</option><option value="34">ESO-NTT - Sofi</option><option value="281">Euclid - NISP</option><option value="280">Euclid - VIS</option><option value="238">FAST - FAST-MB</option><option value="44">FLWO-1.5m - FAST</option><option value="144">FLWO-1.5m - TRES</option><option value="110">FTN - EM01</option><option value="108">FTN - FLOYDS-N</option><option value="112">FTN - FS02</option><option value="125">FTS - FLOYDS-S</option><option value="105">FTS - FS01</option><option value="162">Gaia - Gaia-astrometric</option><option value="163">Gaia - Gaia-photometric</option><option value="164">Gaia - Gaia-RVS</option><option value="102">GALEX - GALEX</option><option value="93">Galileo - AVI</option><option value="57">Galileo - BC-Asi</option><option value="133">GAO-0.65m - GCS</option><option value="65">GAO-1.5m - GLOWS</option><option value="220">Gattini - Gattini-camera</option><option value="227">GBT - GUPPI</option><option value="6">Gemini-N - GMOS</option><option value="166">Gemini-N - GNIRS</option><option value="197">Gemini-S - Flamingos-2</option><option value="9">Gemini-S - GMOS-S</option><option value="242">GMRT - GMRT-Band3</option><option value="218">GOTO-N - GOTO-1</option><option value="264">GOTO-N - GOTO-2</option><option value="265">GOTO-S - GOTO-3</option><option value="266">GOTO-S - GOTO-4</option><option value="270">GTC - EMIR</option><option value="271">GTC - HiPERCAM</option><option value="272">GTC - MEGARA</option><option value="101">GTC - OSIRIS</option><option value="89">Harlan-Smith - ES2</option><option value="171">Harlan-Smith - IDS-McDonald</option><option value="91">Harlan-Smith - LCS</option><option value="46">HCT-2m - HFOSC</option><option value="123">HET - HET-HRS</option><option value="43">HET - HET-LRS</option><option value="124">HET - HET-MRS</option><option value="83">HST - STIS</option><option value="194">HST - WFC3</option><option value="184">IGO - IFOSC</option><option value="274">ILMT - 4K-IMG3</option><option value="67">INT-2.5m - FOS</option><option value="19">INT-2.5m - IDS</option><option value="262">IRiS - IRiS</option><option value="122">IRTF - SpeX</option><option value="94">IUE - IUE</option><option value="188">JWST - MIRI</option><option value="185">JWST - NIRCam</option><option value="187">JWST - NIRISS</option><option value="186">JWST - NIRSpec</option><option value="203">KAIT - KAITCam</option><option value="138">Kanata - HOWPol</option><option value="142">KAO - LOSA-F2</option><option value="82">Keck1 - HIRES</option><option value="3">Keck1 - LRIS</option><option value="130">Keck1 - MOSFIRE</option><option value="4">Keck2 - DEIMOS</option><option value="100">Keck2 - ESI</option><option value="259">Keck2 - KCWI</option><option value="252">Keck2 - NIRES</option><option value="212">KPNO-2.1m - IDS-KPNO</option><option value="251">LAMOST - LRSs</option><option value="269">LAST - LAST-Cam</option><option value="128">LBT - LUCI</option><option value="120">LBT - MODS1</option><option value="121">LBT - MODS2</option><option value="63">LCO-duPont - BC-duPont</option><option value="64">LCO-duPont - Mod-spec</option><option value="62">LCO-duPont - WFCCD</option><option value="208">LCO1m - Sinistro</option><option value="209">LCO2m - Spectral</option><option value="143">LDT - Deveny-LMI</option><option value="279">Lesedi - Mookodi</option><option value="10">Lick-3m - KAST</option><option value="198">Lick-3m - ShARCS</option><option value="99">Lick-3m - UV-Schmidt</option><option value="199">Lick-3m - VNIRIS</option><option value="39">Lick1m - Nickel-Spec</option><option value="107">Lijiang-2.4m - YFOSC</option><option value="230">LPA - LPA</option><option value="95">LT - FRODOspec</option><option value="245">LT - IO-I</option><option value="244">LT - IO-O</option><option value="156">LT - SPRAT</option><option value="151">Magellan-Baade - BC-Magellan</option><option value="116">Magellan-Baade - FIRE</option><option value="75">Magellan-Baade - IMACS</option><option value="137">Magellan-Baade - MagE</option><option value="69">Magellan-Clay - LDSS-2</option><option value="78">Magellan-Clay - LDSS-3</option><option value="84">Magellan-Clay - MIKE</option><option value="258">Mayall - DESI</option><option value="200">Mayall - KOSMOS</option><option value="5">Mayall - RC-Spec</option><option value="59">MDM-2.4 - BC-OSU</option><option value="85">MDM-2.4 - MARK-III</option><option value="135">MDM-2.4 - modspec</option><option value="150">MDM-2.4 - OSMOS</option><option value="170">MDM-2.4 - TIFKAM</option><option value="278">Mephisto - Mephisto-Cam</option><option value="145">Mercator - HERMES</option><option value="214">ML1 - MeerLICHT-Cam</option><option value="213">MLO-1.5m - ITS-MLO</option><option value="275">MLO-1.5m - SN110-106</option><option value="113">MLO-1m - CCD-MLO</option><option value="221">MMT - BINOSPEC</option><option value="96">MMT - Hectospec</option><option value="180">MMT - MMIRS</option><option value="58">MMT - MMT-Blue</option><option value="98">MMT - MMT-Red</option><option value="231">MOST - UTMOST</option><option value="132">MSO-74in - BC-MSO</option><option value="165">Mt-Abu - Abu-NICS</option><option value="49">Nayuta - MALLS</option><option value="41">NOT - ALFOSC</option><option value="267">NOT - FIES</option><option value="254">NOT - NOTCam</option><option value="207">NOT - StanCam</option><option value="139">OAO-188 - KOOLS</option><option value="190">OGLE-1.3m - OGLEIV-Cam</option><option value="106">OHP-1.93m - Carelec</option><option value="261">OHP-1.93m - MISTRAL</option><option value="0">Other - Other</option><option value="268">Other - Synthetic</option><option value="92">Otto-Struve - IGS</option><option value="1">P200 - DBSP</option><option value="2">P200 - LFC</option><option value="109">P200 - P200-TSPEC</option><option value="103">P48 - CFH12k</option><option value="196">P48 - ZTF-Cam</option><option value="104">P60 - P60-Cam</option><option value="149">P60 - SEDM</option><option value="225">Parkes - MB20</option><option value="243">Parkes - UWL</option><option value="146">Plaskett - Plaskett</option><option value="273">PO-RC32 - FLI-CCD</option><option value="155">PS1 - GPC1</option><option value="257">PS2 - GPC2</option><option value="253">RAO-BN - RAO-BN-Cam</option><option value="119">SAAO - G-Spec</option><option value="118">SALT - HRS-SALT</option><option value="117">SALT - RSS</option><option value="152">SkyMapper - SM-WFCam</option><option value="250">Sloan - BOSS</option><option value="140">Sloan - SDSS-Spec</option><option value="127">SOAR - Goodman</option><option value="136">SOAR - SOAR-OSIRIS</option><option value="260">SOAR - TripleSpec</option><option value="126">SPM15 - RATIR</option><option value="241">SRT - LP-DualBand</option><option value="61">SSO-2.3m - DBS</option><option value="193">SST - IRAC</option><option value="66">SST - IRS</option><option value="71">Subaru - FOCAS</option><option value="175">Subaru - HDS</option><option value="177">Subaru - HSC</option><option value="178">Subaru - IRCS</option><option value="248">Super-Kamiokande - Super-Kamiokande</option><option value="50">Swift-UVOT - UV-grism</option><option value="52">Swift-UVOT - UVOT-Imager</option><option value="51">Swift-UVOT - V-grism</option><option value="219">TMT - CCD-TMT</option><option value="15">TNG - DOLORES</option><option value="147">TNG - HARPS-N</option><option value="40">TNG - NICS</option><option value="134">TNG - SARG</option><option value="11">UH88 - SNIFS</option><option value="47">UKIRT - CGS4</option><option value="246">UTMOST-EW - MPSR</option><option value="247">UTMOST-NS - NPSR</option><option value="226">VLA - WIDAR</option><option value="8">VLT-UT1 - FORS1</option><option value="7">VLT-UT1 - FORS2</option><option value="76">VLT-UT2 - FORS1-UT2</option><option value="148">VLT-UT2 - UVES</option><option value="12">VLT-UT2 - X-Shooter</option><option value="35">VLT-UT3 - ISAAC</option><option value="168">VLT-UT3 - VIMOS</option><option value="182">VLT-UT4 - MUSE</option><option value="183">VLT-UT4 - SINFONI</option><option value="282">WFST - WFST-WFC</option><option value="97">WHT-4.2m - ACAM</option><option value="18">WHT-4.2m - FOS-1</option><option value="17">WHT-4.2m - FOS-2</option><option value="16">WHT-4.2m - ISIS</option><option value="129">WHT-4.2m - LIRIS</option><option value="114">Wise-C18 - C18-Cam</option><option value="277">Wise-C28 - C28-Cam</option><option value="22">Wise1m - FOSC</option><option value="20">Wise1m - Laiwo</option><option value="21">Wise1m - PI</option><option value="74">WIYN - Hydra</option><option value="237">WSRT - Apertif</option><option value="56">XLT - BFOSC</option><option value="181">XLT - HRS-XLT</option><option value="179">XLT - OMR</option></select>
+</div>
+<div class="form-item form-type-select form-item-classification-instrument">
+  <label for="edit-classification-instrument">Classification Instrument </label>
+ <select multiple="multiple" name="classification_instrument[]" id="edit-classification-instrument" class="form-select"><option value="236">AAT - AAOmega-2DF</option><option value="157">AAT - RGO</option><option value="115">ANU-2.3m - WiFeS</option><option value="141">APO-3.5m - APO-TSPEC</option><option value="201">APO-3.5m - ARCES</option><option value="70">APO-3.5m - DIS</option><option value="228">Arecibo - ALFA</option><option value="229">Arecibo - L-Wide</option><option value="153">ASASSN-1 - Brutus</option><option value="154">ASASSN-2 - Cassius</option><option value="191">ASASSN-3 - Paczynski</option><option value="192">ASASSN-4 - Leavitt</option><option value="195">ASASSN-5 - Payne-Gaposchkin</option><option value="235">ASKAP - 900MHz</option><option value="234">ASKAP - Coherent</option><option value="232">ASKAP - FlysEye</option><option value="233">ASKAP - Incoherent</option><option value="169">AST3 - AST3-Cam</option><option value="256">ATLAS-CHL - ATLAS-04</option><option value="159">ATLAS-HKO - ATLAS-02</option><option value="160">ATLAS-MLO - ATLAS-01</option><option value="255">ATLAS-STH - ATLAS-03</option><option value="167">BAO-0.6m - BATC</option><option value="77">BAO-0.85m - CCD</option><option value="80">BAO-2.16m - Cassegrain</option><option value="55">BAO-2.16m - Phot-spec</option><option value="215">BG2 - BlackGEM-Cam2</option><option value="216">BG3 - BlackGEM-Cam3</option><option value="217">BG4 - BlackGEM-Cam4</option><option value="68">Bok - BC-Bok</option><option value="131">BTA-6 - SCORPIO</option><option value="48">CA-2.2m - CAFOS</option><option value="60">CA-3.5m - MOSCA</option><option value="81">CA-3.5m - PMAS</option><option value="176">CA-3.5m - TWIN</option><option value="202">CFHT - MegaCam</option><option value="222">CHIME - FRB</option><option value="223">CHIME - PULSAR</option><option value="249">CMO-2.5m - TDS</option><option value="161">CNEOST - STA1600</option><option value="204">CrAO - AZT-8</option><option value="79">Crossley - PNS</option><option value="276">CSS-0.7m - CSS-0.7m-CCD</option><option value="205">CTIO-0.41 - CTIO-Photomultiplier</option><option value="88">CTIO-0.9 - CASS-DI</option><option value="206">CTIO-1.0 - CTIO-Other</option><option value="86">CTIO-1.5m - LORAL</option><option value="73">CTIO-1.5m - RC-Spec-1.5</option><option value="173">CTIO-4m - ARCoIRIS</option><option value="174">CTIO-4m - COSMOS</option><option value="172">CTIO-4m - DECAM</option><option value="87">CTIO-4m - IR-Spec</option><option value="72">CTIO-4m - RC-Spec-4</option><option value="45">Danish-1.54m - DFOSC</option><option value="53">DDO - Cass</option><option value="239">DSA-110 - DSA-10</option><option value="240">Effelsberg - PSRIX</option><option value="37">Ekar - AFOSC</option><option value="38">Ekar - BC-Ekar</option><option value="263">ElSauce-1m - LISA</option><option value="54">ESO-1.5m - BC-ESO</option><option value="158">ESO-1m - QUEST</option><option value="33">ESO-2.2m - EFOSC-2.2</option><option value="210">ESO-2.2m - GROND</option><option value="32">ESO-3.6m - EFOSC2-3.6</option><option value="31">ESO-NTT - EFOSC2-NTT</option><option value="30">ESO-NTT - EMMI</option><option value="34">ESO-NTT - Sofi</option><option value="281">Euclid - NISP</option><option value="280">Euclid - VIS</option><option value="238">FAST - FAST-MB</option><option value="44">FLWO-1.5m - FAST</option><option value="144">FLWO-1.5m - TRES</option><option value="110">FTN - EM01</option><option value="108">FTN - FLOYDS-N</option><option value="112">FTN - FS02</option><option value="125">FTS - FLOYDS-S</option><option value="105">FTS - FS01</option><option value="162">Gaia - Gaia-astrometric</option><option value="163">Gaia - Gaia-photometric</option><option value="164">Gaia - Gaia-RVS</option><option value="102">GALEX - GALEX</option><option value="93">Galileo - AVI</option><option value="57">Galileo - BC-Asi</option><option value="133">GAO-0.65m - GCS</option><option value="65">GAO-1.5m - GLOWS</option><option value="220">Gattini - Gattini-camera</option><option value="227">GBT - GUPPI</option><option value="6">Gemini-N - GMOS</option><option value="166">Gemini-N - GNIRS</option><option value="197">Gemini-S - Flamingos-2</option><option value="9">Gemini-S - GMOS-S</option><option value="242">GMRT - GMRT-Band3</option><option value="218">GOTO-N - GOTO-1</option><option value="264">GOTO-N - GOTO-2</option><option value="265">GOTO-S - GOTO-3</option><option value="266">GOTO-S - GOTO-4</option><option value="270">GTC - EMIR</option><option value="271">GTC - HiPERCAM</option><option value="272">GTC - MEGARA</option><option value="101">GTC - OSIRIS</option><option value="89">Harlan-Smith - ES2</option><option value="171">Harlan-Smith - IDS-McDonald</option><option value="91">Harlan-Smith - LCS</option><option value="46">HCT-2m - HFOSC</option><option value="123">HET - HET-HRS</option><option value="43">HET - HET-LRS</option><option value="124">HET - HET-MRS</option><option value="83">HST - STIS</option><option value="194">HST - WFC3</option><option value="184">IGO - IFOSC</option><option value="274">ILMT - 4K-IMG3</option><option value="67">INT-2.5m - FOS</option><option value="19">INT-2.5m - IDS</option><option value="262">IRiS - IRiS</option><option value="122">IRTF - SpeX</option><option value="94">IUE - IUE</option><option value="188">JWST - MIRI</option><option value="185">JWST - NIRCam</option><option value="187">JWST - NIRISS</option><option value="186">JWST - NIRSpec</option><option value="203">KAIT - KAITCam</option><option value="138">Kanata - HOWPol</option><option value="142">KAO - LOSA-F2</option><option value="82">Keck1 - HIRES</option><option value="3">Keck1 - LRIS</option><option value="130">Keck1 - MOSFIRE</option><option value="4">Keck2 - DEIMOS</option><option value="100">Keck2 - ESI</option><option value="259">Keck2 - KCWI</option><option value="252">Keck2 - NIRES</option><option value="212">KPNO-2.1m - IDS-KPNO</option><option value="251">LAMOST - LRSs</option><option value="269">LAST - LAST-Cam</option><option value="128">LBT - LUCI</option><option value="120">LBT - MODS1</option><option value="121">LBT - MODS2</option><option value="63">LCO-duPont - BC-duPont</option><option value="64">LCO-duPont - Mod-spec</option><option value="62">LCO-duPont - WFCCD</option><option value="208">LCO1m - Sinistro</option><option value="209">LCO2m - Spectral</option><option value="143">LDT - Deveny-LMI</option><option value="279">Lesedi - Mookodi</option><option value="10">Lick-3m - KAST</option><option value="198">Lick-3m - ShARCS</option><option value="99">Lick-3m - UV-Schmidt</option><option value="199">Lick-3m - VNIRIS</option><option value="39">Lick1m - Nickel-Spec</option><option value="107">Lijiang-2.4m - YFOSC</option><option value="230">LPA - LPA</option><option value="95">LT - FRODOspec</option><option value="245">LT - IO-I</option><option value="244">LT - IO-O</option><option value="156">LT - SPRAT</option><option value="151">Magellan-Baade - BC-Magellan</option><option value="116">Magellan-Baade - FIRE</option><option value="75">Magellan-Baade - IMACS</option><option value="137">Magellan-Baade - MagE</option><option value="69">Magellan-Clay - LDSS-2</option><option value="78">Magellan-Clay - LDSS-3</option><option value="84">Magellan-Clay - MIKE</option><option value="258">Mayall - DESI</option><option value="200">Mayall - KOSMOS</option><option value="5">Mayall - RC-Spec</option><option value="59">MDM-2.4 - BC-OSU</option><option value="85">MDM-2.4 - MARK-III</option><option value="135">MDM-2.4 - modspec</option><option value="150">MDM-2.4 - OSMOS</option><option value="170">MDM-2.4 - TIFKAM</option><option value="278">Mephisto - Mephisto-Cam</option><option value="145">Mercator - HERMES</option><option value="214">ML1 - MeerLICHT-Cam</option><option value="213">MLO-1.5m - ITS-MLO</option><option value="275">MLO-1.5m - SN110-106</option><option value="113">MLO-1m - CCD-MLO</option><option value="221">MMT - BINOSPEC</option><option value="96">MMT - Hectospec</option><option value="180">MMT - MMIRS</option><option value="58">MMT - MMT-Blue</option><option value="98">MMT - MMT-Red</option><option value="231">MOST - UTMOST</option><option value="132">MSO-74in - BC-MSO</option><option value="165">Mt-Abu - Abu-NICS</option><option value="49">Nayuta - MALLS</option><option value="41">NOT - ALFOSC</option><option value="267">NOT - FIES</option><option value="254">NOT - NOTCam</option><option value="207">NOT - StanCam</option><option value="139">OAO-188 - KOOLS</option><option value="190">OGLE-1.3m - OGLEIV-Cam</option><option value="106">OHP-1.93m - Carelec</option><option value="261">OHP-1.93m - MISTRAL</option><option value="0">Other - Other</option><option value="268">Other - Synthetic</option><option value="92">Otto-Struve - IGS</option><option value="1">P200 - DBSP</option><option value="2">P200 - LFC</option><option value="109">P200 - P200-TSPEC</option><option value="103">P48 - CFH12k</option><option value="196">P48 - ZTF-Cam</option><option value="104">P60 - P60-Cam</option><option value="149">P60 - SEDM</option><option value="225">Parkes - MB20</option><option value="243">Parkes - UWL</option><option value="146">Plaskett - Plaskett</option><option value="273">PO-RC32 - FLI-CCD</option><option value="155">PS1 - GPC1</option><option value="257">PS2 - GPC2</option><option value="253">RAO-BN - RAO-BN-Cam</option><option value="119">SAAO - G-Spec</option><option value="118">SALT - HRS-SALT</option><option value="117">SALT - RSS</option><option value="152">SkyMapper - SM-WFCam</option><option value="250">Sloan - BOSS</option><option value="140">Sloan - SDSS-Spec</option><option value="127">SOAR - Goodman</option><option value="136">SOAR - SOAR-OSIRIS</option><option value="260">SOAR - TripleSpec</option><option value="126">SPM15 - RATIR</option><option value="241">SRT - LP-DualBand</option><option value="61">SSO-2.3m - DBS</option><option value="193">SST - IRAC</option><option value="66">SST - IRS</option><option value="71">Subaru - FOCAS</option><option value="175">Subaru - HDS</option><option value="177">Subaru - HSC</option><option value="178">Subaru - IRCS</option><option value="248">Super-Kamiokande - Super-Kamiokande</option><option value="50">Swift-UVOT - UV-grism</option><option value="52">Swift-UVOT - UVOT-Imager</option><option value="51">Swift-UVOT - V-grism</option><option value="219">TMT - CCD-TMT</option><option value="15">TNG - DOLORES</option><option value="147">TNG - HARPS-N</option><option value="40">TNG - NICS</option><option value="134">TNG - SARG</option><option value="11">UH88 - SNIFS</option><option value="47">UKIRT - CGS4</option><option value="246">UTMOST-EW - MPSR</option><option value="247">UTMOST-NS - NPSR</option><option value="226">VLA - WIDAR</option><option value="8">VLT-UT1 - FORS1</option><option value="7">VLT-UT1 - FORS2</option><option value="76">VLT-UT2 - FORS1-UT2</option><option value="148">VLT-UT2 - UVES</option><option value="12">VLT-UT2 - X-Shooter</option><option value="35">VLT-UT3 - ISAAC</option><option value="168">VLT-UT3 - VIMOS</option><option value="182">VLT-UT4 - MUSE</option><option value="183">VLT-UT4 - SINFONI</option><option value="282">WFST - WFST-WFC</option><option value="97">WHT-4.2m - ACAM</option><option value="18">WHT-4.2m - FOS-1</option><option value="17">WHT-4.2m - FOS-2</option><option value="16">WHT-4.2m - ISIS</option><option value="129">WHT-4.2m - LIRIS</option><option value="114">Wise-C18 - C18-Cam</option><option value="277">Wise-C28 - C28-Cam</option><option value="22">Wise1m - FOSC</option><option value="20">Wise1m - Laiwo</option><option value="21">Wise1m - PI</option><option value="74">WIYN - Hydra</option><option value="237">WSRT - Apertif</option><option value="56">XLT - BFOSC</option><option value="181">XLT - HRS-XLT</option><option value="179">XLT - OMR</option></select>
+</div>
+<div class="form-item form-type-select form-item-associated-groups">
+  <label for="edit-associated-groups">Assoc. Discovery Group/s </label>
+ <select multiple="multiple" name="associated_groups[]" id="edit-associated-groups" class="form-select"><option value="138">1M2H</option><option value="79">adH0cc</option><option value="101">AHTS</option><option value="74">ALeRCE</option><option value="106">ALERT</option><option value="82">AMPEL</option><option value="115">ANTARES</option><option value="3">ASAS-SN</option><option value="50">ASO</option><option value="18">ATLAS</option><option value="26">ATS</option><option value="52">AZTEC</option><option value="60">BlackGEM</option><option value="7">BOSS</option><option value="54">BraTS</option><option value="73">BTDG</option><option value="72">C-SNAILS</option><option value="145">CET-3PO</option><option value="86">CHIMEFRB</option><option value="153">COIN</option><option value="155">CONGRESS</option><option value="58">CRAFT</option><option value="122">CRAFTS</option><option value="13">CRTS</option><option value="53">CSNS</option><option value="32">CSP</option><option value="9">DAO_OTS</option><option value="124">DEbass</option><option value="68">DECam-GROWTH</option><option value="88">Decameron</option><option value="92">DEHVILS</option><option value="15">DES</option><option value="71">DESGW</option><option value="136">DESI</option><option value="114">DESIRT</option><option value="30">DLT40</option><option value="80">DogsHeavenTS</option><option value="132">DSA-110</option><option value="104">DWF</option><option value="31">EHSSP</option><option value="120">ENGRAVE</option><option value="37">ePESSTO</option><option value="63">ePESSTO+</option><option value="148">Euclid STSWG</option><option value="130">F. D. Romanov</option><option value="70">FDST</option><option value="103">Fink</option><option value="99">FLEET</option><option value="91">FRBCAT</option><option value="24">GaiaAlerts</option><option value="67">Gattini</option><option value="93">GBNCC</option><option value="116">GEOTS</option><option value="143">GIT</option><option value="84">GLGW</option><option value="121">GLO</option><option value="38">Global SN Project</option><option value="59">GOTO</option><option value="75">GRAWITA</option><option value="40">GREAT</option><option value="55">GSNST</option><option value="135">GW-MMADS</option><option value="56">GWAC-ToP</option><option value="134">Hermes_group</option><option value="47">HETH</option><option value="97">HOLISMOKES</option><option value="35">HSC</option><option value="146">ILMT</option><option value="109">IMSNG</option><option value="2">iPTF</option><option value="27">ISSP</option><option value="108">J-VAR</option><option value="133">JADES</option><option value="44">JWST-ERS</option><option value="21">KEGS</option><option value="113">Kinder</option><option value="126">KNTraP</option><option value="62">KSP</option><option value="111">Lasair</option><option value="139">LAST</option><option value="11">LCOGT SN-KP</option><option value="125">LiONS</option><option value="8">LOSS</option><option value="20">LSQ</option><option value="36">MASTER</option><option value="61">MeerLICHT</option><option value="119">MeerTRAP</option><option value="129">Moonbase search SN South</option><option value="42">MUSSES</option><option value="117">NAOCToO</option><option value="28">NUTS</option><option value="17">OGLE</option><option value="29">OOICLE</option><option value="123">OxQUB</option><option value="16">Padova-Asiago</option><option value="118">PALEO</option><option value="102">PALFA</option><option value="4">Pan-STARRS</option><option value="1">PESSTO</option><option value="33">PIKA</option><option value="112">POISE</option><option value="6">POSS</option><option value="57">POTS</option><option value="39">PSH</option><option value="22">PTSS</option><option value="12">RANSSP</option><option value="98">REFITT</option><option value="110">RTSG</option><option value="147">SAAO IO</option><option value="66">SAGUARO</option><option value="94">SALT</option><option value="51">SCAT</option><option value="81">SGLF</option><option value="85">SIRAH</option><option value="5">SkyMapper</option><option value="41">SKYS</option><option value="95">SNAD</option><option value="14">SNHunt</option><option value="96">SOS</option><option value="100">StarDestroyers</option><option value="46">STARGATE</option><option value="131">STEP</option><option value="144">STSP</option><option value="34">SUNBIRD</option><option value="78">Swift</option><option value="127">SwiftXRT</option><option value="45">Swope SN Survey</option><option value="19">TAROT</option><option value="65">TCD</option><option value="43">TexSNs</option><option value="128">Tianlai</option><option value="69">TMTS</option><option value="152">TNS</option><option value="25">TNTS</option><option value="64">Tomo-e Gozen</option><option value="150">TRAPUM</option><option value="142">TRex</option><option value="77">UCSC</option><option value="76">ULL-ASTRO-MASTER</option><option value="140">ULTRASAT</option><option value="105">UTMOST</option><option value="90">VLA-realfast</option><option value="107">VLITE-Fast</option><option value="154">WFST</option><option value="151">WINTER</option><option value="137">WL-GW</option><option value="141">WOTS</option><option value="89">WTFU</option><option value="10">XOSS</option><option value="23">XTSS</option><option value="149">XYO</option><option value="83">YSE</option><option value="48">ZTF</option><option value="87">ZUDS</option></select>
+</div>
+<div class="clear"></div><div class="form-item form-type-checkbox form-item-official-discovery">
+ <input type="checkbox" id="edit-official-discovery" name="official_discovery" value="1" class="form-checkbox" />  <label class="option" for="edit-official-discovery">Official Discovery </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-official-classification">
+ <input type="checkbox" id="edit-official-classification" name="official_classification" value="1" class="form-checkbox" />  <label class="option" for="edit-official-classification">Official Classification </label>
+
+</div>
+<div class="remarks-wrapper"><div class="form-item form-type-textfield form-item-at-rep-remarks">
+  <label for="edit-at-rep-remarks">AT-Rep Remarks </label>
+ <input type="text" id="edit-at-rep-remarks" name="at_rep_remarks" value="" size="60" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-class-rep-remarks">
+  <label for="edit-class-rep-remarks">Class-Rep Remarks </label>
+ <input type="text" id="edit-class-rep-remarks" name="class_rep_remarks" value="" size="60" maxlength="128" class="form-text" />
+</div>
+</div></div></fieldset>
+<fieldset class="collapsible collapsed form-wrapper" id="edit-frb"><legend><span class="fieldset-legend">FRB Advanced Search</span></legend><div class="fieldset-wrapper"><div class="row-item clearfix"><div class="form-item form-type-select form-item-frb-repeat">
+  <label for="edit-frb-repeat">Repeater </label>
+ <select id="edit-frb-repeat" name="frb_repeat" class="form-select"><option value="all" selected="selected">All</option><option value="repeater">Repeater</option><option value="non_repeat">Non-repeater</option></select>
+</div>
+<div class="form-item form-type-textfield form-item-frb-repeater-of-objid">
+  <label for="edit-frb-repeater-of-objid">Repeater of </label>
+ <input type="text" id="edit-frb-repeater-of-objid" name="frb_repeater_of_objid" value="" size="100" maxlength="128" class="form-text form-autocomplete" /><input type="hidden" id="edit-frb-repeater-of-objid-autocomplete" value="https://www.wis-tns.org/index.php?q=autocomplete/frbobj" disabled="disabled" class="autocomplete" />
+</div>
+<div class="form-item form-type-checkbox form-item-frb-measured-redshift">
+ <input type="checkbox" id="edit-frb-measured-redshift" name="frb_measured_redshift" value="1" class="form-checkbox" />  <label class="option" for="edit-frb-measured-redshift">FRB with measured redshift </label>
+
+</div>
+</div><div class="row-item clearfix"><div class="form-item form-type-textfield form-item-frb-dm-range-min">
+  <label for="edit-frb-dm-range-min">DM Range </label>
+ <input type="text" id="edit-frb-dm-range-min" name="frb_dm_range_min" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<span class="to-span to-span-dm">to</span><div class="form-item form-type-textfield form-item-frb-dm-range-max">
+ <input type="text" id="edit-frb-dm-range-max" name="frb_dm_range_max" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-frb-rm-range-min">
+  <label for="edit-frb-rm-range-min">RM Range </label>
+ <input type="text" id="edit-frb-rm-range-min" name="frb_rm_range_min" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<span class="to-span  to-span-rm">to</span><div class="form-item form-type-textfield form-item-frb-rm-range-max">
+ <input type="text" id="edit-frb-rm-range-max" name="frb_rm_range_max" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<div class="clear"></div></div><div class="row-item clearfix"><div class="form-item form-type-textfield form-item-frb-snr-range-min">
+  <label for="edit-frb-snr-range-min">SNR Range </label>
+ <input type="text" id="edit-frb-snr-range-min" name="frb_snr_range_min" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<span class="to-span  to-span-snr">to</span><div class="form-item form-type-textfield form-item-frb-snr-range-max">
+ <input type="text" id="edit-frb-snr-range-max" name="frb_snr_range_max" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<div class="form-item form-type-textfield form-item-frb-flux-range-min">
+  <label for="edit-frb-flux-range-min">Flux Range </label>
+ <input type="text" id="edit-frb-flux-range-min" name="frb_flux_range_min" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<span class="to-span  to-span-flux">to</span><div class="form-item form-type-textfield form-item-frb-flux-range-max">
+ <input type="text" id="edit-frb-flux-range-max" name="frb_flux_range_max" value="" size="10" maxlength="128" class="form-text" />
+</div>
+<div class="clear"></div></div></div></fieldset>
+<div class="captcha"><input type="hidden" name="captcha_sid" value="12446567" />
+<input type="hidden" name="captcha_token" value="f333424efdb990faa2319ad233cd971a" />
+<input data-recaptcha-v3-action="protect" data-recaptcha-v3-sitekey="6Lc1YZ4aAAAAAEQJotvlPckhauunPIr3-v592Utv" type="hidden" name="recaptcha_v3_token" value="" />
+<input type="hidden" name="captcha_response" value="Google recaptcha v3" />
+<input type="hidden" name="captcha_cacheable" value="1" />
+</div><input type="submit" id="edit-submit" name="op" value="Submit" class="form-submit" /><a href="/%23" html="1" data-format="csv" class="search-csv-lnk">Download as CSV</a><a href="/%23" html="1" data-format="tsv" class="search-csv-lnk">Download as TSV</a><div class="form-item form-type-select form-item-num-page">
+  <label for="edit-num-page">Results in page </label>
+ <select id="edit-num-page" name="num_page" class="form-select"><option value="5">5</option><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="40">40</option><option value="50" selected="selected">50</option></select>
+</div>
+<div class="clear"></div></div><fieldset class="collapsible collapsed form-wrapper" id="edit-display"><legend><span class="fieldset-legend">Columns to display</span></legend><div class="fieldset-wrapper"><div class="cloumns-wrapper"><div class="form-item form-type-checkbox form-item-display-redshift">
+ <input columns="redshift" type="checkbox" id="edit-display-redshift" name="display[redshift]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-redshift">Redshift </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-hostname">
+ <input columns="hostname" type="checkbox" id="edit-display-hostname" name="display[hostname]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-hostname">Host Name </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-host-redshift">
+ <input columns="host_redshift" type="checkbox" id="edit-display-host-redshift" name="display[host_redshift]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-host-redshift">Host Redshift </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-source-group-name">
+ <input columns="source_group_name" type="checkbox" id="edit-display-source-group-name" name="display[source_group_name]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-source-group-name">Discovering Group </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-classifying-source-group-name">
+ <input columns="classifying_source_group_name" type="checkbox" id="edit-display-classifying-source-group-name" name="display[classifying_source_group_name]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-classifying-source-group-name">Classifying Group </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-discovering-instrument-name">
+ <input columns="discovering_instrument_name" type="checkbox" id="edit-display-discovering-instrument-name" name="display[discovering_instrument_name]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-discovering-instrument-name">Disc. Instrument/s </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-classifing-instrument-name">
+ <input columns="classifing_instrument_name" type="checkbox" id="edit-display-classifing-instrument-name" name="display[classifing_instrument_name]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-classifing-instrument-name">Class. Instrument/s </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-programs-name">
+ <input columns="groups" type="checkbox" id="edit-display-programs-name" name="display[programs_name]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-programs-name">Assoc. Disc. Group/s </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-internal-name">
+ <input columns="internal_name" type="checkbox" id="edit-display-internal-name" name="display[internal_name]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-internal-name">Disc. Internal Name </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-isTNS-AT">
+ <input columns="isTNS_AT" type="checkbox" id="edit-display-istns-at" name="display[isTNS_AT]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-istns-at">TNS AT </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-public">
+ <input columns="public" type="checkbox" id="edit-display-public" name="display[public]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-public">Public </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-end-pop-period">
+ <input columns="end_prop_period" type="checkbox" id="edit-display-end-pop-period" name="display[end_pop_period]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-end-pop-period">End Prop. period </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-spectra-count">
+ <input columns="spectra_count" type="checkbox" id="edit-display-spectra-count" name="display[spectra_count]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-spectra-count">Object Spectra </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-discoverymag">
+ <input columns="discoverymag" type="checkbox" id="edit-display-discoverymag" name="display[discoverymag]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-discoverymag">Discovery Mag </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-discmagfilter">
+ <input columns="disc_filter_name" type="checkbox" id="edit-display-discmagfilter" name="display[discmagfilter]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-discmagfilter">Discovery Mag Filter </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-discoverydate">
+ <input columns="discoverydate" type="checkbox" id="edit-display-discoverydate" name="display[discoverydate]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-discoverydate">Discovery Date </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-discoverer">
+ <input columns="discoverer" type="checkbox" id="edit-display-discoverer" name="display[discoverer]" value="1" checked="checked" class="form-checkbox" />  <label class="option" for="edit-display-discoverer">Sender </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-remarks">
+ <input columns="remarks" type="checkbox" id="edit-display-remarks" name="display[remarks]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-remarks">Remarks </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-sources">
+ <input columns="sources" type="checkbox" id="edit-display-sources" name="display[sources]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-sources">Sources </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-bibcode">
+ <input columns="bibcode" type="checkbox" id="edit-display-bibcode" name="display[bibcode]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-bibcode">Bibcode </label>
+
+</div>
+<div class="form-item form-type-checkbox form-item-display-ext-catalogs">
+ <input columns="ext_catalogs" type="checkbox" id="edit-display-ext-catalogs" name="display[ext_catalogs]" value="1" class="form-checkbox" />  <label class="option" for="edit-display-ext-catalogs">External Catalog/s </label>
+
+</div>
+</div></fieldset>
+<input type="hidden" name="form_build_id" value="form-fMwYoC4zTPAAW1Mzn3UmajlHYzf8uprWLa1dqR3LUdU" />
+<input type="hidden" name="form_id" value="supernova_search_form" />
+</div></form></div><div class="table-container"><span class="no-results">No results found</span></div>  </div>
+</div>
+  </div>
+      
+    </div></div> <!-- /.section, /#content -->
+
+    
+  </div></div> <!-- /#main, /#main-wrapper -->
+
+  
+  <div id="footer-wrapper"><div class="section">
+		<div class="reights-reserved">Copyright © 2015</div>
+		<div class="builder-credit">Built by <a href="http://www.klido.net" target="_blank" title="Open source programming">klido.net</a></div>
+		<div class="clear"></div>
+
+  </div></div> <!-- /.section, /#footer-wrapper -->
+  
+</div></div> <!-- /#page, /#page-wrapper -->
+  <script type="text/javascript" src="https://www.wis-tns.org/sites/all/modules/recaptcha_v3/js/recaptcha_v3.js?sjcjm6"></script>
+</body>
+</html>
