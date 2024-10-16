@@ -36,7 +36,9 @@ for vn, vv in inp_pdic.items():
 atel_text = text
 atel_ = number
 ### Settings
-data_path = f"data/"
+
+data_path = os.path.abspath("data/")
+
 model_file = f"{data_path}/probabilistic_models/first_single_second_single_with_tel_repetition.dat.npy"
 
 ### Required files
