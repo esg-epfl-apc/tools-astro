@@ -1,0 +1,1 @@
+{"gamma-ray": ["spi_acs", "polar", "cta", "hess", "grb_detection"], "x-ray": ["isgri", "jemx"], "optical": ["legacysurvey"], "infrared": ["legacysurvey"], "gravitational-wave": ["gw", "sgwb"], "neutrino": ["icecube", "antares"]}
