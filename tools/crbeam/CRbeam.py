@@ -329,21 +329,16 @@ def convert_to_ICRS(phi: np.array, theta: np.array, source: SkyCoord):
 def LoadCubeTemplate(
     mc_file: str,
     source: SkyCoord,
-    redshift,
     Emax=1e15,
     Emin=1e9,
     bins_per_decade=20,
     binsz=0.02,
     theta_mult=1,
+    sec_component_mult=1,
+    remove_straight=False,
+    symmetric_split=0,
 ):
-    from astropy.cosmology import FlatLambdaCDM
-
-    cosmo = FlatLambdaCDM(
-        H0=67.8 * u.km / u.s / u.Mpc, Tcmb0=2.725 * u.K, Om0=(1 - 0.692)
-    )
-    time_scale_hours = float(
-        ((cosmo.age(0) - cosmo.age(z_start)) / u.h).decompose()
-    )
+    pass
 
     mc_data = np.loadtxt(mc_file)
     E = mc_data[:, 0]
@@ -352,7 +347,11 @@ def LoadCubeTemplate(
     print(f"dataset Theta: {np.min(Theta)} <= Theta <= {np.max(Theta)}")
     # idx = np.where((E >= Emin) & (E<=Emax) & (Theta<theta_max))[0]
     print(f"Filters: {Emin} <= E/eV <= {Emax}")
-    idx = np.where((E >= Emin) & (E <= Emax))[0]
+    condition = (E >= Emin) & (E <= Emax)
+    if remove_straight:
+        condition &= Theta > 0
+
+    idx = np.where(condition)[0]
 
     print("filtered dataset length:", len(idx))
 
@@ -360,18 +359,23 @@ def LoadCubeTemplate(
     Theta = Theta[idx]
     w = mc_data[:, 1][idx]
     Phi = mc_data[:, 3][idx]
-    t = mc_data[:, 5][idx]
-    t *= time_scale_hours
+    # t = mc_data[:,5][idx]
+    # t *= time_scale_hours
+    if sec_component_mult != 1:  # sec_component_mult is used for debug only
+        print("WARNING: Sec component multiplicity:", sec_component_mult)
+        w[Theta > 0] *= sec_component_mult
 
     if len(idx) > 0:
-        print(f"{np.min(t)} <= t/h <= {np.max(t)}")
+        #     print(f'{np.min(t)} <= t/h <= {np.max(t)}')
         print(f"{np.min(E)} <= E <= {np.max(E)}")
+
+    energy_axis_name = "energy_true"
 
     energy_axis = MapAxis.from_energy_bounds(
         Emin * u.eV,
         Emax * u.eV,
         nbin=bins_per_decade,
-        name="energy",
+        name=energy_axis_name,
         per_decade=True,
     )
 
@@ -386,9 +390,16 @@ def LoadCubeTemplate(
     print(m_cube.geom)
 
     if len(idx) > 0:
+        if symmetric_split > 1:
+            Theta = np.repeat(Theta, symmetric_split)
+            E = np.repeat(E, symmetric_split)
+            w = np.repeat(w, symmetric_split) / symmetric_split
+            Phi = np.random.random(len(Theta)) * 360
+
         sc = convert_to_ICRS(Phi, Theta, source)
         m_cube.fill_by_coord(
-            {"lat": sc.lat, "lon": sc.lon, "energy": E * u.eV}, weights=w
+            {"lat": sc.lat, "lon": sc.lon, energy_axis_name: E * u.eV},
+            weights=w,
         )
 
     return m_cube
@@ -404,6 +415,7 @@ def LoadTemplate4D(
     theta_mult=1,
     max_time_quantile=1.0,
     n_time_bins=100,
+    symmetric_split=0,
 ):
     from astropy.cosmology import FlatLambdaCDM
 
@@ -453,11 +465,13 @@ def LoadTemplate4D(
     Phi = Phi[idx]
     t = t[idx]
 
+    energy_axis_name = "energy_true"
+
     energy_axis = MapAxis.from_energy_bounds(
         Emin * u.eV,
         Emax * u.eV,
         nbin=bins_per_decade,
-        name="energy",
+        name=energy_axis_name,
         per_decade=True,
     )
 
@@ -495,12 +509,19 @@ def LoadTemplate4D(
     print(map4d.geom)
 
     if len(idx) > 0:
+        if symmetric_split > 1:
+            Theta = np.repeat(Theta, symmetric_split)
+            E = np.repeat(E, symmetric_split)
+            t = np.repeat(t, symmetric_split)
+            w = np.repeat(w, symmetric_split) / symmetric_split
+            Phi = np.random.random(len(Theta)) * 360
+
         sc = convert_to_ICRS(Phi, Theta, source)
         map4d.fill_by_coord(
             {
                 "lat": sc.lat,
                 "lon": sc.lon,
-                "energy": E * u.eV,
+                energy_axis_name: E * u.eV,
                 "time": t * u.h,
             },
             weights=w,
@@ -509,14 +530,18 @@ def LoadTemplate4D(
     return map4d
 
 bins_per_decade = 20
+
+symmetric_split = 0 if jet_direction != 0 else 100
+
 map3d = LoadCubeTemplate(
     mc_rotated_file,
     source=source,
-    redshift=z_start,
     Emin=Emin,
     Emax=Emax,
     bins_per_decade=bins_per_decade,
+    symmetric_split=symmetric_split,
 )
+
 map3d.write("map3d.fits", overwrite=True)
 
 map4d = LoadTemplate4D(
@@ -526,6 +551,7 @@ map4d = LoadTemplate4D(
     Emin=Emin,
     Emax=Emax,
     bins_per_decade=bins_per_decade,
+    symmetric_split=symmetric_split,
 )
 map4d.write("map4d.fits", overwrite=True)
 
