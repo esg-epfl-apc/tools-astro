@@ -1,17 +1,17 @@
-<tool id="sgwb_astro_tool" name="SGWB" version="0.0.1+galaxy0" profile="23.0">
+<tool id="sgwb_astro_tool" name="SGWB" version="0.0.2+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.22.2">ipython</requirement>
-    <requirement type="package" version="1.26.4">numpy</requirement>
-    <requirement type="package" version="3.8.4">matplotlib</requirement>
-    <requirement type="package" version="6.0.1">astropy</requirement>
-    <requirement type="package" version="2.2.2">pandas</requirement>
-    <requirement type="package" version="5.19.0">plotly</requirement>
-    <requirement type="package" version="1.13.0">scipy</requirement>
+    <requirement type="package" version="8.29.0">ipython</requirement>
+    <requirement type="package" version="2.1.2">numpy</requirement>
+    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="5.24.1">plotly</requirement>
+    <requirement type="package" version="1.14.1">scipy</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="1.2.15">oda-api</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.3">nbconvert</requirement>
+    <requirement type="package" version="7.16.4">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -28,7 +28,7 @@
         <param name="g_star" type="integer" value="20" label="g_star" />
         <param name="alpha" type="float" value="1.0" label="alpha" />
         <param name="beta_H" type="float" value="3.3" label="beta_H" />
-        <param name="epsilon_turb" type="integer" value="1" label="epsilon_turb" />
+        <param name="epsilon_turb" type="float" value="1" label="epsilon_turb" />
         <param name="v_w" type="float" value="0.999" label="v_w" />
         <param name="h" type="float" value="0.7" label="h" />
       </when>
