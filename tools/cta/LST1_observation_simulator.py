@@ -617,15 +617,6 @@ if displayed_points.sum() > 0:
         finebincenters * u.TeV
     )
 
-    if redshift > 0:
-        plt.plot(
-            finebincenters,
-            intrinsic_SED,
-            "--",
-            color="lightgrey",
-            label="intrinsic",
-        )
-
     SED_fine = (fine_etrue_binning * u.TeV) ** 2 * dFdE(
         fine_etrue_binning * u.TeV
     )
