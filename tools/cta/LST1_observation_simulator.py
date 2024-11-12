@@ -22,12 +22,12 @@ DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 cut_efficiency = (
     0.7  # http://odahub.io/ontology#Float; oda:allowed_value 0.4,0.7,0.9
 )
-Zd = 20.0  # http://odahub.io/ontology#Float
-N_backgr_regions = 3  # http://odahub.io/ontology#Integer
-Exposure_time = 33.0  # http://odahub.io/ontology#Float
-source_extension = 0.0  # http://odahub.io/ontology#Float
-Norm = 8.7e-10  # http://odahub.io/ontology#Float
-index = -2.03  # http://odahub.io/ontology#Float
+Zd = 20.0  # http://odahub.io/ontology#Float ; oda:label "Zenith angle"
+N_backgr_regions = 3  # http://odahub.io/ontology#Integer ; oda:label "Number of backgorund regions"
+Exposure_time = 33.0  # http://odahub.io/ontology#Float ; oda:label "Exposure time in hours"
+source_extension = 0.0  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
+Norm = 8.7e-10  # http://odahub.io/ontology#Float ; oda:label "Powerlaw flux normalisation, 1/(TeV cm2 s)"
+index = -2.03  # http://odahub.io/ontology#Float ; oda:label "Powerlaw slope"
 
 _galaxy_wd = os.getcwd()
 

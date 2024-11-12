@@ -63,12 +63,12 @@
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
         <param name="cut_efficiency" type="float" value="0.7" label="cut_efficiency" />
-        <param name="Zd" type="float" value="20.0" label="Zd" />
-        <param name="N_backgr_regions" type="integer" value="3" label="N_backgr_regions" />
-        <param name="Exposure_time" type="float" value="33.0" label="Exposure_time" />
-        <param name="source_extension" type="float" value="0.0" label="source_extension" />
-        <param name="Norm" type="float" value="8.7e-10" label="Norm" />
-        <param name="index" type="float" value="-2.03" label="index" />
+        <param name="Zd" type="float" value="20.0" label="Zenith angle" />
+        <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
+        <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />
+        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
+        <param name="Norm" type="float" value="8.7e-10" label="Powerlaw flux normalisation, 1/(TeV cm2 s)" />
+        <param name="index" type="float" value="-2.03" label="Powerlaw slope" />
       </when>
     </conditional>
   </inputs>
@@ -130,7 +130,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/01efeb000d9e7059d8cb1e2f1a698fafc04b9b50/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/5e2bc7dd865511bc4870f9492c6995261f7bc094/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />
