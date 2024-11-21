@@ -1,8 +1,9 @@
 categories:
 - Astronomy
-description: analyse-short-astro-text
+description: Tool to analyse ATels
 homepage_url: null
-long_description: analyse-short-astro-text
+long_description: Tool to analyse ATels and extract useful information, like sources
+  etc ...
 name: analyse_short_astro_text_astro_tool
 owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools

@@ -11,7 +11,7 @@ from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 from astropy import units as u
 
-# from query_tns_aux import query_tns_survey_name, parse_data, query_tns_main_name
+from query_tns_aux import query_tns_survey_name, parse_data, query_tns_main_name
 
 
 def query_simbad(data_path, name):
@@ -42,10 +42,10 @@ def query_simbad(data_path, name):
         
     dict_data[name] = {"IDs": list_ids, "MAIN_ID": main_id, "OTYPES": otype_, "RA": ra, "DEC": dec, "DISCOVERY_TIME": None}
     
-    if not os.path.isfile(path + f"/{name}.json"):
-        with open(path + f"/{name}.json", "w") as f:
-            # print("Simbad", name)
-            json.dump(dict_data , f, indent=4)
+    # if not os.path.isfile(path + f"/{name}.json"):
+    #     with open(path + f"/{name}.json", "w") as f:
+    #         # print("Simbad", name)
+    #         json.dump(dict_data , f, indent=4)
 
     return dict_data
         
@@ -59,10 +59,10 @@ def query_tns(data_path, name):
     else:
         my_text = query_tns_survey_name(name)
 
-    if not os.path.isfile(path + f"/{name}.txt"):
-        with open(path + f"/{name}.txt", "w") as f:
-            # print("TNS", name)
-            f.write(my_text)
+    # if not os.path.isfile(path + f"/{name}.txt"):
+    #     with open(path + f"/{name}.txt", "w") as f:
+    #         # print("TNS", name)
+    #         f.write(my_text)
 
     time.sleep(5)
 
@@ -81,9 +81,9 @@ def query_tns(data_path, name):
         otype_ = '|'.join(list_otypes)
     dict_data[name] = {"IDs": list_ids, "MAIN_ID": main_id, "OTYPES": otype_, "RA": ra, "DEC": dec, "DISCOVERY_TIME": discovery_time}
     
-    if not os.path.isfile(path + f"/{name}.json"):
-        with open(path + f"/{name}.json", "w") as f:
-            json.dump(dict_data , f, indent=4)
+    # if not os.path.isfile(path + f"/{name}.json"):
+    #     with open(path + f"/{name}.json", "w") as f:
+    #         json.dump(dict_data , f, indent=4)
 
     return dict_data
 
@@ -249,8 +249,8 @@ def rule_based_source_detector(atel_, atel_text, data_path, dict_path):
                 dict_otype = query_simbad(data_path, source_name)
                 # print("Simbad", dict_otype)
 
-                # if dict_otype[source_name]["MAIN_ID"] == None:
-                    # dict_otype = query_tns(data_path, source_name)
+                if dict_otype[source_name]["MAIN_ID"] == None:
+                    dict_otype = query_tns(data_path, source_name)
                     # print("TNS", dict_otype)
                 if dict_otype[source_name]["MAIN_ID"] == None:
                     dict_otype = query_fink(source_name)
