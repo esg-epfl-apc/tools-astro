@@ -10,15 +10,15 @@ import shutil
 from oda_api.json import CustomJSONEncoder
 
 fn = "testfile.tsv"  # oda:POSIXPath
-sep = "auto"  # oda:allowed_value "auto", "comma", "tab"
-column = "c0"
-weights = "c1"
+sep = "auto"  # http://odahub.io/ontology#String ; oda:allowed_value "auto", "comma", "tab"
+column = "c0"  # http://odahub.io/ontology#String
+weights = "c1"  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
-minval = 1e10
-maxval = 1e13
-nbins = 15
-xlabel = "Energy, eV"
-ylabel = "Ncounts"
+minval = 1e10  # http://odahub.io/ontology#Float
+maxval = 1e13  # http://odahub.io/ontology#Float
+nbins = 15  # http://odahub.io/ontology#Integer
+xlabel = "Energy, eV"  # http://odahub.io/ontology#String
+ylabel = "Ncounts"  # http://odahub.io/ontology#String
 
 _galaxy_wd = os.getcwd()
 

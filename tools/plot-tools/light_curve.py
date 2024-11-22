@@ -10,15 +10,15 @@ import shutil
 from oda_api.json import CustomJSONEncoder
 
 fn = "testfile.tsv"  # oda:POSIXPath
-sep = "auto"  # oda:allowed_value "auto", "comma", "tab"
-column = "c5"
-weights_column = "weight"
+sep = "tab"  # http://odahub.io/ontology#String ; oda:allowed_value "comma", "tab", "space"
+column = "c5"  # http://odahub.io/ontology#String
+weights_column = "weight"  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
-minval = -0.0  # if negative, min value will be calculated
-maxval = 0.0  # if zero, max value will be calculated
-nbins = 15
-xlabel = "time, s"
-ylabel = "Ncounts"
+minval = 0.0  # http://odahub.io/ontology#Float
+maxval = 0.0  # http://odahub.io/ontology#Float
+nbins = 15  # http://odahub.io/ontology#Integer
+xlabel = "time, s"  # http://odahub.io/ontology#String
+ylabel = "Ncounts"  # http://odahub.io/ontology#String
 
 _galaxy_wd = os.getcwd()
 
@@ -41,21 +41,8 @@ if sep == "tab":
     sep = "\t"
 elif sep == "comma":
     sep = ","
-elif sep == "auto":
-    for s in [",", "\t"]:
-        try:
-            df = pd.read_csv(fn, sep=s, index_col=False)
-            if len(df.columns) > 2:
-                sep = s
-                print("Detected separator: ", sep)
-                break
-        except Exception as e:
-            print("Separator ", s, " failed", e)
-    pd.read_csv(fn, sep=sep, index_col=False)
-
-    if sep == "auto":
-        raise Exception("Separator not detected")
-
+elif sep == "space":
+    sep = " "
 df = pd.read_csv(fn, sep=sep, index_col=False)
 
 df.columns
@@ -74,8 +61,6 @@ print(colname, weightname)
 weights = df[weightname]
 delays = df[colname]
 
-weights
-
 if minval < 0:
     minval = np.min(delays)
 if maxval <= 0:
@@ -89,9 +74,9 @@ else:
     if minval == 0:
         minval = np.min(df[colname])
         if minval <= 0:
-            delays = delays[delays > 0]  # select only positive values
-            weights = weights[delays > 0]
-            minval = np.min(df[colname])
+            weights = weights[delays > 0]  # select only positive values
+            delays = delays[delays > 0]
+            minval = np.min(delays)
     bins = np.logspace(log10(minval), log10(maxval), nbins + 1)
 bins
 

@@ -5,6 +5,7 @@
     <requirement type="package" version="6.1.6">astropy</requirement>
     <requirement type="package" version="1.2">gammapy</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="8.29.0">ipython</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -48,9 +49,9 @@
       <when value="light_curve">
         <param name="fn" type="data" label="fn" format="data" />
         <param name="sep" type="select" label="sep">
-          <option value="auto" selected="true">auto</option>
           <option value="comma">comma</option>
-          <option value="tab">tab</option>
+          <option value="space">space</option>
+          <option value="tab" selected="true">tab</option>
         </param>
         <param name="column" type="text" value="c5" label="column" />
         <param name="weights_column" type="text" value="weight" label="weights_column" />
@@ -58,7 +59,7 @@
           <option value="linear">linear</option>
           <option value="logarithmic" selected="true">logarithmic</option>
         </param>
-        <param name="minval" type="float" value="-0.0" label="minval" />
+        <param name="minval" type="float" value="0.0" label="minval" />
         <param name="maxval" type="float" value="0.0" label="maxval" />
         <param name="nbins" type="integer" value="15" label="nbins" />
         <param name="xlabel" type="text" value="time, s" label="xlabel" />
@@ -87,7 +88,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="spectrum" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/2d2f93f7ec34eec46a32e06552f06054f5617050/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/ebbffba982955c0a2b36ab0599cfb66706c57ee9/testfile.tsv" />
         <param name="sep" value="auto" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -108,7 +109,7 @@
         <param name="ra_col" value="0" />
         <param name="dec_col" value="1" />
         <param name="weight_col" value="2" />
-        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/2d2f93f7ec34eec46a32e06552f06054f5617050/data.tsv" />
+        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/ebbffba982955c0a2b36ab0599cfb66706c57ee9/data.tsv" />
         <param name="binsz" value="0.02" />
         <param name="window_size_RA" value="2.0" />
         <param name="window_size_DEC" value="2.0" />
@@ -120,12 +121,12 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="light_curve" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/2d2f93f7ec34eec46a32e06552f06054f5617050/testfile.tsv" />
-        <param name="sep" value="auto" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/ebbffba982955c0a2b36ab0599cfb66706c57ee9/testfile.tsv" />
+        <param name="sep" value="tab" />
         <param name="column" value="c5" />
         <param name="weights_column" value="weight" />
         <param name="binning" value="logarithmic" />
-        <param name="minval" value="-0.0" />
+        <param name="minval" value="0.0" />
         <param name="maxval" value="0.0" />
         <param name="nbins" value="15" />
         <param name="xlabel" value="time, s" />
