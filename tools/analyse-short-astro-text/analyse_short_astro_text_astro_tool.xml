@@ -7,12 +7,15 @@
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
     <requirement type="package" version="3.4.2">networkx</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
     <requirement type="package" version="1.14.1">scipy</requirement>
+    <requirement type="package" version="6.1.6">astropy</requirement>
     <requirement type="package" version="2.5.1">pytorch-cpu</requirement>
     <requirement type="package" version="0.33.0">accelerate</requirement>
     <requirement type="package" version="4.43.2">transformers</requirement>
     <requirement type="package" version="1.2.28">oda-api</requirement>
     <requirement type="package" version="1.4.0">fake-useragent</requirement>
+    <requirement type="package" version="8.29.0">ipython</requirement>
     <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/telescope_type_prediction.py'</command>
