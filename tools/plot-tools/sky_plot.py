@@ -16,6 +16,7 @@ data_file = "data.tsv"  # oda:POSIXPath
 binsz = 0.02  # http://odahub.io/ontology#Float
 window_size_RA = 2.0  # http://odahub.io/ontology#Degree
 window_size_DEC = 2.0  # http://odahub.io/ontology#Degree
+skiprows = 0  # http://odahub.io/ontology#Integer
 
 _galaxy_wd = os.getcwd()
 
@@ -35,7 +36,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import SkyCoord
 from gammapy.maps import Map
-from oda_api.data_products import PictureProduct
+from oda_api.data_products import NumpyDataProduct, PictureProduct
 
 def create_test_data():
     Nevents = 1000
@@ -47,7 +48,7 @@ def create_test_data():
 
 # create_test_data()
 
-data = np.loadtxt(data_file)
+data = np.loadtxt(data_file, skiprows=skiprows)
 w = data[:, weight_col]
 ra = data[:, ra_col]
 dec = data[:, dec_col]
@@ -67,9 +68,13 @@ map.fill_by_coord({"lat": dec * u.deg, "lon": ra * u.deg}, weights=w)
 map.plot()
 plt.savefig("map.png")
 
+map.write("map.fits", overwrite=True)
+fits_file = NumpyDataProduct.from_fits_file("map.fits")
+
 plot = PictureProduct.from_file("map.png")
 
 plot = plot  # http://odahub.io/ontology#ODAPictureProduct
+fits_file = fits_file  #  https://odahub.io/ontology/#Spectrum
 
 # output gathering
 _galaxy_meta_data = {}
@@ -91,6 +96,25 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
+_simple_outs = []
+_simple_outs.append(
+    ("out_sky_plot_fits_file", "fits_file_galaxy.output", fits_file)
+)
+_numpy_available = True
+
+for _outn, _outfn, _outv in _simple_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif _numpy_available and isinstance(_outv, np.ndarray):
+        with open(_galaxy_outfile_name, "wb") as fd:
+            np.savez(fd, _outv)
+        _galaxy_meta_data[_outn] = {"ext": "npz"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd)
+        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
