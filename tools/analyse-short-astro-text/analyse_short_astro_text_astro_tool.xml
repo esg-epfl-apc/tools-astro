@@ -17,6 +17,9 @@
     <requirement type="package" version="1.4.0">fake-useragent</requirement>
     <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
+  <required_files>
+    <include path="data/" />
+  </required_files>
   <command detect_errors="exit_code">python '$__tool_directory__/telescope_type_prediction.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
