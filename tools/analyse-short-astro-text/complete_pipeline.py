@@ -4,8 +4,6 @@ import pandas as pd
 from pipeline_telescope import rule_based_telescope_detector
 from pipeline_sources import rule_based_source_detector
 from pipeline_source_classes import detect_source_classes
-from pipeline_predict_sensitivity import predict_sensitivity
-from pipeline_provide_workflows import provide_workflows
 from pipeline_astrobert import get_astroBERT_cleaned_result
 from pipeline_vectorize_text import  vectorize_text
 from predict_vectorised_atel import predict_vector
@@ -32,18 +30,14 @@ if __name__ == "__main__":
     file_dict_uri_int    = f"{data_path}/dictionary_telescope_uri_int_id.json"
     file_dict_sens_inst  = f"{data_path}/dictionary_telescope_type_2_instrument.json"
 
-    dict_path         = f"{data_path}/dictionary_names_otypes.json"
     simbad_node_file  = f"{data_path}/simbad_otypes_nodes.csv"
 
     ### Run pipeline
     df_tel = rule_based_telescope_detector(atel_, atel_text,         telescope_ontology, file_dict_uri_int)
-    df_sor = rule_based_source_detector(   atel_, atel_text,         data_path,          dict_path)    
+    df_sor = rule_based_source_detector(   atel_, atel_text)    
     df_cla = detect_source_classes(        atel_, atel_text.lower(), df_sor   ,          simbad_node_file)
     df_astrobert = get_astroBERT_cleaned_result(atel_, atel_text)
 
-    df_in, df_pred = predict_sensitivity(model_file, df_tel, first_type="single")
-    df_workflows   = provide_workflows(df_in, df_pred, df_sor, file_dict_sens_inst)
-    
     df_vec, df_astrobert_source_types = vectorize_text(atel_, data_path, df_tel, df_sor, df_astrobert)
     
     df_vec_init_pred = predict_vector(atel_, data_path, df_vec)
@@ -54,10 +48,6 @@ if __name__ == "__main__":
     print(df_sor)
     print(df_cla)
     print(df_astrobert)
-
-    print(df_in)
-    print(df_pred)
-    print(df_workflows)
 
     print(df_vec_init_pred)
     print(df_astrobert_source_types)

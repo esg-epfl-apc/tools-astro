@@ -14,14 +14,13 @@ from astropy import units as u
 from query_tns_aux import query_tns_survey_name, parse_data, query_tns_main_name
 
 
-def query_simbad(data_path, name):
+def query_simbad(name):
     Simbad.add_votable_fields("otypes")
         
     table_ids = Simbad.query_objectids(name)
     table_obj = Simbad.query_object(name)
 
     dict_data = {}
-    path = f"{data_path}/query_simbad/"
 
     list_ids = None
     main_id  = None
@@ -41,28 +40,17 @@ def query_simbad(data_path, name):
         dec = ra_dec.dec.value
         
     dict_data[name] = {"IDs": list_ids, "MAIN_ID": main_id, "OTYPES": otype_, "RA": ra, "DEC": dec, "DISCOVERY_TIME": None}
-    
-    # if not os.path.isfile(path + f"/{name}.json"):
-    #     with open(path + f"/{name}.json", "w") as f:
-    #         # print("Simbad", name)
-    #         json.dump(dict_data , f, indent=4)
 
     return dict_data
         
 
-def query_tns(data_path, name):
+def query_tns(name):
     dict_data = {}
-    path = f"{data_path}/query_tns/"
     
     if ((name[0:3] == "at2") or (name[0:2] == "sn")):
         my_text = query_tns_main_name(name[2:])
     else:
         my_text = query_tns_survey_name(name)
-
-    # if not os.path.isfile(path + f"/{name}.txt"):
-    #     with open(path + f"/{name}.txt", "w") as f:
-    #         # print("TNS", name)
-    #         f.write(my_text)
 
     time.sleep(5)
 
@@ -79,11 +67,8 @@ def query_tns(data_path, name):
         otype_ = list_otypes[0]
     else:
         otype_ = '|'.join(list_otypes)
+
     dict_data[name] = {"IDs": list_ids, "MAIN_ID": main_id, "OTYPES": otype_, "RA": ra, "DEC": dec, "DISCOVERY_TIME": discovery_time}
-    
-    # if not os.path.isfile(path + f"/{name}.json"):
-    #     with open(path + f"/{name}.json", "w") as f:
-    #         json.dump(dict_data , f, indent=4)
 
     return dict_data
 
@@ -202,11 +187,8 @@ def create_pattern_list():
     return pattern_list, pattern_list_low
 
 
-def rule_based_source_detector(atel_, atel_text, data_path, dict_path):
+def rule_based_source_detector(atel_, atel_text):
     pattern_list, pattern_list_low = create_pattern_list()
-
-    with open(dict_path, "r") as fp:
-        dict_names_types = json.load(fp)
     
     atel_sources = []
     dict_data = {}
@@ -241,17 +223,10 @@ def rule_based_source_detector(atel_, atel_text, data_path, dict_path):
             ra_list     = []
             dec_list    = []
             for source_name in atel_sources:
-#                 if source_name in dict_names_types.keys():
-#                     mainid_list.append(dict_names_types[source_name]["MAIN_ID"])
-#                     otype_list.append(dict_names_types[source_name]["OTYPES"])
-                    
-#                 else:
-                dict_otype = query_simbad(data_path, source_name)
-                # print("Simbad", dict_otype)
 
+                dict_otype = query_simbad(source_name)
                 if dict_otype[source_name]["MAIN_ID"] == None:
-                    dict_otype = query_tns(data_path, source_name)
-                    # print("TNS", dict_otype)
+                    dict_otype = query_tns(source_name)
                 if dict_otype[source_name]["MAIN_ID"] == None:
                     dict_otype = query_fink(source_name)
 

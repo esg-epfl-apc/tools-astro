@@ -120,7 +120,7 @@ def vectorize_text(atel_, data_path, df_regex_telescopes, df_regex_celestialobj,
             output_otype = []
             
             for bert_obj in set(df_tmp.word.values):
-                dict_simbad = query_simbad(data_path, bert_obj)
+                dict_simbad = query_simbad(bert_obj)
                 if not pd.isnull(dict_simbad[bert_obj]["OTYPES"]):                
                     main_id_list.append(dict_simbad[bert_obj]["MAIN_ID"])
                     otype_list.append(dict_simbad[bert_obj]["OTYPES"])
