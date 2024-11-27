@@ -209,36 +209,28 @@ def rule_based_source_detector(atel_, atel_text):
             if source_.replace(" ","").lower() not in atel_sources:
                 atel_sources.append(source_)
 
+    atel_sources = list(set(atel_sources))
     if len(atel_sources) != 0:
-        atel_sources = list(set(atel_sources))
-        if "at2018xyz" in atel_sources:
-            atel_sources.remove("at2018xyz")
-        if "asassn18xx" in atel_sources:
-            atel_sources.remove("asassn18xx")
+        otype_list = []
+        mainid_list = []
+        ra_list     = []
+        dec_list    = []
+        for source_name in atel_sources:
 
-        if len(atel_sources) != 0:
-            
-            otype_list = []
-            mainid_list = []
-            ra_list     = []
-            dec_list    = []
-            for source_name in atel_sources:
+            dict_otype = query_simbad(source_name)
+            if dict_otype[source_name]["MAIN_ID"] == None:
+                dict_otype = query_tns(source_name)
+            if dict_otype[source_name]["MAIN_ID"] == None:
+                dict_otype = query_fink(source_name)
 
-                dict_otype = query_simbad(source_name)
-                if dict_otype[source_name]["MAIN_ID"] == None:
-                    dict_otype = query_tns(source_name)
-                if dict_otype[source_name]["MAIN_ID"] == None:
-                    dict_otype = query_fink(source_name)
+            mainid_list.append(dict_otype[source_name]["MAIN_ID"])
+            otype_list.append(dict_otype[source_name]["OTYPES"])
+            ra_list.append(dict_otype[source_name]["RA"])
+            dec_list.append(dict_otype[source_name]["DEC"])
 
-                mainid_list.append(dict_otype[source_name]["MAIN_ID"])
-                otype_list.append(dict_otype[source_name]["OTYPES"])
-                ra_list.append(dict_otype[source_name]["RA"])
-                dec_list.append(dict_otype[source_name]["DEC"])
-            
-            dict_data = {"ATELNO": [atel_] * len(atel_sources), "Raw Source Name": atel_sources, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
-
-            df_save = pd.DataFrame(dict_data)
-            df_save.replace({None: "NotKnown"}, inplace=True)
-            return df_save
+        dict_data = {"ATELNO": [atel_] * len(atel_sources), "Raw Source Name": atel_sources, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
+        df_save = pd.DataFrame(dict_data)
+        df_save.replace({None: "NotKnown"}, inplace=True)
+        return df_save
 
     return pd.DataFrame()

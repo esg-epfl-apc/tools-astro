@@ -88,12 +88,12 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
             df_tmp1 = df_tmp0[df_tmp0["Phrase"]==phrase_]
             if len(df_tmp1) == 1:
                 dict_out["TEXT_ID"].append(text_id)
+                dict_out["Phrase"].append(df_tmp1.Phrase.values[0])
                 dict_out["word"].append(df_tmp1.word.values[0])
-                dict_out["Score"].append(df_tmp1.score.values[0])
-                dict_out["entity_group"].append(entity_to_study)
                 dict_out["start"].append(df_tmp1.start.values[0])
                 dict_out["end"].append(df_tmp1.end.values[0])
-                dict_out["Phrase"].append(df_tmp1.Phrase.values[0])
+                dict_out["Score"].append(df_tmp1.score.values[0])
+                dict_out["entity_group"].append(entity_to_study)
 
             else:
                 df_tmp1.sort_values(by=['start'])
@@ -137,3 +137,6 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
                         dict_out["entity_group"].append(entity_to_study)
 
     return pd.DataFrame(dict_out)
+
+
+def clean_ra_dec
