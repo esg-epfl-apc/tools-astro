@@ -137,6 +137,3 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
                         dict_out["entity_group"].append(entity_to_study)
 
     return pd.DataFrame(dict_out)
-
-
-def clean_ra_dec

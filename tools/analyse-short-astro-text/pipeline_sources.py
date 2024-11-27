@@ -231,6 +231,6 @@ def rule_based_source_detector(atel_, atel_text):
         dict_data = {"ATELNO": [atel_] * len(atel_sources), "Raw Source Name": atel_sources, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
         df_save = pd.DataFrame(dict_data)
         df_save.replace({None: "NotKnown"}, inplace=True)
-        return df_save
+        return df_save.drop_duplicates(subset=['Main ID Name'])
 
     return pd.DataFrame()
