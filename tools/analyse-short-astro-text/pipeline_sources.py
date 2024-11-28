@@ -187,50 +187,65 @@ def create_pattern_list():
     return pattern_list, pattern_list_low
 
 
-def rule_based_source_detector(atel_, atel_text):
+def rule_based_source_detector(text_id, text_id_text):
     pattern_list, pattern_list_low = create_pattern_list()
     
-    atel_sources = []
+    regex_sources = []
     dict_data = {}
 
     for pattern in pattern_list_low:    
-        for m in re.finditer(pattern, atel_text.lower()):
+        for m in re.finditer(pattern, text_id_text.lower()):
             source_ = m.group(0).replace(" ","")
 
             if "asas" in source_:
                 source_ = source_.replace("-", "")
                 source_ = source_.replace("sn", "sn-")
 
-            atel_sources.append(source_)
+            regex_sources.append(source_)
 
     for pattern in pattern_list:    
-        for m in re.finditer(pattern, atel_text):
+        for m in re.finditer(pattern, text_id_text):
             source_ = m.group(0)
-            if source_.replace(" ","").lower() not in atel_sources:
-                atel_sources.append(source_)
+            if source_.replace(" ","").lower() not in regex_sources:
+                regex_sources.append(source_)
 
-    atel_sources = list(set(atel_sources))
-    if len(atel_sources) != 0:
-        otype_list = []
+    return list(set(regex_sources))
+
+
+def query_info_sources(text_id, sources):
+    if len(sources) != 0:
+        source_list = []
+        otype_list  = []
         mainid_list = []
         ra_list     = []
         dec_list    = []
-        for source_name in atel_sources:
+        pattern_string = re.compile("[a-z]")
+        dict_unknown = {}
+        dict_unknown = {"Raw Source Name": []}
+        
+        for source_name in sources:
+            if pattern_string.findall(source_name.lower()):
+                dict_otype = query_simbad(source_name)
+                if dict_otype[source_name]["MAIN_ID"] == None:
+                    dict_otype = query_tns(source_name)
+                if dict_otype[source_name]["MAIN_ID"] == None:
+                    dict_otype = query_fink(source_name)
 
-            dict_otype = query_simbad(source_name)
-            if dict_otype[source_name]["MAIN_ID"] == None:
-                dict_otype = query_tns(source_name)
-            if dict_otype[source_name]["MAIN_ID"] == None:
-                dict_otype = query_fink(source_name)
+                if dict_otype[source_name]["MAIN_ID"] == None:
+                    dict_unknown["Raw Source Name"].append(source_name)
+                else:
+                    mainid_list.append(dict_otype[source_name]["MAIN_ID"])
+                    otype_list.append(dict_otype[source_name]["OTYPES"])
+                    ra_list.append(dict_otype[source_name]["RA"])
+                    dec_list.append(dict_otype[source_name]["DEC"])
+                    source_list.append(source_name)
+            else:
+                dict_unknown["Raw Source Name"].append(source_name)
+                
 
-            mainid_list.append(dict_otype[source_name]["MAIN_ID"])
-            otype_list.append(dict_otype[source_name]["OTYPES"])
-            ra_list.append(dict_otype[source_name]["RA"])
-            dec_list.append(dict_otype[source_name]["DEC"])
-
-        dict_data = {"ATELNO": [atel_] * len(atel_sources), "Raw Source Name": atel_sources, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
+        dict_data = {"TEXT_ID": [text_id] * len(source_list), "Raw Source Name": source_list, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
         df_save = pd.DataFrame(dict_data)
         df_save.replace({None: "NotKnown"}, inplace=True)
-        return df_save.drop_duplicates(subset=['Main ID Name'])
+        return df_save.drop_duplicates(subset=['Main ID Name']), pd.DataFrame(dict_unknown)
 
-    return pd.DataFrame()
+    return pd.DataFrame(), pd.DataFrame()

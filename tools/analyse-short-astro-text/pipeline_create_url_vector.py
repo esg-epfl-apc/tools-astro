@@ -31,26 +31,15 @@ def get_link(ra, dec, T1, T2, instrument, src_name):
 
     rest_url = urllib.parse.urlencode(params)
     return f"https://www.astro.unige.ch/mmoda/?{rest_url}"
-    
 
 
-def source_to_source_type_index(df_dict, df_astrobert_source_types, df_sor):
-    df_sor_n = pd.DataFrame()
-    if not df_astrobert_source_types.empty and not df_sor_n.empty:
-        df_sor_n = pd.concat((df_sor[["Main ID Name", "OTYPE", "RA", "Dec"]], df_astrobert_source_types[["Main ID Name", "OTYPE", "RA", "Dec"]]))
-    
-    elif not df_astrobert_source_types.empty:
-        df_sor_n = df_astrobert_source_types
-        
-    elif not df_sor.empty:
-        df_sor_n = df_sor
-    
-    if df_sor_n.empty:
+def source_to_source_type_index(df_dict, df_sor):
+    if df_sor.empty:
         return {"": {"Indices": [], "RA": None, "Dec": None}}
     
     else:
         dict_out = {}
-        for main_id, input_otypes, ra_, dec_ in zip(df_sor_n["Main ID Name"].values, df_sor_n["OTYPE"].values, df_sor_n["RA"].values, df_sor_n["Dec"].values):
+        for main_id, input_otypes, ra_, dec_ in zip(df_sor["Main ID Name"].values, df_sor["OTYPE"].values, df_sor["RA"].values, df_sor["Dec"].values):
             output_otype = []
             if main_id != "NotKnown" and input_otypes != "NotKnown":
                 for input_otype in set(input_otypes.split("|")):
@@ -65,11 +54,11 @@ def source_to_source_type_index(df_dict, df_astrobert_source_types, df_sor):
             return {"": {"Indices": [], "RA": None, "Dec": None}}
 
 
-def create_url_vector(atel_, data_path, file_dict_sens_inst, df_vec_init_pred, df_astrobert_source_types, df_sor):
+def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred, df_sor):
     otype_label = f"{data_path}/dict_source_otypes_considered_for_prediction.csv"
     df_dict = pd.read_csv(otype_label)
     
-    dict_source_to_type_indx = source_to_source_type_index(df_dict, df_astrobert_source_types, df_sor)
+    dict_source_to_type_indx = source_to_source_type_index(df_dict, df_sor)
     inst_2_inst_name = {
         "spi_acs": ["INTEGRAL", "SPI-ACS"],
         "cta"    : ["CTA/CTAO"],
@@ -88,7 +77,7 @@ def create_url_vector(atel_, data_path, file_dict_sens_inst, df_vec_init_pred, d
     
     dict_ = {}
     dict_["Legend"] = legend
-    dict_[atel_] = df_vec_init_pred[atel_].values
+    dict_[text_id] = df_vec_init_pred[text_id].values
     dict_["Follow-up"] = pred
 
     pred_norm_vector = pred / np.sum(pred**2)
