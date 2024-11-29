@@ -1,9 +1,0 @@
-categories:
-- Astronomy
-description: analyse-short-astro-text
-homepage_url: null
-long_description: analyse-short-astro-text
-name: analyse_short_astro_text_astro_tool
-owner: astroteam
-remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
-type: unrestricted
