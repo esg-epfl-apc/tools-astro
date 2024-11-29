@@ -88,7 +88,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="spectrum" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/eb01d5b8ae1073117102b9452ded71cd0dbb114f/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/testfile.tsv" />
         <param name="sep" value="auto" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -109,7 +109,7 @@
         <param name="ra_col" value="0" />
         <param name="dec_col" value="1" />
         <param name="weight_col" value="2" />
-        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/eb01d5b8ae1073117102b9452ded71cd0dbb114f/data.tsv" />
+        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/data.tsv" />
         <param name="binsz" value="0.02" />
         <param name="window_size_RA" value="2.0" />
         <param name="window_size_DEC" value="2.0" />
@@ -122,7 +122,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="light_curve" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/eb01d5b8ae1073117102b9452ded71cd0dbb114f/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/testfile.tsv" />
         <param name="sep" value="tab" />
         <param name="column" value="c5" />
         <param name="weights_column" value="weight" />
@@ -140,8 +140,20 @@
   </tests>
   <help>Plot Tools
 ==========
+
+Set of tools for astronomical data visualization
+
+- sky_plot - visualize sky map using set of events as input
+- light_cure - calculate and visualize light curve from a set of evebts
+- spectrum - calculate energy spectrum using set of events as input
 </help>
   <citations>
-    <citation type="doi">10.1051/0004-6361/202243364</citation>
+    <citation type="bibtex">@misc{label,
+			title = {Tool repository},
+			url = {https://renkulab.io/projects/astronomy/mmoda/plot-tools},
+			author = {Oleg Kalashev},
+			year = {2024},
+			note = {}
+		}</citation>
   </citations>
 </tool>
