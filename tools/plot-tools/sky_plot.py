@@ -36,7 +36,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import SkyCoord
 from gammapy.maps import Map
-from oda_api.data_products import ImageDataProduct
+from oda_api.data_products import ImageDataProduct, PictureProduct
 
 def create_test_data():
     Nevents = 1000
@@ -71,15 +71,18 @@ plt.savefig("map.png")
 map.write("map.fits", overwrite=True)
 fits_image = ImageDataProduct.from_fits_file("map.fits")
 
-# plot = PictureProduct.from_file('map.png')
-# fits_image=fits_image #  # http://odahub.io/ontology#Image
+plot = PictureProduct.from_file("map.png")
 
 plot = plot  # http://odahub.io/ontology#ODAPictureProduct
+fits_image = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(("out_sky_plot_plot", "plot_galaxy.output", plot))
+_oda_outs.append(
+    ("out_sky_plot_fits_image", "fits_image_galaxy.output", fits_image)
+)
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)

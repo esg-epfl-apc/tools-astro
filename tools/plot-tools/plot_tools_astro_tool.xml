@@ -1,8 +1,8 @@
 <tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="1.2.28">oda-api</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
-    <requirement type="package" version="7.0.0">astropy</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
     <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
   </requirements>
@@ -77,6 +77,9 @@
     <data label="${tool.name} -&gt; sky_plot plot" name="out_sky_plot_plot" format="auto" from_work_dir="plot_galaxy.output">
       <filter>_data_product['_selector'] == 'sky_plot'</filter>
     </data>
+    <data label="${tool.name} -&gt; sky_plot fits_image" name="out_sky_plot_fits_image" format="auto" from_work_dir="fits_image_galaxy.output">
+      <filter>_data_product['_selector'] == 'sky_plot'</filter>
+    </data>
     <data label="${tool.name} -&gt; light_curve histogram_data" name="out_light_curve_histogram_data" format="auto" from_work_dir="histogram_data_galaxy.output">
       <filter>_data_product['_selector'] == 'light_curve'</filter>
     </data>
@@ -88,7 +91,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="spectrum" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/testfile.tsv" />
         <param name="sep" value="auto" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
@@ -103,13 +106,13 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="1">
+    <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="sky_plot" />
         <param name="ra_col" value="0" />
         <param name="dec_col" value="1" />
         <param name="weight_col" value="2" />
-        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/data.tsv" />
+        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/data.tsv" />
         <param name="binsz" value="0.02" />
         <param name="window_size_RA" value="2.0" />
         <param name="window_size_DEC" value="2.0" />
@@ -122,7 +125,7 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="light_curve" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/d399f4faab149588c6e86421b652717dec319173/testfile.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/testfile.tsv" />
         <param name="sep" value="tab" />
         <param name="column" value="c5" />
         <param name="weights_column" value="weight" />
