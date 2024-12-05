@@ -1,0 +1,1 @@
+{"filter": ["Euclid|VIS.vis", "Euclid|NISP.Y", "Euclid|NISP.J", "Euclid|NISP.H", "LSST|LSST.g", "LSST|LSST.r", "LSST|LSST.i", "LSST|LSST.z"], "flux": ["VIS_vis", "NISP_Y", "NISP_J", "NISP_H", "LSST_g", "LSST_r", "LSST_i", "LSST_z"], "flux_error": ["eVIS_vis", "eNISP_Y", "eNISP_J", "eNISP_H", "eLSST_g", "eLSST_r", "eLSST_i", "eLSST_z"]}

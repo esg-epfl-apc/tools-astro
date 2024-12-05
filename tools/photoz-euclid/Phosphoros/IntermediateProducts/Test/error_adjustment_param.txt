@@ -1,0 +1,16 @@
+# Column: Filter string
+# Column: Alpha double
+# Column: Beta double
+# Column: Gamma double
+
+#         Filter Alpha Beta Gamma
+
+     LSST/LSST.z     1    0     0
+     LSST/LSST.u     1    0     0
+  Euclid/VIS.vis     1    0     0
+   Euclid/NISP.Y     1    0     0
+     LSST/LSST.g     1    0     0
+   Euclid/NISP.H     1    0     0
+   Euclid/NISP.J     1    0     0
+     LSST/LSST.i     1    0     0
+     LSST/LSST.r     1    0     0
