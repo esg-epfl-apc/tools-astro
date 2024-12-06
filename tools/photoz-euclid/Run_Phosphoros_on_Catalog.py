@@ -68,7 +68,8 @@ print("Start")
 # inputs & parameters
 
 # input catalog
-catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
+# catalog_URL = 'https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
+catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'data/Catalogs/Catalog_Galaxy_n1K.fits' #http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
 # for tests
 # catalog_URL = 'https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileURL ; oda:group "Catalog filter" ; oda:label ""
@@ -640,7 +641,7 @@ if column_name_DustColumnDensity != "NONE":
     run_FMG += " --config-file " + repo_basedir + conf_file
     run_FMG += (
         " --phosphoros-root "
-        + workdir
+        + repo_basedir
         + " --intermediate-products-dir "
         + workdir
         + " --catalog-type tmp"
