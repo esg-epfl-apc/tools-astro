@@ -34,9 +34,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["src_name", "RA", "DEC", "Radius", "data_release"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 # https://arxiv.org/pdf/2208.08513  Table 2
 # def compute_magnitude(flux, mw_transmission):
@@ -162,15 +161,50 @@ names = (
 )
 cat = ODAAstropyTable(Table(data, names=names))
 
-catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
+dict_filters = json.dumps(
+    {
+        "filter": [
+            "DECam|DECam.g",
+            "DECam|DECam.r",
+            "DECam|DECam.z",
+            "DECam|DECam.i",
+            "WISE|WISE.W1",
+            "WISE|WISE.W2",
+        ],
+        "flux_error": [
+            "flux_g_err[Jy]",
+            "flux_r_err[Jy]",
+            "flux_z_err[Jy]",
+            "flux_i_err[Jy]",
+            "flux_w1_err[Jy]",
+            "flux_w2_err[Jy]",
+        ],
+        "flux": [
+            "flux_g[Jy]",
+            "flux_r[Jy]",
+            "flux_z[Jy]",
+            "flux_i[Jy]",
+            "flux_w1[Jy]",
+            "flux_w2[Jy]",
+        ],
+    }
+)
 
-Table(data, names=names)
+catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
+dictionary_filters = dict_filters  # http://odahub.io/ontology#ODATextProduct
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
     ("out_Catalog_catalog_table", "catalog_table_galaxy.output", catalog_table)
+)
+_oda_outs.append(
+    (
+        "out_Catalog_dictionary_filters",
+        "dictionary_filters_galaxy.output",
+        dictionary_filters,
+    )
 )
 
 for _outn, _outfn, _outv in _oda_outs:

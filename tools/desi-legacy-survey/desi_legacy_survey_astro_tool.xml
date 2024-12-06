@@ -1,12 +1,12 @@
 <tool id="desi_legacy_survey_astro_tool" name="DESI Legacy Survey" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="6.1.4">astropy</requirement>
-    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="3.9.3">matplotlib</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="7.16.4">nbconvert</requirement>
     <requirement type="package" version="0.4.7">astroquery</requirement>
     <requirement type="package" version="1.2.33">oda-api</requirement>
-    <requirement type="package" version="8.29.0">ipython</requirement>
+    <requirement type="package" version="8.30.0">ipython</requirement>
     <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
@@ -49,6 +49,9 @@
     <data label="${tool.name} -&gt; Catalog catalog_table" name="out_Catalog_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output">
       <filter>_data_product['_selector'] == 'Catalog'</filter>
     </data>
+    <data label="${tool.name} -&gt; Catalog dictionary_filters" name="out_Catalog_dictionary_filters" format="auto" from_work_dir="dictionary_filters_galaxy.output">
+      <filter>_data_product['_selector'] == 'Catalog'</filter>
+    </data>
   </outputs>
   <tests>
     <test expect_num_outputs="1">
@@ -66,7 +69,7 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="1">
+    <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Catalog" />
         <param name="src_name" value="Mrk 421" />
@@ -80,6 +83,10 @@
       </assert_stdout>
     </test>
   </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <help>And here, the help text for the galaxy tool goes.
 </help>
 </tool>
