@@ -46,9 +46,19 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "RA",
+    "DEC",
+    "T1",
+    "T2",
+    "Radius",
+    "R_s",
+    "Emin",
+    "Emax",
+    "NTbins",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd

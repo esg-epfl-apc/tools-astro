@@ -143,6 +143,10 @@
       </assert_stdout>
     </test>
   </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <help>This service provides analysis of publicly available sample &#8220;Data Level
 3&#8221; (DL3) data of HESS gamma-ray telescope, described by `Hess
 Collaboration (2018) &lt;https://arxiv.org/abs/1810.04516&gt;`__. Three types
