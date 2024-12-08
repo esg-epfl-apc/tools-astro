@@ -42,9 +42,18 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "RA",
+    "Dec",
+    "tstart_rel_mseconds",
+    "tstop_rel_seconds",
+    "t0_utc",
+    "required_completeness",
+    "mode",
+    "global_snr_threshold",
+    "negative_excesses",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 t0_utc
 

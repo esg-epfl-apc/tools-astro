@@ -25,9 +25,15 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "T1",
+    "T2",
+    "detection_time_scales",
+    "lc_time_scale",
+    "background_age",
+    "min_sn",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import numpy as np
 from astropy.time import Time
