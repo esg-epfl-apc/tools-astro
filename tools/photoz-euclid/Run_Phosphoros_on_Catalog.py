@@ -68,8 +68,7 @@ print("Start")
 # inputs & parameters
 
 # input catalog
-# catalog_URL = 'https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
-catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
+catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'data/Catalogs/Catalog_Galaxy_n1K.fits' #http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
 # for tests
 # catalog_URL = 'https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileURL ; oda:group "Catalog filter" ; oda:label ""
@@ -249,7 +248,7 @@ os.makedirs(path_out, exist_ok=True)
 os.makedirs(path_results, exist_ok=True)
 
 # get the input catalog and save it into tmp/ directory as Input_Catalog.fits
-input_file = path_tmp + "Input_Catalog.fits "
+input_file = path_tmp + "Input_Catalog.fits"
 
 read_from_url = False
 try:
@@ -262,8 +261,9 @@ except:
 
 if read_from_url:
     try:
+        # output = subprocess.check_output('wget -nv -O ' + input_file + catalog_URL, shell=True).decode()
         output = subprocess.check_output(
-            "wget -nv -O " + input_file + catalog_URL, shell=True
+            "wget -O " + input_file + ' "' + catalog_URL + '"', shell=True
         ).decode()
     except:
         raise RuntimeError("File NOT found")
