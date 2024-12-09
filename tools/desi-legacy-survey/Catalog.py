@@ -76,7 +76,7 @@ except:
 
 tap_result = query
 
-from oda_api.data_products import ODAAstropyTable, TextLikeProduct
+from oda_api.data_products import ODAAstropyTable
 
 ra = tap_result["ra"]
 dec = tap_result["dec"]
@@ -161,35 +161,34 @@ names = (
 )
 cat = ODAAstropyTable(Table(data, names=names))
 
-dict_filters = TextLikeProduct(
-    json.dumps(
-        {
-            "filter": [
-                "DECam|DECam.g",
-                "DECam|DECam.r",
-                "DECam|DECam.z",
-                "DECam|DECam.i",
-                "WISE|WISE.W1",
-                "WISE|WISE.W2",
-            ],
-            "flux_error": [
-                "flux_g_err[Jy]",
-                "flux_r_err[Jy]",
-                "flux_z_err[Jy]",
-                "flux_i_err[Jy]",
-                "flux_w1_err[Jy]",
-                "flux_w2_err[Jy]",
-            ],
-            "flux": [
-                "flux_g[Jy]",
-                "flux_r[Jy]",
-                "flux_z[Jy]",
-                "flux_i[Jy]",
-                "flux_w1[Jy]",
-                "flux_w2[Jy]",
-            ],
-        }
-    )
+# dict_filters = json.dumps({"filter": ["DECam|DECam.g", "DECam|DECam.r", "DECam|DECam.z", "DECam|DECam.i", "WISE|WISE.W1", "WISE|WISE.W2"], "flux_error": ["flux_g_err[Jy]", "flux_r_err[Jy]", "flux_z_err[Jy]", "flux_i_err[Jy]", "flux_w1_err[Jy]", "flux_w2_err[Jy]"], "flux": ["flux_g[Jy]", "flux_r[Jy]", "flux_z[Jy]", "flux_i[Jy]", "flux_w1[Jy]", "flux_w2[Jy]"]})
+dict_filters = str(
+    {
+        "filter": [
+            "DECam|DECam.g",
+            "DECam|DECam.r",
+            "DECam|DECam.z",
+            "DECam|DECam.i",
+            "WISE|WISE.W1",
+            "WISE|WISE.W2",
+        ],
+        "flux_error": [
+            "flux_g_err[Jy]",
+            "flux_r_err[Jy]",
+            "flux_z_err[Jy]",
+            "flux_i_err[Jy]",
+            "flux_w1_err[Jy]",
+            "flux_w2_err[Jy]",
+        ],
+        "flux": [
+            "flux_g[Jy]",
+            "flux_r[Jy]",
+            "flux_z[Jy]",
+            "flux_i[Jy]",
+            "flux_w1[Jy]",
+            "flux_w2[Jy]",
+        ],
+    }
 )
 
 catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
