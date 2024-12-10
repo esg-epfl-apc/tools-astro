@@ -79,14 +79,40 @@ df_vec_url, df_url_scores = create_url_vector(
     text_id, data_path, file_dict_sens_inst, df_vec_init_pred, df_sor
 )
 
-t_tel = ODAAstropyTable(Table.from_pandas(df_tel.map(str)))
-t_sor = ODAAstropyTable(Table.from_pandas(df_sor.map(str)))
-t_unk_sor = ODAAstropyTable(Table.from_pandas(df_unk_sor.map(str)))
-t_cla = ODAAstropyTable(Table.from_pandas(df_cla.map(str)))
-t_astrobert = ODAAstropyTable(Table.from_pandas(df_astrobert.map(str)))
-t_vec_init_pred = ODAAstropyTable(Table.from_pandas(df_vec_init_pred.map(str)))
-t_vec_url = ODAAstropyTable(Table.from_pandas(df_vec_url.map(str)))
-t_url_scores = ODAAstropyTable(Table.from_pandas(df_url_scores.map(str)))
+t_tel = ODAAstropyTable(
+    Table.from_pandas(df_tel.map(str).map(lambda x: x.encode("utf-8").strip()))
+)
+t_sor = ODAAstropyTable(
+    Table.from_pandas(df_sor.map(str).map(lambda x: x.encode("utf-8").strip()))
+)
+t_unk_sor = ODAAstropyTable(
+    Table.from_pandas(
+        df_unk_sor.map(str).map(lambda x: x.encode("utf-8").strip())
+    )
+)
+t_cla = ODAAstropyTable(
+    Table.from_pandas(df_cla.map(str).map(lambda x: x.encode("utf-8").strip()))
+)
+t_astrobert = ODAAstropyTable(
+    Table.from_pandas(
+        df_astrobert.map(str).map(lambda x: x.encode("utf-8").strip())
+    )
+)
+t_vec_init_pred = ODAAstropyTable(
+    Table.from_pandas(
+        df_vec_init_pred.map(str).map(lambda x: x.encode("utf-8").strip())
+    )
+)
+t_vec_url = ODAAstropyTable(
+    Table.from_pandas(
+        df_vec_url.map(str).map(lambda x: x.encode("utf-8").strip())
+    )
+)
+t_url_scores = ODAAstropyTable(
+    Table.from_pandas(
+        df_url_scores.map(str).map(lambda x: x.encode("utf-8").strip())
+    )
+)
 
 print(df_sor)
 print(df_unk_sor)
