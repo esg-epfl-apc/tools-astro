@@ -30,9 +30,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["text", "number"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 text_id_text = text
 text_id = number
