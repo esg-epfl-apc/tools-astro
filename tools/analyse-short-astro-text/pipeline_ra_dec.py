@@ -341,10 +341,11 @@ def rule_based_ra_dec_detector(text_id, text_id_text):
     df_final = merge_ra_dec(text_id, df_init)
     good_ra_dec = astropy_test(df_final)
     print(good_ra_dec)
-    dict_out = {"TEXT_ID":[], "RA":[], "DEC":[]}
+    dict_out = {"TEXT_ID":[], "RA":[], "Dec":[], "Main ID Name":[]}
     for ra_dec in good_ra_dec:
         dict_out["TEXT_ID"].append(text_id)
+        dict_out["Main ID Name"].append("NoName")
         dict_out["RA"].append(ra_dec.ra.deg)
-        dict_out["DEC"].append(ra_dec.dec.deg)
+        dict_out["Dec"].append(ra_dec.dec.deg)
 
     return pd.DataFrame(dict_out)

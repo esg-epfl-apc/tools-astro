@@ -7,11 +7,13 @@ import json
 import os
 import shutil
 
+import pandas as pd
 from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
 from oda_api.json import CustomJSONEncoder
 from pipeline_astrobert import get_astroBERT_cleaned_result
 from pipeline_create_url_vector import create_url_vector
+from pipeline_ra_dec import rule_based_ra_dec_detector
 from pipeline_source_classes import detect_source_classes
 from pipeline_sources import query_info_sources, rule_based_source_detector
 from pipeline_telescope import rule_based_telescope_detector
@@ -19,6 +21,8 @@ from pipeline_vectorize_text import vectorize_text
 from predict_vectorised_text import predict_vector
 
 text = "We received an alert about a candidate fast transient from the FINK broker (Peloton, Ishida & Moller et al.) on 2024-06-22 09:58:42.001 UTC, named ZTF24aasjjkf (https://fink-portal.org/ZTF24aasjjkf). This transient was classified by FINK on the same day with a 17 percent probability of being a fast transient. We triggered the TAROT-TCA and TRT-SRO telescopes for further investigation, observing in the R, r', and i' bands, and collecting data from 2024-06-23 around 04:55:14 UTC to 2024-06-24 01:00:00 UTC. Our results, along with public ZTF data, can be found here: https://skyportal-icare.ijclab.in2p3.fr/public/sources/ZTF24aasjjkf/version/07cf393bb53513abe80d3b7863938d8f TAROT-TCA telescope observations can be also labeled as generic in the plot. We utilized STDWeb (Karpov et al.) to perform our photometry, using the Pan-STARRS DR1 (PS1) catalog and subtracting the constant flux of background with a reference PS1 image. We note that in the TAROT-TCA data, we have slight contamination from other stars. However, we mitigated this effect by subtracting the PS1 reference image. According to the ZTF data in the r' band, both before and after our observations, as well as ATLAS data (in the orange band) and the Gaia Alert (2024LXA), the source might be 10 days old or more. Its multi-band light curve is not consistent with a fast transient like a kilonova (a decay rate of 0.15 per day in r-band) but resembles a supernova (also classified by FINK on 2024-06-24 at 08:00 UTC). The source has been independently classified by Jianlin Xu et al. as a CV. We thank the FINK team for their valuable collaboration with GRANDMA. GRANDMA is a worldwide telescope network (https://grandma.lal.in2p3.fr/) devoted to the observation of transients in the context of multi-messenger astrophysics (Antier et al. 2020 MNRAS 497, 5518). Kilonova-Catcher (KNC) is the citizen science program of GRANDMA (http://kilonovacatcher.in2p3.fr/)."  # http://odahub.io/ontology#LongString
+# text="The candidate Be/X-ray Binary system RX J0032.9-7348 (ATEL #16880) has been detected in 2 observations conducted by the Swift SMC Survey (S-CUBED) over the past month. This system was first detected by S-CUBED on 22 October 2024 with a 0.3-10 keV band flux of 1.46 x 10^-11 erg/cm^2/s. The most recent detection, obtained by Swift on 11 November 2024, shows that the source has since brightened to a 0.3-10 keV flux of 2.77 x 10^-11 erg/cm^2/s. The time-averaged spectrum of both observations is best fit to an absorbed power law with a photon index of 0.7 (+0.5, -0.4) and a column density of NH = 4.2 (+29.9, - 4.2) x 10^20 cm^-2.Using S-CUBED data, we can refine the localization of this source to a new position of: R.A. = 00:32:59.30 (8.22459d), Dec. = -73:48:28.1 (-73.8078d) with a 90% confidence error region of 4.3 arc-seconds. This new position places RX J0032.9-7348 within 5â of two early-type stars. One of these stars is the B0.5V star GSC 09141-01338 (Evans et al., 2004). The other is marked as Object 1 in Figure 1a of Stevens el al. (1999), where it is observed to have an emission feature that corresponds to the Balmer Series Hydrogen alpha line. However, those authors were searching a large ROSAT error region and warned that there were many such H-alpha emitters in the region. At this time, the exact optical counterpart cannot be determined. Further observations are required to distinguish between the two stars. "
+
 number = "ATel #16672"  # http://odahub.io/ontology#String
 
 _galaxy_wd = os.getcwd()
@@ -68,6 +72,18 @@ df_sor, df_unk_sor = query_info_sources(
     text_id, list(set(regex_sources + astrobert_sources))
 )
 
+df_pos_0 = rule_based_ra_dec_detector(text_id, text)
+df_pos = (
+    pd.concat(
+        [df_pos_0, df_sor],
+        axis=0,
+        names=["Main ID Name", "RA", "Dec"],
+        ignore_index=True,
+    )
+    .drop(labels=["Raw Source Name", "OTYPE"], axis=1)
+    .drop_duplicates(subset=["RA", "Dec"])
+)
+
 df_cla = detect_source_classes(
     text_id, text_id_text.lower(), df_sor, simbad_node_file
 )
@@ -84,6 +100,9 @@ t_tel = ODAAstropyTable(
 )
 t_sor = ODAAstropyTable(
     Table.from_pandas(df_sor.map(str).map(lambda x: x.encode("utf-8").strip()))
+)
+t_pos = ODAAstropyTable(
+    Table.from_pandas(df_pos.map(str).map(lambda x: x.encode("utf-8").strip()))
 )
 t_unk_sor = ODAAstropyTable(
     Table.from_pandas(
@@ -116,6 +135,8 @@ t_url_scores = ODAAstropyTable(
 
 print(df_sor)
 print(df_unk_sor)
+print(df_pos_0)
+print(df_pos)
 print(df_tel)
 print(df_cla)
 print(df_astrobert)
@@ -123,6 +144,7 @@ print(df_vec_init_pred)
 
 table_telescopes = t_tel  # http://odahub.io/ontology#ODAAstropyTable
 table_sources = t_sor  # http://odahub.io/ontology#ODAAstropyTable
+table_source_positions = t_pos  # http://odahub.io/ontology#ODAAstropyTable
 table_unknown_sources = t_unk_sor  # http://odahub.io/ontology#ODAAstropyTable
 table_source_classes = t_cla  # http://odahub.io/ontology#ODAAstropyTable
 table_astrobert_results = (
@@ -151,6 +173,13 @@ _oda_outs.append(
         "out_extract_data_predict_workflow_table_sources",
         "table_sources_galaxy.output",
         table_sources,
+    )
+)
+_oda_outs.append(
+    (
+        "out_extract_data_predict_workflow_table_source_positions",
+        "table_source_positions_galaxy.output",
+        table_source_positions,
     )
 )
 _oda_outs.append(
