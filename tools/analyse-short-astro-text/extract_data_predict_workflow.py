@@ -69,7 +69,6 @@ regex_sources = rule_based_source_detector(text_id, text_id_text)
 df_sor, df_unk_sor = query_info_sources(
     text_id, list(set(regex_sources + astrobert_sources))
 )
-
 df_pos_0 = rule_based_ra_dec_detector(text_id, text)
 df_pos = (
     pd.concat(
