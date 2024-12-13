@@ -5,16 +5,18 @@
 
 import json
 import os
+import time
 import warnings
 
 warnings.filterwarnings("ignore")
 
 from catalogs_methods import *
 from data_treatment import *
+from plots import *
 
-ra = 120  # http://odahub.io/ontology#AngleDegrees
-dec = -60  # http://odahub.io/ontology#AngleDegrees
-thresh_arcmin = 10  # http://odahub.io/ontology#arcmin
+ra = 83.7  # http://odahub.io/ontology#AngleDegrees
+dec = -11  # http://odahub.io/ontology#AngleDegrees
+thresh_arcmin = 1  # http://odahub.io/ontology#arcmin
 
 _galaxy_wd = os.getcwd()
 
@@ -30,6 +32,13 @@ for _vn in ["ra", "dec", "thresh_arcmin"]:
 
 sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
 msg_out = sources["out_msg"]  # http://odahub.io/ontology#String
+only_spectrum = True
+print(msg_out)
+
+t1 = time.time()
+plot_power_spectrum(ra, dec, thresh_arcmin, only_spectrum)
+t2 = time.time()
+print(t2 - t1)
 
 # output gathering
 _galaxy_meta_data = {}
