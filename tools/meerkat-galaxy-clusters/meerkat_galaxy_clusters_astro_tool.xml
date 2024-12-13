@@ -1,0 +1,38 @@
+<tool id="meerkat_galaxy_clusters_astro_tool" name="Meerkat Galaxy clusters" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="3.9.3">matplotlib</requirement>
+    <requirement type="package" version="7.0.0">astropy</requirement>
+    <requirement type="package" version="2.2.0">numpy</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <requirement type="package" version="2.0.2">photutils</requirement>
+    <requirement type="package" version="1.35.36">boto3</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.4">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/ps_around_source.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="ra" type="float" value="120" label="ra (unit: deg)" />
+    <param name="dec" type="float" value="-60" label="dec (unit: deg)" />
+    <param name="thresh_arcmin" type="integer" value="10" label="thresh_arcmin (unit: arcmin)" />
+  </inputs>
+  <outputs />
+  <tests>
+    <test expect_num_outputs="0">
+      <param name="ra" value="120" />
+      <param name="dec" value="-60" />
+      <param name="thresh_arcmin" value="10" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+</tool>
