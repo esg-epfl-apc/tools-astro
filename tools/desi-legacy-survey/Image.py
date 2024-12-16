@@ -90,7 +90,9 @@ try:
         image_band=image_band,
     )
 except:
-    raise RuntimeError("No data found. Maybe wrong RA, Dec or Data Release.")
+    raise RuntimeError(
+        f"No data found. Maybe (RA, Dec) = ({ra_s}, {dec_s}) is outside the covered region by Data Release {dr}."
+    )
 
 hdul = query[0]
 hdul[0].header

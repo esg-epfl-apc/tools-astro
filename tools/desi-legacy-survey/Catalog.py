@@ -71,12 +71,16 @@ if source.galactic.b > 0:
 else:
     print("DECALS")
 
+error_message = f"No data found, i.e. (RA, Dec) = ({ra_s}, {dec_s}) is outside the covered region by Data Release {dr}."
 try:
     query = DESILegacySurvey.query_region(
         coordinates=source, radius=Radius, data_release=dr
     )
 except:
-    raise RuntimeError("No data found. Maybe wrong RA, Dec or Data Release.")
+    raise RuntimeError(error_message)
+
+if len(query) == 0:
+    raise RuntimeError(error_message)
 
 tap_result = query
 
