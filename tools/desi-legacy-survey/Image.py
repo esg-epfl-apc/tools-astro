@@ -39,10 +39,10 @@ Radius = 3  # http://odahub.io/ontology#AngleMinutes
 pixsize = (
     1.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Pixel size"
 )
-band = (
-    "g"  # http://odahub.io/ontology#String ; oda:allowed_value "g","r","i","z"
+band = "g"  # http://odahub.io/ontology#String ; oda:allowed_value "g","r","i","z" ; oda:label "Band"
+data_release = (
+    9  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
 )
-data_release = 9  # http://odahub.io/ontology#Integer
 
 _galaxy_wd = os.getcwd()
 

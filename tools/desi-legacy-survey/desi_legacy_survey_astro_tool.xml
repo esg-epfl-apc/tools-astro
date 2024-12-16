@@ -1,7 +1,7 @@
 <tool id="desi_legacy_survey_astro_tool" name="DESI Legacy Survey" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="6.1.4">astropy</requirement>
-    <requirement type="package" version="3.9.3">matplotlib</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="7.16.4">nbconvert</requirement>
     <requirement type="package" version="0.4.7">astroquery</requirement>
@@ -25,20 +25,20 @@
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
         <param name="Radius" type="float" value="3" label="Radius (unit: arcmin)" />
         <param name="pixsize" type="float" value="1.0" label="Pixel size (unit: arcsec)" />
-        <param name="band" type="select" label="band">
+        <param name="band" type="select" label="Band">
           <option value="g" selected="true">g</option>
           <option value="i">i</option>
           <option value="r">r</option>
           <option value="z">z</option>
         </param>
-        <param name="data_release" type="integer" value="9" label="data_release" />
+        <param name="data_release" type="integer" value="9" label="Data Release" />
       </when>
       <when value="Catalog">
         <param name="src_name" type="text" value="Mrk 421" label="src_name" />
         <param name="RA" type="float" value="166.113808" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
         <param name="Radius" type="float" value="1" label="Radius (unit: arcmin)" />
-        <param name="data_release" type="integer" value="9" label="data_release" />
+        <param name="data_release" type="integer" value="9" label="Data Release" />
       </when>
     </conditional>
   </inputs>
