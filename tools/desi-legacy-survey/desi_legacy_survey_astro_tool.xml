@@ -1,7 +1,7 @@
 <tool id="desi_legacy_survey_astro_tool" name="DESI Legacy Survey" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="6.1.4">astropy</requirement>
-    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="7.16.4">nbconvert</requirement>
     <requirement type="package" version="0.4.7">astroquery</requirement>
