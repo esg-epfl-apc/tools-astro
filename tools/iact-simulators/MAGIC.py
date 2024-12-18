@@ -403,46 +403,35 @@ def Checks():
         )
         return False
     if (extension > 0.5) and (numoff > 1):
-        print(
-            "For large source extensions 1 OFF estimation region (numoff) should be used"
-        )
         raise RuntimeError(
-            "Number of OFF estimation regions must be in the range 1-7"
+            "or large source extensions 1 OFF estimation region (numoff) should be used"
         )
         return False
     if isSUMT and ismidzd:
-        print("Sorry not implemented yet :-(")
+        raise RuntimeError("Sorry not implemented yet :-(")
         return False
     if isLSTmode and isSUMT:
-        print("LST mode is not compatible with SUMT")
+        raise RuntimeError("LST mode is not compatible with SUMT")
         return False
     if offsetdegrad > 1.00001:
-        print(
-            "No cheating! the performance degradation ({0}) should not be larger then 1".format(
-                offsetdegrad
-            )
+        raise RuntimeError(
+            "No cheating! the performance degradation ({0}) should not be larger then 1"
         )
         return False
     if pulsarmode:
         if pulsarOnRange <= 0 or pulsarOnRange >= 1:
-            print(
-                "Pulsar mode ON phase range is {0}, and it should be in range (0,1)".format(
-                    pulsarOnRange
-                )
+            raise RuntimeError(
+                "Pulsar mode ON phase range is {0}, and it should be in range (0,1)"
             )
             return False
         if pulsarOffRange <= 0 or pulsarOffRange >= 1:
-            print(
-                "Pulsar mode OFF phase range is {0}, and it should be in range (0,1)".format(
-                    pulsarOffRange
-                )
+            raise RuntimeError(
+                "Pulsar mode OFF phase range is {0}, and it should be in range (0,1)"
             )
             return False
         if redshift > 0:
-            print(
-                "Do you really want to observe a pulsar at redshift of {0} ??".format(
-                    redshift
-                )
+            raise RuntimeError(
+                "Do you really want to observe a pulsar at redshift of {0} ??"
             )
     return True
 
