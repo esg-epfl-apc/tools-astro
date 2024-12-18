@@ -36,7 +36,7 @@
     <param name="eplotmax" type="float" value="20000.0" label="eplotmax (unit: GeV)" min="30.01" max="29999.0" />
     <param name="yplotmin" type="float" value="1e-14" label="yplotmin" />
     <param name="yplotmax" type="float" value="1e-09" label="yplotmax" />
-    <param name="minerror" type="integer" value="2" label="minerror" />
+    <param name="minerror" type="float" value="2" label="minerror" />
     <param name="drawsigma" type="boolean" checked="true" label="drawsigma" />
     <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="dN_dE" />
     <param name="pulsarmode" type="boolean" label="pulsarmode" />

@@ -33,15 +33,15 @@ ismidzd = False  #  http://odahub.io/ontology#Boolean
 isSUMT = False  #  http://odahub.io/ontology#Boolean
 
 numoff = 3  # http://odahub.io/ontology#Integer
-minev = 10.0  # http://odahub.io/ontology#Double
-minSBR = 0.05  # http://odahub.io/ontology#Double
+minev = 10.0  # http://odahub.io/ontology#Float
+minSBR = 0.05  # http://odahub.io/ontology#Float
 PSF = 0.1  # http://odahub.io/ontology#AngleDegrees
-offsetdegrad = 1.0  # http://odahub.io/ontology#Double
+offsetdegrad = 1.0  # http://odahub.io/ontology#Float
 eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
 eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Double
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Double
-minerror = 2  # http://odahub.io/ontology#Double
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float
+minerror = 2  # http://odahub.io/ontology#Float
 drawsigma = True  # http://odahub.io/ontology#Boolean
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String
 
@@ -49,10 +49,10 @@ pulsarmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis"
 )
 pulsarOnRange = (
-    0.092  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
+    0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"
 )
 pulsarOffRange = (
-    0.25  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
+    0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"
 )
 
 isLSTmode = False  # http://odahub.io/ontology#Boolean
