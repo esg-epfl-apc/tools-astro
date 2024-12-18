@@ -1,0 +1,183 @@
+<tool id="magic_astro_tool" name="MAGIC" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="8.30.0">ipython</requirement>
+    <requirement type="package" version="7.0.0">astropy</requirement>
+    <requirement type="package" version="2.2.0">numpy</requirement>
+    <requirement type="package" version="1.14.1">scipy</requirement>
+    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.4">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="_data_product">
+      <param name="_selector" type="select" label="Data Product">
+        <option value="Image" selected="true">Image</option>
+        <option value="Spectrum" selected="false">Spectrum</option>
+        <option value="MAGIC_simulator" selected="false">MAGIC_simulator</option>
+      </param>
+      <when value="Image">
+        <param name="src_name" type="text" value="Crab" label="src_name" />
+        <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
+        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
+        <param name="T2" type="text" value="2024-10-10T13:16:00.0" label="T2" />
+        <param name="Radius_search" type="float" value="2.0" label="Radius_search (unit: deg)" />
+        <param name="Radius_image" type="float" value="2.0" label="Radius_image (unit: deg)" />
+        <param name="pixsize" type="float" value="0.025" label="Pixel size (unit: deg)" />
+        <param name="Emin" type="float" value="0.1" label="Emin (unit: TeV)" />
+        <param name="Emax" type="float" value="100" label="Emax (unit: TeV)" />
+      </when>
+      <when value="Spectrum">
+        <param name="src_name" type="text" value="Crab" label="src_name" />
+        <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
+        <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
+        <param name="T2" type="text" value="2024-10-10T13:16:00.0" label="T2" />
+        <param name="Radius_search" type="float" value="2.0" label="Radius_search (unit: deg)" />
+        <param name="pixsize" type="float" value="0.025" label="Pixel size (unit: deg)" />
+        <param name="R_s" type="float" value="0.2" label="R_s (unit: deg)" />
+        <param name="Emin" type="float" value="0.1" label="Emin (unit: TeV)" />
+        <param name="Emax" type="float" value="30.0" label="Emax (unit: TeV)" />
+        <param name="NEbins" type="integer" value="30" label="NEbins" />
+        <param name="Efit_min" type="float" value="0.2" label="Efit_min (unit: TeV)" />
+        <param name="Efit_max" type="float" value="10.0" label="Efit_max (unit: TeV)" />
+      </when>
+      <when value="MAGIC_simulator">
+        <param name="src_name" type="text" value="Crab" label="src_name" />
+        <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
+        <param name="timeh" type="float" value="20" label="timeh (unit: hour)" />
+        <param name="extension" type="float" value="0.0" label="extension (unit: deg)" />
+        <param name="redshift" type="float" value="0.13" label="redshift" />
+        <param name="ismidzd" type="boolean" label="ismidzd" />
+        <param name="isSUMT" type="boolean" label="isSUMT" />
+        <param name="numoff" type="integer" value="3" label="numoff" />
+        <param name="minev" type="float" value="10.0" label="minev" />
+        <param name="minSBR" type="float" value="0.05" label="minSBR" />
+        <param name="PSF" type="float" value="0.1" label="PSF (unit: deg)" />
+        <param name="offsetdegrad" type="float" value="1.0" label="offsetdegrad" />
+        <param name="eplotmin" type="float" value="31" label="eplotmin (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="eplotmax" type="float" value="20000.0" label="eplotmax (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="yplotmin" type="float" value="1e-14" label="yplotmin" />
+        <param name="yplotmax" type="float" value="1e-09" label="yplotmax" />
+        <param name="minerror" type="integer" value="2" label="minerror" />
+        <param name="drawsigma" type="boolean" checked="true" label="drawsigma" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="dN_dE" />
+        <param name="pulsarmode" type="boolean" label="pulsarmode" />
+        <param name="pulsarOnRange" type="float" value="0.092" label="pulsarOnRange" />
+        <param name="pulsarOffRange" type="float" value="0.25" label="pulsarOffRange" />
+        <param name="isLSTmode" type="boolean" label="isLSTmode" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; Image png" name="out_Image_png" format="auto" from_work_dir="png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Image fits" name="out_Image_fits" format="auto" from_work_dir="fits_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum png" name="out_Spectrum_png" format="auto" from_work_dir="png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum table_confidence_contour" name="out_Spectrum_table_confidence_contour" format="auto" from_work_dir="table_confidence_contour_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum table_spectrum" name="out_Spectrum_table_spectrum" format="auto" from_work_dir="table_spectrum_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; MAGIC_simulator spectrum_png" name="out_MAGIC_simulator_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'MAGIC_simulator'</filter>
+    </data>
+    <data label="${tool.name} -&gt; MAGIC_simulator spectrum_table" name="out_MAGIC_simulator_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'MAGIC_simulator'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="Image" />
+        <param name="src_name" value="Crab" />
+        <param name="RA" value="83.6287" />
+        <param name="DEC" value="22.0147" />
+        <param name="T1" value="2000-10-09T13:16:00.0" />
+        <param name="T2" value="2024-10-10T13:16:00.0" />
+        <param name="Radius_search" value="2.0" />
+        <param name="Radius_image" value="2.0" />
+        <param name="pixsize" value="0.025" />
+        <param name="Emin" value="0.1" />
+        <param name="Emax" value="100" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="3">
+      <conditional name="_data_product">
+        <param name="_selector" value="Spectrum" />
+        <param name="src_name" value="Crab" />
+        <param name="RA" value="83.6287" />
+        <param name="DEC" value="22.0147" />
+        <param name="T1" value="2000-10-09T13:16:00.0" />
+        <param name="T2" value="2024-10-10T13:16:00.0" />
+        <param name="Radius_search" value="2.0" />
+        <param name="pixsize" value="0.025" />
+        <param name="R_s" value="0.2" />
+        <param name="Emin" value="0.1" />
+        <param name="Emax" value="30.0" />
+        <param name="NEbins" value="30" />
+        <param name="Efit_min" value="0.2" />
+        <param name="Efit_max" value="10.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="MAGIC_simulator" />
+        <param name="src_name" value="Crab" />
+        <param name="RA" value="83.6287" />
+        <param name="DEC" value="22.0147" />
+        <param name="timeh" value="20" />
+        <param name="extension" value="0.0" />
+        <param name="redshift" value="0.13" />
+        <param name="ismidzd" value="False" />
+        <param name="isSUMT" value="False" />
+        <param name="numoff" value="3" />
+        <param name="minev" value="10.0" />
+        <param name="minSBR" value="0.05" />
+        <param name="PSF" value="0.1" />
+        <param name="offsetdegrad" value="1.0" />
+        <param name="eplotmin" value="31" />
+        <param name="eplotmax" value="20000.0" />
+        <param name="yplotmin" value="1e-14" />
+        <param name="yplotmax" value="1e-09" />
+        <param name="minerror" value="2" />
+        <param name="drawsigma" value="True" />
+        <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
+        <param name="pulsarmode" value="False" />
+        <param name="pulsarOnRange" value="0.092" />
+        <param name="pulsarOffRange" value="0.25" />
+        <param name="isLSTmode" value="False" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+</tool>
