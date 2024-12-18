@@ -16,6 +16,10 @@ from oda_api.json import CustomJSONEncoder
 from scipy.integrate import quad
 from scipy.interpolate import RegularGridInterpolator
 
+workdir = os.getcwd()
+repo_basedir = os.environ.get("BASEDIR", os.getcwd())
+repo_basedir
+
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
@@ -92,7 +96,9 @@ for _vn in [
 
 # global variables (DO NOT MODIFY)
 npoints = 13
-pathebl = "dominguez_ebl_tau.txt"  # path with EBL model of Dominguez+11
+pathebl = (
+    repo_basedir + "/dominguez_ebl_tau.txt"
+)  # path with EBL model of Dominguez+11
 
 version = "1.7"
 
