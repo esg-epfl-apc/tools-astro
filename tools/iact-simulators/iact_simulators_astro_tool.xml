@@ -83,4 +83,6 @@
     <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
     <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
   </environment_variables>
+  <help>Dummy tool help text.
+</help>
 </tool>
