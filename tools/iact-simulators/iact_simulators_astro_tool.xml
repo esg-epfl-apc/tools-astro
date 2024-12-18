@@ -27,26 +27,24 @@
         <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
         <param name="timeh" type="float" value="20" label="Observation time (unit: hour)" />
-        <param name="extension" type="float" value="0.0" label="extension (unit: deg)" />
-        <param name="redshift" type="float" value="0.13" label="redshift" />
-        <param name="ismidzd" type="boolean" label="ismidzd" />
-        <param name="isSUMT" type="boolean" label="isSUMT" />
-        <param name="numoff" type="integer" value="3" label="numoff" />
+        <param name="extension" type="float" value="0.0" label="extension" />
+        <param name="redshift" type="float" value="0.13" label="Source redshift" />
+        <param name="ismidzd" type="boolean" label="Zenith angle range 30-45 degrees?" />
+        <param name="isSUMT" type="boolean" label="Sum Trigger?" />
+        <param name="numoff" type="integer" value="3" label="number of background estimation regions" />
         <param name="minev" type="float" value="10.0" label="minev" />
-        <param name="minSBR" type="float" value="0.05" label="minSBR" />
-        <param name="PSF" type="float" value="0.1" label="PSF (unit: deg)" />
+        <param name="minSBR" type="float" value="0.05" label="minimum ratio of excess to background" />
         <param name="offsetdegrad" type="float" value="1.0" label="offsetdegrad" />
-        <param name="eplotmin" type="float" value="31" label="eplotmin (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="eplotmax" type="float" value="20000.0" label="eplotmax (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="yplotmin" type="float" value="1e-14" label="yplotmin" />
-        <param name="yplotmax" type="float" value="1e-09" label="yplotmax" />
-        <param name="minerror" type="float" value="2" label="minerror" />
-        <param name="drawsigma" type="boolean" checked="true" label="drawsigma" />
-        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="dN_dE" />
-        <param name="pulsarmode" type="boolean" label="pulsarmode" />
-        <param name="pulsarOnRange" type="float" value="0.092" label="pulsarOnRange" />
-        <param name="pulsarOffRange" type="float" value="0.25" label="pulsarOffRange" />
-        <param name="isLSTmode" type="boolean" label="isLSTmode" />
+        <param name="eplotmin" type="float" value="31" label="[TeV] x plot minimal (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="eplotmax" type="float" value="20000.0" label="[TeV] x plot maximal (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="yplotmin" type="float" value="1e-14" label="[TeV cm^-2 s^-1] y plot minimal" />
+        <param name="yplotmax" type="float" value="1e-09" label="[TeV cm^-2 s^-1] y plot maximal" />
+        <param name="minerror" type="float" value="2" label="Minimal error to show" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]" />
+        <param name="pulsarmode" type="boolean" label="Pulsar analysis?" />
+        <param name="pulsarOnRange" type="float" value="0.092" label="range of ON phases" />
+        <param name="pulsarOffRange" type="float" value="0.25" label="range of OFF phases" />
+        <param name="isLSTmode" type="boolean" label="MAGIC+LST1?" />
       </when>
       <when value="CTAO">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -104,14 +102,12 @@
         <param name="numoff" value="3" />
         <param name="minev" value="10.0" />
         <param name="minSBR" value="0.05" />
-        <param name="PSF" value="0.1" />
         <param name="offsetdegrad" value="1.0" />
         <param name="eplotmin" value="31" />
         <param name="eplotmax" value="20000.0" />
         <param name="yplotmin" value="1e-14" />
         <param name="yplotmax" value="1e-09" />
         <param name="minerror" value="2" />
-        <param name="drawsigma" value="True" />
         <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
         <param name="pulsarmode" value="False" />
         <param name="pulsarOnRange" value="0.092" />

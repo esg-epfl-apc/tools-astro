@@ -18,44 +18,43 @@ from scipy.interpolate import RegularGridInterpolator
 
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
-repo_basedir
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
-extension = 0.0  # http://odahub.io/ontology#AngleDegrees
-
-redshift = 0.13  # http://odahub.io/ontology#Double
-
-ismidzd = False  #  http://odahub.io/ontology#Boolean
-isSUMT = False  #  http://odahub.io/ontology#Boolean
-
-numoff = 3  # http://odahub.io/ontology#Integer
-minev = 10.0  # http://odahub.io/ontology#Float
-minSBR = 0.05  # http://odahub.io/ontology#Float
-PSF = 0.1  # http://odahub.io/ontology#AngleDegrees
-offsetdegrad = 1.0  # http://odahub.io/ontology#Float
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float
-minerror = 2  # http://odahub.io/ontology#Float
-drawsigma = True  # http://odahub.io/ontology#Boolean
-dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String
-
-pulsarmode = (
-    False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis"
-)
-pulsarOnRange = (
-    0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"
-)
-pulsarOffRange = (
-    0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"
+extension = (
+    0.0  # http://odahub.io/ontology#AngleDegrees; oda:label "Source extension"
 )
 
-isLSTmode = False  # http://odahub.io/ontology#Boolean
+redshift = (
+    0.13  # http://odahub.io/ontology#Double ; oda:label "Source redshift"
+)
+
+ismidzd = False  #  http://odahub.io/ontology#Boolean ; oda:label "Zenith angle range 30-45 degrees?"
+isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
+
+numoff = 3  # http://odahub.io/ontology#Integer ; oda:label "number of background estimation regions"
+minev = 10.0  # http://odahub.io/ontology#Float; oda:label "minimum number of events"
+minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
+offsetdegrad = 1.0  # http://odahub.io/ontology#Float # ; oda:label "degradation factor (for offset >0.4 deg)"
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "[TeV] x plot minimal" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "[TeV] x plot maximal" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "[TeV cm^-2 s^-1] y plot minimal"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "[TeV cm^-2 s^-1] y plot maximal"
+minerror = (
+    2  # http://odahub.io/ontology#Float ; oda:label "Minimal error to show"
+)
+dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
+
+pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
+pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
+pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"; oda:label "range of OFF phases"
+
+isLSTmode = (
+    False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -78,14 +77,12 @@ for _vn in [
     "numoff",
     "minev",
     "minSBR",
-    "PSF",
     "offsetdegrad",
     "eplotmin",
     "eplotmax",
     "yplotmin",
     "yplotmax",
     "minerror",
-    "drawsigma",
     "dN_dE",
     "pulsarmode",
     "pulsarOnRange",
@@ -101,6 +98,8 @@ pathebl = (
 )  # path with EBL model of Dominguez+11
 
 version = "1.7"
+PSF = 0.1  # http://odahub.io/ontology#AngleDegrees ; oda:label "Point Spread funciton (for worsening the performance for extended sources)
+drawsigma = True  # http://odahub.io/ontology#Boolean
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
