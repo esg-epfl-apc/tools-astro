@@ -3,24 +3,24 @@
 
 # flake8: noqa
 
+import copy
 import json
 import os
+import re
 import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import exp
 from oda_api.json import CustomJSONEncoder
 from scipy.integrate import quad
 from scipy.interpolate import RegularGridInterpolator
-
-srcname = "PWL+cutoff"  # name of the source
-# you can check visibility of your source e.g. here: http://www.magic.iac.es/scheduler/
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
-timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:descritpion "[h], time of observations"
+timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
 extension = 0.0  # http://odahub.io/ontology#AngleDegrees
 
 redshift = 0.13  # http://odahub.io/ontology#Double
@@ -96,11 +96,6 @@ pathebl = "dominguez_ebl_tau.txt"  # path with EBL model of Dominguez+11
 
 version = "1.7"
 
-import copy
-import re
-
-from numpy import exp, pow
-
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
 
@@ -125,15 +120,6 @@ def parse_spectrum(input_str):
 
 # test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
 Assumed = parse_spectrum(dN_dE)
-
-Assumed(39)
-
-# def Assumed(x):
-#    #return 2.7e-9*pow(x/100., -3.18)                                              # simple power-law
-#    return 2.0e-11*pow(x/1000., -1.99)*np.exp(-x/100)                               # power-law with an exponential cut-off
-#    #return 1.0e-11*pow(x/1000., -1.9)*np.exp(-pow(x/300, 0.5))                     # power-law with a non-exponential cut-off
-#    #return 0.007*3.39e-11*pow(x/1000., -2.51-0.21*np.log10(x/1000.))               # Crab Nebula [Aleksic et al. 2016]
-#    #return 0.1*np.exp(-x/200)*3.39e-11*pow(x/1000., -2.51-0.21*np.log10(x/1000.))  # 10% Crab with 200 GeV cut-off
 
 # Crab Nebula [Aleksic et al. 2016]
 def Crab(x):
@@ -407,16 +393,21 @@ def SignificanceLiMa(s, b, alpha):
 
 def Checks():
     if extension > 1:
-        print(
+        raise RuntimeError(
             "Extension comparable to the size of the MAGIC camera cannot be simulated"
         )
         return False
     if (numoff <= 0) or (numoff > 7):
-        print("Number of OFF estimation regions must be in the range 1-7")
+        raise RuntimeError(
+            "Number of OFF estimation regions must be in the range 1-7"
+        )
         return False
     if (extension > 0.5) and (numoff > 1):
         print(
             "For large source extensions 1 OFF estimation region (numoff) should be used"
+        )
+        raise RuntimeError(
+            "Number of OFF estimation regions must be in the range 1-7"
         )
         return False
     if isSUMT and ismidzd:
