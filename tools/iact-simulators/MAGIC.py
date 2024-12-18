@@ -24,28 +24,24 @@ RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
-extension = (
-    0.0  # http://odahub.io/ontology#AngleDegrees; oda:label "Source extension"
-)
+extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
 
 redshift = (
-    0.13  # http://odahub.io/ontology#Double ; oda:label "Source redshift"
+    0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
 )
 
 ismidzd = False  #  http://odahub.io/ontology#Boolean ; oda:label "Zenith angle range 30-45 degrees?"
 isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
 
 numoff = 3  # http://odahub.io/ontology#Integer ; oda:label "number of background estimation regions"
-minev = 10.0  # http://odahub.io/ontology#Float; oda:label "minimum number of events"
+minev = 10.0  # http://odahub.io/ontology#Float ; oda:label "minimum number of events"
 minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
-offsetdegrad = 1.0  # http://odahub.io/ontology#Float # ; oda:label "degradation factor (for offset >0.4 deg)"
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "[TeV] x plot minimal" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "[TeV] x plot maximal" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "[TeV cm^-2 s^-1] y plot minimal"
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "[TeV cm^-2 s^-1] y plot maximal"
-minerror = (
-    2  # http://odahub.io/ontology#Float ; oda:label "Minimal error to show"
-)
+offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "minimal energy [TeV] (for plotting)" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "maximal energy [TeV] (for plotting)" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "minimal flux [TeV cm^-2 s^-1] (for plotting)"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "maximal flux [TeV cm^-2 s^-1] (for plotting)"
+minerror = 2  # http://odahub.io/ontology#Float ; oda:label "Minimal errorbar (signal-to-noise) (for plotting)"
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
 
 pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
