@@ -3,8 +3,7 @@
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="2.32.3">requests</requirement>
     <requirement type="package" version="1.3">gammapy</requirement>
-    <requirement type="package" version="5.3">astropy</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
     <requirement type="package" version="1.11.4">scipy</requirement>
     <requirement type="package" version="1.2.33">oda-api</requirement>
     <requirement type="package" version="0.12.0">pyirf</requirement>
@@ -112,7 +111,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/2a0a0611cd1ea4ea6a262fb9c1415c270e821442/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/d655f12f56a4bcb2bac471a70eed8634f055b547/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />

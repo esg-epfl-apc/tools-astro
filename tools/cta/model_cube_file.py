@@ -104,6 +104,8 @@ file_path = data_cube
 pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
 
+hdul = fits.open("3d_work.fits")
+
 print("loading " + file_path)
 cube_map = Map.read(file_path)
 cube_map.geom
