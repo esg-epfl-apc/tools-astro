@@ -68,7 +68,11 @@
       </when>
       <when value="LST1">
         <param name="redshift" type="float" value="0.13" label="Source redshift" />
-        <param name="cut_efficiency" type="float" value="0.7" label="cut_efficiency" />
+        <param name="cut_efficiency" type="select" label="Gamma-hadron separation cut efficiency">
+          <option value="0.4">0.4</option>
+          <option value="0.7">0.7</option>
+          <option value="0.9">0.9</option>
+        </param>
         <param name="Zd" type="float" value="20.0" label="Zenith angle" />
         <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
         <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />

@@ -26,7 +26,7 @@ redshift = (
     0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
 )
 
-cut_efficiency = 0.7  # http://odahub.io/ontology#Float; oda:label "'Gammaness' efficiency cut" ; oda:allowed_value 0.4,0.7,0.9
+cut_efficiency = 0.7  # http://odahub.io/ontology#Float ; oda:label "Gamma-hadron separation cut efficiency" ; oda:allowed_value 0.4,0.7,0.9
 Zd = 20.0  # http://odahub.io/ontology#Float ; oda:label "Zenith angle"
 N_backgr_regions = 3  # http://odahub.io/ontology#Integer ; oda:label "Number of backgorund regions"
 Exposure_time = 33.0  # http://odahub.io/ontology#Float ; oda:label "Exposure time in hours"
