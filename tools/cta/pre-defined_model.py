@@ -15,6 +15,10 @@ get_ipython().run_cell_magic(   # noqa: F821
     'wget https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/master/Franceschini17.txt\n\nrm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits    \nfor fn in *.gz ; do tar -zxvf $fn; done \n \n',
 )
 
+import astropy
+
+astropy.__version__
+
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
@@ -64,9 +68,23 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "RA",
+    "DEC",
+    "OffAxis_angle",
+    "Texp",
+    "z",
+    "F0",
+    "E0",
+    "Gamma",
+    "Radius_spectal_extraction",
+    "Radius_sky_image",
+    "Site",
+    "Telescope_LST",
+    "Telescope_MST",
+    "Telescope_SST",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 LSTs = Telescope_LST
 MSTs = Telescope_MST

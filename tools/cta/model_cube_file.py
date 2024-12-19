@@ -79,9 +79,20 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "data_cube",
+    "F0",
+    "E0",
+    "OffAxis_angle",
+    "Radius_spectal_extraction",
+    "Radius_sky_image",
+    "Site",
+    "Telescopes_LST",
+    "Telescopes_MST",
+    "Telescopes_SST",
+    "Texp",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 R_s = Radius_spectal_extraction
 Radius = Radius_sky_image

@@ -2,13 +2,13 @@
   <requirements>
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="2.32.3">requests</requirement>
-    <requirement type="package" version="1.2">gammapy</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="5.3">astropy</requirement>
-    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
     <requirement type="package" version="1.11.4">scipy</requirement>
-    <requirement type="package" version="1.2.28">oda-api</requirement>
-    <requirement type="package" version="0.11.0">pyirf</requirement>
-    <requirement type="package" version="8.29.0">ipython</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="0.12.0">pyirf</requirement>
+    <requirement type="package" version="8.30.0">ipython</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="7.16.4">nbconvert</requirement>
@@ -22,7 +22,6 @@
       <param name="_selector" type="select" label="Data Product">
         <option value="pre-defined_model" selected="true">pre-defined_model</option>
         <option value="model_cube_file" selected="false">model_cube_file</option>
-        <option value="LST1_observation_simulator" selected="false">LST1_observation_simulator</option>
       </param>
       <when value="pre-defined_model">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -59,17 +58,6 @@
         <param name="Telescopes_SST" type="boolean" label="Telescopes_SST" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
       </when>
-      <when value="LST1_observation_simulator">
-        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
-        <param name="cut_efficiency" type="float" value="0.7" label="cut_efficiency" />
-        <param name="Zd" type="float" value="20.0" label="Zenith angle" />
-        <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
-        <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />
-        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
-        <param name="Norm" type="float" value="8.7e-10" label="Powerlaw flux normalisation, 1/(TeV cm2 s)" />
-        <param name="index" type="float" value="-2.03" label="Powerlaw slope" />
-      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -96,12 +84,6 @@
     </data>
     <data label="${tool.name} -&gt; model_cube_file event_list_fits" name="out_model_cube_file_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'model_cube_file'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_observation_simulator picture_png" name="out_LST1_observation_simulator_picture_png" format="auto" from_work_dir="picture_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_observation_simulator'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_observation_simulator spectrum_astropy_table" name="out_LST1_observation_simulator_spectrum_astropy_table" format="auto" from_work_dir="spectrum_astropy_table_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_observation_simulator'</filter>
     </data>
   </outputs>
   <tests>
@@ -130,7 +112,7 @@
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="model_cube_file" />
-        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/3af756269a51e2ba50963abe104ece71b30923b6/3d.fits" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/2a0a0611cd1ea4ea6a262fb9c1415c270e821442/3d.fits" />
         <param name="F0" value="1e-11" />
         <param name="E0" value="1.0" />
         <param name="OffAxis_angle" value="0.4" />
@@ -146,24 +128,11 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="2">
-      <conditional name="_data_product">
-        <param name="_selector" value="LST1_observation_simulator" />
-        <param name="RA" value="166.113809" />
-        <param name="DEC" value="38.208833" />
-        <param name="cut_efficiency" value="0.7" />
-        <param name="Zd" value="20.0" />
-        <param name="N_backgr_regions" value="3" />
-        <param name="Exposure_time" value="33.0" />
-        <param name="source_extension" value="0.0" />
-        <param name="Norm" value="8.7e-10" />
-        <param name="index" value="-2.03" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
   </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <help>This service provides simulaiton of observations with `Cherenkov
 Telescope Array (CTA) &lt;https://www.cta-observatory.org/&gt;`__ observatory
 (now in construction), based on the Instrument Response Funcitons (IRF)
