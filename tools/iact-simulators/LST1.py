@@ -125,7 +125,8 @@ Assumed = parse_spectrum(dN_dE)
 # Load files for the requested efficiency:
 #
 input_filename = (
-    "LST1_gamma_irf_gheffi_"
+    repo_basedir
+    + "/LST1_gamma_irf_gheffi_"
     + str(cut_efficiency)
     + "0_theffi_"
     + str(cut_efficiency)
@@ -133,7 +134,8 @@ input_filename = (
 )
 gamma_data = pd.read_csv(input_filename)
 input_filename = (
-    "LST1_backg_irf_gheffi_"
+    repo_basedir
+    + "/LST1_backg_irf_gheffi_"
     + str(cut_efficiency)
     + "0_theffi_"
     + str(cut_efficiency)
