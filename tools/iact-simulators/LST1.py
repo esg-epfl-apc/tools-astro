@@ -21,6 +21,7 @@ from scipy.stats import moyal, skewnorm
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+
 redshift = (
     0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
 )
@@ -30,8 +31,6 @@ Zd = 20.0  # http://odahub.io/ontology#Float ; oda:label "Zenith angle"
 N_backgr_regions = 3  # http://odahub.io/ontology#Integer ; oda:label "Number of backgorund regions"
 Exposure_time = 33.0  # http://odahub.io/ontology#Float ; oda:label "Exposure time in hours"
 source_extension = 0.0  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
-Norm = 8.7e-10  # http://odahub.io/ontology#Float ; oda:label "Powerlaw flux normalisation, 1/(TeV cm2 s)"
-index = -2.03  # http://odahub.io/ontology#Float ; oda:label "Powerlaw slope"
 
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
 
@@ -50,16 +49,12 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
-    "RA",
-    "DEC",
     "redshift",
     "cut_efficiency",
     "Zd",
     "N_backgr_regions",
     "Exposure_time",
     "source_extension",
-    "Norm",
-    "index",
     "dN_dE",
     "pulsar_mode",
     "on_phase_interval",
