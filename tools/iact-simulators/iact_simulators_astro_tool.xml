@@ -35,8 +35,8 @@
         <param name="minev" type="float" value="10.0" label="minimum number of events" />
         <param name="minSBR" type="float" value="0.05" label="minimum ratio of excess to background" />
         <param name="offsetdegrad" type="float" value="1.0" label="degradation factor (for offset &gt;0.4 deg)" />
-        <param name="eplotmin" type="float" value="31" label="minimal energy [TeV] (for plotting) (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="eplotmax" type="float" value="20000.0" label="maximal energy [TeV] (for plotting) (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="eplotmin" type="float" value="31" label="minimal energy [GeV] (for plotting) (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="eplotmax" type="float" value="20000.0" label="maximal energy [GeV] (for plotting) (unit: GeV)" min="30.01" max="29999.0" />
         <param name="yplotmin" type="float" value="1e-14" label="minimal flux [TeV cm^-2 s^-1] (for plotting)" />
         <param name="yplotmax" type="float" value="1e-09" label="maximal flux [TeV cm^-2 s^-1] (for plotting)" />
         <param name="minerror" type="float" value="2" label="Minimal errorbar (signal-to-noise) (for plotting)" />
