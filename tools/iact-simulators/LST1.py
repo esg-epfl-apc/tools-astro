@@ -64,9 +64,7 @@ for _vn in [
 
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
-pathebl = (
-    repo_basedir + "/Franceschini17.txt"
-)  # path with EBL model of Dominguez+11
+pathebl = repo_basedir + "/Franceschini17.txt"  # path with EBL model
 d = np.genfromtxt(pathebl)
 ee = d[:, 0]
 z_grid = np.array([0.01, 0.03, 0.1, 0.3, 0.5, 1.0, 1.5, 2.0, 3.0])
@@ -727,7 +725,7 @@ bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
 data = [mean_etrue_vs_ereco[displayed_points], SED, SED_stat_error]
-names = ("Emean[MTeV]", "Flux[TeV/cm2s]", "Flux_error[TeV/cm2s]")
+names = ("Emean[TeV]", "Flux[TeV/cm2s]", "Flux_error[TeV/cm2s]")
 spec = ODAAstropyTable(Table(data, names=names))
 
 picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
