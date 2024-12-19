@@ -72,7 +72,7 @@
         <param name="Zd" type="float" value="20.0" label="Zenith angle" />
         <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
         <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />
-        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
+        <param name="source_extension" type="float" value="0.1" label="Source extension in degrees" />
         <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]" />
         <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
         <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
@@ -167,7 +167,7 @@
         <param name="Zd" value="20.0" />
         <param name="N_backgr_regions" value="3" />
         <param name="Exposure_time" value="33.0" />
-        <param name="source_extension" value="0.0" />
+        <param name="source_extension" value="0.1" />
         <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
         <param name="pulsar_mode" value="False" />
         <param name="on_phase_interval" value="0.043" />

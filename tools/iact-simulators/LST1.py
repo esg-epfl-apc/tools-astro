@@ -30,7 +30,7 @@ cut_efficiency = 0.7  # http://odahub.io/ontology#Float; oda:label "'Gammaness' 
 Zd = 20.0  # http://odahub.io/ontology#Float ; oda:label "Zenith angle"
 N_backgr_regions = 3  # http://odahub.io/ontology#Integer ; oda:label "Number of backgorund regions"
 Exposure_time = 33.0  # http://odahub.io/ontology#Float ; oda:label "Exposure time in hours"
-source_extension = 0.0  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
+source_extension = 0.1  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
 
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
 
@@ -62,6 +62,8 @@ for _vn in [
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
+source_extension *= u.degree
+
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 pathebl = repo_basedir + "/Franceschini17.txt"  # path with EBL model
@@ -71,7 +73,6 @@ z_grid = np.array([0.01, 0.03, 0.1, 0.3, 0.5, 1.0, 1.5, 2.0, 3.0])
 ind = len(z_grid[redshift > z_grid]) - 1
 coeff = (redshift - z_grid[ind]) / (z_grid[ind + 1] - z_grid[ind])
 tau = d[:, ind + 1] + coeff * d[:, ind + 2]
-tau
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
@@ -95,7 +96,6 @@ def parse_spectrum(input_str):
 
     return eval(f"lambda E: {dnde_str}")
 
-# test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
 Assumed = parse_spectrum(dN_dE)
 
 # ## Set cut efficiency
