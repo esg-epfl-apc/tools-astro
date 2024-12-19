@@ -169,32 +169,10 @@ names = (
 )
 cat = ODAAstropyTable(Table(data, names=names))
 
-flux_error_list = [
-    "flux_g_err[Jy]",
-    "flux_r_err[Jy]",
-    "flux_z_err[Jy]",
-    "flux_i_err[Jy]",
-    "flux_w1_err[Jy]",
-    "flux_w2_err[Jy]",
-]
-flux_list = [
-    "flux_g[Jy]",
-    "flux_r[Jy]",
-    "flux_z[Jy]",
-    "flux_i[Jy]",
-    "flux_w1[Jy]",
-    "flux_w2[Jy]",
-]
+# flux_error_list = ["flux_g_err[Jy]", "flux_r_err[Jy]", "flux_z_err[Jy]", "flux_i_err[Jy]", "flux_w1_err[Jy]", "flux_w2_err[Jy]"]
+# flux_list       = ["flux_g[Jy]",     "flux_r[Jy]",     "flux_z[Jy]",     "flux_i[Jy]",     "flux_w1[Jy]",     "flux_w2[Jy]"]
 if case_ == 0:
-    filter_list = [
-        "DECam|DECam.g",
-        "DECam|DECam.r",
-        "DECam|DECam.z",
-        "DECam|DECam.i",
-        "WISE|WISE.W1",
-        "WISE|WISE.W2",
-    ]
-elif case_ == 1:
+    # filter_list = ["DECam|DECam.g", "DECam|DECam.r", "DECam|DECam.z", "DECam|DECam.i", "WISE|WISE.W1", "WISE|WISE.W2"]
     filter_list = [
         "DESI|bass.g",
         "DESI|bass.r",
@@ -203,12 +181,54 @@ elif case_ == 1:
         "WISE|WISE.W1",
         "WISE|WISE.W2",
     ]
+    flux_error_list = [
+        "flux_g_err[Jy]",
+        "flux_r_err[Jy]",
+        "flux_z_err[Jy]",
+        "flux_i_err[Jy]",
+        "flux_w1_err[Jy]",
+        "flux_w2_err[Jy]",
+    ]
+    flux_list = [
+        "flux_g[Jy]",
+        "flux_r[Jy]",
+        "flux_z[Jy]",
+        "flux_i[Jy]",
+        "flux_w1[Jy]",
+        "flux_w2[Jy]",
+    ]
+elif case_ == 1:
+    # filter_list = ["DESI|bass.g",   "DESI|bass.r",   "DESI|MzLS.z",   "DECam|DECam.i", "WISE|WISE.W1", "WISE|WISE.W2"]
+    filter_list = [
+        "DECam|DECam.i",
+        "DESI|bass.g",
+        "DESI|bass.r",
+        "DESI|MzLS.z",
+        "WISE|WISE.W1",
+        "WISE|WISE.W2",
+    ]
+    flux_error_list = [
+        "flux_i_err[Jy]",
+        "flux_g_err[Jy]",
+        "flux_r_err[Jy]",
+        "flux_z_err[Jy]",
+        "flux_w1_err[Jy]",
+        "flux_w2_err[Jy]",
+    ]
+    flux_list = [
+        "flux_i[Jy]",
+        "flux_g[Jy]",
+        "flux_r[Jy]",
+        "flux_z[Jy]",
+        "flux_w1[Jy]",
+        "flux_w2[Jy]",
+    ]
 
-dict_filters = {
-    "filter": filter_list,
-    "flux_error": flux_error_list,
-    "flux": flux_list,
-}
+    dict_filters = {
+        "filter": filter_list,
+        "flux_error": flux_error_list,
+        "flux": flux_list,
+    }
 dict_filters
 
 catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
