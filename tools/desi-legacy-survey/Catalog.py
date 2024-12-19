@@ -224,11 +224,11 @@ elif case_ == 1:
         "flux_w2[Jy]",
     ]
 
-    dict_filters = {
-        "filter": filter_list,
-        "flux_error": flux_error_list,
-        "flux": flux_list,
-    }
+dict_filters = {
+    "filter": filter_list,
+    "flux_error": flux_error_list,
+    "flux": flux_list,
+}
 dict_filters
 
 catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
