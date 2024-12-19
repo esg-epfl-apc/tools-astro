@@ -37,7 +37,7 @@ dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#
 pulsar_mode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 
 on_phase_interval = 0.043  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
-off_phase_interval = 0.35  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"; oda:label "range of OFF phases"
+off_phase_interval = 0.35  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
 
 _galaxy_wd = os.getcwd()
 

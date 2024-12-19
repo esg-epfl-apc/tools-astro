@@ -19,10 +19,6 @@ from scipy.interpolate import RegularGridInterpolator
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
-
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
 extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
 
@@ -37,16 +33,16 @@ numoff = 3  # http://odahub.io/ontology#Integer ; oda:label "number of backgroun
 minev = 10.0  # http://odahub.io/ontology#Float ; oda:label "minimum number of events"
 minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
 offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "minimal energy [GeV] (for plotting)" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "maximal energy [GeV] (for plotting)" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "minimal flux [TeV cm^-2 s^-1] (for plotting)"
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "maximal flux [TeV cm^-2 s^-1] (for plotting)"
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "minimal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "maximal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "minimal flux [TeV cm^-2 s^-1] for plotting"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "maximal flux [TeV cm^-2 s^-1] for plotting"
 minerror = 2  # http://odahub.io/ontology#Float ; oda:label "Minimal errorbar (signal-to-noise) (for plotting)"
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
 
 pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
-pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis"; oda:label "range of OFF phases"
+pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
 
 isLSTmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
@@ -62,9 +58,6 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
-    "src_name",
-    "RA",
-    "DEC",
     "timeh",
     "extension",
     "redshift",
@@ -96,6 +89,10 @@ pathebl = (
 version = "1.7"
 PSF = 0.1  # http://odahub.io/ontology#AngleDegrees ; oda:label "Point Spread funciton (for worsening the performance for extended sources)
 drawsigma = True  # http://odahub.io/ontology#Boolean
+
+src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
