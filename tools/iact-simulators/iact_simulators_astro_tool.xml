@@ -21,6 +21,7 @@
       <param name="_selector" type="select" label="Data Product">
         <option value="MAGIC" selected="true">MAGIC</option>
         <option value="CTAO" selected="false">CTAO</option>
+        <option value="LST1" selected="false">LST1</option>
       </param>
       <when value="MAGIC">
         <param name="src_name" type="text" value="Crab" label="src_name" />
@@ -65,6 +66,22 @@
         <param name="Telescope_MST" type="boolean" checked="true" label="Telescope_MST" />
         <param name="Telescope_SST" type="boolean" label="Telescope_SST" />
       </when>
+      <when value="LST1">
+        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
+        <param name="redshift" type="float" value="0.13" label="Source redshift" />
+        <param name="cut_efficiency" type="float" value="0.7" label="cut_efficiency" />
+        <param name="Zd" type="float" value="20.0" label="Zenith angle" />
+        <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
+        <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />
+        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
+        <param name="Norm" type="float" value="8.7e-10" label="Powerlaw flux normalisation, 1/(TeV cm2 s)" />
+        <param name="index" type="float" value="-2.03" label="Powerlaw slope" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]" />
+        <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
+        <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
+        <param name="off_phase_interval" type="float" value="0.35" label="range of OFF phases" />
+      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -85,6 +102,12 @@
     </data>
     <data label="${tool.name} -&gt; CTAO event_list_fits" name="out_CTAO_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
       <filter>_data_product['_selector'] == 'CTAO'</filter>
+    </data>
+    <data label="${tool.name} -&gt; LST1 picture_png" name="out_LST1_picture_png" format="auto" from_work_dir="picture_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1'</filter>
+    </data>
+    <data label="${tool.name} -&gt; LST1 spectrum_astropy_table" name="out_LST1_spectrum_astropy_table" format="auto" from_work_dir="spectrum_astropy_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1'</filter>
     </data>
   </outputs>
   <tests>
@@ -135,6 +158,28 @@
         <param name="Telescope_LST" value="True" />
         <param name="Telescope_MST" value="True" />
         <param name="Telescope_SST" value="False" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="LST1" />
+        <param name="RA" value="166.113809" />
+        <param name="DEC" value="38.208833" />
+        <param name="redshift" value="0.13" />
+        <param name="cut_efficiency" value="0.7" />
+        <param name="Zd" value="20.0" />
+        <param name="N_backgr_regions" value="3" />
+        <param name="Exposure_time" value="33.0" />
+        <param name="source_extension" value="0.0" />
+        <param name="Norm" value="8.7e-10" />
+        <param name="index" value="-2.03" />
+        <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
+        <param name="pulsar_mode" value="False" />
+        <param name="on_phase_interval" value="0.043" />
+        <param name="off_phase_interval" value="0.35" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
