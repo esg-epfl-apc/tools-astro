@@ -14,39 +14,44 @@ import numpy as np
 from numpy import exp
 from oda_api.json import CustomJSONEncoder
 from scipy.integrate import quad
-from scipy.interpolate import RegularGridInterpolator
+from scipy.interpolate import RectBivariateSpline, RegularGridInterpolator
 
-workdir = os.getcwd()
-repo_basedir = os.environ.get("BASEDIR", os.getcwd())
+src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
-extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
+extension = 0.0  # http://odahub.io/ontology#AngleDegrees
 
-redshift = (
-    0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
+redshift = 0.13  # http://odahub.io/ontology#Double
+
+zenith = "lowzd"  #  http://odahub.io/ontology/#String ; oda:label "Zenith"; oda:descritpion "lowzd, midzd or hizd"
+isSUMT = False  #  http://odahub.io/ontology#Boolean
+
+numoff = 3  # http://odahub.io/ontology#Integer
+minev = 10.0  # http://odahub.io/ontology#Double
+minSBR = 0.05  # http://odahub.io/ontology#Double
+PSF = 0.1  # http://odahub.io/ontology#AngleDegrees
+offsetdegrad = 1.0  # http://odahub.io/ontology#Double
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Double
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Double
+minerror = 2  # http://odahub.io/ontology#Double
+drawsigma = True  # http://odahub.io/ontology#Boolean
+dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String
+
+pulsarmode = (
+    False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis"
+)
+pulsarOnRange = (
+    0.092  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
+)
+pulsarOffRange = (
+    0.25  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
 )
 
-ismidzd = False  #  http://odahub.io/ontology#Boolean ; oda:label "Zenith angle range 30-45 degrees?"
-isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
-
-numoff = 3  # http://odahub.io/ontology#Integer ; oda:label "number of background estimation regions"
-minev = 10.0  # http://odahub.io/ontology#Float ; oda:label "minimum number of events"
-minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
-offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "minimal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "maximal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "minimal flux [TeV cm^-2 s^-1] for plotting"
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "maximal flux [TeV cm^-2 s^-1] for plotting"
-minerror = 2  # http://odahub.io/ontology#Float ; oda:label "Minimal errorbar (signal-to-noise) (for plotting)"
-dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
-
-pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
-pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
-pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
-
-isLSTmode = (
-    False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
-)
+isLSTmode = False  # http://odahub.io/ontology#Boolean
 
 _galaxy_wd = os.getcwd()
 
@@ -58,20 +63,25 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
+    "src_name",
+    "RA",
+    "DEC",
     "timeh",
     "extension",
     "redshift",
-    "ismidzd",
+    "zenith",
     "isSUMT",
     "numoff",
     "minev",
     "minSBR",
+    "PSF",
     "offsetdegrad",
     "eplotmin",
     "eplotmax",
     "yplotmin",
     "yplotmax",
     "minerror",
+    "drawsigma",
     "dN_dE",
     "pulsarmode",
     "pulsarOnRange",
@@ -82,17 +92,9 @@ for _vn in [
 
 # global variables (DO NOT MODIFY)
 npoints = 13
-pathebl = (
-    repo_basedir + "/dominguez_ebl_tau.txt"
-)  # path with EBL model of Dominguez+11
-
-version = "1.7"
-PSF = 0.1  # http://odahub.io/ontology#AngleDegrees ; oda:label "Point Spread funciton (for worsening the performance for extended sources)
-drawsigma = True  # http://odahub.io/ontology#Boolean
-
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
+pathebl = "dominguez_ebl_tau.txt"  # path with EBL model of Dominguez+11
+ismc = False
+version = "1.9"
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
@@ -143,208 +145,245 @@ def LoadEBL():
     if len(taus > 0):
         return zz, energies, taus
 
-def FluxObs(xx, z, fluxint):
+def FluxObs(z, xx, fluxint):
     en = xx
     EBLz, EBLen, EBLtaus = LoadEBL()
-    # ftau = interpolate.interp2d(EBLz, EBLen, EBLtaus, kind='cubic')
-    ftau = RegularGridInterpolator((EBLen, EBLz), EBLtaus, method="cubic")
-    tau = ftau([en, z])
+    # ftau = RegularGridInterpolator((EBLen,EBLz), EBLtaus, method='cubic')
+    # tau = ftau([en,z])
+    ftau = RectBivariateSpline(
+        EBLz, EBLen, EBLtaus.T, kx=3, ky=3, s=0
+    )  # cubic, no smoothing
+    tau = ftau(z, en)[0]
     atten = np.exp(-tau)
     return fluxint * atten
 
 def Prepare():
     npoints_array = np.arange(0, npoints + 1)
     enbins = 100.0 * pow(10.0, (npoints_array - 2) * 0.2)  # [GeV]
-
+    crabrate = np.zeros(npoints)  # [min^-1]
+    bgdrate = np.zeros(npoints)  # [min^-1]
     if isLSTmode:
-        if ismidzd:  # values from https://doi.org/10.1051/0004-6361/202346927
-            # 1st point is 50 GeV, below threshold; the last point is missing data
-            crabrate = np.array(
-                [
-                    0,
-                    0.59,
-                    2.43,
-                    2.65,
-                    2.03,
-                    1.171,
-                    0.899,
-                    0.806,
-                    0.319,
-                    0.185,
-                    0.113,
-                    0.084,
-                    0,
-                ]
-            )
-            bgdrate = np.array(
-                [
-                    0,
-                    0.715,
-                    1.42,
-                    0.307,
-                    0.093,
-                    0.0229,
-                    0.0093,
-                    0.0096,
-                    0.00264,
-                    0.0007,
-                    0.00138,
-                    0.00148,
-                    0,
-                ]
-            )
-        else:
-            # 1st point is 50 GeV; 2nd point 80 GeV; the last point is missing data
+        if (
+            zenith == "hizd"
+        ):  # MC values values computed at 59 zd angle, might by ~20% too optimistic >~1 TeV
+            crabrate[0] = 0  # 50GeV, below threshold
+            crabrate[1] = 0.0  # 79 GeV, below threshol
+            crabrate[2] = 0.0  # 126 GeV below threshold
+            crabrate[3] = 0.0  # 200 GeV, below threshold
+            crabrate[4] = 0.6929  # 316 GeV
+            crabrate[5] = 2.0531
+            crabrate[6] = 1.5028
+            crabrate[7] = 0.8963
+            crabrate[8] = 0.5915
+            crabrate[9] = 0.3513
+            crabrate[10] = 0.2314
+            crabrate[11] = 0.111  # 7 TeV
+            crabrate[12] = 0.0488  # 12.6 TeV
+
+            bgdrate[0] = 0  #  below threshold
+            bgdrate[1] = 0.0
+            bgdrate[2] = 0.0
+            bgdrate[3] = 0.0  # 200 GeV below threshold
+            bgdrate[4] = 0.349
+            bgdrate[5] = 0.2163
+            bgdrate[6] = 0.0393
+            bgdrate[7] = 0.0126
+            bgdrate[8] = 0.0037
+            bgdrate[9] = 0.0013
+            bgdrate[10] = 0.0018
+            bgdrate[11] = 0.0005
+            bgdrate[12] = 0.0006  # 12.6 TeV
+            # the MC sensitivites are often too optimistic. While at low zenith MAGIC+LST1 sensitivity more or less matches
+            # between the data and MCs, at mid zenith there is some ~20% difference >~1 TeV. Very likely the same happens
+            # at high zenith, so this is why we artificially increase background by 40% to emulate this effect
+            # and make more fair MAGIC-only vs MAGIC+LST1 comparisons at high zenith
+            bgdrate[np.sqrt(enbins[:-1] * enbins[1:]) > 1000] *= 1.4
+
+        elif (
+            zenith == "midzd"
+        ):  # values from https://doi.org/10.1051/0004-6361/202346927
+            crabrate[0] = 0  # 50GeV, below threshold
+            crabrate[1] = 0.59
+            crabrate[2] = 2.43
+            crabrate[3] = 2.65
+            crabrate[4] = 2.03
+            crabrate[5] = 1.171
+            crabrate[6] = 0.899
+            crabrate[7] = 0.806
+            crabrate[8] = 0.319
+            crabrate[9] = 0.185
+            crabrate[10] = 0.113
+            crabrate[11] = 0.084
+            crabrate[12] = 0  # missing data
+
+            bgdrate[0] = 0  # below threshold
+            bgdrate[1] = 0.715
+            bgdrate[2] = 1.42
+            bgdrate[3] = 0.307
+            bgdrate[4] = 0.093
+            bgdrate[5] = 0.0229
+            bgdrate[6] = 0.0093
+            bgdrate[7] = 0.0096
+            bgdrate[8] = 0.00264
+            bgdrate[9] = 0.0007
+            bgdrate[10] = 0.00138
+            bgdrate[11] = 0.00148
+            bgdrate[12] = 0  # missing data
+
+        elif zenith == "lowzd":
             # those numbers are taken from MC, but they agree
             # with a small bunch of data available
-            crabrate = np.array(
-                [
-                    0.3795,
-                    2.5808,
-                    2.8257,
-                    1.6654,
-                    1.3289,
-                    1.2871,
-                    0.8834,
-                    0.7045,
-                    0.3908,
-                    0.1963,
-                    0.089,
-                    0.0368,
-                    0,
-                ]
-            )
-            bgdrate = np.array(
-                [
-                    8.8870e-01,
-                    1.6505e00,
-                    5.7688e-01,
-                    5.0804e-02,
-                    2.0521e-02,
-                    2.1718e-02,
-                    5.6106e-03,
-                    3.9491e-03,
-                    3.2053e-03,
-                    1.8074e-03,
-                    7.3253e-04,
-                    1.1352e-05,
-                    0,
-                ]
-            )
+            crabrate[0] = 0.3795  # 50GeV
+            crabrate[1] = 2.5808  # 80GeV
+            crabrate[2] = 2.8257
+            crabrate[3] = 1.6654
+            crabrate[4] = 1.3289
+            crabrate[5] = 1.2871
+            crabrate[6] = 0.8834
+            crabrate[7] = 0.7045
+            crabrate[8] = 0.3908
+            crabrate[9] = 0.1963
+            crabrate[10] = 0.089
+            crabrate[11] = 0.0368
+            crabrate[12] = 0  # missing data
+
+            bgdrate[0] = 8.8870e-01
+            bgdrate[1] = 1.6505e00
+            bgdrate[2] = 5.7688e-01
+            bgdrate[3] = 5.0804e-02
+            bgdrate[4] = 2.0521e-02
+            bgdrate[5] = 2.1718e-02
+            bgdrate[6] = 5.6106e-03
+            bgdrate[7] = 3.9491e-03
+            bgdrate[8] = 3.2053e-03
+            bgdrate[9] = 1.8074e-03
+            bgdrate[10] = 7.3253e-04
+            bgdrate[11] = 1.1352e-05
+            bgdrate[12] = 0  # missing data
+
     else:
         if isSUMT:
-            if ismidzd:
-                crabrate = np.array([])
-                bgdrate = np.array([])
-                # to be implemented
-            else:
+            if zenith == "lowzd":
                 # 2018/19 Crab data analyzed with generic ST0307 SUMT MCs
                 # 1st point  ~50GeV, last point ~12TeV
-                crabrate = np.array(
-                    [
-                        1.39684,
-                        3.12657,
-                        3.09145,
-                        2.40268,
-                        1.32915,
-                        0.86180,
-                        0.51666,
-                        0.31533,
-                        0.16207,
-                        0.09279,
-                        0.04624,
-                        0.02345,
-                        0.00874,
-                    ]
-                )  # [min^-1]
-                bgdrate = np.array(
-                    [
-                        3.33321,
-                        3.24046,
-                        1.32361,
-                        0.406588,
-                        0.091944,
-                        0.032226,
-                        0.007277,
-                        0.003123,
-                        0.001487,
-                        0.001464,
-                        0.001231,
-                        0.001152,
-                        0.000957,
-                    ]
-                )  # [min^-1]
+                crabrate[0] = 1.39684  # ~50GeV
+                crabrate[1] = 3.12657
+                crabrate[2] = 3.09145
+                crabrate[3] = 2.40268
+                crabrate[4] = 1.32915
+                crabrate[5] = 0.86180
+                crabrate[6] = 0.51666
+                crabrate[7] = 0.31533
+                crabrate[8] = 0.16207
+                crabrate[9] = 0.09279
+                crabrate[10] = 0.04624
+                crabrate[11] = 0.02345
+                crabrate[12] = 0.00874  # ~12TeV
+
+                bgdrate[0] = 3.33321
+                bgdrate[1] = 3.24046
+                bgdrate[2] = 1.32361
+                bgdrate[3] = 0.406588
+                bgdrate[4] = 0.091944
+                bgdrate[5] = 0.032226
+                bgdrate[6] = 0.007277
+                bgdrate[7] = 0.003123
+                bgdrate[8] = 0.001487
+                bgdrate[9] = 0.001464
+                bgdrate[10] = 0.001231
+                bgdrate[11] = 0.001152
+                bgdrate[12] = 0.000957
+            else:
+                print("Only low zenith sensitivity is available for SUMT :-(")
+                # to be implemented
         else:
-            if ismidzd:  # Aleksic et al 2016
-                crabrate = np.array(
-                    [
-                        0,
-                        0.404836,
-                        3.17608,
-                        2.67108,
-                        2.86307,
-                        1.76124,
-                        1.43988,
-                        0.944385,
-                        0.673335,
-                        0.316263,
-                        0.200331,
-                        0.0991222,
-                        0.0289831,
-                    ]
-                )  # [min^-1], 1st point below threshold !!!
-                bgdrate = np.array(
-                    [
-                        1.67777,
-                        2.91732,
-                        2.89228,
-                        0.542563,
-                        0.30467,
-                        0.0876449,
-                        0.0375621,
-                        0.0197085,
-                        0.0111295,
-                        0.00927459,
-                        0.00417356,
-                        0.00521696,
-                        0.000231865,
-                    ]
-                )  # [min^-1], 1st point below threshold !!!
-            else:  # 0-30 deg values, Aleksic et al 2016
-                crabrate = np.array(
-                    [
-                        0.818446,
-                        3.01248,
-                        4.29046,
-                        3.3699,
-                        1.36207,
-                        1.21791,
-                        0.880268,
-                        0.579754,
-                        0.299179,
-                        0.166192,
-                        0.0931911,
-                        0.059986,
-                        0.017854,
-                    ]
-                )  # [min^-1]
-                bgdrate = np.array(
-                    [
-                        3.66424,
-                        4.05919,
-                        2.41479,
-                        0.543629,
-                        0.0660764,
-                        0.0270313,
-                        0.0132653,
-                        0.00592351,
-                        0.00266975,
-                        0.00200231,
-                        0.00141831,
-                        0.00458864,
-                        0.0016686,
-                    ]
-                )  # [min^-1]
+            if (
+                zenith == "hizd"
+            ):  # Crab results from 2.5 hrs of 55-62 zd data from 2016-2018. Dataset from Juliane van Scherpenberg.
+                crabrate[0] = 0  # 50GeV, below threshold
+                crabrate[1] = 0.0  # 79 GeV, below threshol
+                crabrate[2] = 0.0  # 126 GeV below threshold
+                crabrate[3] = 0.0  # 200 GeV, below threshold
+                crabrate[4] = 0.503462  # 316 GeV
+                crabrate[5] = 1.60232
+                crabrate[6] = 2.26558
+                crabrate[7] = 0.928094
+                crabrate[8] = 0.698335
+                crabrate[9] = 0.305662
+                crabrate[10] = 0.173859
+                crabrate[11] = 0.083892  # 7 TeV
+                crabrate[12] = 0.069938  # 12.6 TeV
+
+                bgdrate[0] = 0  # below threshold
+                bgdrate[1] = 0.0
+                bgdrate[2] = 0.0
+                bgdrate[3] = 0.0  # 200 GeV below threshold
+                bgdrate[4] = 0.750815
+                bgdrate[5] = 0.597588
+                bgdrate[6] = 0.564753
+                bgdrate[7] = 0.089775
+                bgdrate[8] = 0.0568584
+                bgdrate[9] = 0.00954936
+                bgdrate[10] = 0.00344762
+                bgdrate[11] = 0.00147755
+                bgdrate[12] = 0.00229841  # 12.6 TeV
+            elif zenith == "midzd":  # Aleksic et al 2016
+                crabrate[0] = 0  # below threshold !!!
+                crabrate[1] = 0.404836
+                crabrate[2] = 3.17608
+                crabrate[3] = 2.67108
+                crabrate[4] = 2.86307
+                crabrate[5] = 1.76124
+                crabrate[6] = 1.43988
+                crabrate[7] = 0.944385
+                crabrate[8] = 0.673335
+                crabrate[9] = 0.316263
+                crabrate[10] = 0.200331
+                crabrate[11] = 0.0991222
+                crabrate[12] = 0.0289831
+
+                bgdrate[0] = 1.67777  # below threashold
+                bgdrate[1] = 2.91732
+                bgdrate[2] = 2.89228
+                bgdrate[3] = 0.542563
+                bgdrate[4] = 0.30467
+                bgdrate[5] = 0.0876449
+                bgdrate[6] = 0.0375621
+                bgdrate[7] = 0.0197085
+                bgdrate[8] = 0.0111295
+                bgdrate[9] = 0.00927459
+                bgdrate[10] = 0.00417356
+                bgdrate[11] = 0.00521696
+                bgdrate[12] = 0.000231865
+            elif zenith == "lowzd":  # Aleksic et al 2016
+                # 0-30 deg values,
+                crabrate[0] = 0.818446
+                crabrate[1] = 3.01248
+                crabrate[2] = 4.29046
+                crabrate[3] = 3.3699
+                crabrate[4] = 1.36207
+                crabrate[5] = 1.21791
+                crabrate[6] = 0.880268
+                crabrate[7] = 0.579754
+                crabrate[8] = 0.299179
+                crabrate[9] = 0.166192
+                crabrate[10] = 0.0931911
+                crabrate[11] = 0.059986
+                crabrate[12] = 0.017854
+
+                bgdrate[0] = 3.66424
+                bgdrate[1] = 4.05919
+                bgdrate[2] = 2.41479
+                bgdrate[3] = 0.543629
+                bgdrate[4] = 0.0660764
+                bgdrate[5] = 0.0270313
+                bgdrate[6] = 0.0132653
+                bgdrate[7] = 0.00592351
+                bgdrate[8] = 0.00266975
+                bgdrate[9] = 0.00200231
+                bgdrate[10] = 0.00141831
+                bgdrate[11] = 0.00458864
+                bgdrate[12] = 0.0016686
         # offset degradation is only applied if NOT in LST mode
         crabrate *= offsetdegrad
         bgdrate *= offsetdegrad
@@ -363,10 +402,21 @@ tau = []
 for i in range(len(EBLen)):
     tau.append(ftau([EBLen[i], z]))
 plt.plot(EBLen, exp(-np.array(tau)))
+
+tau = []
+ftau2 = RectBivariateSpline(
+    EBLz, EBLen, EBLtaus.T, kx=3, ky=3, s=0
+)  # cubic, no smoothing
+for i in range(len(EBLen)):
+    tau.append(ftau2(z, EBLen[i])[0])
+plt.plot(EBLen, exp(-np.array(tau)))
+
 plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-3, 2)
 max(EBLen)
+
+get_ipython().run_line_magic("pinfo", "RectBivariateSpline")   # noqa: F821
 
 # // Li & Ma eq 17. significance, function abridged from MARS
 def SignificanceLiMa(s, b, alpha):
@@ -401,35 +451,46 @@ def Checks():
         )
         return False
     if (extension > 0.5) and (numoff > 1):
+        print(
+            "For large source extensions 1 OFF estimation region (numoff) should be used"
+        )
         raise RuntimeError(
-            "or large source extensions 1 OFF estimation region (numoff) should be used"
+            "Number of OFF estimation regions must be in the range 1-7"
         )
         return False
-    if isSUMT and ismidzd:
-        raise RuntimeError("Sorry not implemented yet :-(")
+    if isSUMT and (zenith != "lowzd"):
+        print("Only low zenith sensitivity is available for SUMT :-(")
         return False
     if isLSTmode and isSUMT:
-        raise RuntimeError("LST mode is not compatible with SUMT")
+        print("LST mode is not compatible with SUMT")
         return False
     if offsetdegrad > 1.00001:
-        raise RuntimeError(
-            "No cheating! the performance degradation ({0}) should not be larger then 1"
+        print(
+            "No cheating! the performance degradation ({0}) should not be larger then 1".format(
+                offsetdegrad
+            )
         )
         return False
     if pulsarmode:
         if pulsarOnRange <= 0 or pulsarOnRange >= 1:
-            raise RuntimeError(
-                "Pulsar mode ON phase range is {0}, and it should be in range (0,1)"
+            print(
+                "Pulsar mode ON phase range is {0}, and it should be in range (0,1)".format(
+                    pulsarOnRange
+                )
             )
             return False
         if pulsarOffRange <= 0 or pulsarOffRange >= 1:
-            raise RuntimeError(
-                "Pulsar mode OFF phase range is {0}, and it should be in range (0,1)"
+            print(
+                "Pulsar mode OFF phase range is {0}, and it should be in range (0,1)".format(
+                    pulsarOffRange
+                )
             )
             return False
         if redshift > 0:
-            raise RuntimeError(
-                "Do you really want to observe a pulsar at redshift of {0} ??"
+            print(
+                "Do you really want to observe a pulsar at redshift of {0} ??".format(
+                    redshift
+                )
             )
     return True
 
@@ -445,11 +506,19 @@ else:
     dsed = []
     sigmas = []
     detected = []
-    for i, e1, e2 in zip(range(0, len(enbins)), enbins, enbins[1:]):
+    nexc_all = 0
+    noff_all = 0
+    best_int_e = -1
+    best_int_sigma = -1
+    pulsarOnOffRatio = pulsarOnRange / pulsarOffRange
+
+    for i, e1, e2 in reversed(
+        list(zip(range(0, len(enbins)), enbins, enbins[1:]))
+    ):
         intcrab, error = quad(Crab, e1, e2)
         if redshift > 0:
             intass, error = quad(
-                lambda x: FluxObs(x, redshift, Assumed(x)), e1, e2
+                lambda x: FluxObs(redshift, x, Assumed(x)), e1, e2
             )
         else:
             intass, error = quad(Assumed, e1, e2)
@@ -470,19 +539,19 @@ else:
             noffon = noff * pulsarOnRange  # number of bgd events in ON phase
             noff *= pulsarOffRange  # number of bgd events in OFF phase
             dnoff = (
-                np.sqrt(noff) * pulsarOnRange / pulsarOffRange
+                np.sqrt(noff) * pulsarOnOffRatio
             )  # ignoring numoff for pulsars and scaling for the phase difference
             dexc = np.sqrt(
                 nexc + noffon + dnoff * dnoff
             )  # error on the number of excess events
+        nexc_all += nexc
+        noff_all += noff
 
         # for tiny excesses (1.e-7 events) the function below can have numerical problems, and either way sigma should be 0 then
         sigma = 0
         if nexc > 0.01:
             if pulsarmode:
-                sigma = SignificanceLiMa(
-                    nexc + noffon, noff, pulsarOnRange / pulsarOffRange
-                )
+                sigma = SignificanceLiMa(nexc + noffon, noff, pulsarOnOffRatio)
                 noff = noffon  # needed later for SBR
             else:
                 sigma = SignificanceLiMa(
@@ -508,13 +577,42 @@ else:
             " DETECTION" if detect else " ",
         )
 
+        sigma_all = -1
+        if nexc_all > 0.01:
+            if pulsarmode:
+                sigma_all = SignificanceLiMa(
+                    nexc_all + noff_all * pulsarOnOffRatio,
+                    noff_all,
+                    pulsarOnOffRatio,
+                )
+            else:
+                sigma_all = SignificanceLiMa(
+                    nexc_all + noff_all, noff_all * numoff, 1.0 / numoff
+                )
+                print(
+                    "Integral significance > {0:.1f} GeV = {1:.2f} with {2:.1f} excess".format(
+                        enbins[i], sigma_all, nexc_all
+                    ),
+                    (
+                        " "
+                        if pulsarmode
+                        else ", SBR={0:.2f}".format(nexc_all / noff_all)
+                    ),
+                )
+            if (nexc_all > minev) and (
+                pulsarmode or (nexc_all > minSBR * noff_all)
+            ):
+                if sigma_all > best_int_sigma:
+                    best_int_sigma = sigma_all
+                    best_int_e = enbins[i]
+
         # print(nexc, minerror, dexc)
         if nexc > minerror * dexc:
             tmpen = np.sqrt(enbins[i] * enbins[i + 1])
             en.append(tmpen)
             if redshift > 0:
                 tmpsed = CalcSED(
-                    tmpen, FluxObs(tmpen, redshift, Assumed(tmpen))
+                    tmpen, FluxObs(redshift, tmpen, Assumed(tmpen))[0]
                 )
             else:
                 tmpsed = CalcSED(tmpen, Assumed(tmpen))
@@ -523,39 +621,7 @@ else:
             sigmas.append(sigma)
             detected.append(detect)
 
-    if len(sigmas) > 0:
-        sig_comb = sum(sigmas) / np.sqrt(len(sigmas))
-
-    print(
-        "Combined significance (using the {0:d} data points shown in the SED) = {1:.1f}".format(
-            len(sigmas), sig_comb
-        )
-    )
     inst = "MAGIC+LST1" if isLSTmode else "MAGIC"
-    if sig_comb < 4:
-        print(
-            "The source probably will not be detected by",
-            inst,
-            "in ",
-            timeh,
-            " hours",
-        )
-    elif sig_comb < 6:
-        print(
-            "The source probably might be detected by",
-            inst,
-            "in ",
-            timeh,
-            " hours",
-        )
-    else:
-        print(
-            "The source probably will be detected by",
-            inst,
-            "in ",
-            timeh,
-            " hours",
-        )
 
     # preparing reference SED graph
     fig, ax = plt.subplots(figsize=(8, 6))
@@ -566,11 +632,6 @@ else:
         ylim=(yplotmin, yplotmax),
         xlabel="E [GeV]",
         ylabel="E$^2$ dN/dE [TeV cm$^{-2}$ s$^{-1}$]",
-        title="$\Sigma\sigma_i / \sqrt{"
-        + str(len(sigmas))
-        + "} ="
-        + str(round(sig_comb, 1))
-        + "\sigma$",
     )
     x = np.logspace(np.log10(eplotmin), np.log10(eplotmax), 50)
     labeltext = "expected SED ($T_{obs}$ = " + str(timeh) + " h)"
@@ -580,30 +641,37 @@ else:
     if redshift > 0:
         plt.plot(
             x,
-            1.0e-6
-            * x
-            * x
-            * [float(FluxObs(ee, redshift, Assumed(ee))) for ee in x],
-            "g",
-            label="Assumed spectrum, z={0:.2f}".format(redshift),
+            1.0e-6 * x * x * FluxObs(redshift, x, Assumed(x)),
+            "limegreen",
+            label=src_name + " (Assumed, z={0:.2f})".format(redshift),
         )
     else:
         plt.plot(
-            x, 1.0e-6 * x * x * Assumed(x), "g", label=" Assumed spectrum"
+            x,
+            1.0e-6 * x * x * Assumed(x),
+            "limegreen",
+            label=src_name + " (Assumed)",
         )
     if len(en) > 0:
         ax.errorbar(en, sed, yerr=dsed, label=labeltext, color="0", fmt="o")
+        handles, labels = ax.get_legend_handles_labels()
+    else:
+        handles, labels = ax.get_legend_handles_labels()
+        scatter_proxy = mlines.Line2D(
+            [], [], color="0", marker="o", linestyle="None", markersize=3
+        )
+        handles.append(scatter_proxy)
+        labels.append(labeltext)
+
+    # zdtag = "lowZd";
+    # if (zenith == Zeniths.midzd): zdtag="midZd"
+    # if (zenith == Zeniths.hizd): zdtag="highZd"
+    zdtag = zenith
 
     header = ""
-    if isLSTmode and ismidzd:
-        header = inst + " (data), mid zd"
-    elif isLSTmode and not (ismidzd):
-        header = inst + " (MC), low zd"
-    else:
-        header = inst + (", midZd " if ismidzd else ", lowZd ")
-        header += ", SUMT " if isSUMT else ""
+    header = inst + " " + zdtag + (", SUMT " if isSUMT else "")
 
-    ax.legend(loc="upper right", title=header)
+    ax.legend(handles=handles, labels=labels, loc="upper right", title=header)
     ax.grid(True, which="both", axis="x", ls="--", color="0.95")
     ax.grid(True, which="major", axis="y", ls="--", color="0.95")
     if drawsigma:
@@ -619,7 +687,20 @@ else:
                 va="bottom",
                 color=col,
             )
-    ax.annotate("mss v" + version, xy=(0.02, 0.02), xycoords="axes fraction")
+    ax.annotate(
+        "mss v"
+        + version
+        + (", (MC based)" if ismc else "")
+        + (f", offset degr.={offsetdegrad}" if offsetdegrad < 0.99 else ""),
+        xy=(0.02, 0.02),
+        xycoords="axes fraction",
+    )
+    if drawsigma and (best_int_sigma > 0):
+        ax.set(
+            title="$\sigma$ (>{0:.1f} GeV) = {1:.2f}".format(
+                best_int_e, best_int_sigma
+            )
+        )
     fig.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 from oda_api.data_products import PictureProduct
