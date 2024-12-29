@@ -35,10 +35,10 @@ minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of e
 offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
 eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "minimal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
 eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "maximal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "minimal flux [TeV cm^-2 s^-1]"
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "maximal flux [TeV cm^-2 s^-1]"
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "minimal flux [TeV/(cm2 s)]"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "maximal flux [TeV/(cm2 s)]"
 minerror = 2  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "Minimal errorbar (signal-to-noise)"
-dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
+dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [1/(TeV cm2 s)]"
 
 pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
