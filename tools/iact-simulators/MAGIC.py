@@ -1,15 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-_galaxy_wd = os.getcwd()
-
-with open("inputs.json", "r") as fd:
-    inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
-else:
-    inp_pdic = inp_dic
-
 # flake8: noqa
 
 import copy
@@ -56,6 +47,38 @@ pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar ana
 isLSTmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
 )
+
+_galaxy_wd = os.getcwd()
+
+with open("inputs.json", "r") as fd:
+    inp_dic = json.load(fd)
+if "_data_product" in inp_dic.keys():
+    inp_pdic = inp_dic["_data_product"]
+else:
+    inp_pdic = inp_dic
+
+for _vn in [
+    "timeh",
+    "extension",
+    "redshift",
+    "ismidzd",
+    "isSUMT",
+    "numoff",
+    "minev",
+    "minSBR",
+    "offsetdegrad",
+    "eplotmin",
+    "eplotmax",
+    "yplotmin",
+    "yplotmax",
+    "minerror",
+    "dN_dE",
+    "pulsarmode",
+    "pulsarOnRange",
+    "pulsarOffRange",
+    "isLSTmode",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 # global variables (DO NOT MODIFY)
 npoints = 13
