@@ -26,7 +26,7 @@
       <when value="MAGIC">
         <param name="timeh" type="float" value="20" label="Observation time (unit: hour)" />
         <param name="extension" type="float" value="0.0" label="Source extension (unit: deg)" />
-        <param name="redshift" type="float" value="0.13" label="Source redshift" />
+        <param name="redshift" type="float" value="0.0" label="Source redshift" />
         <param name="ismidzd" type="boolean" label="Zenith angle range 30-45 degrees?" />
         <param name="isSUMT" type="boolean" label="Sum Trigger?" />
         <param name="numoff" type="integer" value="3" label="number of background estimation regions" />
@@ -40,9 +40,9 @@
         <param name="minerror" type="float" value="2" label="Minimal errorbar (signal-to-noise)" />
         <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [1/(TeV cm2 s)]" />
         <param name="isLSTmode" type="boolean" label="MAGIC+LST1?" />
-        <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
-        <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
-        <param name="off_phase_interval" type="float" value="0.35" label="range of OFF phases" />
+        <param name="pulsarmode" type="boolean" label="Pulsar analysis?" />
+        <param name="pulsarOnRange" type="float" value="0.043" label="range of ON phases" />
+        <param name="pulsarOffRange" type="float" value="0.35" label="range of OFF phases" />
       </when>
       <when value="CTAO">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -113,7 +113,7 @@
         <param name="_selector" value="MAGIC" />
         <param name="timeh" value="20" />
         <param name="extension" value="0.0" />
-        <param name="redshift" value="0.13" />
+        <param name="redshift" value="0.0" />
         <param name="ismidzd" value="False" />
         <param name="isSUMT" value="False" />
         <param name="numoff" value="3" />
@@ -127,9 +127,9 @@
         <param name="minerror" value="2" />
         <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
         <param name="isLSTmode" value="False" />
-        <param name="pulsar_mode" value="False" />
-        <param name="on_phase_interval" value="0.043" />
-        <param name="off_phase_interval" value="0.35" />
+        <param name="pulsarmode" value="False" />
+        <param name="pulsarOnRange" value="0.043" />
+        <param name="pulsarOffRange" value="0.35" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
