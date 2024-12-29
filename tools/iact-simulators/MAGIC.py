@@ -33,11 +33,11 @@ numoff = 3  # http://odahub.io/ontology#Integer ; oda:label "number of backgroun
 minev = 10.0  # http://odahub.io/ontology#Float ; oda:label "minimum number of events"
 minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
 offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:label "minimal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:label "maximal energy for plotting" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:label "minimal flux [TeV cm^-2 s^-1] for plotting"
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:label "maximal flux [TeV cm^-2 s^-1] for plotting"
-minerror = 2  # http://odahub.io/ontology#Float ; oda:label "Minimal errorbar (signal-to-noise) (for plotting)"
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "minimal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "maximal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "minimal flux [TeV cm^-2 s^-1]"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "maximal flux [TeV cm^-2 s^-1]"
+minerror = 2  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "Minimal errorbar (signal-to-noise)"
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
 
 pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
