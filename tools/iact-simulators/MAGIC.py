@@ -40,10 +40,6 @@ yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; od
 minerror = 2  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "Minimal errorbar (signal-to-noise)"
 dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [1/(TeV cm2 s)]"
 
-pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
-pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
-pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
-
 isLSTmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
 )
@@ -73,12 +69,13 @@ for _vn in [
     "yplotmax",
     "minerror",
     "dN_dE",
-    "pulsarmode",
-    "pulsarOnRange",
-    "pulsarOffRange",
     "isLSTmode",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
+pulsarOnRange = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
+pulsarOffRange = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
 
 # global variables (DO NOT MODIFY)
 npoints = 13

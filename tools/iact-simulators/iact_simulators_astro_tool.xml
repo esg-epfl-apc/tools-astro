@@ -39,9 +39,6 @@
         <param name="yplotmax" type="float" value="1e-09" label="maximal flux [TeV/(cm2 s)]" />
         <param name="minerror" type="float" value="2" label="Minimal errorbar (signal-to-noise)" />
         <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [1/(TeV cm2 s)]" />
-        <param name="pulsarmode" type="boolean" label="Pulsar analysis?" />
-        <param name="pulsarOnRange" type="float" value="0.092" label="range of ON phases" />
-        <param name="pulsarOffRange" type="float" value="0.25" label="range of OFF phases" />
         <param name="isLSTmode" type="boolean" label="MAGIC+LST1?" />
       </when>
       <when value="CTAO">
@@ -126,9 +123,6 @@
         <param name="yplotmax" value="1e-09" />
         <param name="minerror" value="2" />
         <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
-        <param name="pulsarmode" value="False" />
-        <param name="pulsarOnRange" value="0.092" />
-        <param name="pulsarOffRange" value="0.25" />
         <param name="isLSTmode" value="False" />
       </conditional>
       <assert_stdout>
