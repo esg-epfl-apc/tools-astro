@@ -22,7 +22,9 @@ repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
 extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
 
-redshift = 0.0  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
+redshift = (
+    0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
+)
 
 ismidzd = False  #  http://odahub.io/ontology#Boolean ; oda:label "Zenith angle range 30-45 degrees?"
 isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
@@ -42,10 +44,10 @@ isLSTmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
 )
 
-pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
+pulsar_mode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 
-pulsarOnRange = 0.043  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
-pulsarOffRange = 0.35  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
+on_phase_interval = 0.043  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
+off_phase_interval = 0.35  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
 
 _galaxy_wd = os.getcwd()
 
@@ -73,11 +75,15 @@ for _vn in [
     "minerror",
     "dN_dE",
     "isLSTmode",
-    "pulsarmode",
-    "pulsarOnRange",
-    "pulsarOffRange",
+    "pulsar_mode",
+    "on_phase_interval",
+    "off_phase_interval",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+pulsarmode = pulsar_mode
+pulsarOnRange = on_phase_interval
+pulsarOffRange = off_phase_interval
 
 # global variables (DO NOT MODIFY)
 npoints = 13
