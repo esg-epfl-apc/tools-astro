@@ -520,25 +520,12 @@ for iereco in range(len(erecobincenters)):
         finebincenters * total_signal_counts_2d[iereco]
     ) / np.nansum(total_signal_counts_2d[iereco])
 
-fig = plt.figure(figsize=(12, 4))
-
-fig.add_subplot(1, 2, 1)
 plt.scatter(erecobincenters, mean_etrue_vs_ereco)
 plt.xlabel("Ereco bin center (TeV)")
 plt.ylabel("Mean Etrue in bin (TeV)")
 plt.xscale("log")
 plt.yscale("log")
 plt.grid()
-
-fig.add_subplot(1, 2, 2)
-plt.scatter(erecobincenters, mean_etrue_vs_ereco / erecobincenters)
-plt.xlabel("Ereco bin center (TeV)")
-plt.ylabel("Mean Etrue in bin / Ereco bin center")
-plt.ylim(0, 1.1 * np.nanmax(mean_etrue_vs_ereco / erecobincenters))
-plt.xscale("log")
-plt.grid()
-
-plt.show()
 plt.savefig("Etrue_vs_Ereco.png", format="png", bbox_inches="tight")
 
 # Let's not use bind with too high bias in the spectrum:
@@ -641,7 +628,6 @@ else:
     print("****************")
     print("No detection :-C")
 plt.legend()
-plt.show()
 plt.savefig("Significance.png", format="png", bbox_inches="tight")
 
 # ## Simulated SED from observation (Asimov dataset)
@@ -733,13 +719,17 @@ data = [
     mean_etrue_vs_ereco,
 ]
 names = (
-    "Etrue[TeV]",
+    "Ereco[TeV]",
     "Signal_counts",
     "Background_counts",
     "Li_Ma_significance",
     "mean_Etrue",
 )
 count_spec = ODAAstropyTable(Table(data, names=names))
+
+0.5 * (erecobins[:-1] + erecobins[1:])
+
+plt.plot(erecobincenters, mean_etrue_vs_ereco)
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Spectrum_raw.png")
