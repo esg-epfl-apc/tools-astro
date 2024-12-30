@@ -74,7 +74,7 @@
         <param name="N_backgr_regions" type="integer" value="3" label="Number of backgorund regions" />
         <param name="Exposure_time" type="float" value="33.0" label="Exposure time in hours" />
         <param name="source_extension" type="float" value="0.1" label="Source extension in degrees" />
-        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [1/(TeV cm2 s)]" />
         <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
         <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
         <param name="off_phase_interval" type="float" value="0.35" label="range of OFF phases" />
@@ -106,7 +106,10 @@
     <data label="${tool.name} -&gt; LST1 Count_spectrum" name="out_LST1_Count_spectrum" format="auto" from_work_dir="Count_spectrum_galaxy.output">
       <filter>_data_product['_selector'] == 'LST1'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 SED_astropy_table" name="out_LST1_SED_astropy_table" format="auto" from_work_dir="SED_astropy_table_galaxy.output">
+    <data label="${tool.name} -&gt; LST1 Etrue_vs_Ereco" name="out_LST1_Etrue_vs_Ereco" format="auto" from_work_dir="Etrue_vs_Ereco_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1'</filter>
+    </data>
+    <data label="${tool.name} -&gt; LST1 Significance" name="out_LST1_Significance" format="auto" from_work_dir="Significance_galaxy.output">
       <filter>_data_product['_selector'] == 'LST1'</filter>
     </data>
     <data label="${tool.name} -&gt; LST1 Count_spectrum_astropy_table" name="out_LST1_Count_spectrum_astropy_table" format="auto" from_work_dir="Count_spectrum_astropy_table_galaxy.output">
@@ -163,7 +166,7 @@
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>
     </test>
-    <test expect_num_outputs="4">
+    <test expect_num_outputs="5">
       <conditional name="_data_product">
         <param name="_selector" value="LST1" />
         <param name="redshift" value="0.13" />

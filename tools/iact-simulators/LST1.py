@@ -35,7 +35,7 @@ N_backgr_regions = 3  # http://odahub.io/ontology#Integer ; oda:label "Number of
 Exposure_time = 33.0  # http://odahub.io/ontology#Float ; oda:label "Exposure time in hours"
 source_extension = 0.1  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
 
-dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [TeV^-1 cm^-2 s^-1]"
+dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [1/(TeV cm2 s)]"
 
 pulsar_mode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 
@@ -510,8 +510,6 @@ plt.grid()
 plt.ylim(0.1, 2 * max(np.max(total_bg_counts), np.max(total_signal_counts)))
 plt.savefig("Spectrum_raw.png", format="png", bbox_inches="tight")
 
-total_bg_counts
-
 mean_etrue_vs_ereco = np.zeros_like(erecobincenters)
 finebincenters = 0.5 * (fine_etrue_binning[1:] + fine_etrue_binning[:-1])
 
@@ -541,6 +539,7 @@ plt.xscale("log")
 plt.grid()
 
 plt.show()
+plt.savefig("Etrue_vs_Ereco.png", format="png", bbox_inches="tight")
 
 # Let's not use bind with too high bias in the spectrum:
 not_too_high_bias = (
@@ -643,6 +642,7 @@ else:
     print("No detection :-C")
 plt.legend()
 plt.show()
+plt.savefig("Significance.png", format="png", bbox_inches="tight")
 
 # ## Simulated SED from observation (Asimov dataset)
 # The fluxes & uncertainties are computed in the Ereco bins, then placed at the mean Etrue of the gamma events falling within the bin, and at the "expected" flux level.
@@ -729,20 +729,30 @@ data = [
     0.5 * (erecobins[:-1] + erecobins[1:]),
     total_signal_counts,
     total_bg_counts,
+    significance,
+    mean_etrue_vs_ereco,
 ]
-names = ("Etrue[TeV]", "Signal_counts", "Background_counts")
+names = (
+    "Etrue[TeV]",
+    "Signal_counts",
+    "Background_counts",
+    "Li_Ma_significance",
+    "mean_Etrue",
+)
 count_spec = ODAAstropyTable(Table(data, names=names))
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Spectrum_raw.png")
-
+bin_image2 = PictureProduct.from_file("Etrue_vs_Ereco.png")
+bin_image3 = PictureProduct.from_file("Significance.png")
 data = [mean_etrue_vs_ereco[displayed_points], SED, SED_stat_error]
 names = ("Emean[TeV]", "Flux[TeV/cm2s]", "Flux_error[TeV/cm2s]")
 spec = ODAAstropyTable(Table(data, names=names))
 
 SED = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 Count_spectrum = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
-SED_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+Etrue_vs_Ereco = bin_image2  # http://odahub.io/ontology#ODAPictureProduct
+Significance = bin_image3  # http://odahub.io/ontology#ODAPictureProductSED_astropy_table = spec # http://odahub.io/ontology#ODAAstropyTable
 Count_spectrum_astropy_table = (
     count_spec  # http://odahub.io/ontology#ODAAstropyTable
 )
@@ -755,11 +765,7 @@ _oda_outs.append(
     ("out_LST1_Count_spectrum", "Count_spectrum_galaxy.output", Count_spectrum)
 )
 _oda_outs.append(
-    (
-        "out_LST1_SED_astropy_table",
-        "SED_astropy_table_galaxy.output",
-        SED_astropy_table,
-    )
+    ("out_LST1_Etrue_vs_Ereco", "Etrue_vs_Ereco_galaxy.output", Etrue_vs_Ereco)
 )
 _oda_outs.append(
     (
@@ -784,6 +790,25 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
+_simple_outs = []
+_simple_outs.append(
+    ("out_LST1_Significance", "Significance_galaxy.output", Significance)
+)
+_numpy_available = True
+
+for _outn, _outfn, _outv in _simple_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif _numpy_available and isinstance(_outv, np.ndarray):
+        with open(_galaxy_outfile_name, "wb") as fd:
+            np.savez(fd, _outv)
+        _galaxy_meta_data[_outn] = {"ext": "npz"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd)
+        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
