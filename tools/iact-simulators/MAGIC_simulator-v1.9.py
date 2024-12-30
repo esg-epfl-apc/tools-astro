@@ -20,12 +20,12 @@ src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
-timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
+timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:description "[h], time of observations"
 extension = 0.0  # http://odahub.io/ontology#AngleDegrees
 
 redshift = 0.13  # http://odahub.io/ontology#Double
 
-zenith = "lowzd"  #  http://odahub.io/ontology/#String ; oda:label "Zenith"; oda:descritpion "lowzd, midzd or hizd"
+zenith = "lowzd"  #  http://odahub.io/ontology/#String ; oda:label "Zenith"; oda:description "lowzd, midzd or hizd"
 isSUMT = False  #  http://odahub.io/ontology#Boolean
 
 numoff = 3  # http://odahub.io/ontology#Integer
