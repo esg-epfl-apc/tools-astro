@@ -16,6 +16,9 @@ import pandas as pd
 from numpy import exp
 from oda_api.data_products import PictureProduct
 from oda_api.json import CustomJSONEncoder
+
+# import gammapy
+# from gammapy.modeling.models import EBLAbsorptionNormSpectralModel
 from pyirf.statistics import li_ma_significance
 from scipy.stats import moyal, skewnorm
 
@@ -505,6 +508,7 @@ plt.xlabel("Ereco (TeV)")
 plt.ylabel("Number of events after cuts in Ereco bins")
 plt.grid()
 plt.ylim(0.1, 2 * max(np.max(total_bg_counts), np.max(total_signal_counts)))
+plt.savefig("Spectrum_raw.png", format="png", bbox_inches="tight")
 
 total_bg_counts
 
@@ -718,30 +722,50 @@ if displayed_points.sum() > 0:
 else:
     print("Nothing to display. No valid flux points!")
 
+from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 
-bin_image = PictureProduct.from_file("Spectrum.png")
+data = [
+    0.5 * (erecobins[:-1] + erecobins[1:]),
+    total_signal_counts,
+    total_bg_counts,
+]
+names = ("Etrue[TeV]", "Signal_counts", "Background_counts")
+count_spec = ODAAstropyTable(Table(data, names=names))
 
-from astropy.table import Table
+bin_image = PictureProduct.from_file("Spectrum.png")
+bin_image1 = PictureProduct.from_file("Spectrum_raw.png")
 
 data = [mean_etrue_vs_ereco[displayed_points], SED, SED_stat_error]
 names = ("Emean[TeV]", "Flux[TeV/cm2s]", "Flux_error[TeV/cm2s]")
 spec = ODAAstropyTable(Table(data, names=names))
 
-picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-spectrum_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+SED = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+Count_spectrum = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
+SED_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+Count_spectrum_astropy_table = (
+    count_spec  # http://odahub.io/ontology#ODAAstropyTable
+)
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
+_oda_outs.append(("out_LST1_SED", "SED_galaxy.output", SED))
 _oda_outs.append(
-    ("out_LST1_picture_png", "picture_png_galaxy.output", picture_png)
+    ("out_LST1_Count_spectrum", "Count_spectrum_galaxy.output", Count_spectrum)
 )
 _oda_outs.append(
     (
-        "out_LST1_spectrum_astropy_table",
-        "spectrum_astropy_table_galaxy.output",
-        spectrum_astropy_table,
+        "out_LST1_SED_astropy_table",
+        "SED_astropy_table_galaxy.output",
+        SED_astropy_table,
+    )
+)
+_oda_outs.append(
+    (
+        "out_LST1_Count_spectrum_astropy_table",
+        "Count_spectrum_astropy_table_galaxy.output",
+        Count_spectrum_astropy_table,
     )
 )
 
