@@ -47,25 +47,29 @@
         <param name="RA" type="float" value="83.6287" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
         <param name="timeh" type="float" value="20" label="Observation time (unit: hour)" />
-        <param name="extension" type="float" value="0.0" label="extension (unit: deg)" />
-        <param name="redshift" type="float" value="0.13" label="redshift" />
-        <param name="zenith" type="text" value="lowzd" label="Zenith" />
-        <param name="isSUMT" type="boolean" label="isSUMT" />
+        <param name="extension" type="float" value="0.0" label="Source extension (unit: deg)" />
+        <param name="redshift" type="float" value="0.13" label="Source redshift" />
+        <param name="zenith" type="select" label="Zenith angle">
+          <option value="hizd">hizd</option>
+          <option value="lowzd" selected="true">lowzd</option>
+          <option value="midzd">midzd</option>
+        </param>
+        <param name="isSUMT" type="boolean" label="Sum Trigger?" />
         <param name="numoff" type="integer" value="3" label="numoff" />
-        <param name="minev" type="float" value="10.0" label="minev" />
-        <param name="minSBR" type="float" value="0.05" label="minSBR" />
+        <param name="minev" type="float" value="10.0" label="minimum number of events" />
+        <param name="minSBR" type="float" value="0.05" label="minimum ratio of excess to background" />
         <param name="PSF" type="float" value="0.1" label="PSF (unit: deg)" />
-        <param name="offsetdegrad" type="float" value="1.0" label="offsetdegrad" />
-        <param name="eplotmin" type="float" value="31" label="eplotmin (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="eplotmax" type="float" value="20000.0" label="eplotmax (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="yplotmin" type="float" value="1e-14" label="yplotmin" />
-        <param name="yplotmax" type="float" value="1e-09" label="yplotmax" />
-        <param name="minerror" type="integer" value="2" label="minerror" />
+        <param name="offsetdegrad" type="float" value="1.0" label="degradation factor (for offset &gt;0.4 deg)" />
+        <param name="eplotmin" type="float" value="31" label="minimal energy (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="eplotmax" type="float" value="20000.0" label="maximal energy (unit: GeV)" min="30.01" max="29999.0" />
+        <param name="yplotmin" type="float" value="1e-14" label="minimal flux [TeV/(cm2 s)]" />
+        <param name="yplotmax" type="float" value="1e-09" label="maximal flux [TeV/(cm2 s)]" />
+        <param name="minerror" type="float" value="2" label="Minimal errorbar (signal-to-noise)" />
         <param name="drawsigma" type="boolean" checked="true" label="drawsigma" />
-        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="dN_dE" />
-        <param name="pulsarmode" type="boolean" label="pulsarmode" />
-        <param name="pulsarOnRange" type="float" value="0.092" label="pulsarOnRange" />
-        <param name="pulsarOffRange" type="float" value="0.25" label="pulsarOffRange" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [1/(TeV cm2 s)]" />
+        <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
+        <param name="on_phase_interval" type="float" value="0.092" label="range of ON phases" />
+        <param name="off_phase_interval" type="float" value="0.25" label="range of OFF phases" />
         <param name="isLSTmode" type="boolean" label="isLSTmode" />
       </when>
       <when value="LST1">
@@ -167,9 +171,9 @@
         <param name="minerror" value="2" />
         <param name="drawsigma" value="True" />
         <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
-        <param name="pulsarmode" value="False" />
-        <param name="pulsarOnRange" value="0.092" />
-        <param name="pulsarOffRange" value="0.25" />
+        <param name="pulsar_mode" value="False" />
+        <param name="on_phase_interval" value="0.092" />
+        <param name="off_phase_interval" value="0.25" />
         <param name="isLSTmode" value="False" />
       </conditional>
       <assert_stdout>
