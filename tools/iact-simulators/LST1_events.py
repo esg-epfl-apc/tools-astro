@@ -9,14 +9,6 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-get_ipython().run_cell_magic(   # noqa: F821
-    "bash",
-    "",
-    'wget https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/master/Franceschini17.txt\n\nrm -r IRFS | echo "Ok"\nmkdir IRFS\ncd IRFS\nwget https://zenodo.org/records/5499840/files/cta-prod5-zenodo-fitsonly-v0.1.zip\nunzip cta-prod5-zenodo-fitsonly-v0.1.zip\ncd fits    \nfor fn in *.gz ; do tar -zxvf $fn; done \n \n',
-)
-
-import os
-
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 # global variables (DO NOT MODIFY)
@@ -219,10 +211,6 @@ plt.xscale("log")
 plt.yscale("log")
 plt.ylim(1e-3, 2)
 max(EBLen)
-
-plt.plot(E, Assumed(E * 1000) * E**2)
-plt.xscale("log")
-plt.yscale("log")
 
 E = np.logspace(-2, 2, 20)
 
