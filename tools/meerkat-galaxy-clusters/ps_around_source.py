@@ -19,7 +19,7 @@ from plots import *
 # ------------------------------------------------------------------------------------
 ra = 260  # http://odahub.io/ontology#AngleDegrees
 dec = -82  # http://odahub.io/ontology#AngleDegrees
-thresh_arcmin = 60  # http://odahub.io/ontology#arcmin
+thresh_arcmin = 2  # http://odahub.io/ontology#arcmin
 
 # -----------------------------------------------------
 # Handling errors and exceptions
@@ -65,7 +65,7 @@ print(msg_out)
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
 # ----------------------------------------------------------------------------------
-# plot_power_spectrum(ra, dec, thresh_arcmin)
+plot_power_spectrum(ra, dec, thresh_arcmin)
 
 # # ----------------------------------------------------------------------------------
 # # Plotting of the enhanced image, the target location and the corresponding sources
