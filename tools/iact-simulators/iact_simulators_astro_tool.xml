@@ -19,32 +19,10 @@
   <inputs>
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
-        <option value="MAGIC" selected="true">MAGIC</option>
-        <option value="CTAO" selected="false">CTAO</option>
+        <option value="CTAO" selected="true">CTAO</option>
         <option value="MAGIC_simulator-v1.9" selected="false">MAGIC_simulator-v1.9</option>
         <option value="LST1" selected="false">LST1</option>
       </param>
-      <when value="MAGIC">
-        <param name="timeh" type="float" value="20" label="Observation time (unit: hour)" />
-        <param name="extension" type="float" value="0.0" label="Source extension (unit: deg)" />
-        <param name="redshift" type="float" value="0.13" label="Source redshift" />
-        <param name="ismidzd" type="boolean" label="Zenith angle range 30-45 degrees?" />
-        <param name="isSUMT" type="boolean" label="Sum Trigger?" />
-        <param name="numoff" type="integer" value="3" label="number of background estimation regions" />
-        <param name="minev" type="float" value="10.0" label="minimum number of events" />
-        <param name="minSBR" type="float" value="0.05" label="minimum ratio of excess to background" />
-        <param name="offsetdegrad" type="float" value="1.0" label="degradation factor (for offset &gt;0.4 deg)" />
-        <param name="eplotmin" type="float" value="31" label="minimal energy (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="eplotmax" type="float" value="20000.0" label="maximal energy (unit: GeV)" min="30.01" max="29999.0" />
-        <param name="yplotmin" type="float" value="1e-14" label="minimal flux [TeV/(cm2 s)]" />
-        <param name="yplotmax" type="float" value="1e-09" label="maximal flux [TeV/(cm2 s)]" />
-        <param name="minerror" type="float" value="2" label="Minimal errorbar (signal-to-noise)" />
-        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" label="Source spectrum dN/dE [1/(TeV cm2 s)]" />
-        <param name="isLSTmode" type="boolean" label="MAGIC+LST1?" />
-        <param name="pulsar_mode" type="boolean" label="Pulsar analysis?" />
-        <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
-        <param name="off_phase_interval" type="float" value="0.35" label="range of OFF phases" />
-      </when>
       <when value="CTAO">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
@@ -109,12 +87,6 @@
     </conditional>
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; MAGIC spectrum_png" name="out_MAGIC_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'MAGIC'</filter>
-    </data>
-    <data label="${tool.name} -&gt; MAGIC spectrum_table" name="out_MAGIC_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
-      <filter>_data_product['_selector'] == 'MAGIC'</filter>
-    </data>
     <data label="${tool.name} -&gt; CTAO image_png" name="out_CTAO_image_png" format="auto" from_work_dir="image_png_galaxy.output">
       <filter>_data_product['_selector'] == 'CTAO'</filter>
     </data>
@@ -150,33 +122,6 @@
     </data>
   </outputs>
   <tests>
-    <test expect_num_outputs="2">
-      <conditional name="_data_product">
-        <param name="_selector" value="MAGIC" />
-        <param name="timeh" value="20" />
-        <param name="extension" value="0.0" />
-        <param name="redshift" value="0.13" />
-        <param name="ismidzd" value="False" />
-        <param name="isSUMT" value="False" />
-        <param name="numoff" value="3" />
-        <param name="minev" value="10.0" />
-        <param name="minSBR" value="0.05" />
-        <param name="offsetdegrad" value="1.0" />
-        <param name="eplotmin" value="31" />
-        <param name="eplotmax" value="20000.0" />
-        <param name="yplotmin" value="1e-14" />
-        <param name="yplotmax" value="1e-09" />
-        <param name="minerror" value="2" />
-        <param name="dN_dE" value="2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)" />
-        <param name="isLSTmode" value="False" />
-        <param name="pulsar_mode" value="False" />
-        <param name="on_phase_interval" value="0.043" />
-        <param name="off_phase_interval" value="0.35" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
     <test expect_num_outputs="4">
       <conditional name="_data_product">
         <param name="_selector" value="CTAO" />
