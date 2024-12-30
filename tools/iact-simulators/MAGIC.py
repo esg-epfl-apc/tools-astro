@@ -44,7 +44,7 @@ isLSTmode = (
     False  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC+LST1?"
 )
 
-pulsarmode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
+pulsar_mode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
 
 on_phase_interval = 0.043  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
 off_phase_interval = 0.35  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
@@ -75,13 +75,13 @@ for _vn in [
     "minerror",
     "dN_dE",
     "isLSTmode",
-    "pulsarmode",
+    "pulsar_mode",
     "on_phase_interval",
     "off_phase_interval",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-pulsarmode = pulsarmode
+pulsarmode = pulsar_mode
 pulsarOnRange = on_phase_interval
 pulsarOffRange = off_phase_interval
 
