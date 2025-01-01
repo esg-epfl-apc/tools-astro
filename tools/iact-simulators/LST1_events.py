@@ -411,8 +411,6 @@ from matplotlib.colors import LogNorm
 plt.figure()
 pixsize = 0.1
 Nbins = 2 * int(Radius / pixsize) + 1
-ra0 = np.mean(ra)
-dec0 = np.mean(dec)
 from numpy import cos, pi
 
 cdec = cos(DEC * pi / 180.0)
