@@ -103,9 +103,9 @@
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
         <param name="redshift" type="float" value="0.13" label="Source redshift" />
         <param name="dN_dE" type="text" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" label="Source spectrum dN/dE 1/(TeV cm2 s1)]" />
-        <param name="source_extension" type="float" value="0.5" label="Source extension in degrees" />
-        <param name="Radius_spectal_extraction" type="float" value="0.2" label="Radius_spectal_extraction" />
-        <param name="Radius_sky_image" type="float" value="4" label="Radius_sky_image (unit: deg)" />
+        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
+        <param name="Radius_spectal_extraction" type="float" value="0.2" label="Source radius aperture photometry" />
+        <param name="Radius_sky_image" type="float" value="4" label="Image size (unit: deg)" />
       </when>
     </conditional>
   </inputs>
@@ -245,7 +245,7 @@
         <param name="Texp" value="1.0" />
         <param name="redshift" value="0.13" />
         <param name="dN_dE" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" />
-        <param name="source_extension" value="0.5" />
+        <param name="source_extension" value="0.0" />
         <param name="Radius_spectal_extraction" value="0.2" />
         <param name="Radius_sky_image" value="4" />
       </conditional>

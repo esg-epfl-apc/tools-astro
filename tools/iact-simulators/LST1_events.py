@@ -53,14 +53,10 @@ redshift = (
 )
 dN_dE = "2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE 1/(TeV cm2 s1)]"
 
-source_extension = 0.5  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
+source_extension = 0.0  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
 
-Radius_spectal_extraction = (
-    0.2  # http://odahub.io/ontology#Float ; oda:group "Plotting"
-)
-Radius_sky_image = (
-    4  # http://odahub.io/ontology#AngleDegrees ; oda:group "Plotting"
-)
+Radius_spectal_extraction = 0.2  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "Source radius aperture photometry"
+Radius_sky_image = 4  # http://odahub.io/ontology#AngleDegrees ; oda:group "Plotting" ; oda:label "Image size"
 
 _galaxy_wd = os.getcwd()
 
@@ -117,16 +113,21 @@ z = redshift
 Texp = Texp * 3600.0
 DEC_pnt = DEC
 cdec = cos(DEC * pi / 180.0)
-RA_pnt = RA - OffAxis_angle / cdec
+RA_pnt1 = RA - OffAxis_angle / cdec
+RA_pnt2 = RA + OffAxis_angle / cdec
 Radius = Radius_sky_image
 R_s = Radius_spectal_extraction
 
-pointing = SkyCoord(RA_pnt, DEC_pnt, unit="deg", frame="icrs")
+pointing1 = SkyCoord(RA_pnt1, DEC_pnt, unit="deg", frame="icrs")
+pointing2 = SkyCoord(RA_pnt2, DEC_pnt, unit="deg", frame="icrs")
 coord_s = SkyCoord(RA, DEC, unit="deg", frame="icrs")
-RA_bkg = RA_pnt - (RA - RA_pnt)
-DEC_bkg = DEC_pnt - (DEC - DEC_pnt)
-coord_b = SkyCoord(RA_bkg, DEC_bkg, unit="deg", frame="icrs")
-offaxis = coord_s.separation(pointing).deg
+RA_bkg1 = RA_pnt1 - (RA - RA_pnt1)
+DEC_bkg1 = DEC_pnt - (DEC - DEC_pnt)
+coord_b1 = SkyCoord(RA_bkg1, DEC_bkg1, unit="deg", frame="icrs")
+RA_bkg2 = RA_pnt2 - (RA - RA_pnt2)
+DEC_bkg2 = DEC_pnt - (DEC - DEC_pnt)
+coord_b2 = SkyCoord(RA_bkg2, DEC_bkg2, unit="deg", frame="icrs")
+offaxis = coord_s.separation(pointing1).deg
 pr = ProgressReporter()
 pr.report_progress(stage="Progress", progress=10.0)
 
@@ -161,14 +162,11 @@ Azimuths = np.array(
 len(Zeniths), len(Azimuths)
 
 CTA_north_lat = 18.0
-Zd_min = abs(DEC - CTA_north_lat)
-if Zd < Zd_min:
-    raise RuntimeError(
-        "Zenith angle is smaller than minimal possible for this source declination: "
-        + str(Zd_min)
-    )
-if Zd_min > 70.0:
-    raise RuntimeError("Source not visible from the LST site")
+# Zd_min=abs(DEC-CTA_north_lat)
+# if(Zd<Zd_min):
+#    raise RuntimeError('Zenith angle is smaller than minimal possible for this source declination: '+str(Zd_min))
+# if(Zd_min>70.):
+#    raise RuntimeError('Source not visible from the LST site')
 
 zen = Zeniths[Zd < Zeniths][0]
 azi = Azimuths[Zd < Zeniths][0]
@@ -183,6 +181,18 @@ if os.path.exists(filename) == False:
     raise RuntimeError("No reponse function found")
     message = "No reponse function found!"
 IRFS = load_irf_dict_from_file(filename)
+hdul = fits.open(filename)
+aeff = hdul["EFFECTIVE AREA"].data
+ENERG_LO = aeff["ENERG_LO"][0]
+ENERG_HI = aeff["ENERG_HI"][0]
+THETA_LO = aeff["THETA_LO"][0]
+THETA_HI = aeff["THETA_HI"][0]
+EFFAREA = aeff["EFFAREA"][0]
+print(offaxis)
+ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
+EFAREA = EFFAREA[ind_offaxis]
+HDU_EFFAREA = hdul["EFFECTIVE AREA"]
+HDU_RMF = hdul["ENERGY DISPERSION"]
 
 E = np.logspace(-2, 2, 20)
 
@@ -284,11 +294,11 @@ modelsky = Models.from_dict(dic)
 
 bkg_model = FoVBackgroundModel(dataset_name="my-dataset")
 
-observation = Observation.create(
-    obs_id="0", pointing=pointing, livetime=str(Texp) + " s", irfs=IRFS
+observation1 = Observation.create(
+    obs_id="0", pointing=pointing1, livetime=str(Texp / 2.0) + " s", irfs=IRFS
 )
 
-print(f"Create the dataset for {pointing}")
+print(f"Create the dataset")
 energy_axis = MapAxis.from_energy_bounds(
     "0.012 TeV", "100 TeV", nbin=10, per_decade=True
 )
@@ -299,56 +309,102 @@ migra_axis = MapAxis.from_bounds(
     0.5, 2, nbin=150, node_type="edges", name="migra"
 )
 
-geom = WcsGeom.create(
-    skydir=pointing,
+geom1 = WcsGeom.create(
+    skydir=pointing1,
     width=(2 * Radius, 2 * Radius),
     binsz=0.02,
     frame="icrs",
     axes=[energy_axis],
 )
 
-empty = MapDataset.create(
-    geom,
+empty1 = MapDataset.create(
+    geom1,
     energy_axis_true=energy_axis_true,
     migra_axis=migra_axis,
     name="my-dataset",
 )
 maker = MapDatasetMaker(selection=["exposure", "background", "psf", "edisp"])
-dataset = maker.run(empty, observation)
+dataset1 = maker.run(empty1, observation1)
 
-region_sky = CircleSkyRegion(center=pointing, radius=Radius * u.deg)
-mask_map = dataset.geoms["geom"].region_mask(region_sky)
-mod = modelsky.select_mask(mask_map)
+region_sky1 = CircleSkyRegion(center=pointing1, radius=Radius * u.deg)
+mask_map1 = dataset1.geoms["geom"].region_mask(region_sky1)
+mod1 = modelsky.select_mask(mask_map1)
 
 bkg_idx = np.where(np.array(modelsky.names) == "my-dataset-bkg")
-mod.append(modelsky[int(bkg_idx[0][0])])
+mod1.append(modelsky[int(bkg_idx[0][0])])
 
-dataset.models = mod
+dataset1.models = mod1
 
-for m in dataset.models[:-1]:
-    sep = m.spatial_model.position.separation(pointing).deg
-    print(
-        f"This is the spatial separation of {m.name} from the pointing direction: {sep}"
-    )
+# for m in dataset.models[:-1]:
+#    sep = m.spatial_model.position.separation(pointing).deg
+#    print(f"This is the spatial separation of {m.name} from the pointing direction: {sep}")
 pr.report_progress(stage="Progress", progress=50.0)
 print("Simulate...")
 sampler = MapDatasetEventSampler()
-events = sampler.run(dataset, observation)
+events1 = sampler.run(dataset1, observation1)
+
+observation2 = Observation.create(
+    obs_id="0", pointing=pointing2, livetime=str(Texp / 2.0) + " s", irfs=IRFS
+)
+
+geom2 = WcsGeom.create(
+    skydir=pointing2,
+    width=(2 * Radius, 2 * Radius),
+    binsz=0.02,
+    frame="icrs",
+    axes=[energy_axis],
+)
+
+empty2 = MapDataset.create(
+    geom2,
+    energy_axis_true=energy_axis_true,
+    migra_axis=migra_axis,
+    name="my-dataset",
+)
+dataset2 = maker.run(empty2, observation2)
+
+region_sky2 = CircleSkyRegion(center=pointing2, radius=Radius * u.deg)
+mask_map2 = dataset2.geoms["geom"].region_mask(region_sky2)
+mod2 = modelsky.select_mask(mask_map2)
+
+bkg_idx = np.where(np.array(modelsky.names) == "my-dataset-bkg")
+mod2.append(modelsky[int(bkg_idx[0][0])])
+
+dataset2.models = mod2
+
+# for m in dataset.models[:-1]:
+#    sep = m.spatial_model.position.separation(pointing).deg
+#    print(f"This is the spatial separation of {m.name} from the pointing direction: {sep}")
+pr.report_progress(stage="Progress", progress=50.0)
+print("Simulate...")
+events2 = sampler.run(dataset2, observation2)
 
 pr.report_progress(stage="Progress", progress=90.0)
 print(f"Save events ...")
 primary_hdu = fits.PrimaryHDU()
-hdu_evt = fits.BinTableHDU(events.table)
-hdu_gti = fits.BinTableHDU(dataset.gti.table, name="GTI")
+hdu_evt = fits.BinTableHDU(events1.table)
+hdu_gti = fits.BinTableHDU(dataset1.gti.table, name="GTI")
 hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti, HDU_EFFAREA, HDU_RMF])
-hdu_all.writeto(f"./events.fits", overwrite=True)
+hdu_all.writeto(f"./events1.fits", overwrite=True)
+primary_hdu = fits.PrimaryHDU()
+hdu_evt = fits.BinTableHDU(events2.table)
+hdu_gti = fits.BinTableHDU(dataset2.gti.table, name="GTI")
+hdu_all = fits.HDUList([primary_hdu, hdu_evt, hdu_gti, HDU_EFFAREA, HDU_RMF])
+hdu_all.writeto(f"./events2.fits", overwrite=True)
 
-hdul = fits.open("events.fits")
-ev = hdul["EVENTS"].data
-ra = ev["RA"]
-dec = ev["DEC"]
-coords = SkyCoord(ra, dec, unit="degree")
-en = ev["ENERGY"]
+hdul = fits.open("events1.fits")
+ev1 = hdul["EVENTS"].data
+hdul = fits.open("events2.fits")
+ev2 = hdul["EVENTS"].data
+
+ra1 = ev1["RA"]
+dec1 = ev1["DEC"]
+en1 = ev1["ENERGY"]
+coords1 = SkyCoord(ra1, dec1, unit="degree")
+ra2 = ev2["RA"]
+dec2 = ev2["DEC"]
+en2 = ev2["ENERGY"]
+coords2 = SkyCoord(ra2, dec2, unit="degree")
 
 from matplotlib.colors import LogNorm
 
@@ -359,31 +415,41 @@ ra0 = np.mean(ra)
 dec0 = np.mean(dec)
 from numpy import cos, pi
 
-cdec = cos(DEC_pnt * pi / 180.0)
-ra_bins = np.linspace(
-    RA_pnt - Radius / cdec, RA_pnt + Radius / cdec, Nbins + 1
-)
-dec_bins = np.linspace(DEC_pnt - Radius, DEC_pnt + Radius, Nbins + 1)
+cdec = cos(DEC * pi / 180.0)
+ra_bins = np.linspace(RA - Radius / cdec, RA + Radius / cdec, Nbins + 1)
+dec_bins = np.linspace(DEC - Radius, DEC + Radius, Nbins + 1)
 
-h = plt.hist2d(ra, dec, bins=[ra_bins, dec_bins], norm=LogNorm())
-image = h[0]
+h1 = np.histogram2d(ra1, dec1, bins=[ra_bins, dec_bins])
+h2 = np.histogram2d(ra2, dec2, bins=[ra_bins, dec_bins])
+plt.imshow(np.transpose(h1[0] + h2[0]), norm=LogNorm())
+image = h1[0] + h2[0]
 plt.colorbar()
 plt.xlabel("RA")
 plt.ylabel("Dec")
 
-plt.figure()
-ev_src = en[coords.separation(coord_s).deg < R_s]
-ev_bkg = en[coords.separation(coord_b).deg < R_s]
 ENERG_BINS = np.concatenate((ENERG_LO, [ENERG_HI[-1]]))
 ENERG = sqrt(ENERG_LO * ENERG_HI)
-h1 = np.histogram(ev_src, bins=ENERG_BINS)
-h2 = np.histogram(ev_bkg, bins=ENERG_BINS)
-cts_s = h1[0]
-cts_b = h2[0]
+m = coords1.separation(coord_s).deg < R_s
+h1 = np.histogram(en1[m], bins=ENERG_BINS)
+m = coords2.separation(coord_s).deg < R_s
+h2 = np.histogram(en2[m], bins=ENERG_BINS)
+cts_s = h1[0] + h2[0]
+m = coords1.separation(coord_b1).deg < R_s
+h1 = np.histogram(en1[m], bins=ENERG_BINS)
+m = coords2.separation(coord_b2).deg < R_s
+h2 = np.histogram(en2[m], bins=ENERG_BINS)
+cts_b = h1[0] + h2[0]
 src = cts_s - cts_b
 src_err = sqrt(cts_s + cts_b)
-plt.errorbar(ENERG, src, src_err)
-plt.axhline(0, linestyle="dashed", color="black")
+plt.errorbar(
+    ENERG,
+    src,
+    yerr=src_err,
+    xerr=[ENERG - ENERG_LO, ENERG_HI - ENERG],
+    linestyle="none",
+    marker="o",
+)
+
 plt.xscale("log")
 plt.xlabel(r"$E$, TeV")
 plt.ylabel("Counts")
@@ -392,10 +458,22 @@ plt.ylim(0.1, 2 * max(src))
 plt.savefig("Count_spectrum.png")
 
 plt.figure()
-sep_s = coords.separation(coord_s).deg
-sep_b = coords.separation(coord_b).deg
-plt.hist(sep_s**2, bins=np.linspace(0, 0.5, 50))
-plt.hist(sep_b**2, bins=np.linspace(0, 0.5, 50))
+th2_bins = np.linspace(0, 0.5, 50)
+th2 = (th2_bins[:-1] + th2_bins[1:]) / 2.0
+sep_s = coords1.separation(coord_s).deg
+
+h1 = np.histogram(sep_s**2, bins=th2_bins)
+sep_s = coords2.separation(coord_s).deg
+h2 = np.histogram(sep_s**2, bins=th2_bins)
+th2_src = h1[0] + h2[0]
+
+sep_b = coords1.separation(coord_b1).deg
+h1 = np.histogram(sep_b**2, bins=th2_bins)
+sep_b = coords2.separation(coord_b2).deg
+h2 = np.histogram(sep_b**2, bins=th2_bins)
+th2_bkg = h1[0] + h2[0]
+plt.step(th2, th2_src, where="mid")
+plt.step(th2, th2_bkg, where="mid")
 plt.axvline(R_s**2, color="black", linestyle="dashed")
 plt.xlabel(r"$\theta^2$, degrees")
 plt.ylabel("Counts")
@@ -411,7 +489,7 @@ w.wcs.ctype = ["RA---CAR", "DEC--CAR"]
 # the peculiarity here is that CAR projection produces rectilinear grid only if CRVAL2==0
 # also, we will follow convention of RA increasing from right to left (CDELT1<0, need to flip an input image)
 # otherwise, aladin-lite doesn't show it
-w.wcs.crval = [RA_pnt, 0]
+w.wcs.crval = [RA, 0]
 w.wcs.crpix = [Nbins / 2.0 + 0.5, 1 - dec_bins[0] / pixsize]
 w.wcs.cdelt = np.array([-pixsize / cdec, pixsize])
 
@@ -431,8 +509,8 @@ plt.imshow(im, origin="lower")
 plt.colorbar(label="Counts")
 
 plt.scatter(
-    [RA_pnt],
-    [DEC_pnt],
+    [RA_pnt1, RA_pnt2],
+    [DEC_pnt, DEC_pnt],
     marker="x",
     color="white",
     alpha=0.5,
