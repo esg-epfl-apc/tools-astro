@@ -21,7 +21,7 @@
       <param name="_selector" type="select" label="Data Product">
         <option value="CTAO" selected="true">CTAO</option>
         <option value="MAGIC_simulator-v1.9" selected="false">MAGIC_simulator-v1.9</option>
-        <option value="LST1" selected="false">LST1</option>
+        <option value="LST1_spectrum" selected="false">LST1_spectrum</option>
         <option value="LST1_events" selected="false">LST1_events</option>
       </param>
       <when value="CTAO">
@@ -73,7 +73,11 @@
         <param name="off_phase_interval" type="float" value="0.25" label="range of OFF phases" />
         <param name="isLSTmode" type="boolean" label="isLSTmode" />
       </when>
-      <when value="LST1">
+      <when value="LST1_spectrum">
+        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
+        <param name="T1" type="text" value="2022-10-09T13:16:00.0" label="T1" />
+        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
         <param name="redshift" type="float" value="0.13" label="Source redshift" />
         <param name="cut_efficiency" type="select" label="Gamma-hadron separation cut efficiency">
           <option value="0.4">0.4</option>
@@ -92,12 +96,16 @@
       <when value="LST1_events">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
-        <param name="OffAxis_angle" type="float" value="0.7" label="OffAxis_angle (unit: deg)" />
+        <param name="T1" type="text" value="2022-10-09T13:16:00.0" label="T1" />
+        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
+        <param name="OffAxis_angle" type="float" value="0.7" label="Source off-axis angle (unit: deg)" />
+        <param name="Zd" type="float" value="30.0" label="Zenith angle" />
         <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
-        <param name="z" type="float" value="0.03" label="z" />
+        <param name="redshift" type="float" value="0.13" label="Source redshift" />
         <param name="dN_dE" type="text" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" label="Source spectrum dN/dE 1/(TeV cm2 s1)]" />
+        <param name="source_extension" type="float" value="0.5" label="Source extension in degrees" />
         <param name="Radius_spectal_extraction" type="float" value="0.2" label="Radius_spectal_extraction" />
-        <param name="Radius_sky_image" type="float" value="2.5" label="Radius_sky_image (unit: deg)" />
+        <param name="Radius_sky_image" type="float" value="4" label="Radius_sky_image (unit: deg)" />
       </when>
     </conditional>
   </inputs>
@@ -120,20 +128,20 @@
     <data label="${tool.name} -&gt; MAGIC_simulator-v1.9 spectrum_table" name="out_MAGIC_simulator_v1.9_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
       <filter>_data_product['_selector'] == 'MAGIC_simulator-v1.9'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 SED" name="out_LST1_SED" format="auto" from_work_dir="SED_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1'</filter>
+    <data label="${tool.name} -&gt; LST1_spectrum SED" name="out_LST1_spectrum_SED" format="auto" from_work_dir="SED_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 Count_spectrum" name="out_LST1_Count_spectrum" format="auto" from_work_dir="Count_spectrum_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1'</filter>
+    <data label="${tool.name} -&gt; LST1_spectrum Count_spectrum" name="out_LST1_spectrum_Count_spectrum" format="auto" from_work_dir="Count_spectrum_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 Etrue_vs_Ereco" name="out_LST1_Etrue_vs_Ereco" format="auto" from_work_dir="Etrue_vs_Ereco_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1'</filter>
+    <data label="${tool.name} -&gt; LST1_spectrum Etrue_vs_Ereco" name="out_LST1_spectrum_Etrue_vs_Ereco" format="auto" from_work_dir="Etrue_vs_Ereco_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 Significance" name="out_LST1_Significance" format="auto" from_work_dir="Significance_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1'</filter>
+    <data label="${tool.name} -&gt; LST1_spectrum Significance" name="out_LST1_spectrum_Significance" format="auto" from_work_dir="Significance_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
     </data>
-    <data label="${tool.name} -&gt; LST1 Count_spectrum_astropy_table" name="out_LST1_Count_spectrum_astropy_table" format="auto" from_work_dir="Count_spectrum_astropy_table_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1'</filter>
+    <data label="${tool.name} -&gt; LST1_spectrum Count_spectrum_astropy_table" name="out_LST1_spectrum_Count_spectrum_astropy_table" format="auto" from_work_dir="Count_spectrum_astropy_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
     </data>
     <data label="${tool.name} -&gt; LST1_events image_png" name="out_LST1_events_image_png" format="auto" from_work_dir="image_png_galaxy.output">
       <filter>_data_product['_selector'] == 'LST1_events'</filter>
@@ -205,7 +213,11 @@
     </test>
     <test expect_num_outputs="5">
       <conditional name="_data_product">
-        <param name="_selector" value="LST1" />
+        <param name="_selector" value="LST1_spectrum" />
+        <param name="RA" value="166.113809" />
+        <param name="DEC" value="38.208833" />
+        <param name="T1" value="2022-10-09T13:16:00.0" />
+        <param name="T2" value="2022-10-10T13:16:00.0" />
         <param name="redshift" value="0.13" />
         <param name="cut_efficiency" value="0.7" />
         <param name="Zd" value="20.0" />
@@ -226,12 +238,16 @@
         <param name="_selector" value="LST1_events" />
         <param name="RA" value="166.113809" />
         <param name="DEC" value="38.208833" />
+        <param name="T1" value="2022-10-09T13:16:00.0" />
+        <param name="T2" value="2022-10-10T13:16:00.0" />
         <param name="OffAxis_angle" value="0.7" />
+        <param name="Zd" value="30.0" />
         <param name="Texp" value="1.0" />
-        <param name="z" value="0.03" />
+        <param name="redshift" value="0.13" />
         <param name="dN_dE" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" />
+        <param name="source_extension" value="0.5" />
         <param name="Radius_spectal_extraction" value="0.2" />
-        <param name="Radius_sky_image" value="2.5" />
+        <param name="Radius_sky_image" value="4" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

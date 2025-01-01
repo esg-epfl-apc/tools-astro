@@ -36,20 +36,31 @@ from numpy import cos, exp, pi, sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import BinaryProduct, PictureProduct
 from regions import CircleSkyRegion
-from scipy.interpolate import RegularGridInterpolator
 
 # from gammapy.irf import load_cta_irfs
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2022-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-OffAxis_angle = 0.7  # http://odahub.io/ontology#AngleDegrees
+OffAxis_angle = 0.7  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle"
+Zd = 30.0  # http://odahub.io/ontology#Float ; oda:label "Zenith angle"
+
 Texp = 1.0  # http://odahub.io/ontology#TimeIntervalHours
-z = 0.03  # http://odahub.io/ontology#Float
+redshift = (
+    0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
+)
 dN_dE = "2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE 1/(TeV cm2 s1)]"
 
-Radius_spectal_extraction = 0.2  # http://odahub.io/ontology#Float
-Radius_sky_image = 2.5  # http://odahub.io/ontology#AngleDegrees
+source_extension = 0.5  # http://odahub.io/ontology#Float ; oda:label "Source extension in degrees"
+
+Radius_spectal_extraction = (
+    0.2  # http://odahub.io/ontology#Float ; oda:group "Plotting"
+)
+Radius_sky_image = (
+    4  # http://odahub.io/ontology#AngleDegrees ; oda:group "Plotting"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -63,10 +74,14 @@ else:
 for _vn in [
     "RA",
     "DEC",
+    "T1",
+    "T2",
     "OffAxis_angle",
+    "Zd",
     "Texp",
-    "z",
+    "redshift",
     "dN_dE",
+    "source_extension",
     "Radius_spectal_extraction",
     "Radius_sky_image",
 ]:
@@ -96,6 +111,8 @@ def parse_spectrum(input_str):
 
 # test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
 Assumed = parse_spectrum(dN_dE)
+
+z = redshift
 
 Texp = Texp * 3600.0
 DEC_pnt = DEC
@@ -144,7 +161,15 @@ Azimuths = np.array(
 len(Zeniths), len(Azimuths)
 
 CTA_north_lat = 18.0
-Zd = abs(DEC - CTA_north_lat)
+Zd_min = abs(DEC - CTA_north_lat)
+if Zd < Zd_min:
+    raise RuntimeError(
+        "Zenith angle is smaller than minimal possible for this source declination: "
+        + str(Zd_min)
+    )
+if Zd_min > 70.0:
+    raise RuntimeError("Source not visible from the LST site")
+
 zen = Zeniths[Zd < Zeniths][0]
 azi = Azimuths[Zd < Zeniths][0]
 filename = (
@@ -154,63 +179,10 @@ filename = (
     + str(azi)
     + "_.fits"
 )
-filename
-
 if os.path.exists(filename) == False:
     raise RuntimeError("No reponse function found")
     message = "No reponse function found!"
-
-hdul = fits.open(filename)
-aeff = hdul["EFFECTIVE AREA"].data
-ENERG_LO = aeff["ENERG_LO"][0]
-ENERG_HI = aeff["ENERG_HI"][0]
-THETA_LO = aeff["THETA_LO"][0]
-THETA_HI = aeff["THETA_HI"][0]
-EFFAREA = aeff["EFFAREA"][0]
-ind_offaxis = len(THETA_LO[THETA_LO < offaxis] - 1)
-EFAREA = EFFAREA[ind_offaxis]
-HDU_EFFAREA = hdul["EFFECTIVE AREA"]
-HDU_RMF = hdul["ENERGY DISPERSION"]
-
-def LoadEBL():
-    f1 = open(pathebl, "r")
-    line = f1.readline()
-    firstlineEBL = list(map(float, line.split()))
-    firstlineEBL[0]
-    zz = firstlineEBL[1:]
-    # print(nz, zz)
-    f1.close()
-    eblbody = np.loadtxt(pathebl, delimiter=" ", skiprows=1)
-    energies = eblbody[:, 0] * 1.0e3  # in GeV  #en*=1.e3; // GeV
-    taus = eblbody[:, 1:]
-    if len(taus > 0):
-        return zz, energies, taus
-
-def FluxObs(xx, z, fluxint):
-    en = xx
-    EBLz, EBLen, EBLtaus = LoadEBL()
-    # ftau = interpolate.interp2d(EBLz, EBLen, EBLtaus, kind='cubic')
-    ftau = RegularGridInterpolator((EBLen, EBLz), EBLtaus, method="cubic")
-    tau = ftau([en, z])
-    atten = np.exp(-tau)
-    return fluxint * atten
-
-EBLz, EBLen, EBLtaus = LoadEBL()
-ftau = RegularGridInterpolator((EBLen, EBLz), EBLtaus, method="cubic")
-z = 0.13
-tau = []
-for i in range(len(EBLen)):
-    tau.append(ftau([EBLen[i], z]))
-plt.plot(EBLen, exp(-np.array(tau)))
-z = 0.18
-tau = []
-for i in range(len(EBLen)):
-    tau.append(ftau([EBLen[i], z]))
-plt.plot(EBLen, exp(-np.array(tau)))
-plt.xscale("log")
-plt.yscale("log")
-plt.ylim(1e-3, 2)
-max(EBLen)
+IRFS = load_irf_dict_from_file(filename)
 
 E = np.logspace(-2, 2, 20)
 
@@ -232,41 +204,82 @@ plt.yscale("log")
 plt.ylim(1e-14, 1e-10)
 
 # filename = "IRFS/fits/Prod5-North-20deg-AverageAz-4LSTs09MSTs.180000s-v0.1.fits.gz"
-IRFS = load_irf_dict_from_file(filename)
-dic = {
-    "components": [
-        {
-            "name": "Source1",
-            "type": "SkyModel",
-            "spectral": {
-                "type": "TemplateSpectralModel",
-                "parameters": [{"name": "norm", "value": 1.0}],
-                "energy": {"data": E.tolist(), "unit": "TeV"},
-                "values": {"data": F.tolist(), "unit": "1 / (cm2 TeV s)"},
+
+if source_extension == 0.0:
+    dic = {
+        "components": [
+            {
+                "name": "Source1",
+                "type": "SkyModel",
+                "spectral": {
+                    "type": "TemplateSpectralModel",
+                    "parameters": [{"name": "norm", "value": 1.0}],
+                    "energy": {"data": E.tolist(), "unit": "TeV"},
+                    "values": {"data": F.tolist(), "unit": "1 / (cm2 TeV s)"},
+                },
+                "spatial": {
+                    "type": "PointSpatialModel",
+                    "frame": "icrs",
+                    "parameters": [
+                        {"name": "lon_0", "value": RA, "unit": "deg"},
+                        {"name": "lat_0", "value": DEC, "unit": "deg"},
+                    ],
+                },
             },
-            "spatial": {
-                "type": "PointSpatialModel",
-                "frame": "icrs",
-                "parameters": [
-                    {"name": "lon_0", "value": RA, "unit": "deg"},
-                    {"name": "lat_0", "value": DEC, "unit": "deg"},
-                ],
+            {
+                "type": "FoVBackgroundModel",
+                "datasets_names": ["my-dataset"],
+                "spectral": {
+                    "type": "PowerLawNormSpectralModel",
+                    "parameters": [
+                        {"name": "norm", "value": 1.0},
+                        {"name": "tilt", "value": 0.0},
+                        {"name": "reference", "value": 1.0, "unit": "TeV"},
+                    ],
+                },
             },
-        },
-        {
-            "type": "FoVBackgroundModel",
-            "datasets_names": ["my-dataset"],
-            "spectral": {
-                "type": "PowerLawNormSpectralModel",
-                "parameters": [
-                    {"name": "norm", "value": 1.0},
-                    {"name": "tilt", "value": 0.0},
-                    {"name": "reference", "value": 1.0, "unit": "TeV"},
-                ],
+        ]
+    }
+else:
+    dic = {
+        "components": [
+            {
+                "name": "Source1",
+                "type": "SkyModel",
+                "spectral": {
+                    "type": "TemplateSpectralModel",
+                    "parameters": [{"name": "norm", "value": 1.0}],
+                    "energy": {"data": E.tolist(), "unit": "TeV"},
+                    "values": {"data": F.tolist(), "unit": "1 / (cm2 TeV s)"},
+                },
+                "spatial": {
+                    "type": "GaussianSpatialModel",
+                    "frame": "icrs",
+                    "parameters": [
+                        {"name": "lon_0", "value": RA, "unit": "deg"},
+                        {"name": "lat_0", "value": DEC, "unit": "deg"},
+                        {
+                            "name": "sigma",
+                            "value": source_extension,
+                            "unit": "deg",
+                        },
+                    ],
+                },
             },
-        },
-    ]
-}
+            {
+                "type": "FoVBackgroundModel",
+                "datasets_names": ["my-dataset"],
+                "spectral": {
+                    "type": "PowerLawNormSpectralModel",
+                    "parameters": [
+                        {"name": "norm", "value": 1.0},
+                        {"name": "tilt", "value": 0.0},
+                        {"name": "reference", "value": 1.0, "unit": "TeV"},
+                    ],
+                },
+            },
+        ]
+    }
 modelsky = Models.from_dict(dic)
 
 bkg_model = FoVBackgroundModel(dataset_name="my-dataset")

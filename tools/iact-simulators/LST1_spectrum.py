@@ -24,6 +24,8 @@ from scipy.stats import moyal, skewnorm
 
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2022-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
 redshift = (
     0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
@@ -52,6 +54,10 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
+    "RA",
+    "DEC",
+    "T1",
+    "T2",
     "redshift",
     "cut_efficiency",
     "Zd",
@@ -727,10 +733,6 @@ names = (
 )
 count_spec = ODAAstropyTable(Table(data, names=names))
 
-0.5 * (erecobins[:-1] + erecobins[1:])
-
-plt.plot(erecobincenters, mean_etrue_vs_ereco)
-
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Spectrum_raw.png")
 bin_image2 = PictureProduct.from_file("Etrue_vs_Ereco.png")
@@ -750,16 +752,24 @@ Count_spectrum_astropy_table = (
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_LST1_SED", "SED_galaxy.output", SED))
+_oda_outs.append(("out_LST1_spectrum_SED", "SED_galaxy.output", SED))
 _oda_outs.append(
-    ("out_LST1_Count_spectrum", "Count_spectrum_galaxy.output", Count_spectrum)
-)
-_oda_outs.append(
-    ("out_LST1_Etrue_vs_Ereco", "Etrue_vs_Ereco_galaxy.output", Etrue_vs_Ereco)
+    (
+        "out_LST1_spectrum_Count_spectrum",
+        "Count_spectrum_galaxy.output",
+        Count_spectrum,
+    )
 )
 _oda_outs.append(
     (
-        "out_LST1_Count_spectrum_astropy_table",
+        "out_LST1_spectrum_Etrue_vs_Ereco",
+        "Etrue_vs_Ereco_galaxy.output",
+        Etrue_vs_Ereco,
+    )
+)
+_oda_outs.append(
+    (
+        "out_LST1_spectrum_Count_spectrum_astropy_table",
         "Count_spectrum_astropy_table_galaxy.output",
         Count_spectrum_astropy_table,
     )
@@ -782,7 +792,11 @@ for _outn, _outfn, _outv in _oda_outs:
         _galaxy_meta_data[_outn] = {"ext": "json"}
 _simple_outs = []
 _simple_outs.append(
-    ("out_LST1_Significance", "Significance_galaxy.output", Significance)
+    (
+        "out_LST1_spectrum_Significance",
+        "Significance_galaxy.output",
+        Significance,
+    )
 )
 _numpy_available = True
 
