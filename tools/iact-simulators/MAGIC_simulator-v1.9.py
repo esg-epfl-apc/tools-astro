@@ -27,7 +27,7 @@ redshift = (
     0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
 )
 
-zenith = "lowzd"  #  http://odahub.io/ontology/#String ; oda:label "Zenith angle"; oda:allowed_value  'lowzd', 'midzd', 'hizd'
+zenith = "lowzd"  #  http://odahub.io/ontology#String ; oda:label "Zenith angle"; oda:allowed_value  'lowzd', 'midzd', 'hizd'
 isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
 
 numoff = 3  # http://odahub.io/ontology#Integer
