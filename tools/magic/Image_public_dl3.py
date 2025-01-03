@@ -69,12 +69,6 @@ if sep > 2:
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
 
-if os.path.exists("magic_dl3_pdr1.zip") == False:
-    get_ipython().system(   # noqa: F821
-        "wget https://zenodo.org/records/13898269/files/magic_dl3_pdr1.zip"
-    )
-get_ipython().system("unzip  -f magic_dl3_pdr1.zip")   # noqa: F821
-
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 data_dir = repo_basedir + "/magic_dl3_pdr1-main/data/CrabNebula"
