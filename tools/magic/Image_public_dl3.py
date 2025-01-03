@@ -199,8 +199,8 @@ fits = fits_image  # http://odahub.io/ontology#Image
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Image_png", "png_galaxy.output", png))
-_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
+_oda_outs.append(("out_Image_public_dl3_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Image_public_dl3_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
