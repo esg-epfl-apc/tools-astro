@@ -83,7 +83,7 @@
         <param name="Emin" type="float" value="0.1" label="Minimal energy (unit: TeV)" />
         <param name="Emax" type="float" value="20" label="Maximal energy (unit: TeV)" />
         <param name="Offset" type="float" value="0.4" label="Source off-axis angle (unit: deg)" />
-        <param name="NSB" type="integer" value="3" label="NSB" />
+        <param name="NSB" type="integer" value="0" label="NSB" />
       </when>
     </conditional>
   </inputs>
@@ -179,7 +179,7 @@
         <param name="Emin" value="0.1" />
         <param name="Emax" value="20" />
         <param name="Offset" value="0.4" />
-        <param name="NSB" value="3" />
+        <param name="NSB" value="0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

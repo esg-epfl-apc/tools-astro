@@ -114,7 +114,7 @@ else:
         raise ValueError("NSB level not found")
 get_ipython().system("ls {data_dir}")   # noqa: F821
 
-pr.report_progress(stage="data selection", progress=0.1)
+pr.report_progress(stage="data selection", progress=10)
 
 from pathlib import Path
 
@@ -299,7 +299,7 @@ Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
     pr.report_progress(
-        stage="spectral fitting", progress=0.1 + (i / Norm_bins) / 2.0
+        stage="spectral fitting", progress=10 + 45 * (i / Norm_bins)
     )
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]
@@ -339,7 +339,7 @@ Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
     pr.report_progress(
-        stage="spectral fitting", progress=0.6 + (i / Norm_bins) / 2.0
+        stage="spectral fitting", progress=55 + 45 * (i / Norm_bins)
     )
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]

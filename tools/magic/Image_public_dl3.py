@@ -31,7 +31,7 @@ Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ;
 
 Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle"
 
-NSB = 3  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
+NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
 
 _galaxy_wd = os.getcwd()
 
