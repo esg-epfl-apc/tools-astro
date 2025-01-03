@@ -35,7 +35,7 @@
         <param name="R_s" type="float" value="0.2" label="Source region radius for aperture photometry (unit: deg)" />
         <param name="Emin" type="float" value="0.1" label="Minimal energy (unit: TeV)" />
         <param name="Emax" type="float" value="100" label="Maximal energy (unit: TeV)" />
-        <param name="NEbins" type="integer" value="30" label="NEbins" />
+        <param name="NEbins" type="integer" value="30" label="Maximal energy" />
         <param name="Efit_min" type="float" value="0.2" label="Minimal energy for spectral fitting (unit: TeV)" />
         <param name="Efit_max" type="float" value="10.0" label="Maximal energy for spectral fitting (unit: TeV)" />
         <param name="Offset" type="float" value="0.4" label="Source off-axis angle (unit: deg)" />

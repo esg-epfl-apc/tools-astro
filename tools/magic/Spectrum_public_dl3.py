@@ -27,7 +27,7 @@ R_s = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source region r
 
 Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
 Emax = 100  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
-NEbins = 30  # http://odahub.io/ontology#Integer
+NEbins = 30  # http://odahub.io/ontology#Integer ; oda:label "Maximal energy" ; oda:group "Plotting"
 
 Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy for spectral fitting"
 Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy for spectral fitting"
