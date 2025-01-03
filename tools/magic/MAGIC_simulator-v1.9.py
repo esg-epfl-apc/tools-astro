@@ -21,35 +21,32 @@ RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
-extension = 0.0  # http://odahub.io/ontology#AngleDegrees
+extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
 
-redshift = 0.13  # http://odahub.io/ontology#Double
+redshift = (
+    0.13  # http://odahub.io/ontology#Float ; oda:label "Source redshift"
+)
 
-zenith = "lowzd"  #  http://odahub.io/ontology/#String ; oda:label "Zenith"; oda:descritpion "lowzd, midzd or hizd"
-isSUMT = False  #  http://odahub.io/ontology#Boolean
+zenith = "lowzd"  #  http://odahub.io/ontology#String ; oda:label "Zenith angle"; oda:allowed_value  'lowzd', 'midzd', 'hizd'
+isSUMT = False  #  http://odahub.io/ontology#Boolean ; oda:label "Sum Trigger?"
 
 numoff = 3  # http://odahub.io/ontology#Integer
-minev = 10.0  # http://odahub.io/ontology#Double
-minSBR = 0.05  # http://odahub.io/ontology#Double
+minev = 10.0  # http://odahub.io/ontology#Float ; oda:label "minimum number of events"
+minSBR = 0.05  # http://odahub.io/ontology#Float ; oda:label "minimum ratio of excess to background"
 PSF = 0.1  # http://odahub.io/ontology#AngleDegrees
-offsetdegrad = 1.0  # http://odahub.io/ontology#Double
-eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
-yplotmin = 1.0e-14  # http://odahub.io/ontology#Double
-yplotmax = 1.0e-9  # http://odahub.io/ontology#Double
-minerror = 2  # http://odahub.io/ontology#Double
+offsetdegrad = 1.0  # http://odahub.io/ontology#Float ; oda:label "degradation factor (for offset >0.4 deg)"
+eplotmin = 31  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "minimal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+eplotmax = 20.0e3  # http://odahub.io/ontology#Energy_GeV ; oda:group "Plotting" ; oda:label "maximal energy" ; oda:lower_limit 30.01 ; oda:upper_limit 29999.
+yplotmin = 1.0e-14  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "minimal flux [TeV/(cm2 s)]"
+yplotmax = 1.0e-9  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "maximal flux [TeV/(cm2 s)]"
+minerror = 2  # http://odahub.io/ontology#Float ; oda:group "Plotting" ; oda:label "Minimal errorbar (signal-to-noise)"
 drawsigma = True  # http://odahub.io/ontology#Boolean
-dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String
 
-pulsarmode = (
-    False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis"
-)
-pulsarOnRange = (
-    0.092  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
-)
-pulsarOffRange = (
-    0.25  # http://odahub.io/ontology#Double ; oda:group "Pulsar analysis"
-)
+dN_dE = "2.0e-11*pow(E/1000., -1.99)*exp(-E/1000)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dE [1/(TeV cm2 s)]"
+
+pulsar_mode = False  # http://odahub.io/ontology#Boolean ; oda:group "Pulsar analysis" ; oda:label "Pulsar analysis?"
+on_phase_interval = 0.092  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of ON phases"
+off_phase_interval = 0.25  # http://odahub.io/ontology#Float ; oda:group "Pulsar analysis" ; oda:label "range of OFF phases"
 
 isLSTmode = False  # http://odahub.io/ontology#Boolean
 
@@ -83,12 +80,16 @@ for _vn in [
     "minerror",
     "drawsigma",
     "dN_dE",
-    "pulsarmode",
-    "pulsarOnRange",
-    "pulsarOffRange",
+    "pulsar_mode",
+    "on_phase_interval",
+    "off_phase_interval",
     "isLSTmode",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+pulsarmode = pulsar_mode
+pulsarOnRange = on_phase_interval
+pulsarOffRange = off_phase_interval
 
 # global variables (DO NOT MODIFY)
 npoints = 13
