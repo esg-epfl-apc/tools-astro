@@ -34,12 +34,12 @@
         <param name="Radius_search" type="float" value="2.0" label="Cone search radius (unit: deg)" />
         <param name="R_s" type="float" value="0.2" label="Source region radius for aperture photometry (unit: deg)" />
         <param name="Emin" type="float" value="0.1" label="Minimal energy (unit: TeV)" />
-        <param name="Emax" type="float" value="100" label="Maximal energy (unit: TeV)" />
+        <param name="Emax" type="float" value="20" label="Maximal energy (unit: TeV)" />
         <param name="NEbins" type="integer" value="30" label="Maximal energy" />
         <param name="Efit_min" type="float" value="0.2" label="Minimal energy for spectral fitting (unit: TeV)" />
         <param name="Efit_max" type="float" value="10.0" label="Maximal energy for spectral fitting (unit: TeV)" />
         <param name="Offset" type="float" value="0.4" label="Source off-axis angle (unit: deg)" />
-        <param name="NSB" type="integer" value="3" label="NSB" />
+        <param name="NSB" type="integer" value="0" label="NSB" />
       </when>
       <when value="MAGIC_simulator-v1.9">
         <param name="src_name" type="text" value="Crab" label="src_name" />
@@ -122,12 +122,12 @@
         <param name="Radius_search" value="2.0" />
         <param name="R_s" value="0.2" />
         <param name="Emin" value="0.1" />
-        <param name="Emax" value="100" />
+        <param name="Emax" value="20" />
         <param name="NEbins" value="30" />
         <param name="Efit_min" value="0.2" />
         <param name="Efit_max" value="10.0" />
         <param name="Offset" value="0.4" />
-        <param name="NSB" value="3" />
+        <param name="NSB" value="0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

@@ -13,8 +13,11 @@ from astropy.coordinates import SkyCoord
 from astropy.io import fits
 from astropy.time import Time
 from numpy import log10, sqrt
+from oda_api.api import ProgressReporter
 from oda_api.data_products import PictureProduct
 from oda_api.json import CustomJSONEncoder
+
+pr = ProgressReporter()
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
@@ -25,16 +28,16 @@ T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Cone search radius"
 R_s = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source region radius for aperture photometry"
 
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
-Emax = 100  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
-NEbins = 30  # http://odahub.io/ontology#Integer ; oda:label "Maximal energy" ; oda:group "Plotting"
+Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:group "Plotting" ; oda:label "Minimal energy"
+Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:group "Plotting" ; oda:label "Maximal energy"
+NEbins = 30  # http://odahub.io/ontology#Integer ; oda:group "Plotting" ; oda:label "Maximal energy"
 
 Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy for spectral fitting"
 Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy for spectral fitting"
 
 Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle"
 
-NSB = 3  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
+NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
 
 _galaxy_wd = os.getcwd()
 
@@ -110,6 +113,8 @@ else:
     else:
         raise ValueError("NSB level not found")
 get_ipython().system("ls {data_dir}")   # noqa: F821
+
+pr.report_progress(stage="data selection", progress=0.1)
 
 from pathlib import Path
 
@@ -293,6 +298,9 @@ Norm_best = Norm_min
 Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
+    pr.report_progress(
+        stage="spectral fitting", progress=0.1 + (i / Norm_bins) / 2.0
+    )
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]
         if chi2_map[i, j] < chi2_best:
@@ -330,6 +338,9 @@ Norm_best = Norm_min
 Gam_best = Gam_min
 chi2_best = 1e10
 for i, N in enumerate(Ns):
+    pr.report_progress(
+        stage="spectral fitting", progress=0.6 + (i / Norm_bins) / 2.0
+    )
     for j, Gam in enumerate(Gams):
         chi2_map[i, j] = chi2([N, Gam])[0]
         if chi2_map[i, j] < chi2_best:
