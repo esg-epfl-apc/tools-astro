@@ -22,19 +22,19 @@ DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees
-pixsize = (
-    0.025  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
-)
+Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Cone search radius"
+R_s = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source region radius for aperture photometry"
 
-R_s = 0.2  # http://odahub.io/ontology#AngleDegrees
-
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV
-Emax = 30.0  # http://odahub.io/ontology#Energy_TeV
+Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
+Emax = 100  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
 NEbins = 30  # http://odahub.io/ontology#Integer
 
-Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV
-Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV
+Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy for spectral fitting"
+Efit_max = 10.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy for spectral fitting"
+
+Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle"
+
+NSB = 3  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
 
 _galaxy_wd = os.getcwd()
 
@@ -52,15 +52,24 @@ for _vn in [
     "T1",
     "T2",
     "Radius_search",
-    "pixsize",
     "R_s",
     "Emin",
     "Emax",
     "NEbins",
     "Efit_min",
     "Efit_max",
+    "Offset",
+    "NSB",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+racrab = 83.628700
+deccrab = 22.014700
+crab = SkyCoord(racrab, deccrab, unit="degree")
+Coords_s = SkyCoord(RA, DEC, unit="degree")
+sep = Coords_s.separation(crab).deg
+if sep > 2:
+    raise ValueError("Public data release is limited to pointings around Crab")
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
@@ -70,35 +79,51 @@ if os.path.exists("magic_dl3_pdr1.zip") == False:
         "wget https://zenodo.org/records/13898269/files/magic_dl3_pdr1.zip"
     )
 get_ipython().system("unzip  -f magic_dl3_pdr1.zip")   # noqa: F821
-get_ipython().system("mkdir data")   # noqa: F821
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/single_offset/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_0.20/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_0.35/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_0.40/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_0.70/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_1.00/*_DL3_* data"
-)
-get_ipython().system(   # noqa: F821
-    "mv magic_dl3_pdr1-main/data/CrabNebula/dark/multi_offset/offset_1.40/*_DL3_* data"
-)
+
+workdir = os.getcwd()
+repo_basedir = os.environ.get("BASEDIR", os.getcwd())
+data_dir = repo_basedir + "/magic_dl3_pdr1-main/data/CrabNebula"
+get_ipython().system("ls {data_dir}")   # noqa: F821
+
+if NSB == 0:
+    data_dir += "/dark"
+    if Offset == 0.4:
+        data_dir += "/single_offset"
+    else:
+        data_dir += "/multi_offset"
+        if Offset == 0.2:
+            data_dir += "/offset_0.20"
+        elif Offset == 0.35:
+            data_dir += "/offset_0.35"
+        elif Offset == 0.7:
+            data_dir += "/offset_0.70"
+        elif Offset == 1.0:
+            data_dir += "/offset_1.00"
+        elif Offset == 1.4:
+            data_dir += "/offset_1.40"
+        else:
+            raise ValueError("Offset angle value not found")
+else:
+    data_dir += "/moon"
+    if NSB < 3:
+        data_dir += "/NSB_1-2"
+    elif NSB < 4:
+        data_dir += "/NSB_2-3"
+    elif NSB < 6:
+        data_dir += "/NSB_3-5"
+    elif NSB < 9:
+        data_dir += "/NSB_5-8"
+    else:
+        raise ValueError("NSB level not found")
+get_ipython().system("ls {data_dir}")   # noqa: F821
 
 from pathlib import Path
 
 from gammapy.data import DataStore
 
-path = Path("data")
-paths = list(path.rglob("*.fits"))
+path = Path(data_dir)
+# data_store=DataStore.from_dir(path)
+paths = list(path.rglob("*DL3*.fits"))
 data_store = DataStore.from_events_files(paths)
 
 selection = dict(
@@ -109,6 +134,7 @@ selection = dict(
     radius=str(Radius_search) + " deg",
 )
 selected_obs_table = data_store.obs_table.select_observations(selection)
+selected_obs_table
 
 RA_pnts = selected_obs_table["RA_PNT"]
 DEC_pnts = selected_obs_table["DEC_PNT"]
@@ -145,7 +171,6 @@ MIGRA = (MIGRA_LO + MIGRA_HI) / 2.0
 ENERG = sqrt(ENERG_LO * ENERG_HI)
 dENERG = ENERG_HI - ENERG_LO
 
-Coords_s = SkyCoord(RA, DEC, unit="degree")
 cts_s = []
 cts_b = []
 Eff_area = []
@@ -394,7 +419,8 @@ hdu = fits.BinTableHDU.from_columns(cols, name="Etrue_BOUNDS")
 new_hdul.append(hdu)
 # new_hdul.writeto('Spectra.fits',overwrite=True)
 
-print("and here")
+from oda_api.data_products import ODAAstropyTable
+
 bin_image = PictureProduct.from_file("Spectrum.png")
 bin_image1 = PictureProduct.from_file("Contour.png")
 from astropy.table import Table
