@@ -6,9 +6,14 @@
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="3.9.4">matplotlib</requirement>
-    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="1.2.35">oda-api</requirement>
     <requirement type="package" version="0.12.0">pyirf</requirement>
     <requirement type="package" version="8.31.0">ipython</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <requirement type="package" version="7.16.5">nbconvert</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
@@ -22,7 +27,6 @@
         <option value="CTAO" selected="true">CTAO</option>
         <option value="MAGIC_simulator-v1.9" selected="false">MAGIC_simulator-v1.9</option>
         <option value="LST1_spectrum" selected="false">LST1_spectrum</option>
-        <option value="LST1_events" selected="false">LST1_events</option>
       </param>
       <when value="CTAO">
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
@@ -93,20 +97,6 @@
         <param name="on_phase_interval" type="float" value="0.043" label="range of ON phases" />
         <param name="off_phase_interval" type="float" value="0.35" label="range of OFF phases" />
       </when>
-      <when value="LST1_events">
-        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
-        <param name="T1" type="text" value="2022-10-09T13:16:00.0" label="T1" />
-        <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
-        <param name="OffAxis_angle" type="float" value="0.7" label="Source off-axis angle (unit: deg)" />
-        <param name="Zd" type="float" value="30.0" label="Zenith angle" />
-        <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
-        <param name="redshift" type="float" value="0.13" label="Source redshift" />
-        <param name="dN_dE" type="text" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" label="Source spectrum dN/dE 1/(TeV cm2 s1)]" />
-        <param name="source_extension" type="float" value="0.0" label="Source extension in degrees" />
-        <param name="Radius_spectal_extraction" type="float" value="0.2" label="Source radius aperture photometry" />
-        <param name="Radius_sky_image" type="float" value="4" label="Image size (unit: deg)" />
-      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -142,18 +132,6 @@
     </data>
     <data label="${tool.name} -&gt; LST1_spectrum Count_spectrum_astropy_table" name="out_LST1_spectrum_Count_spectrum_astropy_table" format="auto" from_work_dir="Count_spectrum_astropy_table_galaxy.output">
       <filter>_data_product['_selector'] == 'LST1_spectrum'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_events image_png" name="out_LST1_events_image_png" format="auto" from_work_dir="image_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_events'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_events theta2_png" name="out_LST1_events_theta2_png" format="auto" from_work_dir="theta2_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_events'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_events spectrum_png" name="out_LST1_events_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_events'</filter>
-    </data>
-    <data label="${tool.name} -&gt; LST1_events event_list_fits" name="out_LST1_events_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
-      <filter>_data_product['_selector'] == 'LST1_events'</filter>
     </data>
   </outputs>
   <tests>
@@ -228,26 +206,6 @@
         <param name="pulsar_mode" value="False" />
         <param name="on_phase_interval" value="0.043" />
         <param name="off_phase_interval" value="0.35" />
-      </conditional>
-      <assert_stdout>
-        <has_text text="*** Job finished successfully ***" />
-      </assert_stdout>
-    </test>
-    <test expect_num_outputs="4">
-      <conditional name="_data_product">
-        <param name="_selector" value="LST1_events" />
-        <param name="RA" value="166.113809" />
-        <param name="DEC" value="38.208833" />
-        <param name="T1" value="2022-10-09T13:16:00.0" />
-        <param name="T2" value="2022-10-10T13:16:00.0" />
-        <param name="OffAxis_angle" value="0.7" />
-        <param name="Zd" value="30.0" />
-        <param name="Texp" value="1.0" />
-        <param name="redshift" value="0.13" />
-        <param name="dN_dE" value="2.0e-10*pow(E/1000., -1.99)*exp(-E/10000)" />
-        <param name="source_extension" value="0.0" />
-        <param name="Radius_spectal_extraction" value="0.2" />
-        <param name="Radius_sky_image" value="4" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
