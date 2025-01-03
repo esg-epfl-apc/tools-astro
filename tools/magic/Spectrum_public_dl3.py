@@ -28,8 +28,8 @@ T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Cone search radius"
 R_s = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source region radius for aperture photometry"
 
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:group "Plotting" ; oda:label "Minimal energy"
-Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:group "Plotting" ; oda:label "Maximal energy"
+Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
+Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
 NEbins = 30  # http://odahub.io/ontology#Integer ; oda:group "Plotting" ; oda:label "Maximal energy"
 
 Efit_min = 0.2  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy for spectral fitting"
