@@ -103,7 +103,7 @@ else:
     elif NSB < 9:
         data_dir += "/NSB_5-8"
     else:
-        raise ValueError("NSB level not found")
+        raise ValueError("NSB level not found ")
 get_ipython().system("ls {data_dir}")   # noqa: F821
 
 from pathlib import Path
