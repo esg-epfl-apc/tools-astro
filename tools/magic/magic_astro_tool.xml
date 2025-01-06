@@ -39,11 +39,28 @@
         <param name="R_s" type="float" value="0.2" label="Source region radius for aperture photometry (unit: deg)" />
         <param name="Emin" type="float" value="0.1" label="Minimal energy (unit: TeV)" />
         <param name="Emax" type="float" value="20" label="Maximal energy (unit: TeV)" />
-        <param name="NEbins" type="integer" value="30" label="Maximal energy" />
+        <param name="NEbins" type="integer" value="30" label="NEbins" />
         <param name="Efit_min" type="float" value="0.2" label="Minimal energy for spectral fitting (unit: TeV)" />
         <param name="Efit_max" type="float" value="10.0" label="Maximal energy for spectral fitting (unit: TeV)" />
-        <param name="Offset" type="float" value="0.4" label="Source off-axis angle (unit: deg)" />
-        <param name="NSB" type="integer" value="0" label="NSB" />
+        <param name="Offset" type="select" label="Source off-axis angle (unit: deg)">
+          <option value="0.2">0.2</option>
+          <option value="0.35">0.35</option>
+          <option value="0.4">0.4</option>
+          <option value="0.7">0.7</option>
+          <option value="1.0">1.0</option>
+          <option value="1.4">1.4</option>
+        </param>
+        <param name="NSB" type="select" label="Night sky background level (0-0.8)">
+          <option value="0" selected="true">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </param>
       </when>
       <when value="MAGIC_simulator-v1.9">
         <param name="src_name" type="text" value="Crab" label="src_name" />
@@ -108,7 +125,17 @@
           <option value="1.0">1.0</option>
           <option value="1.4">1.4</option>
         </param>
-        <param name="NSB" type="integer" value="0" label="NSB" />
+        <param name="NSB" type="select" label="Night sky background level (0-0.8)">
+          <option value="0" selected="true">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </param>
       </when>
     </conditional>
   </inputs>
