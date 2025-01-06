@@ -135,11 +135,6 @@ Tstart = selected_obs_table["TSTART"]
 Tstop = selected_obs_table["TSTOP"]
 DL3_fname = selected_obs_table["EVENTS_FILENAME"]
 
-hdul = fits.open(DL3_fname[-1])
-hdul.info()
-
-hdul["EVENTS"].header
-
 def met2mjd(met):
     # https://fermi.gsfc.nasa.gov/ssc/data/analysis/documentation/Cicerone/Cicerone_Data/Time_in_ScienceTools.html
     mjd_ref = 52706
@@ -147,7 +142,18 @@ def met2mjd(met):
 
     return met / sec_per_day + mjd_ref
 
-met2mjd(333862677.085005), met2mjd(336713240.122429)
+Tstart_mjd = met2mjd(Tstart)
+Tstop_mjd = met2mjd(Tstart)
+m = (Tstart_mjd > T1) & (Tstop_mjd < T2)
+if sum(m) == 0:
+    raise ValueError("No data for this time period")
+else:
+    selected_obs_table = selected_obs_table[m]
+    RA_pnts = selected_obs_table["RA_PNT"]
+    DEC_pnts = selected_obs_table["DEC_PNT"]
+    Tstart = selected_obs_table["TSTART"]
+    Tstop = selected_obs_table["TSTOP"]
+    DL3_fname = selected_obs_table["EVENTS_FILENAME"]
 
 ind = 0
 pointing = DL3_fname[ind]

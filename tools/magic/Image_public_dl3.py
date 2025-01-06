@@ -131,6 +131,26 @@ Tstart = selected_obs_table["TSTART"]
 Tstop = selected_obs_table["TSTOP"]
 DL3_fname = selected_obs_table["EVENTS_FILENAME"]
 
+def met2mjd(met):
+    # https://fermi.gsfc.nasa.gov/ssc/data/analysis/documentation/Cicerone/Cicerone_Data/Time_in_ScienceTools.html
+    mjd_ref = 52706
+    sec_per_day = 86400
+
+    return met / sec_per_day + mjd_ref
+
+Tstart_mjd = met2mjd(Tstart)
+Tstop_mjd = met2mjd(Tstart)
+m = (Tstart_mjd > T1) & (Tstop_mjd < T2)
+if sum(m) == 0:
+    raise ValueError("No data for this time period")
+else:
+    selected_obs_table = selected_obs_table[m]
+    RA_pnts = selected_obs_table["RA_PNT"]
+    DEC_pnts = selected_obs_table["DEC_PNT"]
+    Tstart = selected_obs_table["TSTART"]
+    Tstop = selected_obs_table["TSTOP"]
+    DL3_fname = selected_obs_table["EVENTS_FILENAME"]
+
 cdec = cos(DEC * pi / 180.0)
 Npix = int(2 * Radius_image / pixsize) + 1
 RA_bins = np.linspace(
