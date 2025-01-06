@@ -21,7 +21,7 @@ from plots import *
 # ------------------------------------------------------------------------------------
 ra = 260  # http://odahub.io/ontology#AngleDegrees
 dec = -82  # http://odahub.io/ontology#AngleDegrees
-thresh_arcmin = 20  # http://odahub.io/ontology#arcmin
+thresh_arcmin = 5  # http://odahub.io/ontology#arcmin
 
 _galaxy_wd = os.getcwd()
 
