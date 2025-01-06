@@ -181,37 +181,6 @@ MIGRA = (MIGRA_LO + MIGRA_HI) / 2.0
 ENERG = sqrt(ENERG_LO * ENERG_HI)
 dENERG = ENERG_HI - ENERG_LO
 
-RA_pnt = hdul[1].header["RA_PNT"]
-DEC_pnt = hdul[1].header["DEC_PNT"]
-Texp = hdul[1].header["LIVETIME"]
-print(Texp)
-Tstart = met2mjd(hdul[1].header["TSTART"])
-Tstop = met2mjd(hdul[1].header["TSTOP"])
-dRA = RA - RA_pnt
-dDEC = DEC - DEC_pnt
-RA_b = RA_pnt - dRA
-DEC_b = DEC_pnt - dDEC
-Coords_b = SkyCoord(RA_b, DEC_b, unit="degree")
-Coords_pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
-dist = Coords_pnt.separation(Coords_s).deg
-
-ev = hdul["EVENTS"].data
-ev_ra = ev["RA"]
-ev_dec = ev["DEC"]
-ev_en = ev["ENERGY"]
-ev_time = np.array(ev["TIME"])
-ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
-sep_s = ev_coords.separation(Coords_s).deg
-sep_b = ev_coords.separation(Coords_b).deg
-mask = (sep_s < R_s) * (ev_en > Emin) * (ev_en < Emax)
-Nevents = len(ev_time)
-Texp_binned = np.histogram(
-    met2mjd(ev_time), weights=Texp * np.ones(Nevents) / Nevents, bins=Tbins
-)[0]
-Expos_binned = np.outer(Eff_area[-1], Texp_binned) * 1e4
-
-Expos_binned.shape
-
 NEbins = len(ENERG_LO)
 NEbins
 
