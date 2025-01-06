@@ -100,7 +100,14 @@
         <param name="pixsize" type="float" value="0.025" label="Pixel size (unit: deg)" />
         <param name="Emin" type="float" value="0.1" label="Minimal energy (unit: TeV)" />
         <param name="Emax" type="float" value="20" label="Maximal energy (unit: TeV)" />
-        <param name="Offset" type="float" value="0.4" label="Source off-axis angle (unit: deg)" />
+        <param name="Offset" type="select" label="Source off-axis angle (unit: deg)">
+          <option value="0.2">0.2</option>
+          <option value="0.35">0.35</option>
+          <option value="0.4">0.4</option>
+          <option value="0.7">0.7</option>
+          <option value="1.0">1.0</option>
+          <option value="1.4">1.4</option>
+        </param>
         <param name="NSB" type="integer" value="0" label="NSB" />
       </when>
     </conditional>
