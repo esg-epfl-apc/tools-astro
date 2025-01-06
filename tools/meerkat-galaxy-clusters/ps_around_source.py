@@ -7,6 +7,8 @@ import json
 import os
 import warnings
 
+import matplotlib.pyplot as plt
+
 warnings.filterwarnings("ignore")
 
 from catalogs_methods import *
@@ -20,6 +22,18 @@ from plots import *
 ra = 260  # http://odahub.io/ontology#AngleDegrees
 dec = -82  # http://odahub.io/ontology#AngleDegrees
 thresh_arcmin = 20  # http://odahub.io/ontology#arcmin
+
+_galaxy_wd = os.getcwd()
+
+with open("inputs.json", "r") as fd:
+    inp_dic = json.load(fd)
+if "_data_product" in inp_dic.keys():
+    inp_pdic = inp_dic["_data_product"]
+else:
+    inp_pdic = inp_dic
+
+for _vn in ["ra", "dec", "thresh_arcmin"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 # -----------------------------------------------------
 # Handling errors and exceptions
@@ -43,18 +57,6 @@ if clust_name == 0:
         "Error: the entered coordinates do not lie within any MGCLS field (cluster)"
     )
 
-_galaxy_wd = os.getcwd()
-
-with open("inputs.json", "r") as fd:
-    inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
-else:
-    inp_pdic = inp_dic
-
-for _vn in ["ra", "dec", "thresh_arcmin", "clust_name"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
-
 # ----------------------------------------------------------------------------------
 # Determination of the sources found (or not) in the given aperture
 # ----------------------------------------------------------------------------------
@@ -66,6 +68,7 @@ print(msg_out)
 # Computation of the power spectrum of the sources within the aperture
 # ----------------------------------------------------------------------------------
 plot_power_spectrum(ra, dec, thresh_arcmin)
+plt.savefig("spectrum.png", format="png", bbox_inches="tight")
 
 # # ----------------------------------------------------------------------------------
 # # Plotting of the enhanced image, the target location and the corresponding sources
@@ -80,6 +83,12 @@ plot_power_spectrum(ra, dec, thresh_arcmin)
 # freq_index = 0
 # plot_enhanced_image(clust_name, freq_index)
 # plt.show()
+
+from oda_api.data_products import PictureProduct
+
+bin_image = PictureProduct.from_file("spectrum.png")
+
+picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
