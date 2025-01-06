@@ -23,17 +23,21 @@ src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
-T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+T1 = "2013-09-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2014-01-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Cone search radius"
 R_s = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source region radius for aperture photometry"
 
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
-Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
-Slope = 2.7  # http://odahub.io/ontology#Float ; oda:label "Slope of the model powerlaw"
-Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle"
+Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy"
+Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy"
+NTbins = (
+    10  # http://odahub.io/ontology#Integer ; oda:label "Number of time bins"
+)
 
-NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; allowed_value 0,1,2,3,4,5,6,7,8
+Slope = 2.7  # http://odahub.io/ontology#Float ; oda:label "Slope of the model powerlaw"
+Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle" ; oda:allowed_value 0.2, 0.35, 0.4, 0.7, 1.0, 1.4
+
+NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; oda:allowed_value 0, 1, 2, 3, 4, 5, 6, 7, 8
 
 _galaxy_wd = os.getcwd()
 
@@ -54,6 +58,7 @@ for _vn in [
     "R_s",
     "Emin",
     "Emax",
+    "NTbins",
     "Slope",
     "Offset",
     "NSB",
@@ -70,6 +75,14 @@ if sep > 2:
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
+print(T1, T2)
+Tbins = np.linspace(T1, T2, NTbins + 1)
+Tmin = Tbins[:-1]
+Tmax = Tbins[1:]
+Tmean = (Tmin + Tmax) / 2.0
+Tbins
+
+56569.18116244464, 56659.13889054572
 
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
@@ -144,6 +157,7 @@ def met2mjd(met):
 
 Tstart_mjd = met2mjd(Tstart)
 Tstop_mjd = met2mjd(Tstart)
+print(min(Tstart_mjd), max(Tstop_mjd))
 m = (Tstart_mjd > T1) & (Tstop_mjd < T2)
 if sum(m) == 0:
     raise ValueError("No data for this time period")
@@ -167,10 +181,48 @@ MIGRA = (MIGRA_LO + MIGRA_HI) / 2.0
 ENERG = sqrt(ENERG_LO * ENERG_HI)
 dENERG = ENERG_HI - ENERG_LO
 
+RA_pnt = hdul[1].header["RA_PNT"]
+DEC_pnt = hdul[1].header["DEC_PNT"]
+Texp = hdul[1].header["LIVETIME"]
+print(Texp)
+Tstart = met2mjd(hdul[1].header["TSTART"])
+Tstop = met2mjd(hdul[1].header["TSTOP"])
+dRA = RA - RA_pnt
+dDEC = DEC - DEC_pnt
+RA_b = RA_pnt - dRA
+DEC_b = DEC_pnt - dDEC
+Coords_b = SkyCoord(RA_b, DEC_b, unit="degree")
+Coords_pnt = SkyCoord(RA_pnt, DEC_pnt, unit="degree")
+dist = Coords_pnt.separation(Coords_s).deg
+
+ev = hdul["EVENTS"].data
+ev_ra = ev["RA"]
+ev_dec = ev["DEC"]
+ev_en = ev["ENERGY"]
+ev_time = np.array(ev["TIME"])
+ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
+sep_s = ev_coords.separation(Coords_s).deg
+sep_b = ev_coords.separation(Coords_b).deg
+mask = (sep_s < R_s) * (ev_en > Emin) * (ev_en < Emax)
+Nevents = len(ev_time)
+Texp_binned = np.histogram(
+    met2mjd(ev_time), weights=Texp * np.ones(Nevents) / Nevents, bins=Tbins
+)[0]
+Expos_binned = np.outer(Eff_area[-1], Texp_binned) * 1e4
+
+Expos_binned.shape
+
+NEbins = len(ENERG_LO)
+NEbins
+
 cts_s = []
 cts_b = []
+Cts_s_binned = np.zeros(NTbins)
+Cts_b_binned = np.zeros(NTbins)
 Eff_area = []
-Eff_area_interp = []
+Expos_binned = np.zeros((NEbins, NTbins))
+Texp_binned = np.zeros(NTbins)
+
 Texp = []
 RMFs = []
 Tstart = []
@@ -202,26 +254,38 @@ for ind in range(len(DL3_fname)):
     ev_ra = ev["RA"]
     ev_dec = ev["DEC"]
     ev_en = ev["ENERGY"]
-    ev_time = ev["TIME"]
+    ev_time = np.array(ev["TIME"])
     ev_coords = SkyCoord(ev_ra, ev_dec, unit="degree")
     sep_s = ev_coords.separation(Coords_s).deg
     sep_b = ev_coords.separation(Coords_b).deg
+    Nevents = len(ev_time)
+    Texp_binned = np.histogram(
+        met2mjd(ev_time),
+        weights=Texp[-1] * np.ones(Nevents) / Nevents,
+        bins=Tbins,
+    )[0]
+    Expos_binned += np.outer(Eff_area[-1], Texp_binned) * 1e4
 
     mask = (sep_s < R_s) * (ev_en > Emin) * (ev_en < Emax)
     cts_s.append(len(ev_en[mask]))
+    Cts_s_binned += np.histogram(met2mjd(ev_time[mask]), bins=Tbins)[0]
     mask = (sep_b < R_s) * (ev_en > Emin) * (ev_en < Emax)
     cts_b.append(len(ev_en[mask]))
+    Cts_b_binned += np.histogram(met2mjd(ev_time[mask]), bins=Tbins)[0]
     hdul.close()
 
 cts_s = np.array(cts_s)
 cts_b = np.array(cts_b)
 Eff_area = np.array(Eff_area)
-Eff_area_interp = np.array(Eff_area_interp)
 Texp = np.array(Texp)
 Tstart = np.array(Tstart)
 Tstop = np.array(Tstart)
 Tmid = (Tstart + Tstop) / 2.0
 dT = (-Tstart + Tstop) / 2.0
+
+Cts_b_binned, Cts_s_binned
+
+len(Expos_binned[:, 0])
 
 E0 = 1.0
 
@@ -233,20 +297,30 @@ def model_rate(E1, E2, N, Gam):
     EE = sqrt(E1 * E2)
     return model_dNdE(EE, N, Gam) * dEE
 
+def model_binned_cts(N, Gam, ind):
+    model_ENERG = model_rate(ENERG_LO, ENERG_HI, N, Gam)
+    model_counts_ENERG = model_ENERG * Expos_binned[:, ind]
+    return model_counts_ENERG
+
 def model_cts(N, Gam, ind):
     model_ENERG = model_rate(ENERG_LO, ENERG_HI, N, Gam)
     model_counts_ENERG = model_ENERG * Eff_area[ind] * 1e4 * Texp[ind]
     return model_counts_ENERG
 
 Norm_ref = 1e-11
-plt.plot(ENERG_LO, model_cts(Norm_ref, Slope, 1))
+print(sum(model_cts(Norm_ref, Slope, 1)))
+
+model_binned = []
+for i in range(NTbins):
+    model_binned.append(sum(model_binned_cts(Norm_ref, Slope, i)))
+    plt.plot(ENERG_LO, model_binned_cts(Norm_ref, Slope, i))
 plt.xscale("log")
 plt.yscale("log")
-print(sum(model_cts(Norm_ref, Slope, 1)))
 
 model = []
 for i in range(len(cts_s)):
     model.append(sum(model_cts(Norm_ref, Slope, i)))
+    plt.plot(ENERG_LO, model_cts(Norm_ref, Slope, i))
 
 factor = (
     Norm_ref
@@ -255,16 +329,46 @@ factor = (
     * ((Emax / E0) ** (1 - Slope) - (Emin / E0) ** (1 - Slope))
 )
 
+src = Cts_s_binned - Cts_b_binned
+src_err = sqrt(Cts_s_binned + Cts_b_binned)
+fl_binned = src / model_binned * factor
+fl_binned_err = src_err / model_binned * factor
+
 src = cts_s - cts_b
 src_err = sqrt(cts_s + cts_b)
 fl = src / model * factor
 fl_err = src_err / model * factor
 
 plt.figure(figsize=(12, 5))
-plt.errorbar(Tmid, fl, yerr=fl_err, xerr=dT, linestyle="none", marker="o")
+Tmeans = (Tbins[1:] + Tbins[:-1]) / 2.0
+Tdels = (Tbins[1:] - Tbins[:-1]) / 2.0
+plt.errorbar(
+    Tmeans,
+    fl_binned,
+    yerr=fl_binned_err,
+    xerr=Tdels,
+    linestyle="none",
+    marker="o",
+    label="Lightcurve",
+    color="black",
+)
+plt.errorbar(
+    Tmid,
+    fl,
+    yerr=fl_err,
+    xerr=dT,
+    linestyle="none",
+    marker="o",
+    label="Run-wise flux",
+    color="black",
+    alpha=0.2,
+)
+
 plt.xlabel("Time, MJD")
 plt.ylabel("Flux, 1/(cm$^2$s)")
+plt.legend(loc="lower left")
 plt.savefig("Lightcurve.png", format="png", bbox_inches="tight")
+plt.xlim(T1, T2)
 
 from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
