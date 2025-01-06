@@ -430,17 +430,17 @@ table_spectrum = spec  # http://odahub.io/ontology#ODAAstropyTable
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Spectrum_public_dl3_png", "png_galaxy.output", png))
 _oda_outs.append(
     (
-        "out_Spectrum_table_confidence_contour",
+        "out_Spectrum_public_dl3_table_confidence_contour",
         "table_confidence_contour_galaxy.output",
         table_confidence_contour,
     )
 )
 _oda_outs.append(
     (
-        "out_Spectrum_table_spectrum",
+        "out_Spectrum_public_dl3_table_spectrum",
         "table_spectrum_galaxy.output",
         table_spectrum,
     )

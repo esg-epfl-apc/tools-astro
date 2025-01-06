@@ -19,7 +19,7 @@ from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
 pr = ProgressReporter()
-pr.report_progress(stage="Progress", progress=5.0)
+pr.report_progress(stage="Data download", progress=5.0)
 
 if os.path.exists("hess_dl3_dr1.tar.gz") == False:
     get_ipython().system(   # noqa: F821
@@ -32,12 +32,16 @@ RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
+Radius = (
+    1.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Image radius"
+)
 pixsize = (
     0.05  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
 )
-Emin = 1  # http://odahub.io/ontology#Energy_TeV
-Emax = 100.0  # http://odahub.io/ontology#Energy_TeV
+Emin = 1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy"
+Emax = (
+    100.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -92,7 +96,10 @@ for f in flist:
                 scale="utc",
             ).mjd
         )
+        print(Tstart[-1])
         hdul.close()
+
+pr.report_progress(stage="Data product generation", progress=50.0)
 
 Coords_s = SkyCoord(RA, DEC, unit="degree")
 COORDS_pnts = SkyCoord(RA_pnts, DEC_pnts, unit="degree")
@@ -192,8 +199,8 @@ fits = fits_image  # http://odahub.io/ontology#Image
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Image_png", "png_galaxy.output", png))
-_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
+_oda_outs.append(("out_Image_public_dl3_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Image_public_dl3_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
