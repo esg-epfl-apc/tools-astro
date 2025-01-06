@@ -24,10 +24,14 @@ DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius_search = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Cone search radius"
-Radius_image = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Image radius" ; oda:group "Plotting"
-pixsize = 0.025  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size" ; oda:group "Plotting"
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy" ; oda:group "Plotting"
-Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy" ; oda:group "Plotting"
+Radius_image = (
+    2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Image radius"
+)
+pixsize = (
+    0.025  # http://odahub.io/ontology#AngleDegrees ; oda:label "Pixel size"
+)
+Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy"
+Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy"
 
 Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle" ; oda:allowed_value 0.2, 0.35, 0.4, 0.7, 1.0, 1.4
 
