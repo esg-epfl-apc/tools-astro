@@ -22,6 +22,7 @@ from oda_api.json import CustomJSONEncoder
 from pyirf.statistics import li_ma_significance
 from scipy.stats import moyal, skewnorm
 
+src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2022-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
@@ -54,6 +55,7 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
+    "src_name",
     "RA",
     "DEC",
     "T1",
@@ -744,7 +746,8 @@ spec = ODAAstropyTable(Table(data, names=names))
 SED = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 Count_spectrum = bin_image1  # http://odahub.io/ontology#ODAPictureProduct
 Etrue_vs_Ereco = bin_image2  # http://odahub.io/ontology#ODAPictureProduct
-Significance = bin_image3  # http://odahub.io/ontology#ODAPictureProductSED_astropy_table = spec # http://odahub.io/ontology#ODAAstropyTable
+Significance = bin_image3  # http://odahub.io/ontology#ODAPictureProduct
+SED_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
 Count_spectrum_astropy_table = (
     count_spec  # http://odahub.io/ontology#ODAAstropyTable
 )
@@ -765,6 +768,20 @@ _oda_outs.append(
         "out_LST1_spectrum_Etrue_vs_Ereco",
         "Etrue_vs_Ereco_galaxy.output",
         Etrue_vs_Ereco,
+    )
+)
+_oda_outs.append(
+    (
+        "out_LST1_spectrum_Significance",
+        "Significance_galaxy.output",
+        Significance,
+    )
+)
+_oda_outs.append(
+    (
+        "out_LST1_spectrum_SED_astropy_table",
+        "SED_astropy_table_galaxy.output",
+        SED_astropy_table,
     )
 )
 _oda_outs.append(
@@ -790,29 +807,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-_simple_outs = []
-_simple_outs.append(
-    (
-        "out_LST1_spectrum_Significance",
-        "Significance_galaxy.output",
-        Significance,
-    )
-)
-_numpy_available = True
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
