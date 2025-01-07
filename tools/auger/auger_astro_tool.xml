@@ -19,7 +19,7 @@
     <param name="src_name" type="text" value="Cen A" label="src_name" />
     <param name="RA" type="float" value="201.365063" label="RA (unit: deg)" />
     <param name="DEC" type="float" value="-43.019113" label="DEC (unit: deg)" />
-    <param name="T1" type="text" value="2021-10-09T13:16:00.0" label="T1" />
+    <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
     <param name="T2" type="text" value="2021-10-13T13:16:00.0" label="T2" />
     <param name="Source_region_radius" type="float" value="27.0" label="Source signal region radius (unit: deg)" />
     <param name="Emin" type="float" value="3.162e+19" label="Minimal energy (unit: eV)" />
@@ -35,7 +35,7 @@
       <param name="src_name" value="Cen A" />
       <param name="RA" value="201.365063" />
       <param name="DEC" value="-43.019113" />
-      <param name="T1" value="2021-10-09T13:16:00.0" />
+      <param name="T1" value="2000-10-09T13:16:00.0" />
       <param name="T2" value="2021-10-13T13:16:00.0" />
       <param name="Source_region_radius" value="27.0" />
       <param name="Emin" value="3.162e+19" />

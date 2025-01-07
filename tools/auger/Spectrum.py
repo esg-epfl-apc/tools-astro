@@ -25,7 +25,7 @@ src_name = "Cen A"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 201.365063  # http://odahub.io/ontology#PointOfInterestRA
 DEC = -43.019113  # http://odahub.io/ontology#PointOfInterestDEC
 
-T1 = "2021-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
 Source_region_radius = 27.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
@@ -113,17 +113,13 @@ else:
 coords = SkyCoord(ra_ev, dec_ev, unit="degree")
 sep = coords.separation(coords_s).deg
 
-cts_s = np.zeros(NEbins)
-cts_b = np.zeros(NEbins)
 mask = sep < Source_region_radius
-cts_s[i] = len(E[mask])
 plt.scatter(ra_ev[mask], dec_ev[mask], color="green", label="source events")
 mask = (
     (dec_ev < DEC + Source_region_radius)
     & (dec_ev > DEC - Source_region_radius)
     & (sep > Source_region_radius)
 )
-cts_b[i] = len(E[mask])
 plt.scatter(ra_ev[mask], dec_ev[mask], color="blue", label="background events")
 
 plt.scatter([RA], [DEC], color="red")
@@ -137,9 +133,6 @@ cts_b = np.zeros(NEbins)
 for i in range(NEbins):
     mask = (E > Ebins[i]) & (E < Ebins[i + 1]) & (sep < Source_region_radius)
     cts_s[i] = len(E[mask])
-    plt.scatter(
-        ra_ev[mask], dec_ev[mask], color="green", label="source events"
-    )
     mask = (
         (E > Ebins[i])
         & (E < Ebins[i + 1])
@@ -148,13 +141,6 @@ for i in range(NEbins):
         & (sep > Source_region_radius)
     )
     cts_b[i] = len(E[mask])
-    plt.scatter(
-        ra_ev[mask], dec_ev[mask], color="blue", label="background events"
-    )
-
-plt.scatter([RA], [DEC], color="red")
-plt.scatter(ra_ev, dec_ev, alpha=0.1)
-plt.legend(loc="upper right")
 
 # exposure function * cos(declination) for a given zenith range
 def fCos(declination, latitude, thetamin, thetamax):
