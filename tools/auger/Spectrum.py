@@ -25,10 +25,10 @@ src_name = "Cen A"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 201.365063  # http://odahub.io/ontology#PointOfInterestRA
 DEC = -43.019113  # http://odahub.io/ontology#PointOfInterestDEC
 
-T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T1 = "2021-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-Source_region_radius = 3.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
+Source_region_radius = 27.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
 Emin = 31.62e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Minimal energy"
 Emax = 316.2e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Maximal energy"
 NEbins = (
@@ -92,29 +92,54 @@ dec_ev = d[:, 6]
 E = np.array(d[:, 7]) * 1e18
 expos = d[:, 8]
 
+utc
+
 t_ev = []
 for tt in utc:
     t_ev.append(datetime.datetime.fromtimestamp(tt).isoformat())
 t_ev = Time(t_ev, format="isot", scale="utc").mjd
 mask = (t_ev > Tstart) & (t_ev < Tstop)
-th = th[mask]
-ph = ph[mask]
-ra_ev = ra_ev[mask]
-dec_ev = dec_ev[mask]
-E = E[mask]
-expos = expos[mask]
-tot_expos = expos[-1] - expos[0]
-tot_expos
+if sum(mask) > 0:
+    th = th[mask]
+    ph = ph[mask]
+    ra_ev = ra_ev[mask]
+    dec_ev = dec_ev[mask]
+    E = E[mask]
+    expos = expos[mask]
+    tot_expos = expos[-1] - expos[0]
+else:
+    raise ValueError("No events found in this time interval")
 
 coords = SkyCoord(ra_ev, dec_ev, unit="degree")
 sep = coords.separation(coords_s).deg
 
 cts_s = np.zeros(NEbins)
 cts_b = np.zeros(NEbins)
+mask = sep < Source_region_radius
+cts_s[i] = len(E[mask])
+plt.scatter(ra_ev[mask], dec_ev[mask], color="green", label="source events")
+mask = (
+    (dec_ev < DEC + Source_region_radius)
+    & (dec_ev > DEC - Source_region_radius)
+    & (sep > Source_region_radius)
+)
+cts_b[i] = len(E[mask])
+plt.scatter(ra_ev[mask], dec_ev[mask], color="blue", label="background events")
+
+plt.scatter([RA], [DEC], color="red")
+plt.scatter(ra_ev, dec_ev, alpha=0.1)
+plt.legend(loc="upper right")
+plt.xlabel("RA, degrees")
+plt.ylabel("DEC, degrees")
+
+cts_s = np.zeros(NEbins)
+cts_b = np.zeros(NEbins)
 for i in range(NEbins):
     mask = (E > Ebins[i]) & (E < Ebins[i + 1]) & (sep < Source_region_radius)
     cts_s[i] = len(E[mask])
-    plt.scatter(ra_ev[mask], dec_ev[mask], color="green")
+    plt.scatter(
+        ra_ev[mask], dec_ev[mask], color="green", label="source events"
+    )
     mask = (
         (E > Ebins[i])
         & (E < Ebins[i + 1])
@@ -123,10 +148,13 @@ for i in range(NEbins):
         & (sep > Source_region_radius)
     )
     cts_b[i] = len(E[mask])
-    plt.scatter(ra_ev[mask], dec_ev[mask], color="blue")
+    plt.scatter(
+        ra_ev[mask], dec_ev[mask], color="blue", label="background events"
+    )
 
 plt.scatter([RA], [DEC], color="red")
 plt.scatter(ra_ev, dec_ev, alpha=0.1)
+plt.legend(loc="upper right")
 
 # exposure function * cos(declination) for a given zenith range
 def fCos(declination, latitude, thetamin, thetamax):
