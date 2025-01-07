@@ -19,6 +19,8 @@ from scipy.interpolate import RectBivariateSpline, RegularGridInterpolator
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2013-09-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2014-01-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
 timeh = 20  # http://odahub.io/ontology#TimeIntervalHours ; oda:label "Observation time"; oda:descritpion "[h], time of observations"
 extension = 0.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source extension"
@@ -63,6 +65,8 @@ for _vn in [
     "src_name",
     "RA",
     "DEC",
+    "T1",
+    "T2",
     "timeh",
     "extension",
     "redshift",
