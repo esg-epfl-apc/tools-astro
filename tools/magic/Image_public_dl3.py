@@ -33,9 +33,9 @@ pixsize = (
 Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "Minimal energy"
 Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy"
 
-Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle" ; oda:allowed_value 0.2, 0.35, 0.4, 0.7, 1.0, 1.4
+Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle" ; oda:allowed_value 0.2,0.35,0.4,0.7,1.0,1.4
 
-NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; oda:allowed_value 0, 1, 2, 3, 4, 5, 6, 7, 8
+NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-8)" ; oda:allowed_value 0,1,2,3,4,5,6,7,8
 
 _galaxy_wd = os.getcwd()
 
