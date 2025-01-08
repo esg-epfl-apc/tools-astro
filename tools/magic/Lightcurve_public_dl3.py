@@ -35,9 +35,9 @@ NTbins = (
 )
 
 Slope = 2.7  # http://odahub.io/ontology#Float ; oda:label "Slope of the model powerlaw"
-Offset = 0.4  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source off-axis angle" ; oda:allowed_value 0.2, 0.35, 0.4, 0.7, 1.0, 1.4
+Offset = "0.4 deg"  # http://odahub.io/ontology#String ; oda:label "Source off-axis angle" ; oda:allowed_value "0.2 deg","0.35 deg","0.4 deg","0.7 deg","1.0 deg","1.4 deg"
 
-NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-0.8)" ; oda:allowed_value 0, 1, 2, 3, 4, 5, 6, 7, 8
+NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-8)" ; oda:lower_limit 0 ; oda:upper_limit 8
 
 _galaxy_wd = os.getcwd()
 
@@ -89,21 +89,22 @@ repo_basedir = os.environ.get("BASEDIR", os.getcwd())
 data_dir = repo_basedir + "/magic_dl3_pdr1-main/data/CrabNebula"
 get_ipython().system("ls {data_dir}")   # noqa: F821
 
+Offset = Offset[:-4]
 if NSB == 0:
     data_dir += "/dark"
-    if Offset == 0.4:
+    if Offset == "0.4":
         data_dir += "/single_offset"
     else:
         data_dir += "/multi_offset"
-        if Offset == 0.2:
+        if Offset == "0.2":
             data_dir += "/offset_0.20"
-        elif Offset == 0.35:
+        elif Offset == "0.35":
             data_dir += "/offset_0.35"
-        elif Offset == 0.7:
+        elif Offset == "0.7":
             data_dir += "/offset_0.70"
-        elif Offset == 1.0:
+        elif Offset == "1.":
             data_dir += "/offset_1.00"
-        elif Offset == 1.4:
+        elif Offset == "1.4":
             data_dir += "/offset_1.40"
         else:
             raise ValueError("Offset angle value not found")
