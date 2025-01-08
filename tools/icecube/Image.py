@@ -43,9 +43,21 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "RA",
+    "DEC",
+    "IC40",
+    "IC59",
+    "IC79",
+    "IC86_I",
+    "IC86_II_VII",
+    "Radius",
+    "pixel_size",
+    "TSmap_type",
+    "Slope",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
 from skyllh.core.config import Config
