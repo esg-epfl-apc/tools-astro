@@ -7,6 +7,11 @@
     <requirement type="package" version="0.4.7">astroquery</requirement>
     <requirement type="package" version="1.2.33">oda-api</requirement>
     <requirement type="package" version="8.31.0">ipython</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.15.0">scipy</requirement>
+    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
     <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
@@ -46,6 +51,9 @@
     <data label="${tool.name} -&gt; Image picture" name="out_Image_picture" format="auto" from_work_dir="picture_galaxy.output">
       <filter>_data_product['_selector'] == 'Image'</filter>
     </data>
+    <data label="${tool.name} -&gt; Image fits" name="out_Image_fits" format="auto" from_work_dir="fits_galaxy.output">
+      <filter>_data_product['_selector'] == 'Image'</filter>
+    </data>
     <data label="${tool.name} -&gt; Catalog catalog_table" name="out_Catalog_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output">
       <filter>_data_product['_selector'] == 'Catalog'</filter>
     </data>
@@ -54,7 +62,7 @@
     </data>
   </outputs>
   <tests>
-    <test expect_num_outputs="1">
+    <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Image" />
         <param name="src_name" value="Mrk 421" />

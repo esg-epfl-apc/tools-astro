@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from astropy.coordinates import Angle  # Angles
 from astropy.coordinates import SkyCoord  # High-level coordinates
+from astropy.io import fits
 
 # Conventional astronomical tools, also to be traced by Renku plugin, there is domain-specific ontology built in
 from astropy.wcs import WCS
@@ -97,6 +98,8 @@ except:
 hdul = query[0]
 hdul[0].header
 
+query[0].writeto("Image.fits")
+
 # paramstring='ra='+str(ra_s)+'&dec='+str(dec_s)+'&size='+str(npix)+'&layer=ls-dr'+str(dr)+'&pixscale='+str(pixsize)+'&bands='+image_band
 # suffix = hashlib.md5(paramstring.encode()).hexdigest()
 # filename='data/image_legacysurvey_%s.fits'%( suffix )
@@ -134,16 +137,19 @@ plt.colorbar(im)
 
 plt.savefig("Image.png", format="png", bbox_inches="tight")
 
-from oda_api.data_products import PictureProduct
+from oda_api.data_products import ImageDataProduct, PictureProduct
 
 bin_image = PictureProduct.from_file("Image.png")
+fits_image = ImageDataProduct.from_fits_file("Image.fits")
 
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+fits = fits_image  # http://odahub.io/ontology#Image
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(("out_Image_picture", "picture_galaxy.output", picture))
+_oda_outs.append(("out_Image_fits", "fits_galaxy.output", fits))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
