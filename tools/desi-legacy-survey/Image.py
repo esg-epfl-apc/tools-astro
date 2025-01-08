@@ -42,7 +42,7 @@ pixsize = (
 )
 band = "g"  # http://odahub.io/ontology#String ; oda:allowed_value "g","r","i","z" ; oda:label "Band"
 data_release = (
-    9  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
+    10  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
 )
 
 _galaxy_wd = os.getcwd()
@@ -98,7 +98,7 @@ except:
 hdul = query[0]
 hdul[0].header
 
-query[0].writeto("Image.fits")
+query[0].writeto("Image.fits", overwrite=True)
 
 # paramstring='ra='+str(ra_s)+'&dec='+str(dec_s)+'&size='+str(npix)+'&layer=ls-dr'+str(dr)+'&pixscale='+str(pixsize)+'&bands='+image_band
 # suffix = hashlib.md5(paramstring.encode()).hexdigest()

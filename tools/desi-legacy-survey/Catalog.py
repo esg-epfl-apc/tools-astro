@@ -24,7 +24,7 @@ RA = 166.113808  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 Radius = 1  # http://odahub.io/ontology#AngleMinutes
 data_release = (
-    9  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
+    10  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
 )
 
 _galaxy_wd = os.getcwd()
