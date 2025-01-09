@@ -1,8 +1,8 @@
 categories:
 - Astronomy
-description: Synchrotron-InverseCompton-Bremsstrahlung
+description: Synch-IC-Brems
 homepage_url: null
-long_description: Synchrotron-InverseCompton-Bremsstrahlung
+long_description: Synch-IC-Brems
 name: synchrotron_inversecompton_bremsstrahlung_astro_tool
 owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools

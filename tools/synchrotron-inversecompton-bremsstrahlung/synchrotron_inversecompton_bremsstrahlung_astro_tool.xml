@@ -1,31 +1,31 @@
-<tool id="synchrotron_inversecompton_bremsstrahlung_astro_tool" name="Synchrotron-InverseCompton-Bremsstrahlung" version="0.0.1+galaxy0" profile="23.0">
+<tool id="synchrotron_inversecompton_bremsstrahlung_astro_tool" name="Synch-IC-Brems" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.29.0">ipython</requirement>
-    <requirement type="package" version="6.1.4">astropy</requirement>
-    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="8.31.0">ipython</requirement>
+    <requirement type="package" version="7.0.0">astropy</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
     <requirement type="package" version="0.4.7">astroquery</requirement>
-    <requirement type="package" version="1.14.1">scipy</requirement>
+    <requirement type="package" version="1.15.0">scipy</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.4">nbconvert</requirement>
+    <requirement type="package" version="7.16.5">nbconvert</requirement>
   </requirements>
-  <command detect_errors="exit_code">python '$__tool_directory__/SIC_BREMS.py'</command>
+  <command detect_errors="exit_code">python '$__tool_directory__/Synchrotron_Inverse-Compton_Bremsstrahlung.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
   <inputs>
-    <param name="Gamma_inj" type="float" value="2.0" label="Gamma" />
-    <param name="Ecut" type="float" value="30000000000000.0" label="Ecut" />
-    <param name="B" type="float" value="3e-06" label="B" />
-    <param name="n" type="float" value="0.1" label="n" />
-    <param name="Z" type="float" value="1.4" label="Z" />
-    <param name="T" type="float" value="2.73" label="T" />
-    <param name="Back_norm" type="float" value="1.0" label="Back_norm" />
+    <param name="Gamma_inj" type="float" value="2.0" label="electron injection spectrum powerlaw index" />
+    <param name="Ecut" type="float" value="30000000000000.0" label="electron injeciton spectrum cut-off" />
+    <param name="B" type="float" value="3e-06" label="magnetic field [G]" />
+    <param name="n" type="float" value="0.1" label="density of the medium [1/cm3]" />
+    <param name="Z" type="float" value="1.4" label="average atomic charge of the medium" />
+    <param name="T" type="float" value="2.73" label="Temperature of black body photon background [K]" />
+    <param name="Back_norm" type="float" value="1.0" label="Normalization of blackbody photon background (&lt;=1)" />
   </inputs>
   <outputs>
-    <data label="${tool.name} -&gt; SIC_BREMS spectrum_png" name="out_SIC_BREMS_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output" />
-    <data label="${tool.name} -&gt; SIC_BREMS spectrum_table" name="out_SIC_BREMS_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output" />
+    <data label="${tool.name} -&gt; Synchrotron_Inverse-Compton_Bremsstrahlung spectrum_png" name="out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output" />
+    <data label="${tool.name} -&gt; Synchrotron_Inverse-Compton_Bremsstrahlung spectrum_table" name="out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output" />
   </outputs>
   <tests>
     <test expect_num_outputs="2">
@@ -41,4 +41,8 @@
       </assert_stdout>
     </test>
   </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
 </tool>

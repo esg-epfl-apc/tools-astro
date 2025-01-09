@@ -21,14 +21,14 @@ from oda_api.json import CustomJSONEncoder
 # // Based on Blumenthal&Gould Rev. Mod. Phys. 42, 237 (1970) [BG]
 # ////////////////////////////////////////////////////////////////////////
 
-Gamma_inj = 2.0  # http://odahub.io/ontology#Float ; oda:label "Gamma" ; oda:description "electron injection spectrum powerlaw index"
-Ecut = 3e13  # http://odahub.io/ontology#Float ; oda:label "Ecut" ; oda:description "electron injeciton spectrum cut-off"
+Gamma_inj = 2.0  # http://odahub.io/ontology#Float ; oda:label "electron injection spectrum powerlaw index"
+Ecut = 3e13  # http://odahub.io/ontology#Float ; oda:label "electron injeciton spectrum cut-off"
 
-B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "B" ; oda:description "magnetic field [G]"
-n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "n" ; oda:description "density of the medium [1/cm3]"
-Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "Z" ; oda:description "average atomic charge of the medium"
-T = 2.73  # http://odahub.io/ontology#Float ; oda:label "T" ; oda:description "Temperature of external BB photon background [K]"
-Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Back_norm" ; oda:description "Normalization of BB spectrum (<=1)"
+B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
+n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
+Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
+T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black body photon background [K]"
+Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of blackbody photon background (<=1)"
 
 _galaxy_wd = os.getcwd()
 
@@ -39,9 +39,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["Gamma_inj", "Ecut", "B", "n", "Z", "T", "Back_norm"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 # constants
 m_e = 5.1e5  # electron mass [eV]
@@ -258,11 +257,15 @@ spectrum_table = spec  # http://odahub.io/ontology#ODAAstropyTable
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_SIC_BREMS_spectrum_png", "spectrum_png_galaxy.output", spectrum_png)
+    (
+        "out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
 )
 _oda_outs.append(
     (
-        "out_SIC_BREMS_spectrum_table",
+        "out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_table",
         "spectrum_table_galaxy.output",
         spectrum_table,
     )
