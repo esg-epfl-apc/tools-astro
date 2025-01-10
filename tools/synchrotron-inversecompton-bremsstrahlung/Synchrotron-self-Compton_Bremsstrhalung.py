@@ -36,8 +36,8 @@ pr = ProgressReporter()
 
 dN_dE = "2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
 electron_file = ""  # oda:POSIXPath ; oda:label "Electron spectrum ascii file (overrides analytical formula)"
-Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations [eV]"
-Emax = 1e14  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations [eV]"
+Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations"
+Emax = 1e14  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations"
 B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
 n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
