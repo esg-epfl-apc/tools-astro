@@ -99,6 +99,10 @@ c = 3.0e10  # speed of light
 # CGS units, Kolb-Turner, "The Early Universe", Appendix A
 BeV = sqrt(1.9084e-40 * 1e9**4 * 8 * pi)  # Gauss-to-eV2 conversion factor
 e = 0.085  # electron charge in natural system
+hbar = 6.6e-16  # Planck constant in eV-s
+eV_cm = hbar * c  # hbar*c
+sigma_T = 6.6e-25  # Thomson cross-seciton
+alpha = 0.007299  # fine structure constant
 
 # Energy binning parameters
 Ndec = 10  # number of energy bins per decade;

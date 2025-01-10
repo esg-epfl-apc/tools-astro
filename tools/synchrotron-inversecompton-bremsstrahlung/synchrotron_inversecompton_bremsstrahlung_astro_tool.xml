@@ -39,7 +39,7 @@
   <tests>
     <test expect_num_outputs="2">
       <param name="dN_dE" value="2.0e-11*pow(E/1e13, -1.99)*exp(-E/1e13)" />
-      <param name="electron_file" location="https://gitlab.renkulab.io/astronomy/mmoda/synchrotron-inversecompton-bremsstrahlung/-/raw/3685f15c92ca56e764355209a6e6af0129f2217a/electrons.txt" />
+      <param name="electron_file" location="https://gitlab.renkulab.io/astronomy/mmoda/synchrotron-inversecompton-bremsstrahlung/-/raw/0645639d3e198c5345e92cb012744ef1dc1810d4/electrons.txt" />
       <param name="Emin" value="1e-10" />
       <param name="Emax" value="1000000000000000.0" />
       <param name="B" value="3e-06" />
