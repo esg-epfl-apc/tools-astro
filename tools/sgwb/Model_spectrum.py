@@ -7,18 +7,11 @@ import json
 import os
 import shutil
 
-from oda_api.json import CustomJSONEncoder
-
-get_ipython().run_cell_magic(   # noqa: F821
-    "bash",
-    "",
-    "wget https://gitlab.renkulab.io/astronomy/mmoda/sgwb/-/raw/master/EPTA.csv\nwget https://gitlab.renkulab.io/astronomy/mmoda/sgwb/-/raw/master/NANOGrav23.csv\nwget https://gitlab.renkulab.io/astronomy/mmoda/sgwb/-/raw/master/PPTA.csv\n",
-)
-
 import matplotlib.pyplot as plt
 
 # Loading necessary packages
 import numpy as np
+from oda_api.json import CustomJSONEncoder
 
 get_ipython().run_line_magic("matplotlib", "inline")   # noqa: F821
 import astropy.constants as const
