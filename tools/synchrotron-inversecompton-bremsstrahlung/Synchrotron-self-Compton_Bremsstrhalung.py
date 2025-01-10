@@ -1,22 +1,26 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+_galaxy_wd = os.getcwd()
+
+with open("inputs.json", "r") as fd:
+    inp_dic = json.load(fd)
+if "_data_product" in inp_dic.keys():
+    inp_pdic = inp_dic["_data_product"]
+else:
+    inp_pdic = inp_dic
+
 # flake8: noqa
 
 import copy
 import json
 import os
 import re
-import shutil
 
 import matplotlib.pyplot as plt
-import numpy as np
-from numpy import exp, log, log10, pi, sqrt
-from oda_api.api import ProgressReporter
-from oda_api.json import CustomJSONEncoder
 
 # ////////////////////////////////////////////////////////////////////////
-# // Calculation of synchrotron, inverse Compton (IC) and bremsstrahlung
+# // Calculation of synchrotron-self-Compton and bremsstrahlung
 # // emission from a distribution of electrons with given injection
 # // spectrum.
 # //
@@ -24,6 +28,9 @@ from oda_api.json import CustomJSONEncoder
 # //
 # // Notebook from A.Neronov
 # ////////////////////////////////////////////////////////////////////////
+import numpy as np
+from numpy import exp, log, log10, pi, sqrt
+from oda_api.api import ProgressReporter
 
 pr = ProgressReporter()
 
@@ -34,35 +41,7 @@ Emax = 1e14  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy f
 B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
 n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
-T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black body photon background [K]"
-Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of blackbody photon background (<=1)"
-# backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
-backgr_dN_dE = ""  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
-backgr_file = ""  # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
-
-_galaxy_wd = os.getcwd()
-
-with open("inputs.json", "r") as fd:
-    inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
-else:
-    inp_pdic = inp_dic
-
-for _vn in [
-    "dN_dE",
-    "electron_file",
-    "Emin",
-    "Emax",
-    "B",
-    "n",
-    "Z",
-    "T",
-    "Back_norm",
-    "backgr_dN_dE",
-    "backgr_file",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+synch_dens = 0.25  # http://odahub.io/ontology#Float ; oda:label "Energy density of synchrotron radiation [eV/cm3]"
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
@@ -88,8 +67,6 @@ def parse_spectrum(input_str):
 
 test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
 # Assumed = parse_spectrum(test_str)
-if len(backgr_dN_dE) > 0:
-    Assumed_backgr = parse_spectrum(backgr_dN_dE)
 if len(dN_dE) > 0:
     Assumed = parse_spectrum(dN_dE)
 
@@ -169,30 +146,16 @@ for i in range(NEbins):
 
 pr.report_progress(stage="inverse Compton", progress=20)
 
-# thermal emission spectrum
-def Thermal(ee, T):
-    T_eV = 8.6e-5 * T  # temperature in eV
-    # thermal spectrum BG (2.58) [1/eV/cm3]
-    return ee**2 / (exp(ee / T_eV) - 1) / pi**2 / (hbar * c) ** 3
+# backgr in 1/cm3, synch is E dN/dE
+U_back = integrate(synch, 1, -1)
+backgr = synch / U_back * synch_dens
+U_back = integrate(backgr, 1, -1)
 
-if len(backgr_file) > 0:
-    d = np.genfromtxt(backgr_file)
-    ee = d[:, 0]
-    ff = d[:, 1]
-    plt.plot(ee, ee * ff)
-    backgr = energy * np.interp(energy, ee, ff)
-elif len(backgr_dN_dE) > 0:
-    backgr = energy * Assumed_backgr(energy)
-else:
-    backgr = energy * Back_norm * Thermal(energy, T)
-
-plt.plot(energy, backgr)
-plt.ylim(max(backgr) / 1e3, max(backgr) * 2)
-plt.xlim(energy[np.argmax(backgr)] / 100, energy[np.argmax(backgr)] * 100)
+plt.plot(energy, energy * backgr)
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("$E$, eV")
-plt.ylabel("$E\cdot dn/dE$, 1/cm$^3$")
+plt.ylabel("$E\cdot dn/dE$, eV/cm$^3$")
 print(integrate(backgr, 1, -1))
 np.savetxt("background.txt", np.transpose(np.array([energy, backgr / energy])))
 
@@ -328,37 +291,6 @@ pr.report_progress(stage="Finished", progress=100)
 
 # output gathering
 _galaxy_meta_data = {}
-_oda_outs = []
-_oda_outs.append(
-    (
-        "out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_png",
-        "spectrum_png_galaxy.output",
-        spectrum_png,
-    )
-)
-_oda_outs.append(
-    (
-        "out_Synchrotron_Inverse_Compton_Bremsstrahlung_spectrum_table",
-        "spectrum_table_galaxy.output",
-        spectrum_table,
-    )
-)
-
-for _outn, _outfn, _outv in _oda_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif getattr(_outv, "write_fits_file", None):
-        _outv.write_fits_file(_galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "fits"}
-    elif getattr(_outv, "write_file", None):
-        _outv.write_file(_galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd, cls=CustomJSONEncoder)
-        _galaxy_meta_data[_outn] = {"ext": "json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
