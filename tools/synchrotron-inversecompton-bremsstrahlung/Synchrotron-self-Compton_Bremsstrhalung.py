@@ -1,21 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-_galaxy_wd = os.getcwd()
-
-with open("inputs.json", "r") as fd:
-    inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
-else:
-    inp_pdic = inp_dic
-
 # flake8: noqa
 
 import copy
 import json
 import os
 import re
+import shutil
 
 import matplotlib.pyplot as plt
 
@@ -31,6 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from numpy import exp, log, log10, pi, sqrt
 from oda_api.api import ProgressReporter
+from oda_api.json import CustomJSONEncoder
 
 pr = ProgressReporter()
 
@@ -42,6 +35,27 @@ B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
 n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
 synch_dens = 0.25  # http://odahub.io/ontology#Float ; oda:label "Energy density of synchrotron radiation [eV/cm3]"
+
+_galaxy_wd = os.getcwd()
+
+with open("inputs.json", "r") as fd:
+    inp_dic = json.load(fd)
+if "_data_product" in inp_dic.keys():
+    inp_pdic = inp_dic["_data_product"]
+else:
+    inp_pdic = inp_dic
+
+for _vn in [
+    "dN_dE",
+    "electron_file",
+    "Emin",
+    "Emax",
+    "B",
+    "n",
+    "Z",
+    "synch_dens",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
@@ -291,6 +305,37 @@ pr.report_progress(stage="Finished", progress=100)
 
 # output gathering
 _galaxy_meta_data = {}
+_oda_outs = []
+_oda_outs.append(
+    (
+        "out_Synchrotron_self_Compton_Bremsstrhalung_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Synchrotron_self_Compton_Bremsstrhalung_spectrum_table",
+        "spectrum_table_galaxy.output",
+        spectrum_table,
+    )
+)
+
+for _outn, _outfn, _outv in _oda_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif getattr(_outv, "write_fits_file", None):
+        _outv.write_fits_file(_galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "fits"}
+    elif getattr(_outv, "write_file", None):
+        _outv.write_file(_galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd, cls=CustomJSONEncoder)
+        _galaxy_meta_data[_outn] = {"ext": "json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)

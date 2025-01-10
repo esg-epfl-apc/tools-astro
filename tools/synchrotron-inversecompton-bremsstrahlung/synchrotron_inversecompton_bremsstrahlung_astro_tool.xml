@@ -25,7 +25,16 @@
         <option value="Synchrotron-self-Compton_Bremsstrhalung" selected="true">Synchrotron-self-Compton_Bremsstrhalung</option>
         <option value="Synchrotron_external-Compton_Bremsstrahlung" selected="false">Synchrotron_external-Compton_Bremsstrahlung</option>
       </param>
-      <when value="Synchrotron-self-Compton_Bremsstrhalung" />
+      <when value="Synchrotron-self-Compton_Bremsstrhalung">
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)" label="Electron spectrum dN/dE" />
+        <param name="electron_file" type="data" label="Electron spectrum ascii file (overrides analytical formula)" format="data" />
+        <param name="Emin" type="float" value="1e-10" label="minimal energy for calculations (unit: eV)" />
+        <param name="Emax" type="float" value="100000000000000.0" label="maximal energy for calculations (unit: eV)" />
+        <param name="B" type="float" value="3e-06" label="magnetic field [G]" />
+        <param name="n" type="float" value="0.1" label="density of the medium [1/cm3]" />
+        <param name="Z" type="float" value="1.4" label="average atomic charge of the medium" />
+        <param name="synch_dens" type="float" value="0.25" label="Energy density of synchrotron radiation [eV/cm3]" />
+      </when>
       <when value="Synchrotron_external-Compton_Bremsstrahlung">
         <param name="dN_dE" type="text" value="2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)" label="Electron spectrum dN/dE" />
         <param name="electron_file" type="data" label="Electron spectrum ascii file (overrides analytical formula)" format="data" />
@@ -42,6 +51,12 @@
     </conditional>
   </inputs>
   <outputs>
+    <data label="${tool.name} -&gt; Synchrotron-self-Compton_Bremsstrhalung spectrum_png" name="out_Synchrotron_self_Compton_Bremsstrhalung_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Synchrotron-self-Compton_Bremsstrhalung'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Synchrotron-self-Compton_Bremsstrhalung spectrum_table" name="out_Synchrotron_self_Compton_Bremsstrhalung_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'Synchrotron-self-Compton_Bremsstrhalung'</filter>
+    </data>
     <data label="${tool.name} -&gt; Synchrotron_external-Compton_Bremsstrahlung spectrum_png" name="out_Synchrotron_external_Compton_Bremsstrahlung_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
       <filter>_data_product['_selector'] == 'Synchrotron_external-Compton_Bremsstrahlung'</filter>
     </data>
@@ -50,9 +65,17 @@
     </data>
   </outputs>
   <tests>
-    <test expect_num_outputs="0">
+    <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Synchrotron-self-Compton_Bremsstrhalung" />
+        <param name="dN_dE" value="2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)" />
+        <param name="electron_file" value="electron_file.json" />
+        <param name="Emin" value="1e-10" />
+        <param name="Emax" value="100000000000000.0" />
+        <param name="B" value="3e-06" />
+        <param name="n" value="0.1" />
+        <param name="Z" value="1.4" />
+        <param name="synch_dens" value="0.25" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
