@@ -27,7 +27,7 @@ from oda_api.json import CustomJSONEncoder
 pr = ProgressReporter()
 
 dN_dE = "2.0e-11*pow(E/1e13, -1.99)*exp(-E/1e13)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
-
+electron_file = "electrons.txt"  # oda:POSIXPath ; oda:label "Electron spectrum ascii file (overrides analytical formula)"
 Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations [eV]"
 Emax = 1e15  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations [eV]"
 B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
@@ -37,7 +37,7 @@ T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black bo
 Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of blackbody photon background (<=1)"
 # backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
 backgr_dN_dE = ""  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
-backgr_file = ""  # oda:POSIXPath ; oda:label "Background spectrum npy file [1/(eV cm3)] (overrides parameters above)"
+backgr_file = ""  # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
 
 _galaxy_wd = os.getcwd()
 
@@ -50,6 +50,7 @@ else:
 
 for _vn in [
     "dN_dE",
+    "electron_file",
     "Emin",
     "Emax",
     "B",
@@ -86,17 +87,14 @@ def parse_spectrum(input_str):
 
 test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
 # Assumed = parse_spectrum(test_str)
-Assumed = parse_spectrum(dN_dE)
 if len(backgr_dN_dE) > 0:
     Assumed_backgr = parse_spectrum(backgr_dN_dE)
+if len(dN_dE) > 0:
+    Assumed = parse_spectrum(dN_dE)
 
 # constants
 m_e = 5.1e5  # electron mass [eV]
 c = 3.0e10  # speed of light
-hbar = 6.6e-16  # Planck constant in eV-s
-eV_cm = hbar * c  # hbar*c
-sigma_T = 6.6e-25  # Thomson cross-seciton
-alpha = 0.007299  # fine structure constant
 
 # CGS units, Kolb-Turner, "The Early Universe", Appendix A
 BeV = sqrt(1.9084e-40 * 1e9**4 * 8 * pi)  # Gauss-to-eV2 conversion factor
@@ -116,7 +114,13 @@ m = energy < m_e
 j_me = sum(m)
 
 # electron injection spectrum, set by hands
-electrons = Assumed(energy)
+if len(dN_dE) > 0:
+    electrons = Assumed(energy)
+else:
+    d = np.genfromtxt(electron_file)
+    ee = d[:, 0]
+    ff = d[:, 1]
+    electrons = np.interp(energy, ee, ff)
 plt.plot(energy, electrons * energy**2)
 plt.xscale("log")
 plt.yscale("log")
