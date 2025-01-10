@@ -177,7 +177,7 @@ png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Porphyrion_png", "png_galaxy.output", png))
+_oda_outs.append(("out_2411.01640_Fig2_png", "png_galaxy.output", png))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
