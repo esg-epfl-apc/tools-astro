@@ -58,9 +58,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["T_star", "g_star", "alpha", "beta_H", "epsilon_turb", "v_w", "h"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 c_s = 3 ** (-0.5)  # speed of sound
 F0_GW = 1.64e-5 / h**2 * (100 / g_star) ** (1 / 3.0)

@@ -41,9 +41,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["epsilon_turb"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 Tmax_yrs = 10.0  # http://odahub.io/ontology#Float
 Tmin_yrs = 2.0  # http://odahub.io/ontology#Float
