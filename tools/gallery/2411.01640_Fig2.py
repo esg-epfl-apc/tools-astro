@@ -31,6 +31,11 @@ token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbW
 
 T = 2.73 * (1 + redshift)
 
+workdir = os.getcwd()
+repo_basedir = os.environ.get("BASEDIR", os.getcwd())
+data_dir = repo_basedir + "/data_Porphyrion"
+get_ipython().system("ls {data_dir}")   # noqa: F821
+
 B = 30e-9
 Ecut = 4e10 / sqrt(2)
 
@@ -148,14 +153,14 @@ plt.text(3e-2, 0.4e-12, "AGN core", color="blue", alpha=0.5)
 plt.text(0.7e-8, 1.6e-17, "synchrotron", color="black")
 plt.text(1e3, 1.6e-14, "inverse Compton", color="black")
 
-d = np.genfromtxt("data_Porphyrion/porphyrion_LOFAR.csv")
+d = np.genfromtxt(data_dir + "/porphyrion_LOFAR.csv")
 plt.scatter(d[:, 0], d[:, 1], color="red", marker="o")
-d = np.genfromtxt("data_Porphyrion/porphyrion_fermi.csv")
+d = np.genfromtxt(data_dir + "/porphyrion_fermi.csv")
 plt.plot(d[:, 0], d[:, 1], color="black", linewidth=2)
 plt.fill_between(
     d[:, 0], d[:, 1], 0.0 * d[:, 0] + 1, color="black", linewidth=0, alpha=0.25
 )
-d = np.genfromtxt("data_Porphyrion/porphyrion_core.csv")
+d = np.genfromtxt(data_dir + "/porphyrion_core.csv")
 plt.plot(d[:, 0], d[:, 1], color="blue", linewidth=4, alpha=0.3)
 
 plt.xscale("log")
