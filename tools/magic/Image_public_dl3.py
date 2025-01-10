@@ -35,7 +35,7 @@ Emax = 20  # http://odahub.io/ontology#Energy_TeV ; oda:label "Maximal energy"
 
 Offset = "0.4 deg"  # http://odahub.io/ontology#String ; oda:label "Source off-axis angle" ; oda:allowed_value "0.2 deg","0.35 deg","0.4 deg","0.7 deg","1.0 deg","1.4 deg"
 
-NSB = 0  # http://odahub.io/ontology#Integer ; oda:label "Night sky background level (0-8)" ; oda:lower_limit 0 ; oda:upper_limit 8
+NSB = "2"  # http://odahub.io/ontology#String ; oda:label "Night sky background level (0-8)" ; oda:allowed_value "0","1","2","3","4","5","6","7","8"
 
 _galaxy_wd = os.getcwd()
 
@@ -61,6 +61,8 @@ for _vn in [
     "NSB",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+NSB = int(NSB)
 
 racrab = 83.628700
 deccrab = 22.014700

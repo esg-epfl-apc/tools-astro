@@ -123,7 +123,17 @@
           <option value="1.0 deg">1.0 deg</option>
           <option value="1.4 deg">1.4 deg</option>
         </param>
-        <param name="NSB" type="integer" value="0" label="Night sky background level (0-8)" min="0" max="8" />
+        <param name="NSB" type="select" label="Night sky background level (0-8)">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2" selected="true">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+        </param>
       </when>
     </conditional>
   </inputs>
@@ -248,7 +258,7 @@
         <param name="Emin" value="0.1" />
         <param name="Emax" value="20" />
         <param name="Offset" value="0.4 deg" />
-        <param name="NSB" value="0" />
+        <param name="NSB" value="2" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
