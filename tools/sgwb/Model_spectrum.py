@@ -29,25 +29,25 @@ from oda_api.data_products import ODAAstropyTable, PictureProduct
 
 # Parameters of the phase transition
 # Temperature in GeV
-T_star = 0.178  # http://odahub.io/ontology#Energy_GeV
+T_star = 0.178  # http://odahub.io/ontology#Energy_GeV ; oda:label "Phase transition temperature"
 
 # Numbers of relativistic degrees of freedom
-g_star = 20  # http://odahub.io/ontology#Integer
+g_star = 20  # http://odahub.io/ontology#Integer ; oda:label "Number of effective degrees of freedom"
 
 # ratio of the energy density deposited in the bubbles to the radiation energy density
-alpha = 1.0  # http://odahub.io/ontology#Float
+alpha = 1.0  # http://odahub.io/ontology#Float ; oda:label "alpha: latent heat in units of radiation density"
 
 # beta/H : rate of the phase transition compared to Hubble rate
-beta_H = 3.3
+beta_H = 3.3  # http://odahub.io/ontology#Float ; oda:label "beta: phase transition rate in units of Hubble rate"
 
 # fraction of turbulent energy that goes to gw N.B. arXiv:1004.4187 claims that epsilon_turb=0.05, but checks below show that it is rather 0.01
-epsilon_turb = 1  # http://odahub.io/ontology#Float
+epsilon_turb = 1  # http://odahub.io/ontology#Float ; oda:label "fraction of energy release in turbulence"
 
 # terminal velocity of bubbles
-v_w = 0.999  # http://odahub.io/ontology#Float
-h = 0.7  # http://odahub.io/ontology#Float
+v_w = 0.999  # http://odahub.io/ontology#Float ; oda:label "ternminal velocity of bubles"
+h = 0.7  # http://odahub.io/ontology#Float ; oda:label "Hubble parameter"
 
-# Parameterisation='RoperPol2023' # http://odahub.io/ontology#String ; oda:allowed_value "Lewicki2022","RoperPol2023"
+Parameterisation = "RoperPol2023"  # http://odahub.io/ontology#String ; ; oda:label "model parameterisation" ; oda:allowed_value "Lewicki2022","RoperPol2023"
 
 _galaxy_wd = os.getcwd()
 
@@ -58,7 +58,16 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["T_star", "g_star", "alpha", "beta_H", "epsilon_turb", "v_w", "h"]:
+for _vn in [
+    "T_star",
+    "g_star",
+    "alpha",
+    "beta_H",
+    "epsilon_turb",
+    "v_w",
+    "h",
+    "Parameterisation",
+]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 c_s = 3 ** (-0.5)  # speed of sound
@@ -293,23 +302,6 @@ def GW_Ellis(f, T_star, alpha, beta_H, v_w, epsilon_turb):
         B,
     )
 
-d = np.genfromtxt("NANOGrav23.csv")
-gammas_nano = d[:, 0]
-As_nano = 10 ** d[:, 1]
-ps_nano = 5 - gammas_nano
-
-d = np.genfromtxt("EPTA.csv")
-gammas_epta = d[:, 0]
-As_epta = 10 ** d[:, 1]
-ps_epta = 5 - gammas_epta
-
-d = np.genfromtxt("PPTA.csv")
-gammas_ppta = d[:, 0]
-As_ppta = 10 ** d[:, 1]
-ps_ppta = 5 - gammas_ppta
-
-H0 = 70 * (u.km / u.s) / u.Mpc
-
 GW_t = GW_turb_Theo(
     ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb
 )
@@ -322,12 +314,14 @@ GW = GW_s + GW_t
 
 GW1 = GW_Ellis(ff * u.Hz, T_star * u.GeV, alpha, beta_H, v_w, epsilon_turb)[0]
 
-# if(Parameterisation=='Lewicki2022'):
-#    plt.plot(ff,GW1,color='magenta',alpha=0.5,linewidth=4,label='2208.11697')
-# else:
-plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
-plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
-plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
+if Parameterisation == "Lewicki2022":
+    plt.plot(
+        ff, GW1, color="magenta", alpha=0.5, linewidth=4, label="2208.11697"
+    )
+else:
+    plt.plot(ff, GW_t, color="blue", linestyle="dashed", label="turbulence")
+    plt.plot(ff, GW_s, color="red", linestyle="dotted", label="sound waves")
+    plt.plot(ff, GW, linewidth=4, color="black", alpha=0.5, label="total")
 
 fref = (1 / u.yr).cgs.value
 lgfmin = np.log10(fref / 10.0)
@@ -335,58 +329,6 @@ lgfmax = np.log10(fref / 2.0)
 fff = np.logspace(lgfmin, lgfmax, 10) * u.Hz
 min_nano = np.ones(len(fff))
 max_nano = np.zeros(len(fff))
-for i in range(len(As_nano)):
-    spec = (
-        2
-        * pi**2
-        / 3
-        / H0**2
-        * fff**2
-        * As_nano[i] ** 2
-        * (fff / fref) ** (3 - gammas_nano[i])
-    ).cgs.value
-    min_nano = np.minimum(spec, min_nano)
-    max_nano = np.maximum(spec, max_nano)
-    # plt.plot(ff,spec)
-plt.fill_between(
-    fff.value, min_nano, max_nano, color="red", alpha=0.5, label="NANOGrav"
-)
-min_epta = np.ones(len(fff))
-max_epta = np.zeros(len(fff))
-for i in range(len(As_epta)):
-    spec = (
-        2
-        * pi**2
-        / 3
-        / H0**2
-        * fff**2
-        * As_epta[i] ** 2
-        * (fff / fref) ** (3 - gammas_epta[i])
-    ).cgs.value
-    min_epta = np.minimum(spec, min_epta)
-    max_epta = np.maximum(spec, max_epta)
-    # plt.plot(ff,spec)
-plt.fill_between(
-    fff.value, min_epta, max_epta, color="blue", alpha=0.5, label="EPTA"
-)
-min_ppta = np.ones(len(fff))
-max_ppta = np.zeros(len(fff))
-for i in range(len(As_ppta)):
-    spec = (
-        2
-        * pi**2
-        / 3
-        / H0**2
-        * fff**2
-        * As_ppta[i] ** 2
-        * (fff / fref) ** (3 - gammas_ppta[i])
-    ).cgs.value
-    min_ppta = np.minimum(spec, min_ppta)
-    max_ppta = np.maximum(spec, max_ppta)
-    # plt.plot(ff,spec)
-plt.fill_between(
-    fff.value, min_ppta, max_ppta, color="green", alpha=0.5, label="PPTA"
-)
 
 maxGW = max(GW)
 ind = np.argmax(GW)
@@ -406,12 +348,12 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-# if(Parameterisation=='Lewicki2022'):
-#    data=[ff,GW1]
-#    names=('f[Hz]','Omega_gw')
-# else:
-data = [ff, GW_s, GW_t]
-names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
+if Parameterisation == "Lewicki2022":
+    data = [ff, GW1]
+    names = ("f[Hz]", "Omega_gw")
+else:
+    data = [ff, GW_s, GW_t]
+    names = ("f[Hz]", "Omega_sound_waves", "Omega_turbulence")
 spectrum = ODAAstropyTable(Table(data, names=names))
 
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct

@@ -2,16 +2,15 @@
   <requirements>
     <requirement type="package" version="8.31.0">ipython</requirement>
     <requirement type="package" version="7.0.0">astropy</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
-    <requirement type="package" version="0.4.7">astroquery</requirement>
-    <requirement type="package" version="1.15.0">scipy</requirement>
-    <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="7.16.5">nbconvert</requirement>
     <requirement type="package" version="2.2.1">numpy</requirement>
+    <requirement type="package" version="1.15.0">scipy</requirement>
     <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="0.70.17">multiprocess</requirement>
     <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <requirement type="package" version="7.16.5">nbconvert</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
     <requirement type="package" version="5.24.1">plotly</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
@@ -28,13 +27,17 @@
         <option value="Phase_transition_parameters" selected="false">Phase_transition_parameters</option>
       </param>
       <when value="Model_spectrum">
-        <param name="T_star" type="float" value="0.178" label="T_star (unit: GeV)" />
-        <param name="g_star" type="integer" value="20" label="g_star" />
-        <param name="alpha" type="float" value="1.0" label="alpha" />
-        <param name="beta_H" type="float" value="3.3" label="beta_H" />
-        <param name="epsilon_turb" type="float" value="1" label="epsilon_turb" />
-        <param name="v_w" type="float" value="0.999" label="v_w" />
-        <param name="h" type="float" value="0.7" label="h" />
+        <param name="T_star" type="float" value="0.178" label="Phase transition temperature (unit: GeV)" />
+        <param name="g_star" type="integer" value="20" label="Number of effective degrees of freedom" />
+        <param name="alpha" type="float" value="1.0" label="alpha: latent heat in units of radiation density" />
+        <param name="beta_H" type="float" value="3.3" label="beta: phase transition rate in units of Hubble rate" />
+        <param name="epsilon_turb" type="float" value="1" label="fraction of energy release in turbulence" />
+        <param name="v_w" type="float" value="0.999" label="ternminal velocity of bubles" />
+        <param name="h" type="float" value="0.7" label="Hubble parameter" />
+        <param name="Parameterisation" type="select" label="model parameterisation">
+          <option value="Lewicki2022">Lewicki2022</option>
+          <option value="RoperPol2023" selected="true">RoperPol2023</option>
+        </param>
       </when>
       <when value="Phase_transition_parameters">
         <param name="epsilon_turb" type="float" value="1.0" label="epsilon_turb" />
@@ -72,6 +75,7 @@
         <param name="epsilon_turb" value="1" />
         <param name="v_w" value="0.999" />
         <param name="h" value="0.7" />
+        <param name="Parameterisation" value="RoperPol2023" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
