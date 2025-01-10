@@ -36,11 +36,11 @@
         <param name="synch_dens" type="float" value="0.25" label="Energy density of synchrotron radiation [eV/cm3]" />
       </when>
       <when value="Synchrotron_external-Compton_Bremsstrahlung">
-        <param name="dN_dE" type="text" value="2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)" label="Electron spectrum dN/dE" />
+        <param name="dN_dE" type="text" value="2.0e-11*pow(E/5e10, -2.)*exp(-E/5e10)" label="Electron spectrum dN/dE" />
         <param name="electron_file" type="data" label="Electron spectrum ascii file (overrides analytical formula)" format="data" />
         <param name="Emin" type="float" value="1e-10" label="minimal energy for calculations (unit: eV)" />
         <param name="Emax" type="float" value="100000000000000.0" label="maximal energy for calculations (unit: eV)" />
-        <param name="B" type="float" value="3e-06" label="magnetic field [G]" />
+        <param name="B" type="float" value="3e-08" label="magnetic field [G]" />
         <param name="n" type="float" value="0.1" label="density of the medium [1/cm3]" />
         <param name="Z" type="float" value="1.4" label="average atomic charge of the medium" />
         <param name="T" type="float" value="2.73" label="Temperature of black body photon background [K]" />
@@ -84,11 +84,11 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="Synchrotron_external-Compton_Bremsstrahlung" />
-        <param name="dN_dE" value="2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)" />
+        <param name="dN_dE" value="2.0e-11*pow(E/5e10, -2.)*exp(-E/5e10)" />
         <param name="electron_file" value="electron_file.json" />
         <param name="Emin" value="1e-10" />
         <param name="Emax" value="100000000000000.0" />
-        <param name="B" value="3e-06" />
+        <param name="B" value="3e-08" />
         <param name="n" value="0.1" />
         <param name="Z" value="1.4" />
         <param name="T" value="2.73" />

@@ -117,6 +117,7 @@ else:
     ee = d[:, 0]
     ff = d[:, 1]
     electrons = np.interp(energy, ee, ff)
+electrons = electrons * (energy > m_e)
 plt.plot(energy, electrons * energy**2)
 plt.xscale("log")
 plt.yscale("log")

@@ -27,11 +27,11 @@ from oda_api.json import CustomJSONEncoder
 
 pr = ProgressReporter()
 
-dN_dE = "2.0e-11*pow(E/1e12, -1.99)*exp(-E/1e12)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
+dN_dE = "2.0e-11*pow(E/5e10, -2.)*exp(-E/5e10)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
 electron_file = ""  # oda:POSIXPath ; oda:label "Electron spectrum ascii file (overrides analytical formula)"
 Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations"
 Emax = 1e14  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations"
-B = 3e-6  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
+B = 3e-8  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
 n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium [1/cm3]"
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
 T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black body photon background [K]"
@@ -126,6 +126,7 @@ else:
     ee = d[:, 0]
     ff = d[:, 1]
     electrons = np.interp(energy, ee, ff)
+electrons = electrons * (energy > m_e)
 plt.plot(energy, electrons * energy**2)
 plt.xscale("log")
 plt.yscale("log")
@@ -305,6 +306,8 @@ plt.legend(loc="lower right")
 plt.xlabel("Energy, eV")
 plt.ylabel("$E^2 dN/dE$ (arbitrary units)")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
+
+max(synch * energy) / max(ics * energy)
 
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 
