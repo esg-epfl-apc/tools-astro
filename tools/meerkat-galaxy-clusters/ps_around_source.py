@@ -7,21 +7,16 @@ import json
 import os
 import warnings
 
-import matplotlib.pyplot as plt
-
 warnings.filterwarnings("ignore")
 
-from catalogs_methods import *
-from data_treatment import *
-from parameters import *
-from plots import *
+# download_fits_file_from_switch()
 
-# ------------------------------------------------------------------------------------
-# ra/dec coordinates of target point of the sky, and the aperture to find sources in
-# ------------------------------------------------------------------------------------
-ra = 260  # http://odahub.io/ontology#AngleDegrees
-dec = -82  # http://odahub.io/ontology#AngleDegrees
-thresh_arcmin = 5  # http://odahub.io/ontology#arcmin
+# # ------------------------------------------------------------------------------------
+# # ra/dec coordinates of target point of the sky, and the aperture to find sources in
+# # ------------------------------------------------------------------------------------
+# ra = 260 #http://odahub.io/ontology#AngleDegrees
+# dec = -82 #http://odahub.io/ontology#AngleDegrees
+# thresh_arcmin = 5 #http://odahub.io/ontology#arcmin
 
 _galaxy_wd = os.getcwd()
 
@@ -32,43 +27,34 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["ra", "dec", "thresh_arcmin"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+# # -----------------------------------------------------
+# # Handling errors and exceptions
+# # -----------------------------------------------------
+# if ra<0 or ra>360:
+#     raise ValueError("Wrong value: the right ascension (ra) must be between 0 and 360 degrees!")
+# if dec<-90 or dec>90:
+#     raise ValueError("Wrong value: the declination (dec) must be between -90 and 90 degrees!")
 
-# -----------------------------------------------------
-# Handling errors and exceptions
-# -----------------------------------------------------
-if ra < 0 or ra > 360:
-    raise ValueError(
-        "Wrong value: the right ascension (ra) must be between 0 and 360 degrees!"
-    )
-if dec < -90 or dec > 90:
-    raise ValueError(
-        "Wrong value: the declination (dec) must be between -90 and 90 degrees!"
-    )
+# # Test if the ra/dec coordinates lie in a MGCLS field (cluster)
+# # -----------------------------------------------------------------------------
+# clust_name = test_if_in_clusters(ra,dec)
 
-# Test if the ra/dec coordinates lie in a MGCLS field (cluster)
-# -----------------------------------------------------------------------------
-clust_name = test_if_in_clusters(ra, dec)
+# if clust_name == 0:
 
-if clust_name == 0:
+#     raise Exception("Error: the entered coordinates do not lie within any MGCLS field (cluster)")
 
-    raise Exception(
-        "Error: the entered coordinates do not lie within any MGCLS field (cluster)"
-    )
-
-# ----------------------------------------------------------------------------------
-# Determination of the sources found (or not) in the given aperture
-# ----------------------------------------------------------------------------------
-sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
-msg_out = sources["out_msg"]  # http://odahub.io/ontology#String
-print(msg_out)
+# # ----------------------------------------------------------------------------------
+# # Determination of the sources found (or not) in the given aperture
+# # ----------------------------------------------------------------------------------
+# sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
+# msg_out = sources['out_msg'] #http://odahub.io/ontology#String
+# print(msg_out)
 
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
-# ----------------------------------------------------------------------------------
-plot_power_spectrum(ra, dec, thresh_arcmin)
-plt.savefig("spectrum.png", format="png", bbox_inches="tight")
+# # ----------------------------------------------------------------------------------
+# plot_power_spectrum(ra, dec, thresh_arcmin)
+# plt.savefig('spectrum.png',format='png',bbox_inches='tight')
 
 # # ----------------------------------------------------------------------------------
 # # Plotting of the enhanced image, the target location and the corresponding sources
@@ -84,11 +70,10 @@ plt.savefig("spectrum.png", format="png", bbox_inches="tight")
 # plot_enhanced_image(clust_name, freq_index)
 # plt.show()
 
-from oda_api.data_products import PictureProduct
+# from oda_api.data_products import PictureProduct
+# bin_image = PictureProduct.from_file('spectrum.png')
 
-bin_image = PictureProduct.from_file("spectrum.png")
-
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+# picture = bin_image # http://odahub.io/ontology#ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
