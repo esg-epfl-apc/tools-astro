@@ -64,7 +64,6 @@ if clust_name == 0:
 sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
 msg_out = sources["out_msg"]  # http://odahub.io/ontology#String
 print(msg_out)
-# print(np.load('all_files_names.npy'))
 
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
