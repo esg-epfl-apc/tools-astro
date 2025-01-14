@@ -1,16 +1,16 @@
 <tool id="meerkat_galaxy_clusters_astro_tool" name="Meerkat Galaxy clusters" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
     <requirement type="package" version="2.2.3">pandas</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
-    <requirement type="package" version="7.0.0">astropy</requirement>
-    <requirement type="package" version="2.2.1">numpy</requirement>
-    <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="2.1.0">photutils</requirement>
-    <requirement type="package" version="1.35.88">boto3</requirement>
-    <requirement type="package" version="7.16.5">nbconvert</requirement>
-    <requirement type="package" version="2.32.3">requests</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="6.0.1">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.2.35">oda-api</requirement>
+    <requirement type="package" version="1.11.0">photutils</requirement>
+    <requirement type="package" version="1.35.97">boto3</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.5">nbconvert</requirement>
+    <requirement type="package" version="2.32.3">requests</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/ps_around_source.py'</command>
   <configfiles>
