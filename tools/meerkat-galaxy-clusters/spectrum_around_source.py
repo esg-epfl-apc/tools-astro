@@ -21,7 +21,7 @@ from plots import *
 # ra/dec coordinates of target point of the sky, and the aperture to find sources in
 # ------------------------------------------------------------------------------------
 ra = 260  # http://odahub.io/ontology#PointOfInterestRA
-dec = -85  # http://odahub.io/ontology#PointOfInterestDEC
+dec = -82  # http://odahub.io/ontology#PointOfInterestDEC
 thresh_arcmin = (
     5  # http://odahub.io/ontology#arcmin, oda:label "Radius [arcmin]"
 )
