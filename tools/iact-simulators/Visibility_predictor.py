@@ -110,6 +110,8 @@ bin_image = PictureProduct.from_file("Obs_time.png")
 GTI_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 GTI_table = GTI  # http://odahub.io/ontology#ODAAstropyTable
 
+Table(data, names=names)[:100]
+
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
