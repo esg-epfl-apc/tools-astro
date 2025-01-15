@@ -5,24 +5,26 @@
 
 import json
 import os
-import warnings
 
 import matplotlib.pyplot as plt
-
-warnings.filterwarnings("ignore")
-
 from catalogs_methods import *
 from data_treatment import *
 from download import *
+from oda_api.data_products import PictureProduct
 from parameters import *
 from plots import *
+
+# import warnings
+# warnings.filterwarnings('ignore')
 
 # ------------------------------------------------------------------------------------
 # ra/dec coordinates of target point of the sky, and the aperture to find sources in
 # ------------------------------------------------------------------------------------
 ra = 260  # http://odahub.io/ontology#PointOfInterestRA
 dec = -82  # http://odahub.io/ontology#PointOfInterestDEC
-thresh_arcmin = 5  # http://odahub.io/ontology#arcmin
+thresh_arcmin = (
+    5  # http://odahub.io/ontology#arcmin oda:label "Radius [arcmin]"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -63,29 +65,12 @@ if clust_name == 0:
 # ----------------------------------------------------------------------------------
 sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
 msg_out = sources["out_msg"]  # http://odahub.io/ontology#String
-print(msg_out)
 
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
 # ----------------------------------------------------------------------------------
 plot_spectrum(ra, dec, thresh_arcmin)
 plt.savefig("spectrum.png", format="png", bbox_inches="tight")
-
-# # ----------------------------------------------------------------------------------
-# # Plotting of the enhanced image, the target location and the corresponding sources
-# # ----------------------------------------------------------------------------------
-# freq_index = 0
-# plot_enhanced_image(clust_name, freq_index)
-# plt.show()
-
-# # ----------------------------------------------------------------------------------
-# # Plotting of the enhanced image, the target location and the corresponding sources
-# # ----------------------------------------------------------------------------------
-# freq_index = 0
-# plot_enhanced_image(clust_name, freq_index)
-# plt.show()
-
-from oda_api.data_products import PictureProduct
 
 bin_image = PictureProduct.from_file("spectrum.png")
 
