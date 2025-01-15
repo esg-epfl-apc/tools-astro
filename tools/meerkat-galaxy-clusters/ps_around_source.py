@@ -20,8 +20,8 @@ from plots import *
 # ------------------------------------------------------------------------------------
 # ra/dec coordinates of target point of the sky, and the aperture to find sources in
 # ------------------------------------------------------------------------------------
-ra = 260  # http://odahub.io/ontology#AngleDegrees
-dec = -82  # http://odahub.io/ontology#AngleDegrees
+ra = 260  # http://odahub.io/ontology#PointOfInterestRA
+dec = -82  # http://odahub.io/ontology#PointOfInterestDEC
 thresh_arcmin = 5  # http://odahub.io/ontology#arcmin
 
 _galaxy_wd = os.getcwd()
