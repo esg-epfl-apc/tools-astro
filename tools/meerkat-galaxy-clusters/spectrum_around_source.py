@@ -23,7 +23,7 @@ from plots import *
 ra = 260  # http://odahub.io/ontology#PointOfInterestRA
 dec = -82  # http://odahub.io/ontology#PointOfInterestDEC
 thresh_arcmin = (
-    5  # http://odahub.io/ontology#arcmin oda:label "Radius [arcmin]"
+    5  # http://odahub.io/ontology#arcmin, oda:label "Radius [arcmin]"
 )
 
 _galaxy_wd = os.getcwd()
@@ -64,7 +64,7 @@ if clust_name == 0:
 # Determination of the sources found (or not) in the given aperture
 # ----------------------------------------------------------------------------------
 sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
-msg_out = sources["out_msg"]  # http://odahub.io/ontology#String
+msg_out = sources["out_msg"]
 
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
@@ -75,6 +75,7 @@ plt.savefig("spectrum.png", format="png", bbox_inches="tight")
 bin_image = PictureProduct.from_file("spectrum.png")
 
 picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+test_out = msg_out  # http://odahub.io/ontology#String
 
 # output gathering
 _galaxy_meta_data = {}
