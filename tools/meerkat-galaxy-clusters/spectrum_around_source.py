@@ -21,7 +21,7 @@ from plots import *
 # ra/dec coordinates of target point of the sky, and the aperture to find sources in
 # ------------------------------------------------------------------------------------
 ra = 260  # http://odahub.io/ontology#PointOfInterestRA
-dec = -82  # http://odahub.io/ontology#PointOfInterestDEC
+dec = -85  # http://odahub.io/ontology#PointOfInterestDEC
 thresh_arcmin = (
     5  # http://odahub.io/ontology#arcmin, oda:label "Radius [arcmin]"
 )
@@ -69,12 +69,15 @@ msg_out = sources["out_msg"]
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
 # ----------------------------------------------------------------------------------
-plot_spectrum(ra, dec, thresh_arcmin)
-plt.savefig("spectrum.png", format="png", bbox_inches="tight")
+if sources["found_source"] == True:
+    plot_spectrum(ra, dec, thresh_arcmin)
+    plt.savefig("spectrum.png", format="png", bbox_inches="tight")
 
-bin_image = PictureProduct.from_file("spectrum.png")
+if sources["found_source"] == True:
+    bin_image = PictureProduct.from_file("spectrum.png")
 
-picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+if sources["found_source"] == True:
+    picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 test_out = msg_out  # http://odahub.io/ontology#String
 
 # output gathering

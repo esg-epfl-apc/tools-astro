@@ -24,7 +24,7 @@
       </param>
       <when value="spectrum_around_source">
         <param name="ra" type="float" value="260" label="ra (unit: deg)" />
-        <param name="dec" type="float" value="-82" label="dec (unit: deg)" />
+        <param name="dec" type="float" value="-85" label="dec (unit: deg)" />
         <param name="thresh_arcmin" type="integer" value="5" label="thresh_arcmin" />
       </when>
       <when value="pictures" />
@@ -36,7 +36,7 @@
       <conditional name="_data_product">
         <param name="_selector" value="spectrum_around_source" />
         <param name="ra" value="260" />
-        <param name="dec" value="-82" />
+        <param name="dec" value="-85" />
         <param name="thresh_arcmin" value="5" />
       </conditional>
       <assert_stdout>
