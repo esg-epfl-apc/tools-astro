@@ -21,14 +21,14 @@ from astropy.coordinates import SkyCoord
 from astropy.time import Time
 from numpy import arccos, cos, log10, pi, sin, sqrt
 
-src_name = "Cen A"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 201.365063  # http://odahub.io/ontology#PointOfInterestRA
-DEC = -43.019113  # http://odahub.io/ontology#PointOfInterestDEC
+src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 83.63  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 22.01  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-Source_region_radius = 27.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
+Source_region_radius = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
 Emin = 31.62e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Minimal energy"
 Emax = 316.2e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Maximal energy"
 NEbins = (
@@ -91,8 +91,6 @@ ra_ev = d[:, 5]
 dec_ev = d[:, 6]
 E = np.array(d[:, 7]) * 1e18
 expos = d[:, 8]
-
-utc
 
 t_ev = []
 for tt in utc:
@@ -305,12 +303,13 @@ def Expos(dd):
         i += 1
     return AT[i - 1]
 
-Expos(-89.1)
+Expos(22.01)
 
 Omega_s = pi * (1 - cos(Source_region_radius * pi / 180.0))
-Omega_b = pi * (
-    cos((DEC + Source_region_radius) * pi / 180.0)
-    - cos((DEC - Source_region_radius) * pi / 180.0)
+theta = 90 - DEC
+Omega_b = pi * abs(
+    cos((theta + Source_region_radius) * pi / 180.0)
+    - cos((theta - Source_region_radius) * pi / 180.0)
 )
 factor = Omega_s / (Omega_b - Omega_s)
 Src = cts_s - factor * cts_b
@@ -319,6 +318,7 @@ Src_err_lo = sqrt(cts_s + factor**2 * cts_b + 0.25) - 0.5
 Src_err_hi = sqrt(cts_s + factor**2 * cts_b + 0.25) + 0.5
 print("Source counts", cts_s)
 print("Background estimate", factor * cts_b)
+print("Source:", Src, Src_err_lo, Src_err_hi)
 print(Src)
 print(Src_err)
 print(Src_err_lo)
@@ -334,7 +334,7 @@ F_err_lo = (
 F_err_hi = (
     Src_err_hi / (E_max - E_min) * E_max * E_min / Exposure * 1.6e-12
 )  # erg.cm2s
-uplims = F - F_err_lo < 0
+uplims = (F - F_err_lo <= 0) + (Src < 0)
 print(F, F_err_lo, F_err_hi, uplims)
 F = F * (1 - uplims) + 2 * F_err_hi * uplims
 F_err_lo = F_err_lo * (1 - uplims) + 0.5 * F * uplims
