@@ -23,11 +23,13 @@ DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2023-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2024-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-Zdmin = 0  # http://odahub.io/ontology#AngleDegree ; oda:label "Minimal zenith"
-Zdmax = (
-    30  # http://odahub.io/ontology#AngleDegree ; oda:label "Maximal zenith"
+Zdmin = (
+    0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Minimal zenith"
 )
-moon_max = 0.1  # #http://odahub.io/ontology#AngleDegree ; oda:label "maximal moon (between 0 and 1)"
+Zdmax = (
+    30  # http://odahub.io/ontology#AngleDegrees ; oda:label "Maximal zenith"
+)
+moon_max = 0.1  # #http://odahub.io/ontology#AngleDegrees ; oda:label "maximal moon (between 0 and 1)"
 
 _galaxy_wd = os.getcwd()
 

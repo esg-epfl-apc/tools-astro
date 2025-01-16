@@ -106,9 +106,9 @@
         <param name="DEC" type="float" value="22.0147" label="DEC (unit: deg)" />
         <param name="T1" type="text" value="2023-10-09T13:16:00.0" label="T1" />
         <param name="T2" type="text" value="2024-10-10T13:16:00.0" label="T2" />
-        <param name="Zdmin" type="integer" value="0" label="Minimal zenith" />
-        <param name="Zdmax" type="integer" value="30" label="Maximal zenith" />
-        <param name="moon_max" type="float" value="0.1" label="maximal moon (between 0 and 1)" />
+        <param name="Zdmin" type="float" value="0" label="Minimal zenith (unit: deg)" />
+        <param name="Zdmax" type="float" value="30" label="Maximal zenith (unit: deg)" />
+        <param name="moon_max" type="float" value="0.1" label="maximal moon (between 0 and 1) (unit: deg)" />
       </when>
     </conditional>
   </inputs>
