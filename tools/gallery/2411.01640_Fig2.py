@@ -1,6 +1,32 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# flake8: noqa
+
+import json
+import os
+import shutil
+
+import matplotlib.pyplot as plt
+import numpy as np
+from oda_api.api import DispatcherAPI
+from oda_api.json import CustomJSONEncoder
+from oda_api.token import discover_token
+
+disp = DispatcherAPI(
+    url="https://www.astro.unige.ch/mmoda//dispatch-data", instrument="mock"
+)
+token = discover_token()
+
+redshift = 0.9  # http://odahub.io/ontology#Float ; oda:label "redshift"
+B = 30.0e-9  # http://odahub.io/ontology#Float ; oda:label "Magnetic field [G]"
+Ecut = (
+    2.82e10  # http://odahub.io/ontology#Energy_eV ; oda:label "Cutoff energy"
+)
+Slope = (
+    2.0  # http://odahub.io/ontology#Float ; oda:label "Slope of the spectrum"
+)
+
 _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
@@ -10,34 +36,15 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-# flake8: noqa
-
-import json
-import os
-import shutil
-
-import matplotlib.pyplot as plt
-import numpy as np
-from numpy import sqrt
-from oda_api.api import DispatcherAPI
-from oda_api.json import CustomJSONEncoder
-
-disp = DispatcherAPI(
-    url="https://www.astro.unige.ch/mmoda//dispatch-data", instrument="mock"
-)
-
-redshift = 0.9
-token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzc3MzQ3MjV9.uXgzftZwf55IJGN6VGuO8ztTccFU-XitWtg11fvDocI"
+for _vn in ["redshift", "B", "Ecut", "Slope"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 T = 2.73 * (1 + redshift)
 
 workdir = os.getcwd()
 repo_basedir = os.environ.get("BASEDIR", os.getcwd())
-data_dir = repo_basedir + "/data_Porphyrion"
+data_dir = repo_basedir + "/data_2411.01640"
 get_ipython().system("ls {data_dir}")   # noqa: F821
-
-B = 30e-9
-Ecut = 4e10 / sqrt(2)
 
 par_dict = {
     "B": B,
@@ -48,7 +55,11 @@ par_dict = {
     "Z": 1.4,
     "backgr_dN_dE": "",
     "backgr_file": "",
-    "dN_dE": "2.0e-11*pow(E/5e10, -2.)*exp(-E/" + str(Ecut) + ")",
+    "dN_dE": "2.0e-11*pow(E/5e10, -"
+    + str(Slope)
+    + ")*exp(-E/"
+    + str(Ecut)
+    + ")",
     "electron_file": "",
     "instrument": "synch_ic_brems",
     "n": 0.1,
