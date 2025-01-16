@@ -656,8 +656,8 @@ else:
     if len(en) > 0:
         ax.errorbar(en, sed, yerr=dsed, label=labeltext, color="0", fmt="o")
         handles, labels = ax.get_legend_handles_labels()
-    # else:
-    #    handles, labels = ax.get_legend_handles_labels()
+    else:
+        handles, labels = ax.get_legend_handles_labels()
     #    scatter_proxy = mlines.Line2D([], [] , color='0', marker='o', linestyle='None', markersize=3)
     #    handles.append(scatter_proxy)
     #    labels.append(labeltext)
