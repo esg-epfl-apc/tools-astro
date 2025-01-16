@@ -21,14 +21,14 @@ from astropy.coordinates import SkyCoord
 from astropy.time import Time
 from numpy import arccos, cos, log10, pi, sin, sqrt
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 83.63  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.01  # http://odahub.io/ontology#PointOfInterestDEC
+src_name = "Cen A"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 201.365063  # http://odahub.io/ontology#PointOfInterestRA
+DEC = -43.019113  # http://odahub.io/ontology#PointOfInterestDEC
 
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-Source_region_radius = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
+Source_region_radius = 27.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Source signal region radius"
 Emin = 31.62e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Minimal energy"
 Emax = 316.2e18  # http://odahub.io/ontology#Energy_eV ; oda:label "Maximal energy"
 NEbins = (
