@@ -137,6 +137,7 @@ plt.plot(
     color="black",
     linestyle="dashed",
     label=r"$B=15$ nG",
+    alpha=0.2,
 )
 
 factor = 3e-11 / 4.0
@@ -153,7 +154,11 @@ plt.plot(
 factor = 3e-11 / 16.0
 # plt.plot(E/(1+redshift),synch_60nG*factor,color='black')
 plt.plot(
-    E / (1 + redshift), ics_60nG * factor, color="black", label=r"$B=60$ nG"
+    E / (1 + redshift),
+    ics_60nG * factor,
+    color="black",
+    label=r"$B=60$ nG",
+    alpha=0.2,
 )
 
 plt.axhline(2.5e-11, color="blue", linestyle="dotted")
