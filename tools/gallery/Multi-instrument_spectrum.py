@@ -10,9 +10,11 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 from numpy import sqrt
-from oda_api.api import DispatcherAPI
+from oda_api.api import DispatcherAPI, ProgressReporter
 from oda_api.json import CustomJSONEncoder
 from oda_api.token import discover_token
+
+pr = ProgressReporter()
 
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
@@ -71,6 +73,7 @@ def exp_counts(A, Gam):
         tmp[i] += sum(spectrum_dndE * dENERG * resp[:, i])
     return tmp
 
+pr.report_progress(stage="INTEGRAL/ISGRI", progress=10)
 FLAG_isgri = 0
 if do_isgri:
     par_dict = {
@@ -137,6 +140,7 @@ if do_isgri:
             E_isgri = Emeans * 1e-9
             F_isgri_err = F_isgri / rate * rate_err
 
+pr.report_progress(stage="HESS", progress=30)
 FLAG_hess = 0
 if do_hess:
     par_dict = {
@@ -170,6 +174,7 @@ if do_hess:
             F_hess = tab["Flux[TeV/cm2s]"]
             F_err_hess = tab["Flux_error[TeV/cm2s]"]
 
+pr.report_progress(stage="MAGIC", progress=40)
 FLAG_magic = 0
 if do_magic:
     par_dict = {
@@ -205,6 +210,7 @@ if do_magic:
             Flux_magic = tab["Flux[TeV/cm2s]"]
             Flux_err_magic = tab["Flux_error[TeV/cm2s]"]
 
+pr.report_progress(stage="Fermi/LAT", progress=50)
 FLAG_fermi = 0
 if do_fermi:
     par_dict = {
@@ -237,6 +243,7 @@ if do_fermi:
             F_fermi = tab["Flux[MeV/cm2s]"] * 1e-6
             F_err_fermi = tab["Flux_error[MeV/cm2s]"] * 1e-6
 
+pr.report_progress(stage="IceCube", progress=80)
 FLAG_icecube = 0
 if do_icecube:
     par_dict = {
@@ -267,6 +274,7 @@ if do_icecube:
             F_ic_min = tab["F_min_68[TeV/cm2s]"]
             F_ic_max = tab["F_max_68[TeV/cm2s]"]
 
+pr.report_progress(stage="Auger", progress=90)
 FLAG_auger = 0
 if do_auger:
     par_dict = {
@@ -299,6 +307,7 @@ if do_auger:
             F_err_hi_auger = tab["Flux_error_hi[erg/cm2s]"]
             UL_auger = tab["UpLim"]
 
+pr.report_progress(stage="Data product preparation", progress=95)
 ymin_auger = 1e20
 ymax_auger = 1e-20
 ymin_magic = 1e20
