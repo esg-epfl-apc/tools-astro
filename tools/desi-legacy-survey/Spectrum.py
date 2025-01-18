@@ -77,6 +77,8 @@ if len(query) == 0:
 
 tap_result = query
 
+factor
+
 wavelength = np.array(
     [4770, 6231, 9134, 3.368e4, 4.618e4, 12.082e4, 22.194e4]
 )  # in Angstroem
@@ -111,43 +113,22 @@ flux = np.zeros(len(label))
 flux_err = np.zeros(len(label))
 for ind in range(nsources):
     if t[ind] != "DUP":
-        print(ind)
-        y1 = np.array(
-            [
-                query[ind]["flux_" + i] / query["mw_transmission_" + i][ind]
-                for i in label
-            ]
-        )  # in nanomaggies
-        y1_err = np.array(
-            [
-                1.0
-                / sqrt(query[ind]["flux_ivar_" + i])
-                / query["mw_transmission_" + i][ind]
-                for i in label
-            ]
-        )  # in nanomaggies
-        y = y1 * nano_maggies_to_Jy * factor  # in Jy
-        y_err = y1_err * nano_maggies_to_Jy * factor  # in Jy
-        flux += y
-        flux_err += y_err**2
-        plt.errorbar(
-            energy,
-            y,
-            y_err,
-            marker="o",
-            label="source " + str(query[ind]["objid"]),
-            alpha=0.3,
-        )
+        for j, i in enumerate(label):
+            y1 = query[ind]["flux_" + i]
+            if y1 > 0:
+                y1 = y1 / query["mw_transmission_" + i][ind]  # in nanomaggies
+                y1_err = (
+                    1.0
+                    / sqrt(query[ind]["flux_ivar_" + i])
+                    / query["mw_transmission_" + i][ind]
+                )  # in nanomaggies
+                flux[j] += y1
+                flux_err[j] += y1_err**2
+
+flux *= nano_maggies_to_Jy * factor
 flux_err = sqrt(flux_err)
-plt.errorbar(
-    energy,
-    flux,
-    flux_err,
-    marker="o",
-    color="black",
-    linewidth=2,
-    label="total",
-)
+flux_err *= nano_maggies_to_Jy * factor
+plt.errorbar(energy, flux, flux_err, marker="o", color="black", linewidth=2)
 plt.yscale("log")
 plt.xscale("log")
 plt.legend(loc="lower right")
