@@ -9,6 +9,7 @@ import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
+from astropy.io import fits
 from numpy import sqrt
 from oda_api.api import DispatcherAPI, ProgressReporter
 from oda_api.json import CustomJSONEncoder
@@ -16,10 +17,12 @@ from oda_api.token import discover_token
 
 pr = ProgressReporter()
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
 
+src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
@@ -96,119 +99,145 @@ if do_isgri:
         "token": token,
     }
     data_collection_isgri = disp.get_product(**par_dict)
-    dic = data_collection_isgri.as_list()
-    spec_name = "isgri_spectrum_0_" + src_name + "_isgri_spectrum"
-    for i in range(len(dic)):
-        if dic[i]["prod_name"] == spec_name:
-            FLAG_isgri = 1
-            hdul = (
-                data_collection_isgri.isgri_spectrum_0_Crab_isgri_spectrum.to_fits_hdu_list()
-            )
-            spec = hdul["ISGR-EVTS-SPE"].data
-            rate = spec["RATE"]
-            rate_err = spec["STAT_ERR"]
-            rate_sys = spec["SYS_ERR"]
-            rate_qual = spec["QUALITY"]
 
-            hdul = (
-                data_collection_isgri.isgri_spectrum_1_Crab_isgri_arf.to_fits_hdu_list()
-            )
-            arf = hdul["SPECRESP"].data
-            ENERG_LO = arf["ENERG_LO"]
-            ENERG_HI = arf["ENERG_HI"]
-            ENERG = sqrt(ENERG_LO * ENERG_HI)
-            dENERG = ENERG_HI - ENERG_LO
+if do_isgri:
+    prod_list = data_collection_isgri.as_list()
+    for prod in prod_list:
+        if prod["meta_data:"]["src_name"] == src_name:
+            if prod["meta_data:"]["product"] == "isgri_spectrum":
+                FLAG_isgri = 1
+                print(prod["meta_data:"]["product"])
+                fname = prod["prod_name"] + ".fits"
+                hdul = fits.open(fname)
+                spec = hdul["ISGR-EVTS-SPE"].data
+                rate = spec["RATE"]
+                rate_err = spec["STAT_ERR"]
+                rate_sys = spec["SYS_ERR"]
+                rate_qual = spec["QUALITY"]
+            elif prod["meta_data:"]["product"] == "isgri_arf":
+                print(prod["meta_data:"]["product"])
+                fname = prod["prod_name"] + ".fits"
+                hdul = fits.open(fname)
+                arf = hdul["SPECRESP"].data
+                ENERG_LO = arf["ENERG_LO"]
+                ENERG_HI = arf["ENERG_HI"]
+                ENERG = sqrt(ENERG_LO * ENERG_HI)
+                dENERG = ENERG_HI - ENERG_LO
+            elif prod["meta_data:"]["product"] == "isgri_rmf":
+                print(prod["meta_data:"]["product"])
+                fname = prod["prod_name"] + ".fits"
+                hdul = fits.open(fname)
+                EBOUNDS = hdul["EBOUNDS"].data
+                rmf = hdul["SPECRESP MATRIX"].data
+                Emins = EBOUNDS["E_MIN"]
+                Emaxs = EBOUNDS["E_MAX"]
+                Emeans = sqrt(Emins * Emaxs)
+                NEtrue = len(rmf["MATRIX"])
+                NErec = len(rmf["MATRIX"][0])
+                resp = np.zeros((NEtrue, NErec))
+                for i in range(NEtrue):
+                    resp[i] = rmf["MATRIX"][i]
+                Norm = 1e-2
+                Gamma = 2.1
+                Ebins_isgri = np.logspace(1.5, 2.5, 3)
+                Emins_isgri = Ebins_isgri[:-1]
+                Emaxs_isgri = Ebins_isgri[1:]
+                Emeans_isgri = sqrt(Emins_isgri * Emaxs_isgri)
+                F_isgri = np.zeros(len(Emeans_isgri))
+                F_isgri_err = np.zeros(len(Emeans_isgri))
+                for i in range(len(Emins_isgri)):
+                    m = (Emeans > Emins_isgri[i]) & (Emeans < Emaxs_isgri[i])
+                    model_cts = sum(m * exp_counts(Norm, Gamma))
+                    real_cts = np.nansum(m * rate)
+                    real_err = sqrt(np.nansum(m * rate_err**2))
+                    ratio = real_cts / model_cts
+                    F_isgri[i] = (
+                        ratio
+                        * dn_de(Emeans_isgri[i], Norm, Gamma)
+                        * Emeans_isgri[i] ** 2
+                        * 1e-9
+                    )
+                    F_isgri_err[i] = F_isgri[i] / real_cts * real_err
 
-            hdul = (
-                data_collection_isgri.isgri_spectrum_2_Crab_isgri_rmf.to_fits_hdu_list()
-            )
-            EBOUNDS = hdul["EBOUNDS"].data
-            rmf = hdul["SPECRESP MATRIX"].data
-            Emins = EBOUNDS["E_MIN"]
-            Emaxs = EBOUNDS["E_MAX"]
-            Emeans = sqrt(Emins * Emaxs)
-            NEtrue = len(rmf["MATRIX"])
-            NErec = len(rmf["MATRIX"][0])
-            resp = np.zeros((NEtrue, NErec))
-            for i in range(NEtrue):
-                resp[i] = rmf["MATRIX"][i]
-            Norm = 1e-2
-            Gamma = 2.1
-            model = exp_counts(Norm, Gamma)
-            ratio = rate / model
-            F_isgri = ratio * dn_de(Emeans, Norm, Gamma) * Emeans**2 * 1e-9
-            E_isgri = Emeans * 1e-9
-            F_isgri_err = F_isgri / rate * rate_err
+                E_isgri = Emeans_isgri * 1e-9
+                Emins_isgri = Emins_isgri * 1e-9
+                Emaxs_isgri = Emaxs_isgri * 1e-9
 
 pr.report_progress(stage="HESS", progress=30)
 FLAG_hess = 0
 if do_hess:
-    par_dict = {
-        "RA": RA,
-        "DEC": DEC,
-        "Efit_max": 10.0,
-        "Efit_min": 0.2,
-        "Emax": 100.0,
-        "Emin": 1.0,
-        "NEbins": 30,
-        "R_s": 0.2,
-        "Radius": 1.0,
-        "T1": T1,
-        "T2": T2,
-        "T_format": "isot",
-        "instrument": "hess",
-        "product": "Spectrum_public_dl3",
-        "product_type": "Real",
-        "src_name": "Crab",
-        "token": token,
-    }
-    data_collection_hess = disp.get_product(**par_dict)
-    dic = data_collection_hess.as_list()
-    for i in range(len(dic)):
-        if dic[i]["prod_name"] == "table_spectrum_1":
-            FLAG_hess = 1
-            tab = data_collection_hess.table_spectrum_1.table
-            E_hess = tab["Emean[TeV]"]
-            Emin_hess = tab["Emin[TeV]"]
-            Emax_hess = tab["Emax[TeV]"]
-            F_hess = tab["Flux[TeV/cm2s]"]
-            F_err_hess = tab["Flux_error[TeV/cm2s]"]
+    try:
+        par_dict = {
+            "RA": RA,
+            "DEC": DEC,
+            "Efit_max": 10.0,
+            "Efit_min": 0.2,
+            "Emax": 100.0,
+            "Emin": 1.0,
+            "NEbins": 30,
+            "R_s": 0.2,
+            "Radius": 1.0,
+            "T1": T1,
+            "T2": T2,
+            "T_format": "isot",
+            "instrument": "hess",
+            "product": "Spectrum_public_dl3",
+            "product_type": "Real",
+            "src_name": "Crab",
+            "token": token,
+        }
+        data_collection_hess = disp.get_product(**par_dict)
+        dic = data_collection_hess.as_list()
+        for i in range(len(dic)):
+            if dic[i]["prod_name"] == "table_spectrum_1":
+                FLAG_hess = 1
+                tab = data_collection_hess.table_spectrum_1.table
+                E_hess = tab["Emean[TeV]"]
+                Emin_hess = tab["Emin[TeV]"]
+                Emax_hess = tab["Emax[TeV]"]
+                F_hess = tab["Flux[TeV/cm2s]"]
+                F_err_hess = tab["Flux_error[TeV/cm2s]"]
+    except:
+        print("No HESS data")
 
 pr.report_progress(stage="MAGIC", progress=40)
 FLAG_magic = 0
 if do_magic:
-    par_dict = {
-        "RA": RA,
-        "DEC": DEC,
-        "T1": T1,
-        "T2": T2,
-        "Efit_max": 10.0,
-        "Efit_min": 0.2,
-        "Emax": 20.0,
-        "Emin": 0.1,
-        "NEbins": 30,
-        "NSB": 0,
-        "Offset": "0.4 deg",
-        "R_s": 0.2,
-        "Radius_search": 2.0,
-        "T_format": "isot",
-        "instrument": "magic",
-        "product": "Spectrum_public_dl3",
-        "product_type": "Real",
-        "src_name": src_name,
-        "token": token,
-    }
-    data_collection_magic = disp.get_product(**par_dict)
-    dic = data_collection_magic.as_list()
-    for i in range(len(dic)):
-        if dic[i]["prod_name"] == "table_spectrum_1":
-            FLAG_magic = 1
-            tab = data_collection_magic.table_spectrum_1.table
-            Emean_magic = tab["Emean[TeV]"]
-            Emin_magic = tab["Emin[TeV]"]
-            Emax_magic = tab["Emax[TeV]"]
-            Flux_magic = tab["Flux[TeV/cm2s]"]
-            Flux_err_magic = tab["Flux_error[TeV/cm2s]"]
+    try:
+        par_dict = {
+            "RA": RA,
+            "DEC": DEC,
+            "T1": T1,
+            "T2": T2,
+            "Efit_max": 10.0,
+            "Efit_min": 0.2,
+            "Emax": 20.0,
+            "Emin": 0.1,
+            "NEbins": 30,
+            "NSB": 0,
+            "Offset": "0.4 deg",
+            "R_s": 0.2,
+            "Radius_search": 2.0,
+            "T_format": "isot",
+            "instrument": "magic",
+            "product": "Spectrum_public_dl3",
+            "product_type": "Real",
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_magic = disp.get_product(**par_dict)
+        dic = data_collection_magic.as_list()
+        for i in range(len(dic)):
+            if dic[i]["prod_name"] == "table_spectrum_1":
+                FLAG_magic = 1
+                tab = data_collection_magic.table_spectrum_1.table
+                Emean_magic = tab["Emean[TeV]"]
+                Emin_magic = tab["Emin[TeV]"]
+                Emax_magic = tab["Emax[TeV]"]
+                Flux_magic = tab["Flux[TeV/cm2s]"]
+                Flux_err_magic = tab["Flux_error[TeV/cm2s]"]
+    except:
+        print("No MAGIC data")
 
 pr.report_progress(stage="Fermi/LAT", progress=50)
 FLAG_fermi = 0
@@ -246,66 +275,72 @@ if do_fermi:
 pr.report_progress(stage="IceCube", progress=80)
 FLAG_icecube = 0
 if do_icecube:
-    par_dict = {
-        "RA": RA,
-        "DEC": DEC,
-        "IC40": False,
-        "IC59": False,
-        "IC79": False,
-        "IC86_I": True,
-        "IC86_II_VII": True,
-        "Slope": 3.0,
-        "Spectrum_type": "Free_slope",
-        "instrument": "icecube",
-        "product": "Spectrum",
-        "product_type": "Real",
-        "src_name": "Crab",
-        "token": token,
-    }
-    data_collection_icecube = disp.get_product(**par_dict)
-    dic = data_collection_icecube.as_list()
-    for i in range(len(dic)):
-        if dic[i]["prod_name"] == "table_0":
-            FLAG_icecube = 1
-            tab = data_collection_icecube.table_0.table
-            E_icecube = tab["Energy[TeV]"]
-            UL_icecube = tab["F_max_90[TeV/cm2s]"]
-            F_ic = tab["F_best[TeV/cm2s]"]
-            F_ic_min = tab["F_min_68[TeV/cm2s]"]
-            F_ic_max = tab["F_max_68[TeV/cm2s]"]
+    try:
+        par_dict = {
+            "RA": RA,
+            "DEC": DEC,
+            "IC40": False,
+            "IC59": False,
+            "IC79": False,
+            "IC86_I": True,
+            "IC86_II_VII": True,
+            "Slope": 3.0,
+            "Spectrum_type": "Free_slope",
+            "instrument": "icecube",
+            "product": "Spectrum",
+            "product_type": "Real",
+            "src_name": "Crab",
+            "token": token,
+        }
+        data_collection_icecube = disp.get_product(**par_dict)
+        dic = data_collection_icecube.as_list()
+        for i in range(len(dic)):
+            if dic[i]["prod_name"] == "table_0":
+                FLAG_icecube = 1
+                tab = data_collection_icecube.table_0.table
+                E_icecube = tab["Energy[TeV]"]
+                UL_icecube = tab["F_max_90[TeV/cm2s]"]
+                F_ic = tab["F_best[TeV/cm2s]"]
+                F_ic_min = tab["F_min_68[TeV/cm2s]"]
+                F_ic_max = tab["F_max_68[TeV/cm2s]"]
+    except:
+        print("No IceCube data")
 
 pr.report_progress(stage="Auger", progress=90)
 FLAG_auger = 0
 if do_auger:
-    par_dict = {
-        "RA": RA,
-        "DEC": DEC,
-        "T1": T1,
-        "T2": T2,
-        "Emax": 3.162e20,
-        "Emin": 3.162e19,
-        "NEbins": 2,
-        "Source_region_radius": 2.0,
-        "T_format": "isot",
-        "instrument": "auger",
-        "product": "Spectrum",
-        "product_type": "Real",
-        "src_name": "Crab",
-        "token": token,
-    }
-    data_collection_auger = disp.get_product(**par_dict)
-    dic = data_collection_auger.as_list()
-    for i in range(len(dic)):
-        if dic[i]["prod_name"] == "spectrum_astropy_table_0":
-            FLAG_auger = 1
-            tab = data_collection_auger.spectrum_astropy_table_0.table
-            E_auger = tab["Emean[eV]"]
-            Emin_auger = tab["Emin[eV]"]
-            Emax_auger = tab["Emax[eV]"]
-            F_auger = tab["Flux[erg/cm2s]"]
-            F_err_lo_auger = tab["Flux_error_lo[erg/cm2s]"]
-            F_err_hi_auger = tab["Flux_error_hi[erg/cm2s]"]
-            UL_auger = tab["UpLim"]
+    try:
+        par_dict = {
+            "RA": RA,
+            "DEC": DEC,
+            "T1": T1,
+            "T2": T2,
+            "Emax": 3.162e20,
+            "Emin": 3.162e19,
+            "NEbins": 2,
+            "Source_region_radius": 2.0,
+            "T_format": "isot",
+            "instrument": "auger",
+            "product": "Spectrum",
+            "product_type": "Real",
+            "src_name": "Crab",
+            "token": token,
+        }
+        data_collection_auger = disp.get_product(**par_dict)
+        dic = data_collection_auger.as_list()
+        for i in range(len(dic)):
+            if dic[i]["prod_name"] == "spectrum_astropy_table_0":
+                FLAG_auger = 1
+                tab = data_collection_auger.spectrum_astropy_table_0.table
+                E_auger = tab["Emean[eV]"]
+                Emin_auger = tab["Emin[eV]"]
+                Emax_auger = tab["Emax[eV]"]
+                F_auger = tab["Flux[erg/cm2s]"]
+                F_err_lo_auger = tab["Flux_error_lo[erg/cm2s]"]
+                F_err_hi_auger = tab["Flux_error_hi[erg/cm2s]"]
+                UL_auger = tab["UpLim"]
+    except:
+        print("No Auger data")
 
 pr.report_progress(stage="Data product preparation", progress=95)
 ymin_auger = 1e20
@@ -322,7 +357,11 @@ ymax_isgri = 1e-20
 if FLAG_isgri > 0:
     m = (E_isgri > 3e-8) & (E_isgri < 2e-7)
     plt.errorbar(
-        E_isgri[m], F_isgri[m], yerr=F_isgri_err[m], label="INTEGRAL/ISGRI"
+        E_isgri[m],
+        F_isgri[m],
+        yerr=F_isgri_err[m],
+        xerr=[E_isgri - Emins_isgri, Emaxs_isgri - E_isgri],
+        label="INTEGRAL/ISGRI",
     )
     ymin_isgri = min(F_isgri[m]) / 10.0
     ymax_isgri = max(F_isgri[m]) * 10.0
