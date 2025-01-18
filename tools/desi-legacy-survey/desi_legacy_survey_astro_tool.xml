@@ -4,9 +4,14 @@
     <requirement type="package" version="3.10.0">matplotlib</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="7.16.5">nbconvert</requirement>
-    <requirement type="package" version="0.4.7">astroquery</requirement>
+    <requirement type="package" version="0.4.8">astroquery</requirement>
     <requirement type="package" version="1.2.33">oda-api</requirement>
     <requirement type="package" version="8.31.0">ipython</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.15.1">scipy</requirement>
+    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
     <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
@@ -18,6 +23,7 @@
       <param name="_selector" type="select" label="Data Product">
         <option value="Image" selected="true">Image</option>
         <option value="Catalog" selected="false">Catalog</option>
+        <option value="Spectrum" selected="false">Spectrum</option>
       </param>
       <when value="Image">
         <param name="src_name" type="text" value="Mrk 421" label="src_name" />
@@ -40,6 +46,13 @@
         <param name="Radius" type="float" value="1" label="Radius (unit: arcmin)" />
         <param name="data_release" type="integer" value="10" label="Data Release" />
       </when>
+      <when value="Spectrum">
+        <param name="src_name" type="text" value="Mrk 421" label="src_name" />
+        <param name="RA" type="float" value="166.113808" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
+        <param name="Radius" type="float" value="0.1" label="Radius (unit: arcmin)" />
+        <param name="data_release" type="integer" value="10" label="Data Release" />
+      </when>
     </conditional>
   </inputs>
   <outputs>
@@ -54,6 +67,12 @@
     </data>
     <data label="${tool.name} -&gt; Catalog dictionary_filters" name="out_Catalog_dictionary_filters" format="auto" from_work_dir="dictionary_filters_galaxy.output">
       <filter>_data_product['_selector'] == 'Catalog'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum spectrum_table" name="out_Spectrum_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; Spectrum spectrum_png" name="out_Spectrum_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'Spectrum'</filter>
     </data>
   </outputs>
   <tests>
@@ -79,6 +98,19 @@
         <param name="RA" value="166.113808" />
         <param name="DEC" value="38.208833" />
         <param name="Radius" value="1" />
+        <param name="data_release" value="10" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="_data_product">
+        <param name="_selector" value="Spectrum" />
+        <param name="src_name" value="Mrk 421" />
+        <param name="RA" value="166.113808" />
+        <param name="DEC" value="38.208833" />
+        <param name="Radius" value="0.1" />
         <param name="data_release" value="10" />
       </conditional>
       <assert_stdout>
