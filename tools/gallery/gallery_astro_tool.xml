@@ -50,6 +50,7 @@
         <param name="do_icecube" type="boolean" checked="true" label="IceCube" />
         <param name="do_auger" type="boolean" checked="true" label="Auger" />
         <param name="do_hess" type="boolean" checked="true" label="HESS" />
+        <param name="do_gaia" type="boolean" checked="true" label="GAIA" />
       </when>
       <when value="2411.01640_Fig2">
         <param name="redshift" type="float" value="0.9" label="redshift" />
@@ -101,6 +102,7 @@
         <param name="do_icecube" value="True" />
         <param name="do_auger" value="True" />
         <param name="do_hess" value="True" />
+        <param name="do_gaia" value="True" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

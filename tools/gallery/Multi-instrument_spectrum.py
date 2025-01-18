@@ -33,6 +33,7 @@ do_magic = True  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC"
 do_icecube = True  # http://odahub.io/ontology#Boolean ; oda:label "IceCube"
 do_auger = True  # http://odahub.io/ontology#Boolean ; oda:label "Auger"
 do_hess = True  # http://odahub.io/ontology#Boolean ; oda:label "HESS"
+do_gaia = True  # http://odahub.io/ontology#Boolean ; oda:label "GAIA"
 
 _galaxy_wd = os.getcwd()
 
@@ -55,6 +56,7 @@ for _vn in [
     "do_icecube",
     "do_auger",
     "do_hess",
+    "do_gaia",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
@@ -74,6 +76,35 @@ def exp_counts(A, Gam):
     for i in range(NErec):
         tmp[i] += sum(spectrum_dndE * dENERG * resp[:, i])
     return tmp
+
+pr.report_progress(stage="GAIA", progress=5)
+FLAG_gaia = 0
+if do_gaia:
+    try:
+        par_dict = {
+            "DEC": DEC,
+            "RA": RA,
+            "T1": T1,
+            "T2": T2,
+            "T_format": "isot",
+            "data_release": 3,
+            "instrument": "gaia",
+            "product": "Spectrum_from_photometry",
+            "product_type": "Real",
+            "radius_photometry": 60.0,
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_gaia = disp.get_product(**par_dict)
+        tab = data_collection_gaia.spectrum_astropy_table_0.table
+        E_gaia = tab["Emean[eV]"] * 1e-12
+        Emin_gaia = tab["Emin[eV]"] * 1e-12
+        Emax_gaia = tab["Emax[eV]"] * 1e-12
+        F_gaia = tab["Flux[erg/cm2s]"] / 1.6
+        Ferr_gaia = tab["Flux_error[erg/cm2s]"] / 1.6
+        FLAG_gaia = 1
+    except:
+        print("No GAIA data")
 
 pr.report_progress(stage="INTEGRAL/ISGRI", progress=10)
 FLAG_isgri = 0
@@ -98,8 +129,6 @@ if do_isgri:
         "token": token,
     }
     data_collection_isgri = disp.get_product(**par_dict)
-
-if do_isgri:
     prod_list = data_collection_isgri.as_list()
     data_collection_isgri.save_all_data()
     for prod in prod_list:
@@ -354,6 +383,16 @@ ymax_fermi = 1e-20
 ymin_isgri = 1e20
 ymax_isgri = 1e-20
 
+if FLAG_gaia == 1:
+    plt.errorbar(
+        E_gaia,
+        F_gaia,
+        xerr=[E_gaia - Emin_gaia, Emax_gaia - E_gaia],
+        yerr=Ferr_gaia,
+        linestyle="none",
+        color="magenta",
+        label="GAIA",
+    )
 if FLAG_isgri > 0:
     m = (E_isgri > 3e-8) & (E_isgri < 2e-7)
     plt.errorbar(
