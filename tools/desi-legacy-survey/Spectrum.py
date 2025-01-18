@@ -77,8 +77,6 @@ if len(query) == 0:
 
 tap_result = query
 
-factor
-
 wavelength = np.array(
     [4770, 6231, 9134, 3.368e4, 4.618e4, 12.082e4, 22.194e4]
 )  # in Angstroem
