@@ -17,6 +17,12 @@ from oda_api.token import discover_token
 
 pr = ProgressReporter()
 
+from oda_api.token import discover_token
+
+token = discover_token(allow_invalid=True)
+
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0NDc2MTJ9.15boefij-LRgE_XyobvaQO_iLTW7dggnrtBvqsR3FEM"
+
 workdir = os.getcwd()
 
 src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
@@ -34,6 +40,9 @@ do_icecube = True  # http://odahub.io/ontology#Boolean ; oda:label "IceCube"
 do_auger = True  # http://odahub.io/ontology#Boolean ; oda:label "Auger"
 do_hess = True  # http://odahub.io/ontology#Boolean ; oda:label "HESS"
 do_gaia = True  # http://odahub.io/ontology#Boolean ; oda:label "GAIA"
+do_legacysurvey = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "DESI Legacy Survey"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -57,13 +66,18 @@ for _vn in [
     "do_auger",
     "do_hess",
     "do_gaia",
+    "do_legacysurvey",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+
+token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0MjcxMjV9.wDtqEZIGlNe0uxoO9jc3Y4D--RK8XK77TMZ3-qDdSjk"
 
 disp = DispatcherAPI(
     url="https://www.astro.unige.ch/mmoda//dispatch-data", instrument="mock"
 )
 token = discover_token()
+
+token
 
 E0 = 20.0  # keV
 
@@ -76,6 +90,31 @@ def exp_counts(A, Gam):
     for i in range(NErec):
         tmp[i] += sum(spectrum_dndE * dENERG * resp[:, i])
     return tmp
+
+pr.report_progress(stage="DESI Legacy Survey", progress=5)
+FLAG_desi = 0
+if do_legacysurvey:
+    try:
+        par_dict = {
+            "DEC": DEC,
+            "RA": RA,
+            "Radius": 0.1,
+            "data_release": 10,
+            "instrument": "desi_legacy_survey",
+            "product": "Spectrum",
+            "product_type": "Real",
+            "src_name": src_name,
+            "token": token,
+        }
+
+        data_collection_desi = disp.get_product(**par_dict)
+        tab = data_collection_desi.spectrum_table_0.table
+        E_desi = tab["Energy[eV]"] / 1e12
+        F_desi = tab["Flux[erg/cm2s]"] / 1.6
+        Ferr_desi = tab["Flux_err[erg/cm2s]"] / 1.6
+        FLAG_desi = 1
+    except:
+        print("No Legacy Survey data")
 
 pr.report_progress(stage="GAIA", progress=5)
 FLAG_gaia = 0
@@ -383,6 +422,16 @@ ymax_fermi = 1e-20
 ymin_isgri = 1e20
 ymax_isgri = 1e-20
 
+if FLAG_desi == 1:
+    plt.errorbar(
+        E_desi,
+        F_desi,
+        yerr=Ferr_desi,
+        linestyle="none",
+        color="black",
+        label="DESI Legacy Survey",
+        marker="o",
+    )
 if FLAG_gaia == 1:
     plt.errorbar(
         E_gaia,
@@ -392,6 +441,7 @@ if FLAG_gaia == 1:
         linestyle="none",
         color="magenta",
         label="GAIA",
+        marker="*",
     )
 if FLAG_isgri > 0:
     m = (E_isgri > 3e-8) & (E_isgri < 2e-7)
