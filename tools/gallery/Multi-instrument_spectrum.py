@@ -101,6 +101,7 @@ if do_isgri:
 
 if do_isgri:
     prod_list = data_collection_isgri.as_list()
+    data_collection_isgri.save_all_data()
     for prod in prod_list:
         if prod["meta_data:"]["src_name"] == src_name:
             if prod["meta_data:"]["product"] == "isgri_spectrum":
