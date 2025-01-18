@@ -17,8 +17,7 @@ from oda_api.token import discover_token
 
 pr = ProgressReporter()
 
-RA = 83.628700  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.014700  # http://odahub.io/ontology#PointOfInterestDEC
+workdir = os.getcwd()
 
 src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
@@ -107,7 +106,7 @@ if do_isgri:
             if prod["meta_data:"]["product"] == "isgri_spectrum":
                 FLAG_isgri = 1
                 print(prod["meta_data:"]["product"])
-                fname = prod["prod_name"] + ".fits"
+                fname = workdir + "/" + prod["prod_name"] + ".fits"
                 hdul = fits.open(fname)
                 spec = hdul["ISGR-EVTS-SPE"].data
                 rate = spec["RATE"]
@@ -116,7 +115,7 @@ if do_isgri:
                 rate_qual = spec["QUALITY"]
             elif prod["meta_data:"]["product"] == "isgri_arf":
                 print(prod["meta_data:"]["product"])
-                fname = prod["prod_name"] + ".fits"
+                fname = workdir + "/" + prod["prod_name"] + ".fits"
                 hdul = fits.open(fname)
                 arf = hdul["SPECRESP"].data
                 ENERG_LO = arf["ENERG_LO"]
@@ -125,7 +124,7 @@ if do_isgri:
                 dENERG = ENERG_HI - ENERG_LO
             elif prod["meta_data:"]["product"] == "isgri_rmf":
                 print(prod["meta_data:"]["product"])
-                fname = prod["prod_name"] + ".fits"
+                fname = workdir + "/" + prod["prod_name"] + ".fits"
                 hdul = fits.open(fname)
                 EBOUNDS = hdul["EBOUNDS"].data
                 rmf = hdul["SPECRESP MATRIX"].data
