@@ -21,16 +21,20 @@ from oda_api.token import discover_token
 
 token = discover_token(allow_invalid=True)
 
-token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0NDc2MTJ9.15boefij-LRgE_XyobvaQO_iLTW7dggnrtBvqsR3FEM"
+# token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0MjcxMjV9.wDtqEZIGlNe0uxoO9jc3Y4D--RK8XK77TMZ3-qDdSjk"
+# token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0NDc2MTJ9.15boefij-LRgE_XyobvaQO_iLTW7dggnrtBvqsR3FEM"
 
 workdir = os.getcwd()
 
-src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
+src_name = "Mrk 501"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
+do_jemx = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/JEM-X"
+)
 do_isgri = (
     True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/ISGRI"
 )
@@ -59,6 +63,7 @@ for _vn in [
     "DEC",
     "T1",
     "T2",
+    "do_jemx",
     "do_isgri",
     "do_fermi",
     "do_magic",
@@ -70,26 +75,221 @@ for _vn in [
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0MjcxMjV9.wDtqEZIGlNe0uxoO9jc3Y4D--RK8XK77TMZ3-qDdSjk"
+from astropy.coordinates import SkyCoord
+
+coords = SkyCoord.from_name(src_name)
+RA = coords.icrs.ra.deg
+DEC = coords.icrs.dec.deg
+RA, DEC
 
 disp = DispatcherAPI(
     url="https://www.astro.unige.ch/mmoda//dispatch-data", instrument="mock"
 )
 token = discover_token()
 
-token
-
 E0 = 20.0  # keV
 
 def dn_de(E, A, Gam):
     return A * (E / E0) ** (-Gam)
 
-def exp_counts(A, Gam):
+def exp_counts_isgri(A, Gam):
     spectrum_dndE = dn_de(ENERG, A, Gam)
     tmp = np.zeros(NErec)
     for i in range(NErec):
-        tmp[i] += sum(spectrum_dndE * dENERG * resp[:, i])
+        tmp[i] += sum(spectrum_dndE * dENERG * resp_isgri[:, i])
     return tmp
+
+def exp_counts_jemx(A, Gam):
+    spectrum_dndE = dn_de(ENERG, A, Gam)
+    tmp = np.zeros(NErec)
+    for i in range(NErec):
+        # tmp[i]+=sum(spectrum_dndE*dENERG*resp_jemx[:,i])
+        tmp[i] += sum(spectrum_dndE * dENERG * resp_jemx[:, i] * aeff)
+    return tmp
+
+pr.report_progress(stage="JEM-X", progress=5)
+FLAG_jemx = 0
+if do_jemx:
+    try:
+        par_dict = {
+            "DEC": DEC,
+            "E1_keV": 3.0,
+            "E2_keV": 20.0,
+            "RA": RA,
+            "T1": T1,
+            "T2": T2,
+            "T_format": "isot",
+            "detection_threshold": "7",
+            "instrument": "jemx",
+            "integral_data_rights": "public",
+            "jemx_num": 1,
+            "max_pointings": 50,
+            "osa_version": "OSA11.2",
+            "product": "jemx_spectrum",
+            "product_type": "Real",
+            "radius": 4.0,
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_jemx1 = disp.get_product(**par_dict)
+        prod_list = data_collection_jemx1.as_list()
+        data_collection_jemx1.save_all_data()
+        for prod in prod_list:
+            if prod["meta_data:"]["src_name"] == src_name:
+                print(prod["meta_data:"]["product"])
+                if prod["meta_data:"]["product"] == "jemx_spectrum":
+                    FLAG_jemx = 1
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    spec = hdul["JMX1-PHA1-SPE"].data
+                    rate = spec["RATE"]
+                    rate_err = spec["STAT_ERR"]
+                    rate_sys = spec["SYS_ERR"]
+                    rate_qual = spec["QUALITY"]
+                elif prod["meta_data:"]["product"] == "jemx_arf":
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    arf = hdul["SPECRESP"].data
+                    ENERG_LO = arf["ENERG_LO"]
+                    ENERG_HI = arf["ENERG_HI"]
+                    ENERG = sqrt(ENERG_LO * ENERG_HI)
+                    dENERG = ENERG_HI - ENERG_LO
+                    aeff = arf["SPECRESP"]
+                elif prod["meta_data:"]["product"] == "jemx_rmf":
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    EBOUNDS = hdul["EBOUNDS"].data
+                    rmf = hdul["SPECRESP MATRIX"].data
+                    Emins = EBOUNDS["E_MIN"]
+                    Emaxs = EBOUNDS["E_MAX"]
+                    Emeans = sqrt(Emins * Emaxs)
+                    NEtrue = len(rmf["MATRIX"])
+                    NErec = len(rmf["MATRIX"][0])
+                    resp_jemx = np.zeros((NEtrue, NErec))
+                    for i in range(NEtrue):
+                        resp_jemx[i] = rmf["MATRIX"][i]
+                    Norm = 1e-2
+                    Gamma = 2.1
+                    Ebins_jemx = np.logspace(0.5, 1.5, 3)
+                    Emins_jemx = Ebins_jemx[:-1]
+                    Emaxs_jemx = Ebins_jemx[1:]
+                    Emeans_jemx = sqrt(Emins_jemx * Emaxs_jemx)
+                    F_jemx = np.zeros(len(Emeans_jemx))
+                    F_jemx_err = np.zeros(len(Emeans_jemx))
+                    for i in range(len(Emins_jemx)):
+                        m = (Emeans > Emins_jemx[i]) & (Emeans < Emaxs_jemx[i])
+                        model_cts = sum(m * exp_counts_jemx(Norm, Gamma))
+                        real_cts = np.nansum(m * rate)
+                        print(model_cts, real_cts)
+                        real_err = sqrt(np.nansum(m * rate_err**2))
+                        ratio = real_cts / model_cts
+                        F_jemx[i] = (
+                            ratio
+                            * dn_de(Emeans_jemx[i], Norm, Gamma)
+                            * Emeans_jemx[i] ** 2
+                            * 1e-9
+                        )
+                        F_jemx_err[i] = F_jemx[i] / real_cts * real_err
+    except:
+        print("No JEMX1 data")
+
+pr.report_progress(stage="JEM-X", progress=5)
+if do_jemx:
+    try:
+        par_dict = {
+            "DEC": DEC,
+            "E1_keV": 3.0,
+            "E2_keV": 20.0,
+            "RA": RA,
+            "T1": T1,
+            "T2": T2,
+            "T_format": "isot",
+            "detection_threshold": "7",
+            "instrument": "jemx",
+            "integral_data_rights": "public",
+            "jemx_num": 2,
+            "max_pointings": 50,
+            "osa_version": "OSA11.2",
+            "product": "jemx_spectrum",
+            "product_type": "Real",
+            "radius": 4.0,
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_jemx2 = disp.get_product(**par_dict)
+        prod_list = data_collection_jemx2.as_list()
+        data_collection_jemx2.save_all_data()
+        for prod in prod_list:
+            if prod["meta_data:"]["src_name"] == src_name:
+                FLAG_jemx = 1
+                print(prod["meta_data:"]["product"])
+                if prod["meta_data:"]["product"] == "jemx_spectrum":
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    spec = hdul["JMX2-PHA1-SPE"].data
+                    rate = spec["RATE"]
+                    rate_err = spec["STAT_ERR"]
+                    rate_sys = spec["SYS_ERR"]
+                    rate_qual = spec["QUALITY"]
+                elif prod["meta_data:"]["product"] == "jemx_arf":
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    arf = hdul["SPECRESP"].data
+                    ENERG_LO = arf["ENERG_LO"]
+                    ENERG_HI = arf["ENERG_HI"]
+                    ENERG = sqrt(ENERG_LO * ENERG_HI)
+                    dENERG = ENERG_HI - ENERG_LO
+                    aeff = arf["SPECRESP"]
+                elif prod["meta_data:"]["product"] == "jemx_rmf":
+                    print(prod["meta_data:"]["product"])
+                    fname = workdir + "/" + prod["prod_name"] + ".fits"
+                    hdul = fits.open(fname)
+                    EBOUNDS = hdul["EBOUNDS"].data
+                    rmf = hdul["SPECRESP MATRIX"].data
+                    Emins = EBOUNDS["E_MIN"]
+                    Emaxs = EBOUNDS["E_MAX"]
+                    Emeans = sqrt(Emins * Emaxs)
+                    NEtrue = len(rmf["MATRIX"])
+                    NErec = len(rmf["MATRIX"][0])
+                    resp_jemx = np.zeros((NEtrue, NErec))
+                    for i in range(NEtrue):
+                        resp_jemx[i] = rmf["MATRIX"][i]
+                    Norm = 1e-2
+                    Gamma = 2.1
+                    Ebins_jemx = np.logspace(0.5, 1.5, 3)
+                    Emins_jemx = Ebins_jemx[:-1]
+                    Emaxs_jemx = Ebins_jemx[1:]
+                    Emeans_jemx = sqrt(Emins_jemx * Emaxs_jemx)
+                    F_jemx2 = np.zeros(len(Emeans_jemx))
+                    F_jemx2_err = np.zeros(len(Emeans_jemx))
+                    for i in range(len(Emins_jemx)):
+                        m = (Emeans > Emins_jemx[i]) & (Emeans < Emaxs_jemx[i])
+                        model_cts = sum(m * exp_counts_jemx(Norm, Gamma))
+                        real_cts = np.nansum(m * rate)
+                        print(model_cts, real_cts)
+                        real_err = sqrt(np.nansum(m * rate_err**2))
+                        ratio = real_cts / model_cts
+                        F_jemx2[i] = (
+                            ratio
+                            * dn_de(Emeans_jemx[i], Norm, Gamma)
+                            * Emeans_jemx[i] ** 2
+                            * 1e-9
+                        )
+                        F_jemx2_err[i] = F_jemx2[i] / real_cts * real_err
+    except:
+        print("No JEMX2 data")
+
+if FLAG_jemx == 1:
+    tmp = F_jemx2 / F_jemx2_err**2 + F_jemx / F_jemx_err**2
+    tmp1 = 1 / F_jemx2_err**2 + 1 / F_jemx_err**2
+    F_jemx_all = tmp / tmp1
+    F_jemx_all_err = 1 / sqrt(tmp1)
+    F_jemx_all, F_jemx_all_err
 
 pr.report_progress(stage="DESI Legacy Survey", progress=5)
 FLAG_desi = 0
@@ -202,9 +402,9 @@ if do_isgri:
                 Emeans = sqrt(Emins * Emaxs)
                 NEtrue = len(rmf["MATRIX"])
                 NErec = len(rmf["MATRIX"][0])
-                resp = np.zeros((NEtrue, NErec))
+                resp_isgri = np.zeros((NEtrue, NErec))
                 for i in range(NEtrue):
-                    resp[i] = rmf["MATRIX"][i]
+                    resp_isgri[i] = rmf["MATRIX"][i]
                 Norm = 1e-2
                 Gamma = 2.1
                 Ebins_isgri = np.logspace(1.5, 2.5, 3)
@@ -215,7 +415,7 @@ if do_isgri:
                 F_isgri_err = np.zeros(len(Emeans_isgri))
                 for i in range(len(Emins_isgri)):
                     m = (Emeans > Emins_isgri[i]) & (Emeans < Emaxs_isgri[i])
-                    model_cts = sum(m * exp_counts(Norm, Gamma))
+                    model_cts = sum(m * exp_counts_isgri(Norm, Gamma))
                     real_cts = np.nansum(m * rate)
                     real_err = sqrt(np.nansum(m * rate_err**2))
                     ratio = real_cts / model_cts
@@ -454,6 +654,19 @@ if FLAG_isgri > 0:
     )
     ymin_isgri = min(F_isgri[m]) / 10.0
     ymax_isgri = max(F_isgri[m]) * 10.0
+if FLAG_jemx > 0:
+    plt.errorbar(
+        Emeans_jemx * 1e-9,
+        F_jemx,
+        yerr=F_jemx_err,
+        xerr=[
+            (Emeans_jemx - Emins_jemx) * 1e-9,
+            (Emaxs_jemx - Emeans_jemx) * 1e-9,
+        ],
+        label="INTEGRAL/JEMX",
+    )
+    ymin_isgri = min(F_isgri[m]) / 10.0
+    ymax_isgri = max(F_isgri[m]) * 10.0
 
 if FLAG_auger > 0:
     plt.errorbar(
@@ -523,8 +736,6 @@ from oda_api.data_products import PictureProduct
 bin_image = PictureProduct.from_file("SED.png")
 
 sed_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-
-FLAG_isgri = 1
 
 # output gathering
 _galaxy_meta_data = {}
