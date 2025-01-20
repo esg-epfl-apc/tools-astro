@@ -39,9 +39,18 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "Gamma",
+    "Emax",
+    "Ecut",
+    "B",
+    "source_size_cm",
+    "background_norm_mode",
+    "corona_backround_norm_cm3",
+    "disk_background_norm_cm3",
+    "min_steps",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 background_norm_mode_index = [
     "absolute",
