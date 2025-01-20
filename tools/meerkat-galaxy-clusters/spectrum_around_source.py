@@ -6,11 +6,9 @@
 import json
 import os
 
-import matplotlib.pyplot as plt
 from catalogs_methods import *
 from data_treatment import *
 from download import *
-from oda_api.data_products import PictureProduct
 from parameters import *
 from plots import *
 
@@ -41,24 +39,18 @@ for _vn in ["ra", "dec", "thresh_arcmin"]:
 # -----------------------------------------------------
 # Handling errors and exceptions
 # -----------------------------------------------------
-if ra < 0 or ra > 360:
-    raise ValueError(
-        "Wrong value: the right ascension (ra) must be between 0 and 360 degrees!"
-    )
-if dec < -90 or dec > 90:
-    raise ValueError(
-        "Wrong value: the declination (dec) must be between -90 and 90 degrees!"
-    )
+# if ra<0 or ra>360:
+#     raise ValueError("Wrong value: the right ascension (ra) must be between 0 and 360 degrees!")
+# if dec<-90 or dec>90:
+#     raise ValueError("Wrong value: the declination (dec) must be between -90 and 90 degrees!")
 
-# Test if the ra/dec coordinates lie in a MGCLS field (cluster)
-# -----------------------------------------------------------------------------
-clust_name = test_if_in_clusters(ra, dec)
+# # Test if the ra/dec coordinates lie in a MGCLS field (cluster)
+# # -----------------------------------------------------------------------------
+# clust_name = test_if_in_clusters(ra,dec)
 
-if clust_name == 0:
+# if clust_name == 0:
 
-    raise Exception(
-        "Error: the entered coordinates do not lie within any MGCLS field (cluster)"
-    )
+#     raise Exception("Error: the entered coordinates do not lie within any MGCLS field (cluster)")
 
 # ----------------------------------------------------------------------------------
 # Determination of the sources found (or not) in the given aperture
@@ -69,15 +61,15 @@ msg_out = sources["out_msg"]
 # ----------------------------------------------------------------------------------
 # Computation of the power spectrum of the sources within the aperture
 # ----------------------------------------------------------------------------------
-if sources["found_source"] == True:
-    plot_spectrum(ra, dec, thresh_arcmin)
-    plt.savefig("spectrum.png", format="png", bbox_inches="tight")
+# if sources['found_source'] == True:
+#     plot_spectrum(ra, dec, thresh_arcmin)
+#     plt.savefig('spectrum.png',format='png',bbox_inches='tight')
 
-if sources["found_source"] == True:
-    bin_image = PictureProduct.from_file("spectrum.png")
-
+# if sources['found_source'] == True:
+#     bin_image = PictureProduct.from_file('spectrum.png')
 if sources["found_source"] == True:
     picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+
 test_out = msg_out  # http://odahub.io/ontology#String
 
 # output gathering
