@@ -38,7 +38,6 @@ else:
 for _vn in ["ra", "dec", "thresh_arcmin"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-# -----------------------------------------------------
 # Handling errors and exceptions
 # -----------------------------------------------------
 if ra < 0 or ra > 360:
@@ -60,23 +59,18 @@ if clust_name == 0:
         "Error: the entered coordinates do not lie within any MGCLS field (cluster)"
     )
 
-# ----------------------------------------------------------------------------------
-# Determination of the sources found (or not) in the given aperture
-# ----------------------------------------------------------------------------------
-sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
-msg_out = sources["out_msg"]
+else:
 
-# ----------------------------------------------------------------------------------
-# Computation of the power spectrum of the sources within the aperture
-# ----------------------------------------------------------------------------------
-if sources["found_source"] == True:
-    plot_spectrum(ra, dec, thresh_arcmin)
-    plt.savefig("spectrum.png", format="png", bbox_inches="tight")
+    sources = find_sources_around_coordinates(ra, dec, thresh_arcmin)
+    msg_out = sources["out_msg"]
 
-if sources["found_source"] == True:
-    bin_image = PictureProduct.from_file(
-        "../meerkat-galaxy-clusters/spectrum.png"
-    )
+    if sources["found_source"] == True:
+
+        plot_spectrum(ra, dec, thresh_arcmin)
+        plt.savefig("spectrum.png", format="png", bbox_inches="tight")
+        bin_image = PictureProduct.from_file(
+            "../meerkat-galaxy-clusters/spectrum.png"
+        )
 
 test_out = msg_out  # http://odahub.io/ontology#String
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
