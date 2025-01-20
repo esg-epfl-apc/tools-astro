@@ -68,9 +68,7 @@ else:
 
         plot_spectrum(ra, dec, thresh_arcmin)
         plt.savefig("spectrum.png", format="png", bbox_inches="tight")
-        bin_image = PictureProduct.from_file(
-            "../meerkat-galaxy-clusters/spectrum.png"
-        )
+        bin_image = PictureProduct.from_file("spectrum.png")
 
 test_out = msg_out  # http://odahub.io/ontology#String
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
