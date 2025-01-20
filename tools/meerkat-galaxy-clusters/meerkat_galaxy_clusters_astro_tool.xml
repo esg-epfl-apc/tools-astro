@@ -7,10 +7,10 @@
     <requirement type="package" version="1.2.35">oda-api</requirement>
     <requirement type="package" version="1.11.0">photutils</requirement>
     <requirement type="package" version="1.36.2">boto3</requirement>
-    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="7.16.5">nbconvert</requirement>
     <requirement type="package" version="2.32.3">requests</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>

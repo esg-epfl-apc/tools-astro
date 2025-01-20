@@ -67,8 +67,8 @@ msg_out = sources["out_msg"]
 
 # if sources['found_source'] == True:
 #     bin_image = PictureProduct.from_file('spectrum.png')
-if sources["found_source"] == True:
-    picture = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+# if sources['found_source'] == True:
+#     picture = bin_image # http://odahub.io/ontology#ODAPictureProduct
 
 test_out = msg_out  # http://odahub.io/ontology#String
 
