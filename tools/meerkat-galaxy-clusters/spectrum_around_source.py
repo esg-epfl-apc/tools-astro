@@ -73,7 +73,7 @@ else:
         plt.savefig("spectrum.png", format="png", bbox_inches="tight")
         bin_image = PictureProduct.from_file("spectrum.png")
 
-test_out = msg_out  # http://odahub.io/ontology#String
+test_out = msg_out  # http://odahub.io/ontology#String ; oda:label "Message"
 png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 
 # output gathering
