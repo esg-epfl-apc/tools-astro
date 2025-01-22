@@ -14,9 +14,11 @@ from astroquery.skyview import SkyView
 from oda_api.data_products import ImageDataProduct, PictureProduct
 from oda_api.json import CustomJSONEncoder
 
+class AnalysisError(RuntimeError): ...
+
 src_name = "1ES 0229+200"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = 40.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
@@ -49,9 +51,13 @@ Radius *= u.deg
 pos = str(RA) + ", " + str(DEC)
 pixels
 
-hdul = SkyView.get_images(
-    position=pos, survey=[Frequency], pixels=pixels, radius=Radius
-)
+try:
+    hdul = SkyView.get_images(
+        position=pos, survey=[Frequency], pixels=pixels, radius=Radius
+    )
+except:
+    raise AnalysisError("No data found")
+    message = "No data found!"
 
 hdu = hdul[0]
 hdu[0].header

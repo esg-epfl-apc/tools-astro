@@ -9,6 +9,7 @@ import shutil
 
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy import sqrt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 from pyvo import registry  # version >=1.4.1
@@ -66,7 +67,9 @@ for col in columns:
     ):
         nu.append(int(col.name[9:12]) * 1e6)
         flux.append(sum(table[col.name][m]) * nu[-1] * 1e-23)
-        flux_err.append(sum(table["err_" + col.name][m]) * nu[-1] * 1e-23)
+        flux_err.append(
+            sqrt(sum((table["err_" + col.name][m]) ** 2)) * nu[-1] * 1e-23
+        )
 E = h_p * np.array(nu)
 plt.errorbar(E, flux, flux_err)
 plt.xscale("log")
