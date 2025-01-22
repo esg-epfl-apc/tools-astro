@@ -13,6 +13,8 @@ from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 from pyvo import registry  # version >=1.4.1
 
+class AnalysisError(RuntimeError): ...
+
 src_name = "1ES 0229+200"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
@@ -39,15 +41,15 @@ coords_s = SkyCoord(RA, DEC, unit="degree")
 from astropy.io import fits
 
 hdul = fits.open("GLEAM_EGC_v2.fits.gz")
-hdul.info()
 table = hdul[1].data
-table.columns
 
 coords = SkyCoord(ras, decs, unit="degree")
 seps = coords.separation(coords_s).deg
 m = seps < Radius
 sum(m)
-ras[m], decs[m], flux_084[m]
+if sum(m) == 0:
+    raise AnalysisError("No data found")
+    message = "No data found!"
 
 ras = table["RAJ2000"]
 decs = table["DEJ2000"]
