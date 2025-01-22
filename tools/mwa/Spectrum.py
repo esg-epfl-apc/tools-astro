@@ -7,9 +7,11 @@ import json
 import os
 import shutil
 
+import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-from numpy import sqrt
+from astropy.constants import h
+from numpy import pi, sqrt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 from pyvo import registry  # version >=1.4.1
@@ -41,9 +43,15 @@ coords_s = SkyCoord(RA, DEC, unit="degree")
 
 from astropy.io import fits
 
-hdul = fits.open("GLEAM_EGC_v2.fits.gz")
+workdir = os.getcwd()
+
+hdul = fits.open(workdir + "/GLEAM_EGC_v2.fits.gz")
 table = hdul[1].data
 
+ras = table["RAJ2000"]
+decs = table["DEJ2000"]
+# flux=[table['int_flux_084']
+columns = table.columns
 coords = SkyCoord(ras, decs, unit="degree")
 seps = coords.separation(coords_s).deg
 m = seps < Radius
@@ -52,10 +60,8 @@ if sum(m) == 0:
     raise AnalysisError("No data found")
     message = "No data found!"
 
-ras = table["RAJ2000"]
-decs = table["DEJ2000"]
-# flux=[table['int_flux_084']
-columns = table.columns
+h_p = 2 * pi * h.to(u.eV * u.s).value
+
 nu = []
 flux = []
 flux_err = []
