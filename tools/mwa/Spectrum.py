@@ -31,9 +31,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 conesearch_radius = Radius  # in degrees
 conesearch_center = (RA, DEC)
