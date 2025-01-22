@@ -39,7 +39,7 @@
         </param>
       </when>
       <when value="Multi-instrument_spectrum">
-        <param name="src_name" type="text" value="Mrk 501" label="src_name" />
+        <param name="src_name" type="text" value="Mrk 421" label="src_name" />
         <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
         <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
@@ -93,7 +93,7 @@
     <test expect_num_outputs="1">
       <conditional name="_data_product">
         <param name="_selector" value="Multi-instrument_spectrum" />
-        <param name="src_name" value="Mrk 501" />
+        <param name="src_name" value="Mrk 421" />
         <param name="RA" value="166.113809" />
         <param name="DEC" value="38.208833" />
         <param name="T1" value="2000-10-09T13:16:00.0" />

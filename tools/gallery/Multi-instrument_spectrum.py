@@ -26,7 +26,7 @@ token = discover_token(allow_invalid=True)
 
 workdir = os.getcwd()
 
-src_name = "Mrk 501"  # http://odahub.io/ontology#AstrophysicalObject
+src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
@@ -74,13 +74,6 @@ for _vn in [
     "do_legacysurvey",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
-
-from astropy.coordinates import SkyCoord
-
-coords = SkyCoord.from_name(src_name)
-RA = coords.icrs.ra.deg
-DEC = coords.icrs.dec.deg
-RA, DEC
 
 disp = DispatcherAPI(
     url="https://www.astro.unige.ch/mmoda//dispatch-data", instrument="mock"
@@ -615,6 +608,8 @@ ymin_auger = 1e20
 ymax_auger = 1e-20
 ymin_magic = 1e20
 ymax_magic = 1e-20
+ymin_hess = 1e20
+ymax_hess = 1e-20
 ymin_ic = 1e20
 ymax_ic = 1e-20
 ymin_fermi = 1e20
@@ -652,8 +647,8 @@ if FLAG_isgri > 0:
         xerr=[E_isgri - Emins_isgri, Emaxs_isgri - E_isgri],
         label="INTEGRAL/ISGRI",
     )
-    ymin_isgri = min(F_isgri[m]) / 10.0
-    ymax_isgri = max(F_isgri[m]) * 10.0
+    ymin_isgri = min(F_isgri[m]) / 3.0
+    ymax_isgri = max(F_isgri[m]) * 3.0
 if FLAG_jemx > 0:
     plt.errorbar(
         Emeans_jemx * 1e-9,
@@ -665,8 +660,8 @@ if FLAG_jemx > 0:
         ],
         label="INTEGRAL/JEMX",
     )
-    ymin_isgri = min(F_isgri[m]) / 10.0
-    ymax_isgri = max(F_isgri[m]) * 10.0
+    ymin_isgri = min(F_isgri[m]) / 3.0
+    ymax_isgri = max(F_isgri[m]) * 3.0
 
 if FLAG_auger > 0:
     plt.errorbar(
@@ -679,8 +674,8 @@ if FLAG_auger > 0:
         color="green",
         label="Auger",
     )
-    ymin_auger = min(F_auger) / 10.0
-    ymax_auger = max(F_auger) * 10.0
+    ymin_auger = min(F_auger) / 3.0
+    ymax_auger = max(F_auger) * 3.0
 
 if FLAG_icecube > 0:
     if min(F_ic_min) > 1e-14:
@@ -696,8 +691,8 @@ if FLAG_icecube > 0:
         xytext=(E_icecube_line, F_icecube_line),
         arrowprops=dict(facecolor="black", shrink=0.0, width=1, headwidth=4),
     )
-    ymin_ic = F_icecube_line / 10.0
-    ymax_ic = max(F_ic_max * 10.0)
+    ymin_ic = F_icecube_line / 3.0
+    ymax_ic = max(F_ic_max * 3.0)
 
 if FLAG_fermi > 0:
     plt.errorbar(
@@ -707,18 +702,18 @@ if FLAG_fermi > 0:
         xerr=[E_fermi - Emin_fermi, Emax_fermi - E_fermi],
         label="Fermi/LAT",
     )
-    ymin_fermi = min(F_fermi / 10.0)
-    ymax_fermi = max(F_fermi * 10.0)
+    ymin_fermi = min(F_fermi / 3.0)
+    ymax_fermi = max(F_fermi * 3.0)
 
 if FLAG_magic > 0:
     plt.errorbar(Emean_magic, Flux_magic, yerr=Flux_err_magic, label="MAGIC")
-    ymin_magic = min(Flux_magic / 10.0)
-    ymax_magic = max(Flux_magic * 10.0)
+    ymin_magic = min(Flux_magic / 3.0)
+    ymax_magic = max(Flux_magic * 3.0)
 
 if FLAG_hess > 0:
     plt.errorbar(E_hess, F_hess, yerr=F_err_hess, label="HESS")
-    ymin_magic = min(Flux_magic / 10.0)
-    ymax_magic = max(Flux_magic * 10.0)
+    ymin_hess = min(Flux_hess / 3.0)
+    ymax_hess = max(Flux_hess * 3.0)
 
 plt.xscale("log")
 plt.yscale("log")
