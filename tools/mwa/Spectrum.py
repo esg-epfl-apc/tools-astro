@@ -7,10 +7,8 @@ import json
 import os
 import shutil
 
-import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
-from astropy.constants import h
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 from pyvo import registry  # version >=1.4.1
@@ -20,7 +18,7 @@ RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 0.05  # http://odahub.io/ontology#AngleDegrees
+Radius = 0.5  # http://odahub.io/ontology#AngleDegrees
 
 _galaxy_wd = os.getcwd()
 
@@ -34,37 +32,41 @@ else:
 for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-conesearch_radius = Radius  # in degrees
-conesearch_center = (RA, DEC)
+from astropy.coordinates import SkyCoord
 
-# the catalogue name in VizieR
-CATALOGUE = "VIII/100"
-# each resource in the VO has an identifier, called ivoid. For vizier catalogs,
-# the VO ids can be constructed like this:
-catalogue_ivoid = f"ivo://CDS.VizieR/{CATALOGUE}"
-# the actual query to the registry
-voresource = registry.search(ivoid=catalogue_ivoid)[0]
+coords_s = SkyCoord(RA, DEC, unit="degree")
 
-conesearch_records = voresource.get_service("conesearch").search(
-    pos=conesearch_center,
-    sr=conesearch_radius,
-)
-conesearch_records
+from astropy.io import fits
 
-h_p = (h / u.s).to(u.eV).value  # Planck constant in eV*s
+hdul = fits.open("GLEAM_EGC_v2.fits.gz")
+hdul.info()
+table = hdul[1].data
+table.columns
 
-conesearch_records.fieldnames
+coords = SkyCoord(ras, decs, unit="degree")
+seps = coords.separation(coords_s).deg
+m = seps < Radius
+sum(m)
+ras[m], decs[m], flux_084[m]
+
+ras = table["RAJ2000"]
+decs = table["DEJ2000"]
+# flux=[table['int_flux_084']
+columns = table.columns
 nu = []
-F = []
-F_err = []
-for f in conesearch_records.fieldnames:
-    if (f[:4] == "Fint") and (f[4] != "w") and (f[4] != "f"):
-        nu.append(int(f[-3:]) * 1e6)  # in Hz
-        F.append(conesearch_records[f][0] * nu[-1] * 1e-23)
-        F_err.append(conesearch_records["e_" + f][0] * nu[-1] * 1e-23)
-
+flux = []
+flux_err = []
+for col in columns:
+    if (
+        (col.name[:8] == "int_flux")
+        and (col.name[9] != "w")
+        and (col.name[9] != "f")
+    ):
+        nu.append(int(col.name[9:12]) * 1e6)
+        flux.append(sum(table[col.name][m]) * nu[-1] * 1e-23)
+        flux_err.append(sum(table["err_" + col.name][m]) * nu[-1] * 1e-23)
 E = h_p * np.array(nu)
-plt.errorbar(E, F, F_err)
+plt.errorbar(E, flux, flux_err)
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("$E$, eV")
@@ -74,8 +76,13 @@ plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-data = [E, F, F_err]
-names = ("E[eV]", "Flux[erg/cm2s]", "Flux_error[erg/cm2s]")
+data = [E, nu, flux, flux_err]
+names = (
+    "Energy[eV]",
+    "frequency[Hz]",
+    "Flux[erg/cm2s]",
+    "Flux_error[erg/cm2s]",
+)
 spec = ODAAstropyTable(Table(data, names=names))
 
 picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct

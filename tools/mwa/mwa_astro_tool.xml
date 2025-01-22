@@ -46,7 +46,7 @@
         <param name="DEC" type="float" value="20.288191" label="DEC (unit: deg)" />
         <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
         <param name="T2" type="text" value="2022-10-10T13:16:00.0" label="T2" />
-        <param name="Radius" type="float" value="0.05" label="Radius (unit: deg)" />
+        <param name="Radius" type="float" value="0.5" label="Radius (unit: deg)" />
       </when>
     </conditional>
   </inputs>
@@ -89,7 +89,7 @@
         <param name="DEC" value="20.288191" />
         <param name="T1" value="2000-10-09T13:16:00.0" />
         <param name="T2" value="2022-10-10T13:16:00.0" />
-        <param name="Radius" value="0.05" />
+        <param name="Radius" value="0.5" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
