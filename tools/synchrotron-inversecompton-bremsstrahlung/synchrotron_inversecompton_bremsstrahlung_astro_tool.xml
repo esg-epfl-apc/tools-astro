@@ -1,21 +1,13 @@
 <tool id="synchrotron_inversecompton_bremsstrahlung_astro_tool" name="Synch-IC-Brems" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.31.0">ipython</requirement>
     <requirement type="package" version="7.0.0">astropy</requirement>
     <requirement type="package" version="3.10.0">matplotlib</requirement>
-    <requirement type="package" version="0.4.7">astroquery</requirement>
-    <requirement type="package" version="1.15.0">scipy</requirement>
+    <requirement type="package" version="0.4.8">astroquery</requirement>
+    <requirement type="package" version="1.15.1">scipy</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="7.16.5">nbconvert</requirement>
-    <requirement type="package" version="2.2.1">numpy</requirement>
-    <requirement type="package" version="2.30.1">iminuit</requirement>
-    <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="0.70.17">multiprocess</requirement>
-    <requirement type="package" version="1.3">gammapy</requirement>
-    <requirement type="package" version="2.2.3">pandas</requirement>
-    <requirement type="package" version="5.24.1">plotly</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.5">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
@@ -61,7 +53,7 @@
         <param name="Z" type="float" value="1.4" label="average atomic charge of the medium" />
         <param name="T" type="float" value="2.73" label="Temperature of black body photon background [K]" />
         <param name="Back_norm" type="float" value="1.0" label="Normalization of blackbody photon background (&lt;=1)" />
-        <param name="backgr_dN_dE" type="text" value="" label="Custom background spectral energy density [1/(eV cm3)]" />
+        <param name="backgr_dN_dE" type="text" value="E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" label="Custom background spectral energy density [1/(eV cm3)]" />
         <param name="backgr_file" type="data" label="Background spectrum ascii file (overrides parameters above)" format="data" />
       </when>
     </conditional>
@@ -134,7 +126,7 @@
         <param name="Z" value="1.4" />
         <param name="T" value="2.73" />
         <param name="Back_norm" value="1.0" />
-        <param name="backgr_dN_dE" value="" />
+        <param name="backgr_dN_dE" value="E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" />
         <param name="backgr_file" value="backgr_file.json" />
       </conditional>
       <assert_stdout>

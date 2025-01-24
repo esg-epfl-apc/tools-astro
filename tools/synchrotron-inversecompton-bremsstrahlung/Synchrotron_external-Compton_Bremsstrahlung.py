@@ -36,8 +36,9 @@ n = 1.0e-1  # http://odahub.io/ontology#Float ; oda:label "density of the medium
 Z = 1.4  # http://odahub.io/ontology#Float ; oda:label "average atomic charge of the medium"
 T = 2.73  # http://odahub.io/ontology#Float ; oda:label "Temperature of black body photon background [K]"
 Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of blackbody photon background (<=1)"
-# backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
-backgr_dN_dE = ""  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
+backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3"  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
+# backgr_dN_dE = "" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
+# backgr_file = 'CMB_EBL_z1.csv' # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
 backgr_file = ""  # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
 
 _galaxy_wd = os.getcwd()
@@ -182,13 +183,16 @@ if len(backgr_file) > 0:
     ff = d[:, 1]
     plt.plot(ee, ee * ff)
     backgr = energy * np.interp(energy, ee, ff)
+    backgr = backgr * (energy > min(ee))
+    backgr = backgr * (energy < max(ee))
 elif len(backgr_dN_dE) > 0:
     backgr = energy * Assumed_backgr(energy)
 else:
     backgr = energy * Back_norm * Thermal(energy, T)
 
 plt.plot(energy, backgr)
-plt.ylim(max(backgr) / 1e3, max(backgr) * 2)
+plt.ylim(max(backgr) / 1e7, max(backgr) * 2)
+
 plt.xlim(energy[np.argmax(backgr)] / 100, energy[np.argmax(backgr)] * 100)
 plt.xscale("log")
 plt.yscale("log")
