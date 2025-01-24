@@ -21,32 +21,34 @@ from oda_api.token import discover_token
 
 token = discover_token(allow_invalid=True)
 
-# token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0MjcxMjV9.wDtqEZIGlNe0uxoO9jc3Y4D--RK8XK77TMZ3-qDdSjk"
-# token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbmRyaWkubmVyb25vdkBnbWFpbC5jb20iLCJlbWFpbCI6ImFuZHJpaS5uZXJvbm92QGdtYWlsLmNvbSIsIm5hbWUiOiJhbmRyaWluZXJvbm92Iiwicm9sZXMiOiJhdXRoZW50aWNhdGVkIHVzZXIsIGFkbWluaXN0cmF0b3IsIHVzZXIgbWFuYWdlciwgZ2VuZXJhbCwgaW50ZWdyYWwtcHJpdmF0ZS1xbGEsIHVuaWdlLWhwYy1mdWxsLCBwdWJsaWMtcG9vbC1ocGMsIGFudGFyZXMsIHNkc3MsIGFwYywgcmVua3UgY29udHJpYnV0b3IsIGdhbGxlcnkgY29udHJpYnV0b3IsIG9kYSB3b3JrZmxvdyBkZXZlbG9wZXIiLCJleHAiOjE3Mzg0NDc2MTJ9.15boefij-LRgE_XyobvaQO_iLTW7dggnrtBvqsR3FEM"
-
 workdir = os.getcwd()
 
-src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 166.113809  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 38.208833  # http://odahub.io/ontology#PointOfInterestDEC
+src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 83.6324  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 22.0174  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
 
-do_jemx = (
-    True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/JEM-X"
+do_mwa = True  # http://odahub.io/ontology#Boolean ; oda:label "MWA (radio"
+do_jemx = True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/JEM-X (X-ray)"
+do_isgri = True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/ISGRI (hard X-ray)"
+do_fermi = True  # http://odahub.io/ontology#Boolean ; oda:label "Fermi/LAT (gamma-ray)"
+do_magic = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC (gamma-ray)"
 )
-do_isgri = (
-    True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/ISGRI"
+do_icecube = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "IceCube (neutrino)"
 )
-do_fermi = True  # http://odahub.io/ontology#Boolean ; oda:label "Fermi/LAT"
-do_magic = True  # http://odahub.io/ontology#Boolean ; oda:label "MAGIC"
-do_icecube = True  # http://odahub.io/ontology#Boolean ; oda:label "IceCube"
-do_auger = True  # http://odahub.io/ontology#Boolean ; oda:label "Auger"
-do_hess = True  # http://odahub.io/ontology#Boolean ; oda:label "HESS"
-do_gaia = True  # http://odahub.io/ontology#Boolean ; oda:label "GAIA"
-do_legacysurvey = (
-    True  # http://odahub.io/ontology#Boolean ; oda:label "DESI Legacy Survey"
+do_auger = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "Auger (UHECR)"
 )
+do_hess = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "HESS (gamma-ray)"
+)
+do_gaia = (
+    True  # http://odahub.io/ontology#Boolean ; oda:label "GAIA (visible)"
+)
+do_legacysurvey = True  # http://odahub.io/ontology#Boolean ; oda:label "DESI Legacy Survey (visible/infrared)"
 
 _galaxy_wd = os.getcwd()
 
@@ -63,6 +65,7 @@ for _vn in [
     "DEC",
     "T1",
     "T2",
+    "do_mwa",
     "do_jemx",
     "do_isgri",
     "do_fermi",
@@ -100,7 +103,35 @@ def exp_counts_jemx(A, Gam):
         tmp[i] += sum(spectrum_dndE * dENERG * resp_jemx[:, i] * aeff)
     return tmp
 
-pr.report_progress(stage="JEM-X", progress=5)
+pr.report_progress(stage="MWA", progress=5)
+FLAG_mwa = 0
+if do_mwa:
+    try:
+        par_dict = {
+            "DEC": DEC,
+            "RA": RA,
+            "Radius": 0.1,
+            "T1": "2017-03-06T13:26:48.000",
+            "T2": "2017-03-06T15:32:27.000",
+            "T_format": "isot",
+            "instrument": "mwa",
+            "product": "Spectrum",
+            "product_type": "Real",
+            "src_name": src_name,
+            "token": token,
+        }
+
+        data_collection_mwa = disp.get_product(**par_dict)
+        tab = data_collection_mwa.spectrum_astropy_table_0.table
+        E_mwa = tab["Energy[eV]"] * 1e-12
+        F_mwa = tab["Flux[erg/cm2s]"] / 1.6
+        F_mwa_err = tab["Flux_error[erg/cm2s]"] / 1.6
+        UL_mwa = F_mwa_err < F_mwa / 2.0
+        FLAG_mwa = 1
+    except:
+        print("No MWA data")
+
+pr.report_progress(stage="JEM-X1", progress=10)
 FLAG_jemx = 0
 if do_jemx:
     try:
@@ -189,7 +220,7 @@ if do_jemx:
     except:
         print("No JEMX1 data")
 
-pr.report_progress(stage="JEM-X", progress=5)
+pr.report_progress(stage="JEM-X2", progress=15)
 if do_jemx:
     try:
         par_dict = {
@@ -283,8 +314,9 @@ if FLAG_jemx == 1:
     F_jemx_all = tmp / tmp1
     F_jemx_all_err = 1 / sqrt(tmp1)
     F_jemx_all, F_jemx_all_err
+    UL_jemx = F_jemx_all_err < F_jemx_all / 2.0
 
-pr.report_progress(stage="DESI Legacy Survey", progress=5)
+pr.report_progress(stage="DESI Legacy Survey", progress=20)
 FLAG_desi = 0
 if do_legacysurvey:
     try:
@@ -305,11 +337,12 @@ if do_legacysurvey:
         E_desi = tab["Energy[eV]"] / 1e12
         F_desi = tab["Flux[erg/cm2s]"] / 1.6
         Ferr_desi = tab["Flux_err[erg/cm2s]"] / 1.6
+        UL_desi = Ferr_desi < F_desi / 2.0
         FLAG_desi = 1
     except:
         print("No Legacy Survey data")
 
-pr.report_progress(stage="GAIA", progress=5)
+pr.report_progress(stage="GAIA", progress=25)
 FLAG_gaia = 0
 if do_gaia:
     try:
@@ -334,11 +367,12 @@ if do_gaia:
         Emax_gaia = tab["Emax[eV]"] * 1e-12
         F_gaia = tab["Flux[erg/cm2s]"] / 1.6
         Ferr_gaia = tab["Flux_error[erg/cm2s]"] / 1.6
+        UL_gaia = Ferr_gaia < F_gaia / 2.0
         FLAG_gaia = 1
     except:
         print("No GAIA data")
 
-pr.report_progress(stage="INTEGRAL/ISGRI", progress=10)
+pr.report_progress(stage="INTEGRAL/ISGRI", progress=30)
 FLAG_isgri = 0
 if do_isgri:
     par_dict = {
@@ -423,8 +457,9 @@ if do_isgri:
                 E_isgri = Emeans_isgri * 1e-9
                 Emins_isgri = Emins_isgri * 1e-9
                 Emaxs_isgri = Emaxs_isgri * 1e-9
+                UL_isgri = F_isgri_err < F_isgri / 2.0
 
-pr.report_progress(stage="HESS", progress=30)
+pr.report_progress(stage="HESS", progress=35)
 FLAG_hess = 0
 if do_hess:
     try:
@@ -458,6 +493,7 @@ if do_hess:
                 Emax_hess = tab["Emax[TeV]"]
                 F_hess = tab["Flux[TeV/cm2s]"]
                 F_err_hess = tab["Flux_error[TeV/cm2s]"]
+                UL_hess = F_err_hess < F_hess / 2.0
     except:
         print("No HESS data")
 
@@ -497,6 +533,7 @@ if do_magic:
                 Emax_magic = tab["Emax[TeV]"]
                 Flux_magic = tab["Flux[TeV/cm2s]"]
                 Flux_err_magic = tab["Flux_error[TeV/cm2s]"]
+                UL_magic = Flux_err_magic < Flux_magic / 2.0
     except:
         print("No MAGIC data")
 
@@ -532,6 +569,7 @@ if do_fermi:
             Emax_fermi = tab["Emax[MeV]"] * 1e-6
             F_fermi = tab["Flux[MeV/cm2s]"] * 1e-6
             F_err_fermi = tab["Flux_error[MeV/cm2s]"] * 1e-6
+            UL_fermi = F_err_fermi < F_fermi / 2.0
 
 pr.report_progress(stage="IceCube", progress=80)
 FLAG_icecube = 0
@@ -616,12 +654,15 @@ ymin_fermi = 1e20
 ymax_fermi = 1e-20
 ymin_isgri = 1e20
 ymax_isgri = 1e-20
+ymin_mwa = 1e20
+ymax_mwa = 1e-20
 
 if FLAG_desi == 1:
     plt.errorbar(
         E_desi,
         F_desi,
         yerr=Ferr_desi,
+        uplims=UL_desi,
         linestyle="none",
         color="black",
         label="DESI Legacy Survey",
@@ -633,6 +674,7 @@ if FLAG_gaia == 1:
         F_gaia,
         xerr=[E_gaia - Emin_gaia, Emax_gaia - E_gaia],
         yerr=Ferr_gaia,
+        uplims=UL_gaia,
         linestyle="none",
         color="magenta",
         label="GAIA",
@@ -645,6 +687,7 @@ if FLAG_isgri > 0:
         F_isgri[m],
         yerr=F_isgri_err[m],
         xerr=[E_isgri - Emins_isgri, Emaxs_isgri - E_isgri],
+        uplims=UL_isgri,
         label="INTEGRAL/ISGRI",
     )
     ymin_isgri = min(F_isgri[m]) / 3.0
@@ -712,8 +755,13 @@ if FLAG_magic > 0:
 
 if FLAG_hess > 0:
     plt.errorbar(E_hess, F_hess, yerr=F_err_hess, label="HESS")
-    ymin_hess = min(Flux_hess / 3.0)
-    ymax_hess = max(Flux_hess * 3.0)
+    ymin_hess = min(F_hess / 3.0)
+    ymax_hess = max(F_hess * 3.0)
+
+if FLAG_mwa > 0:
+    plt.errorbar(E_mwa, F_mwa, yerr=F_mwa_err, label="MWA")
+    ymin_mwa = min(F_mwa / 3.0)
+    ymax_mwa = max(F_mwa * 3.0)
 
 plt.xscale("log")
 plt.yscale("log")
