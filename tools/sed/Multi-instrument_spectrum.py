@@ -23,11 +23,11 @@ token = discover_token(allow_invalid=True)
 
 workdir = os.getcwd()
 
-src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 83.6324  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 22.0174  # http://odahub.io/ontology#PointOfInterestDEC
-T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2021-10-13T13:16:00.0"  # http://odahub.io/ontology#EndTime
+src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 166.1138083333333  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 38.20883277777778  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2000-03-06T13:26:48.0"  # http://odahub.io/ontology#StartTime
+T2 = "2024-03-06T15:32:27.0"  # http://odahub.io/ontology#EndTime
 
 do_mwa = True  # http://odahub.io/ontology#Boolean ; oda:label "MWA (radio"
 do_jemx = True  # http://odahub.io/ontology#Boolean ; oda:label "INTEGRAL/JEM-X (X-ray)"
@@ -126,7 +126,7 @@ if do_mwa:
         E_mwa = tab["Energy[eV]"] * 1e-12
         F_mwa = tab["Flux[erg/cm2s]"] / 1.6
         F_mwa_err = tab["Flux_error[erg/cm2s]"] / 1.6
-        UL_mwa = F_mwa_err < F_mwa / 2.0
+        UL_mwa = F_mwa_err > F_mwa / 2.0
         FLAG_mwa = 1
     except:
         print("No MWA data")
@@ -314,7 +314,7 @@ if FLAG_jemx == 1:
     F_jemx_all = tmp / tmp1
     F_jemx_all_err = 1 / sqrt(tmp1)
     F_jemx_all, F_jemx_all_err
-    UL_jemx = F_jemx_all_err < F_jemx_all / 2.0
+    UL_jemx = F_jemx_all_err > F_jemx_all / 2.0
 
 pr.report_progress(stage="DESI Legacy Survey", progress=20)
 FLAG_desi = 0
@@ -337,7 +337,7 @@ if do_legacysurvey:
         E_desi = tab["Energy[eV]"] / 1e12
         F_desi = tab["Flux[erg/cm2s]"] / 1.6
         Ferr_desi = tab["Flux_err[erg/cm2s]"] / 1.6
-        UL_desi = Ferr_desi < F_desi / 2.0
+        UL_desi = Ferr_desi > F_desi / 2.0
         FLAG_desi = 1
     except:
         print("No Legacy Survey data")
@@ -367,7 +367,7 @@ if do_gaia:
         Emax_gaia = tab["Emax[eV]"] * 1e-12
         F_gaia = tab["Flux[erg/cm2s]"] / 1.6
         Ferr_gaia = tab["Flux_error[erg/cm2s]"] / 1.6
-        UL_gaia = Ferr_gaia < F_gaia / 2.0
+        UL_gaia = Ferr_gaia > F_gaia / 2.0
         FLAG_gaia = 1
     except:
         print("No GAIA data")
@@ -457,7 +457,7 @@ if do_isgri:
                 E_isgri = Emeans_isgri * 1e-9
                 Emins_isgri = Emins_isgri * 1e-9
                 Emaxs_isgri = Emaxs_isgri * 1e-9
-                UL_isgri = F_isgri_err < F_isgri / 2.0
+                UL_isgri = F_isgri_err > F_isgri / 2.0
 
 pr.report_progress(stage="HESS", progress=35)
 FLAG_hess = 0
@@ -493,7 +493,7 @@ if do_hess:
                 Emax_hess = tab["Emax[TeV]"]
                 F_hess = tab["Flux[TeV/cm2s]"]
                 F_err_hess = tab["Flux_error[TeV/cm2s]"]
-                UL_hess = F_err_hess < F_hess / 2.0
+                UL_hess = F_err_hess > F_hess / 2.0
     except:
         print("No HESS data")
 
@@ -533,7 +533,7 @@ if do_magic:
                 Emax_magic = tab["Emax[TeV]"]
                 Flux_magic = tab["Flux[TeV/cm2s]"]
                 Flux_err_magic = tab["Flux_error[TeV/cm2s]"]
-                UL_magic = Flux_err_magic < Flux_magic / 2.0
+                UL_magic = Flux_err_magic > Flux_magic / 2.0
     except:
         print("No MAGIC data")
 
@@ -569,7 +569,7 @@ if do_fermi:
             Emax_fermi = tab["Emax[MeV]"] * 1e-6
             F_fermi = tab["Flux[MeV/cm2s]"] * 1e-6
             F_err_fermi = tab["Flux_error[MeV/cm2s]"] * 1e-6
-            UL_fermi = F_err_fermi < F_fermi / 2.0
+            UL_fermi = F_err_fermi > F_fermi / 2.0
 
 pr.report_progress(stage="IceCube", progress=80)
 FLAG_icecube = 0
@@ -744,6 +744,7 @@ if FLAG_fermi > 0:
         yerr=F_err_fermi,
         xerr=[E_fermi - Emin_fermi, Emax_fermi - E_fermi],
         label="Fermi/LAT",
+        uplims=UL_fermi,
     )
     ymin_fermi = min(F_fermi / 3.0)
     ymax_fermi = max(F_fermi * 3.0)
@@ -773,6 +774,8 @@ ymax = max([ymax_isgri, ymax_ic, ymax_fermi, ymax_magic, ymax_auger])
 plt.ylim(ymin, ymax)
 plt.title(src_name)
 plt.savefig("SED.png", format="png", bbox_inches="tight")
+
+UL_isgri, F_fermi, F_err_fermi
 
 from oda_api.data_products import PictureProduct
 

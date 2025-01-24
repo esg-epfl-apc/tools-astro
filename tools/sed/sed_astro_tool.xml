@@ -18,11 +18,11 @@
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
   <inputs>
-    <param name="src_name" type="text" value="Crab" label="src_name" />
-    <param name="RA" type="float" value="83.6324" label="RA (unit: deg)" />
-    <param name="DEC" type="float" value="22.0174" label="DEC (unit: deg)" />
-    <param name="T1" type="text" value="2000-10-09T13:16:00.0" label="T1" />
-    <param name="T2" type="text" value="2021-10-13T13:16:00.0" label="T2" />
+    <param name="src_name" type="text" value="Mrk 421" label="src_name" />
+    <param name="RA" type="float" value="166.1138083333333" label="RA (unit: deg)" />
+    <param name="DEC" type="float" value="38.20883277777778" label="DEC (unit: deg)" />
+    <param name="T1" type="text" value="2000-03-06T13:26:48.0" label="T1" />
+    <param name="T2" type="text" value="2024-03-06T15:32:27.0" label="T2" />
     <param name="do_mwa" type="boolean" checked="true" label="MWA (radio" />
     <param name="do_jemx" type="boolean" checked="true" label="INTEGRAL/JEM-X (X-ray)" />
     <param name="do_isgri" type="boolean" checked="true" label="INTEGRAL/ISGRI (hard X-ray)" />
@@ -39,11 +39,11 @@
   </outputs>
   <tests>
     <test expect_num_outputs="1">
-      <param name="src_name" value="Crab" />
-      <param name="RA" value="83.6324" />
-      <param name="DEC" value="22.0174" />
-      <param name="T1" value="2000-10-09T13:16:00.0" />
-      <param name="T2" value="2021-10-13T13:16:00.0" />
+      <param name="src_name" value="Mrk 421" />
+      <param name="RA" value="166.1138083333333" />
+      <param name="DEC" value="38.20883277777778" />
+      <param name="T1" value="2000-03-06T13:26:48.0" />
+      <param name="T2" value="2024-03-06T15:32:27.0" />
       <param name="do_mwa" value="True" />
       <param name="do_jemx" value="True" />
       <param name="do_isgri" value="True" />
