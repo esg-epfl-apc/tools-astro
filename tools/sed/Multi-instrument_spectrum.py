@@ -82,6 +82,23 @@ for _vn in [
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
+# Parameters
+src_name = "Crab"
+RA = 83.6325
+DEC = 22.0175
+T1 = "2000-03-06T13:26:48.000"
+T2 = "2024-03-06T15:32:27.000"
+do_mwa = True
+do_jemx = True
+do_isgri = True
+do_fermi = True
+do_magic = True
+do_icecube = True
+do_auger = True
+do_hess = True
+do_gaia = True
+do_legacysurvey = True
+
 FLAG_mwa = 0
 FLAG_jemx = 0
 FLAG_isgri = 0
@@ -473,9 +490,9 @@ while True:
         if state_list[i] == False:
             disp.poll()
             state_list[i] = disp.is_complete
-            instruments += "," + disp.instrument
+            instruments += disp.instrument + ", "
     pr.report_progress(
-        stage="Producing instrument products " + instruments,
+        stage="Working on " + instruments,
         progress=12 + int(sum(state_list) / len(state_list) * 76),
     )
     if np.all(state_list):
@@ -491,7 +508,7 @@ for i, disp in enumerate(disp_list):
     print(disp.instrument)
     pr.report_progress(
         stage="Collecting the results " + disp.instrument,
-        progress=88 + 10 * (i / len(disp_list)),
+        progress=88 + int(10 * (i / len(disp_list))),
     )
     try:
         par_dict = parameters[i]
@@ -665,7 +682,7 @@ for i, disp in enumerate(disp_list):
                         fluxes_max.append(F_auger + F_err_hi_auger)
                         fluxes_min.append(F_auger - F_err_lo_auger)
                         ULs.append(UL_auger)
-                        for k in range(len(E_Auger)):
+                        for k in range(len(E_auger)):
                             instruments.append("PierreAugerObservatory")
                 FLAG_auger = 1
             except Exception as e:
@@ -920,9 +937,6 @@ if FLAG_jemx == 1:
     ULs.append(UL_jemx)
     for k in range(len(Emeans_jemx)):
         instruments.append("INTEGRAL-JEMX")
-
-len(Energies), len(instruments)
-instruments
 
 E = np.array([])
 F = np.array([])
