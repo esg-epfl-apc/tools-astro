@@ -11,7 +11,7 @@
     <requirement type="package" version="1.2.27">oda-api</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.5">nbconvert</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/Multi-instrument_spectrum.py'</command>
   <configfiles>
@@ -23,7 +23,7 @@
     <param name="DEC" type="float" value="38.20883277777778" label="DEC (unit: deg)" />
     <param name="T1" type="text" value="2000-03-06T13:26:48.0" label="T1" />
     <param name="T2" type="text" value="2024-03-06T15:32:27.0" label="T2" />
-    <param name="do_mwa" type="boolean" checked="true" label="MWA (radio" />
+    <param name="do_mwa" type="boolean" checked="true" label="MWA (radio)" />
     <param name="do_jemx" type="boolean" checked="true" label="INTEGRAL/JEM-X (X-ray)" />
     <param name="do_isgri" type="boolean" checked="true" label="INTEGRAL/ISGRI (hard X-ray)" />
     <param name="do_fermi" type="boolean" checked="true" label="Fermi/LAT (gamma-ray)" />
@@ -36,9 +36,10 @@
   </inputs>
   <outputs>
     <data label="${tool.name} -&gt; Multi-instrument_spectrum sed_png" name="out_Multi_instrument_spectrum_sed_png" format="auto" from_work_dir="sed_png_galaxy.output" />
+    <data label="${tool.name} -&gt; Multi-instrument_spectrum sed_table" name="out_Multi_instrument_spectrum_sed_table" format="auto" from_work_dir="sed_table_galaxy.output" />
   </outputs>
   <tests>
-    <test expect_num_outputs="1">
+    <test expect_num_outputs="2">
       <param name="src_name" value="Mrk 421" />
       <param name="RA" value="166.1138083333333" />
       <param name="DEC" value="38.20883277777778" />
