@@ -82,23 +82,6 @@ for _vn in [
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-# Parameters
-src_name = "Crab"
-RA = 83.6325
-DEC = 22.0175
-T1 = "2000-03-06T13:26:48.000"
-T2 = "2024-03-06T15:32:27.000"
-do_mwa = True
-do_jemx = True
-do_isgri = True
-do_fermi = True
-do_magic = True
-do_icecube = True
-do_auger = True
-do_hess = True
-do_gaia = True
-do_legacysurvey = True
-
 FLAG_mwa = 0
 FLAG_jemx = 0
 FLAG_isgri = 0
