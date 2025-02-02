@@ -11,7 +11,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.constants import h
-from numpy import pi, sqrt
+from numpy import sqrt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
 from pyvo import registry  # version >=1.4.1
@@ -60,7 +60,8 @@ if sum(m) == 0:
     raise AnalysisError("No data found")
     message = "No data found!"
 
-h_p = 2 * pi * h.to(u.eV * u.s).value
+h_p = h.to(u.eV * u.s).value
+h_p
 
 nu = []
 flux = []
