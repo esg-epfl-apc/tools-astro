@@ -26,10 +26,6 @@ workdir = os.getcwd()
 src_name = "Crab"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 83.6325  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 22.0175  # http://odahub.io/ontology#PointOfInterestDEC
-
-src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
-RA = 166.1138083333333  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 38.20883277777778  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-03-06T13:26:48.0"  # http://odahub.io/ontology#StartTime
 T2 = "2024-03-06T15:32:27.0"  # http://odahub.io/ontology#EndTime
 
@@ -311,8 +307,8 @@ if do_hess:
             "Efit_max": 10.0,
             "Efit_min": 0.2,
             "Emax": 100.0,
-            "Emin": 1.0,
-            "NEbins": 30,
+            "Emin": 0.1,
+            "NEbins": 15,
             "R_s": 0.2,
             "Radius": 1.0,
             "T1": T1,
