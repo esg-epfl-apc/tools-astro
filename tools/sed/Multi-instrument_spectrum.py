@@ -620,7 +620,6 @@ for i, disp in enumerate(disp_list):
             except Exception as e:
                 print(e)
 
-        pr.report_progress(stage="Collecting the results", progress=95)
         if par_dict["instrument"] == "gaia":
             try:
                 tab = data_collection.spectrum_astropy_table_0.table
@@ -641,7 +640,6 @@ for i, disp in enumerate(disp_list):
             except Exception as e:
                 print(e)
 
-        pr.report_progress(stage="Collecting the results", progress=96)
         if par_dict["instrument"] == "auger":
             try:
                 dic = data_collection.as_list()
@@ -957,11 +955,6 @@ names = (
     "instrument",
 )
 sed_table = ODAAstropyTable(Table(data, names=names))
-
-if FLAG_mwa > 0:
-    plt.errorbar(E_mwa, F_mwa, yerr=F_mwa_err, label="MWA")
-    ymin_mwa = min(F_mwa / 3.0)
-    ymax_mwa = max(F_mwa * 3.0)
 
 pr.report_progress(stage="SED preparation", progress=99)
 ymin_auger = 1e20
