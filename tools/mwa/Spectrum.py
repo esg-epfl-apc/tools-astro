@@ -11,6 +11,7 @@ import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
 from astropy.constants import h
+from astroquery.skyview import SkyView
 from numpy import sqrt
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 from oda_api.json import CustomJSONEncoder
@@ -18,12 +19,13 @@ from pyvo import registry  # version >=1.4.1
 
 class AnalysisError(RuntimeError): ...
 
+h_p = h.to(u.eV * u.s).value
+
 src_name = "1ES 0229+200"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 0.5  # http://odahub.io/ontology#AngleDegrees
 
 _galaxy_wd = os.getcwd()
 
@@ -34,12 +36,18 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
+for _vn in ["src_name", "RA", "DEC", "T1", "T2"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
+Radius = 0.1  # http://odahub.io/ontology#AngleDegrees
+pixsize = 0.01
+pixels = int(2 * Radius / pixsize) + 1
+source_pix = int(Radius / pixsize)
 from astropy.coordinates import SkyCoord
 
 coords_s = SkyCoord(RA, DEC, unit="degree")
+pos = str(RA) + ", " + str(DEC)
+pos
 
 from astropy.io import fits
 
@@ -54,51 +62,117 @@ decs = table["DEJ2000"]
 columns = table.columns
 coords = SkyCoord(ras, decs, unit="degree")
 seps = coords.separation(coords_s).deg
-m = seps < Radius
-sum(m)
-if sum(m) == 0:
+
+freq_list = [
+    "GLEAM 72-103 MHz",
+    "GLEAM 103-134 MHz",
+    "GLEAM 139-170 MHz",
+    "GLEAM 170-231 MHz",
+]
+fmin = np.array([73.0, 103.0, 139.0, 170.0]) * 1e6
+fmax = np.array([103.0, 134.0, 170.0, 231.0]) * 1e6
+fmid = sqrt(fmin * fmax)
+Emid = h_p * fmid
+Emax = h_p * fmax
+Emin = h_p * fmin
+
+try:
+    images = SkyView.get_images(
+        position=pos, survey=freq_list, pixels=pixels, radius=Radius * u.deg
+    )
+    f = []
+    ferr = []
+    for i in range(len(images)):
+        im = images[i][0].data
+        f.append(im[source_pix, source_pix] * fmid[i] * 1e-23)
+        im_flat = im.flatten()
+        f1 = max(im_flat)
+        f0 = min(im_flat)
+        h = np.histogram(im_flat, bins=np.linspace(f0, f1, 101))
+        profile = h[0]
+        profile_cum = np.cumsum(profile)
+        profile_cum = profile_cum / profile_cum[-1]
+        fbins = h[1]
+        fvalues = (fbins[:-1] + fbins[1:]) / 2.0
+        plt.plot(fvalues, profile_cum * 30)
+        m = profile_cum < 0.5 - 0.34
+        f1 = fvalues[m][-1]
+        m = profile_cum < 0.5 + 0.34
+        f2 = fvalues[m][-1]
+        ferr.append((f2 - f1) / 2.0 * fmid[i] * 1e-23)
+        plt.axvline(np.median(im_flat), color="red")
+        print(f[-1], ferr[-1])
+except:
     raise AnalysisError("No data found")
     message = "No data found!"
 
-h_p = h.to(u.eV * u.s).value
-h_p
+m = seps < Radius
 
-nu = []
-flux = []
-flux_err = []
-for col in columns:
-    if (
-        (col.name[:8] == "int_flux")
-        and (col.name[9] != "w")
-        and (col.name[9] != "f")
-    ):
-        nu.append(int(col.name[9:12]) * 1e6)
-        flux.append(sum(table[col.name][m]) * nu[-1] * 1e-23)
-        flux_err.append(
-            sqrt(sum((table["err_" + col.name][m]) ** 2)) * nu[-1] * 1e-23
-        )
-E = h_p * np.array(nu)
-plt.errorbar(E, flux, flux_err)
+if len(table[m]) > 0.0:
+    nu = []
+    flux = []
+    flux_err = []
+    for col in columns:
+        if (
+            (col.name[:8] == "int_flux")
+            and (col.name[9] != "w")
+            and (col.name[9] != "f")
+        ):
+            nu.append(int(col.name[9:12]) * 1e6)
+            flux.append(sum(table[col.name][m]) * nu[-1] * 1e-23)
+            flux_err.append(
+                sqrt(sum((table["err_" + col.name][m]) ** 2)) * nu[-1] * 1e-23
+            )
+    E = h_p * np.array(nu)
+
+plt.errorbar(
+    E, flux, flux_err, label="sum of catalog source fluxes within aperture"
+)
+plt.errorbar(
+    Emid,
+    f,
+    yerr=ferr,
+    xerr=[Emid - Emin, Emax - Emid],
+    linestyle="none",
+    color="black",
+    linewidth=2,
+    marker="o",
+    label="point source flux at requested position (from images)",
+)
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("$E$, eV")
 plt.ylabel("$E F_E$, erg/cm$^2$s")
+plt.legend(loc="lower right")
 plt.savefig("Spectrum.png", format="png", bbox_inches="tight")
 
 bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
-data = [E, nu, flux, flux_err]
+names = ("E[eV]", "frequency[Hz]", "Flux[erg/cm2s]", "Flux_error[erg/cm2s]")
+if len(m) > 0:
+    data = [E, nu, flux, flux_err]
+    spec = ODAAstropyTable(Table(data, names=names))
+else:
+    data = [[0], [0], [0], [0]]
+    spec = ODAAstropyTable(Table(data, names=names))
+
 names = (
-    "Energy[eV]",
-    "frequency[Hz]",
+    "E[eV]",
+    "Emin[eV]",
+    "Emax[eV]",
+    "f[Hz]",
+    "fmin[Hz]",
+    "fmax[Hz]",
     "Flux[erg/cm2s]",
     "Flux_error[erg/cm2s]",
 )
-spec = ODAAstropyTable(Table(data, names=names))
+data = [Emid, Emin, Emax, fmid, fmin, fmax, f, ferr]
+spec_image = ODAAstropyTable(Table(data, names=names))
 
 picture_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
-spectrum_astropy_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+spectrum_catalog_table = spec  # http://odahub.io/ontology#ODAAstropyTable
+spectrum_image_table = spec_image  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
@@ -108,9 +182,16 @@ _oda_outs.append(
 )
 _oda_outs.append(
     (
-        "out_Spectrum_spectrum_astropy_table",
-        "spectrum_astropy_table_galaxy.output",
-        spectrum_astropy_table,
+        "out_Spectrum_spectrum_catalog_table",
+        "spectrum_catalog_table_galaxy.output",
+        spectrum_catalog_table,
+    )
+)
+_oda_outs.append(
+    (
+        "out_Spectrum_spectrum_image_table",
+        "spectrum_image_table_galaxy.output",
+        spectrum_image_table,
     )
 )
 

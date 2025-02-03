@@ -18,7 +18,7 @@ class AnalysisError(RuntimeError): ...
 
 src_name = "1ES 0229+200"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 40.288191  # http://odahub.io/ontology#PointOfInterestDEC
+DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
 Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
