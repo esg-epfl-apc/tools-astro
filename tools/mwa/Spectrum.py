@@ -40,9 +40,10 @@ for _vn in ["src_name", "RA", "DEC", "T1", "T2"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 Radius = 0.1  # http://odahub.io/ontology#AngleDegrees
+Imsize = 0.2  # http://odahub.io/ontology#AngleDegrees
 pixsize = 0.01
-pixels = int(2 * Radius / pixsize) + 1
-source_pix = int(Radius / pixsize)
+pixels = int(2 * Imsize / pixsize) + 1
+source_pix = int(Imsize / pixsize)
 from astropy.coordinates import SkyCoord
 
 coords_s = SkyCoord(RA, DEC, unit="degree")
@@ -78,33 +79,37 @@ Emin = h_p * fmin
 
 try:
     images = SkyView.get_images(
-        position=pos, survey=freq_list, pixels=pixels, radius=Radius * u.deg
+        position=pos, survey=freq_list, pixels=pixels, radius=Imsize * u.deg
     )
-    f = []
-    ferr = []
-    for i in range(len(images)):
-        im = images[i][0].data
-        f.append(im[source_pix, source_pix] * fmid[i] * 1e-23)
-        im_flat = im.flatten()
-        f1 = max(im_flat)
-        f0 = min(im_flat)
-        h = np.histogram(im_flat, bins=np.linspace(f0, f1, 101))
-        profile = h[0]
-        profile_cum = np.cumsum(profile)
-        profile_cum = profile_cum / profile_cum[-1]
-        fbins = h[1]
-        fvalues = (fbins[:-1] + fbins[1:]) / 2.0
-        plt.plot(fvalues, profile_cum * 30)
-        m = profile_cum < 0.5 - 0.34
-        f1 = fvalues[m][-1]
-        m = profile_cum < 0.5 + 0.34
-        f2 = fvalues[m][-1]
-        ferr.append((f2 - f1) / 2.0 * fmid[i] * 1e-23)
-        plt.axvline(np.median(im_flat), color="red")
-        print(f[-1], ferr[-1])
 except:
     raise AnalysisError("No data found")
     message = "No data found!"
+
+im = images[-1][0].data
+plt.imshow(im)
+
+f = []
+ferr = []
+for i in range(len(images)):
+    im = images[i][0].data
+    f.append(im[source_pix, source_pix] * fmid[i] * 1e-23)
+    im_flat = im.flatten()
+    f1 = max(im_flat)
+    f0 = min(im_flat)
+    fbins = np.linspace(f0, f1, 1001)
+    fvalues = (fbins[:-1] + fbins[1:]) / 2.0
+    h = np.histogram(im_flat, bins=fbins)
+    profile = h[0]
+    profile_cum = np.cumsum(profile)
+    profile_cum = profile_cum / profile_cum[-1]
+    plt.plot(fvalues, profile_cum)
+    m = profile_cum < 0.5 - 0.34
+    f1 = fvalues[m][-1]
+    m = profile_cum < 0.5 + 0.34
+    f2 = fvalues[m][-1]
+    ferr.append((f2 - f1) / 2.0 * fmid[i] * 1e-23)
+    plt.axvline(np.median(im_flat), color="red")
+    print(f[-1], ferr[-1])
 
 m = seps < Radius
 
@@ -125,9 +130,10 @@ if len(table[m]) > 0.0:
             )
     E = h_p * np.array(nu)
 
-plt.errorbar(
-    E, flux, flux_err, label="sum of catalog source fluxes within aperture"
-)
+if sum(m) > 0:
+    plt.errorbar(
+        E, flux, flux_err, label="sum of catalog source fluxes within aperture"
+    )
 plt.errorbar(
     Emid,
     f,
@@ -150,7 +156,7 @@ bin_image = PictureProduct.from_file("Spectrum.png")
 from astropy.table import Table
 
 names = ("E[eV]", "frequency[Hz]", "Flux[erg/cm2s]", "Flux_error[erg/cm2s]")
-if len(m) > 0:
+if sum(m) > 0:
     data = [E, nu, flux, flux_err]
     spec = ODAAstropyTable(Table(data, names=names))
 else:
