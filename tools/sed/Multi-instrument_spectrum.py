@@ -113,31 +113,36 @@ def exp_counts_jemx(A, Gam):
     return tmp
 
 pr.report_progress(stage="Sending requests for data products", progress=1)
-try:
-    if do_mwa:
+if do_fermi:
+    try:
         disp = DispatcherAPI(
             url="https://www.astro.unige.ch/mmoda//dispatch-data",
             instrument="mock",
             wait=False,
         )
         par_dict = {
-            "DEC": DEC,
+            "Background_region_radius": 4.0,
             "RA": RA,
-            "Radius": 0.1,
-            "T1": T1,
-            "T2": T2,
+            "DEC": DEC,
+            "Emax": 1000000.0,
+            "Emin": 100.0,
+            "NEbins": 8,
+            "Radius": 15.0,
+            "Source_region_radius": 2.0,
+            "T1": "2017-03-06T13:26:48.000",
+            "T2": "2017-07-06T15:32:27.000",
             "T_format": "isot",
-            "instrument": "mwa",
-            "product": "Spectrum",
+            "instrument": "fermi_lat",
+            "product": "Spectrum_aperture",
             "product_type": "Real",
             "src_name": src_name,
             "token": token,
         }
-        job = disp.get_product(**par_dict)
+        data_collection_fermi = disp.get_product(**par_dict)
         disp_list.append(disp)
         parameters.append(par_dict)
-except Exception as e:
-    print(e)
+    except Exception as e:
+        print(e)
 
 pr.report_progress(stage="Sending requests for data products", progress=2)
 if do_jemx:
@@ -208,59 +213,6 @@ if do_jemx:
         print(e)
 
 pr.report_progress(stage="Sending requests for data products", progress=4)
-if do_legacysurvey:
-    try:
-        disp = DispatcherAPI(
-            url="https://www.astro.unige.ch/mmoda//dispatch-data",
-            instrument="mock",
-            wait=False,
-        )
-        par_dict = {
-            "DEC": DEC,
-            "RA": RA,
-            "Radius": 0.1,
-            "data_release": 10,
-            "instrument": "desi_legacy_survey",
-            "product": "Spectrum",
-            "product_type": "Real",
-            "src_name": src_name,
-            "token": token,
-        }
-        data_collection_legacysurvey = disp.get_product(**par_dict)
-        disp_list.append(disp)
-        parameters.append(par_dict)
-    except Exception as e:
-        print(e)
-
-pr.report_progress(stage="Sending requests for data products", progress=5)
-if do_gaia:
-    try:
-        disp = DispatcherAPI(
-            url="https://www.astro.unige.ch/mmoda//dispatch-data",
-            instrument="mock",
-            wait=False,
-        )
-        par_dict = {
-            "DEC": DEC,
-            "RA": RA,
-            "T1": T1,
-            "T2": T2,
-            "T_format": "isot",
-            "data_release": 3,
-            "instrument": "gaia",
-            "product": "Spectrum_from_photometry",
-            "product_type": "Real",
-            "radius_photometry": 60.0,
-            "src_name": src_name,
-            "token": token,
-        }
-        data_collection_gaia = disp.get_product(**par_dict)
-        disp_list.append(disp)
-        parameters.append(par_dict)
-    except Exception as e:
-        print(e)
-
-pr.report_progress(stage="Sending requests for data products", progress=6)
 if do_isgri:
     try:
         disp = DispatcherAPI(
@@ -288,6 +240,59 @@ if do_isgri:
             "token": token,
         }
         data_collection_isgri = disp.get_product(**par_dict)
+        disp_list.append(disp)
+        parameters.append(par_dict)
+    except Exception as e:
+        print(e)
+
+pr.report_progress(stage="Sending requests for data products", progress=5)
+if do_legacysurvey:
+    try:
+        disp = DispatcherAPI(
+            url="https://www.astro.unige.ch/mmoda//dispatch-data",
+            instrument="mock",
+            wait=False,
+        )
+        par_dict = {
+            "DEC": DEC,
+            "RA": RA,
+            "Radius": 0.1,
+            "data_release": 10,
+            "instrument": "desi_legacy_survey",
+            "product": "Spectrum",
+            "product_type": "Real",
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_legacysurvey = disp.get_product(**par_dict)
+        disp_list.append(disp)
+        parameters.append(par_dict)
+    except Exception as e:
+        print(e)
+
+pr.report_progress(stage="Sending requests for data products", progress=6)
+if do_gaia:
+    try:
+        disp = DispatcherAPI(
+            url="https://www.astro.unige.ch/mmoda//dispatch-data",
+            instrument="mock",
+            wait=False,
+        )
+        par_dict = {
+            "DEC": DEC,
+            "RA": RA,
+            "T1": T1,
+            "T2": T2,
+            "T_format": "isot",
+            "data_release": 3,
+            "instrument": "gaia",
+            "product": "Spectrum_from_photometry",
+            "product_type": "Real",
+            "radius_photometry": 60.0,
+            "src_name": src_name,
+            "token": token,
+        }
+        data_collection_gaia = disp.get_product(**par_dict)
         disp_list.append(disp)
         parameters.append(par_dict)
     except Exception as e:
@@ -362,36 +367,31 @@ if do_magic:
         print(e)
 
 pr.report_progress(stage="Sending requests for data products", progress=9)
-if do_fermi:
-    try:
+try:
+    if do_mwa:
         disp = DispatcherAPI(
             url="https://www.astro.unige.ch/mmoda//dispatch-data",
             instrument="mock",
             wait=False,
         )
         par_dict = {
-            "Background_region_radius": 4.0,
-            "RA": RA,
             "DEC": DEC,
-            "Emax": 1000000.0,
-            "Emin": 100.0,
-            "NEbins": 8,
-            "Radius": 15.0,
-            "Source_region_radius": 2.0,
-            "T1": "2017-03-06T13:26:48.000",
-            "T2": "2017-07-06T15:32:27.000",
+            "RA": RA,
+            "Radius": 0.1,
+            "T1": T1,
+            "T2": T2,
             "T_format": "isot",
-            "instrument": "fermi_lat",
-            "product": "Spectrum_aperture",
+            "instrument": "mwa",
+            "product": "Spectrum",
             "product_type": "Real",
             "src_name": src_name,
             "token": token,
         }
-        data_collection_fermi = disp.get_product(**par_dict)
+        job = disp.get_product(**par_dict)
         disp_list.append(disp)
         parameters.append(par_dict)
-    except Exception as e:
-        print(e)
+except Exception as e:
+    print(e)
 
 pr.report_progress(stage="Sending requests for data products", progress=10)
 if do_icecube:
@@ -586,8 +586,8 @@ for i, disp in enumerate(disp_list):
 
         if par_dict["instrument"] == "mwa":
             try:
-                tab = data_collection.spectrum_astropy_table_0.table
-                E_mwa = tab["Energy[eV]"] * 1e-12
+                tab = data_collection.spectrum_image_table_1.table
+                E_mwa = tab["E[eV]"] * 1e-12
                 F_mwa = tab["Flux[erg/cm2s]"] / 1.6
                 F_mwa_err = tab["Flux_error[erg/cm2s]"] / 1.6
                 UL_mwa = F_mwa_err > F_mwa / 2.0
@@ -958,6 +958,11 @@ names = (
 )
 sed_table = ODAAstropyTable(Table(data, names=names))
 
+if FLAG_mwa > 0:
+    plt.errorbar(E_mwa, F_mwa, yerr=F_mwa_err, label="MWA")
+    ymin_mwa = min(F_mwa / 3.0)
+    ymax_mwa = max(F_mwa * 3.0)
+
 pr.report_progress(stage="SED preparation", progress=99)
 ymin_auger = 1e20
 ymax_auger = 1e-20
@@ -974,6 +979,7 @@ ymax_isgri = 1e-20
 ymin_mwa = 1e20
 ymax_mwa = 1e-20
 
+plt.figure(figsize=(12, 7))
 if FLAG_legacysurvey == 1:
     plt.errorbar(
         E_desi,
@@ -1077,7 +1083,7 @@ if FLAG_hess > 0:
     ymax_hess = max(F_hess * 3.0)
 
 if FLAG_mwa > 0:
-    plt.errorbar(E_mwa, F_mwa, yerr=F_mwa_err, label="MWA")
+    plt.errorbar(E_mwa, F_mwa, yerr=F_mwa_err, label="MWA", marker="o")
     ymin_mwa = min(F_mwa / 3.0)
     ymax_mwa = max(F_mwa * 3.0)
 
@@ -1086,8 +1092,8 @@ plt.yscale("log")
 plt.xlabel("Energy [TeV]")
 plt.ylabel("Flux [TeV/(cm$^2$s)]")
 plt.legend(loc="upper right")
-ymin = min([ymin_isgri, ymin_ic, ymin_fermi, ymin_magic, ymin_auger])
-ymax = max([ymax_isgri, ymax_ic, ymax_fermi, ymax_magic, ymax_auger])
+ymin = min([ymin_mwa, ymin_isgri, ymin_ic, ymin_fermi, ymin_magic, ymin_auger])
+ymax = max([ymax_mwa, ymax_isgri, ymax_ic, ymax_fermi, ymax_magic, ymax_auger])
 plt.ylim(ymin, ymax)
 plt.title(src_name)
 plt.savefig("SED.png", format="png", bbox_inches="tight")
