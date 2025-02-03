@@ -21,7 +21,7 @@ RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 1.0  # http://odahub.io/ontology#AngleDegrees
+Radius = 0.1  # http://odahub.io/ontology#AngleDegrees
 pixsize = 0.01  # http://odahub.io/ontology#AngleDegrees
 Frequency = "GLEAM 170-231 MHz"  # http://odahub.io/ontology#String ; oda:allowed_value "GLEAM 72-103 MHz","GLEAM 103-134 MHz","GLEAM 139-170 MHz","GLEAM 170-231 MHz"
 

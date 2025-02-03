@@ -26,6 +26,7 @@ RA = 38.202562  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 20.288191  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2000-10-09T13:16:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2022-10-10T13:16:00.0"  # http://odahub.io/ontology#EndTime
+Radius = 0.1  # http://odahub.io/ontology#AngleDegrees
 
 _galaxy_wd = os.getcwd()
 
@@ -36,10 +37,9 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["src_name", "RA", "DEC", "T1", "T2"]:
+for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-Radius = 0.1  # http://odahub.io/ontology#AngleDegrees
 Imsize = 0.2  # http://odahub.io/ontology#AngleDegrees
 pixsize = 0.01
 pixels = int(2 * Imsize / pixsize) + 1
