@@ -1,7 +1,7 @@
 <tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="1.2.33">oda-api</requirement>
-    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="1.2.36">oda-api</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
     <requirement type="package" version="6.1.4">astropy</requirement>
     <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
@@ -10,6 +10,10 @@
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <inputs>
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
@@ -20,9 +24,11 @@
       <when value="spectrum">
         <param name="fn" type="data" label="fn" format="data" />
         <param name="sep" type="select" label="sep">
-          <option value="auto" selected="true">auto</option>
+          <option value="auto">auto</option>
           <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
           <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
         </param>
         <param name="column" type="text" value="c0" label="column" />
         <param name="weights" type="text" value="c1" label="weights" />
@@ -33,8 +39,9 @@
         <param name="minval" type="float" value="10000000000.0" label="minval" />
         <param name="maxval" type="float" value="10000000000000.0" label="maxval" />
         <param name="nbins" type="integer" value="15" label="nbins" />
-        <param name="xlabel" type="text" value="Energy, eV" label="xlabel" />
-        <param name="ylabel" type="text" value="Ncounts" label="ylabel" />
+        <param name="xlabel" type="text" value="Energy, [eV]" label="xlabel" />
+        <param name="ylabel" type="text" value="Flux E^2, [eV]" label="ylabel" />
+        <param name="spec_power" type="float" value="2.0" label="spec_power" />
       </when>
       <when value="sky_plot">
         <param name="ra_col" type="integer" value="0" label="ra_col" />
@@ -50,17 +57,20 @@
         <param name="fn" type="data" label="fn" format="data" />
         <param name="sep" type="select" label="sep">
           <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
           <option value="space">space</option>
-          <option value="tab" selected="true">tab</option>
+          <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
         </param>
         <param name="column" type="text" value="c5" label="column" />
-        <param name="weights_column" type="text" value="weight" label="weights_column" />
+        <param name="weights_column" type="text" value="" label="weights_column" />
         <param name="binning" type="select" label="binning">
           <option value="linear">linear</option>
           <option value="logarithmic" selected="true">logarithmic</option>
         </param>
-        <param name="minval" type="float" value="0.0" label="minval" />
-        <param name="maxval" type="float" value="0.0" label="maxval" />
+        <param name="minval" type="float" value="0" label="minval" />
+        <param name="maxval" type="float" value="0" label="maxval" />
+        <param name="use_quantile_values" type="boolean" label="use_quantile_values" />
         <param name="nbins" type="integer" value="15" label="nbins" />
         <param name="xlabel" type="text" value="time, s" label="xlabel" />
         <param name="ylabel" type="text" value="Ncounts" label="ylabel" />
@@ -91,16 +101,17 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="spectrum" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/testfile.tsv" />
-        <param name="sep" value="auto" />
+        <param name="fn" value="fn.json" />
+        <param name="sep" value="whitespace" />
         <param name="column" value="c0" />
         <param name="weights" value="c1" />
         <param name="binning" value="logarithmic" />
         <param name="minval" value="10000000000.0" />
         <param name="maxval" value="10000000000000.0" />
         <param name="nbins" value="15" />
-        <param name="xlabel" value="Energy, eV" />
-        <param name="ylabel" value="Ncounts" />
+        <param name="xlabel" value="Energy, [eV]" />
+        <param name="ylabel" value="Flux E^2, [eV]" />
+        <param name="spec_power" value="2.0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
@@ -112,7 +123,7 @@
         <param name="ra_col" value="0" />
         <param name="dec_col" value="1" />
         <param name="weight_col" value="2" />
-        <param name="data_file" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/data.tsv" />
+        <param name="data_file" value="data_file.json" />
         <param name="binsz" value="0.02" />
         <param name="window_size_RA" value="2.0" />
         <param name="window_size_DEC" value="2.0" />
@@ -125,13 +136,14 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="light_curve" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/52dbb9b7b2674303955b510ea28e3773a6f8ded1/testfile.tsv" />
-        <param name="sep" value="tab" />
+        <param name="fn" value="fn.json" />
+        <param name="sep" value="whitespace" />
         <param name="column" value="c5" />
-        <param name="weights_column" value="weight" />
+        <param name="weights_column" value="" />
         <param name="binning" value="logarithmic" />
-        <param name="minval" value="0.0" />
-        <param name="maxval" value="0.0" />
+        <param name="minval" value="0" />
+        <param name="maxval" value="0" />
+        <param name="use_quantile_values" value="False" />
         <param name="nbins" value="15" />
         <param name="xlabel" value="time, s" />
         <param name="ylabel" value="Ncounts" />

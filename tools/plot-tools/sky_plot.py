@@ -27,9 +27,17 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "ra_col",
+    "dec_col",
+    "weight_col",
+    "data_file",
+    "binsz",
+    "window_size_RA",
+    "window_size_DEC",
+    "skiprows",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import astropy.units as u
 import matplotlib.pyplot as plt

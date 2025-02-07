@@ -9,16 +9,17 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-fn = "testfile.tsv"  # oda:POSIXPath
-sep = "auto"  # http://odahub.io/ontology#String ; oda:allowed_value "auto", "comma", "tab"
+fn = "testfile_l.tsv"  # oda:POSIXPath
+sep = "whitespace"  # http://odahub.io/ontology#String ; oda:allowed_value "auto", "comma", "tab", "whitespace", "semicolon"
 column = "c0"  # http://odahub.io/ontology#String
 weights = "c1"  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
 minval = 1e10  # http://odahub.io/ontology#Float
 maxval = 1e13  # http://odahub.io/ontology#Float
 nbins = 15  # http://odahub.io/ontology#Integer
-xlabel = "Energy, eV"  # http://odahub.io/ontology#String
-ylabel = "Ncounts"  # http://odahub.io/ontology#String
+xlabel = "Energy, [eV]"  # http://odahub.io/ontology#String
+ylabel = "Flux E^2, [eV]"  # http://odahub.io/ontology#String
+spec_power = 2.0  # http://odahub.io/ontology#Float
 
 _galaxy_wd = os.getcwd()
 
@@ -29,33 +30,79 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "fn",
+    "sep",
+    "column",
+    "weights",
+    "binning",
+    "minval",
+    "maxval",
+    "nbins",
+    "xlabel",
+    "ylabel",
+    "spec_power",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-if sep == "tab":
-    sep = "\t"
-elif sep == "comma":
-    sep = ","
-elif sep == "auto":
-    for s in [",", "\t"]:
+separators = {
+    "tab": "\t",
+    "comma": ",",
+    "semicolon": ";",
+    "whitespace": "\s+",
+    "space": " ",
+}
+
+df = None
+
+if sep == "auto":
+    for name, s in separators.items():
         try:
             df = pd.read_csv(fn, sep=s, index_col=False)
             if len(df.columns) > 2:
                 sep = s
-                print("Detected separator: ", sep)
+                print("Detected separator: ", name)
                 break
         except Exception as e:
             print("Separator ", s, " failed", e)
-    pd.read_csv(fn, sep=sep, index_col=False)
+    assert sep != "auto", "Failed to find valid separator"
 
-    if sep == "auto":
-        raise Exception("Separator not detected")
+if df is None:
+    df = pd.read_csv(fn, sep=separators[sep], index_col=False)
 
-df = pd.read_csv(fn, sep=sep, index_col=False)
+df.columns
+
+weightname = ""
+colname = ""
+
+for i, c in enumerate(df.columns):
+
+    if column == f"c{i}":
+        colname = c
+    elif weights == f"c{i}":
+        weightname = c
+    elif column == c:
+        colname = c
+    elif weights == c:
+        weightname = c
+
+assert len(weightname) > 0 or len(weights) == 0, "weight column not found"
+assert len(colname) > 0, "value column not found"
+
+print(colname, weightname)
+
+values = df[colname].values
+
+if len(weightname) > 0:
+    weights = df[weightname].values
+else:
+    weights = np.ones_like(values)
+
+values, weights
 
 from numpy import log10
 
@@ -65,36 +112,42 @@ else:
     bins = np.logspace(log10(minval), log10(maxval), nbins + 1)
 bins
 
-import matplotlib.pyplot as plt
+# # generate test E^-alpha spec
+# alpha = -1
+# n_part = 100000
+# log10_E = np.log10(bins[0]) + np.random.rand(n_part) * (np.log10(bins[-1]) - np.log10(bins[0]))
+# values = np.power(10, log10_E)
+# weights = np.power(values, alpha + 1)
+# np.min(values)/minval, np.max(values)/maxval, len(values)
 
-for i, c in enumerate(df.columns):
-    if column == f"c{i}":
-        colname = c
-    elif weights == f"c{i}":
-        weightname = c
-print(colname, weightname)
+bin_val, _ = np.histogram(values, weights=weights, bins=bins)
+len(bin_val), len(bins)
+bin_width = bins[1:] - bins[:-1]
+flux = bin_val / bin_width
+if binning == "linear":
+    spec_point = 0.5 * (bins[1:] + bins[:-1])
+else:
+    spec_point = np.sqrt(bins[1:] * bins[:-1])
 
 plt.figure()
-h = plt.hist(df[colname], weights=df[weightname], bins=bins)
+h = plt.plot(spec_point, flux * spec_point**spec_power)
 
 if binning == "logarithmic":
     plt.xscale("log")
     plt.yscale("log")
+
 plt.xlabel(xlabel)
 plt.ylabel(ylabel)
-plt.savefig("Histogram.png", format="png", dpi=150)
-hist_counts = h[0]
-hist_bins = h[1]
-hist_mins = hist_bins[:-1]
-hist_maxs = hist_bins[1:]
+plt.savefig("spectrum.png", format="png", dpi=150)
 
 from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable, PictureProduct
 
-names = ("bins_min", "bins_max", "counts")
-res = ODAAstropyTable(Table([hist_mins, hist_maxs, hist_counts], names=names))
+names = ("bins_min", "bins_max", "flux")
 
-plot = PictureProduct.from_file("Histogram.png")
+res = ODAAstropyTable(Table([bins[:-1], bins[1:], flux], names=names))
+
+plot = PictureProduct.from_file("spectrum.png")
 
 histogram_data = res  # http://odahub.io/ontology#ODAAstropyTable
 histogram_picture = plot  # http://odahub.io/ontology#ODAPictureProduct

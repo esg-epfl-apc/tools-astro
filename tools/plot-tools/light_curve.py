@@ -9,13 +9,14 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-fn = "testfile.tsv"  # oda:POSIXPath
-sep = "tab"  # http://odahub.io/ontology#String ; oda:allowed_value "comma", "tab", "space"
+fn = "testfile_l.tsv"  # oda:POSIXPath
+sep = "whitespace"  # http://odahub.io/ontology#String ; oda:allowed_value "comma", "tab", "space", "whitespace", "semicolon"
 column = "c5"  # http://odahub.io/ontology#String
-weights_column = "weight"  # http://odahub.io/ontology#String
+weights_column = ""  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
-minval = 0.0  # http://odahub.io/ontology#Float
-maxval = 0.0  # http://odahub.io/ontology#Float
+minval = 0  # http://odahub.io/ontology#Float
+maxval = 0  # http://odahub.io/ontology#Float
+use_quantile_values = False  # https://odahub.io/ontology/#Boolean
 nbins = 15  # http://odahub.io/ontology#Integer
 xlabel = "time, s"  # http://odahub.io/ontology#String
 ylabel = "Ncounts"  # http://odahub.io/ontology#String
@@ -29,23 +30,95 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "fn",
+    "sep",
+    "column",
+    "weights_column",
+    "binning",
+    "minval",
+    "maxval",
+    "use_quantile_values",
+    "nbins",
+    "xlabel",
+    "ylabel",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-if sep == "tab":
-    sep = "\t"
-elif sep == "comma":
-    sep = ","
-elif sep == "space":
-    sep = " "
-df = pd.read_csv(fn, sep=sep, index_col=False)
+assert minval >= 0 or not use_quantile_values
+assert maxval >= 0 or not use_quantile_values
+assert minval <= 1 or not use_quantile_values
+assert maxval <= 1 or not use_quantile_values
+assert minval < maxval or minval == 0 or maxval == 0
+
+separators = {
+    "tab": "\t",
+    "comma": ",",
+    "semicolon": ";",
+    "whitespace": "\s+",
+    "space": " ",
+}
+
+df = None
+
+if sep == "auto":
+    for name, s in separators.items():
+        try:
+            df = pd.read_csv(fn, sep=s, index_col=False)
+            if len(df.columns) > 2:
+                sep = s
+                print("Detected separator: ", name)
+                break
+        except Exception as e:
+            print("Separator ", s, " failed", e)
+    assert sep != "auto", "Failed to find valid separator"
+
+if df is None:
+    df = pd.read_csv(fn, sep=separators[sep], index_col=False)
 
 df.columns
+
+def weighted_quantile(
+    values, quantiles, sample_weight=None, values_sorted=False, old_style=False
+):
+    """Very close to numpy.percentile, but supports weights.
+    NOTE: quantiles should be in [0, 1]!
+    :param values: numpy.array with data
+    :param quantiles: array-like with many quantiles needed
+    :param sample_weight: array-like of the same length as `array`
+    :param values_sorted: bool, if True, then will avoid sorting of initial array
+    :param old_style: if True, will correct output to be consistent with numpy.percentile.
+    :return: numpy.array with computed quantiles.
+    """
+    values = np.array(values)
+    quantiles = np.array(quantiles)
+    if sample_weight is None:
+        sample_weight = np.ones(len(values))
+    sample_weight = np.array(sample_weight)
+    assert np.all(quantiles >= 0) and np.all(
+        quantiles <= 1
+    ), "quantiles should be in [0, 1]"
+
+    if not values_sorted:
+        sorter = np.argsort(values)
+        values = values[sorter]
+        sample_weight = sample_weight[sorter]
+
+    weighted_quantiles = np.cumsum(sample_weight) - 0.5 * sample_weight
+    if old_style:
+        # To be convenient with np.percentile
+        weighted_quantiles -= weighted_quantiles[0]
+        weighted_quantiles /= weighted_quantiles[-1]
+    else:
+        weighted_quantiles /= np.sum(sample_weight)
+    return np.interp(quantiles, weighted_quantiles, values)
+
+weightname = ""
+colname = ""
 
 for i, c in enumerate(df.columns):
 
@@ -57,26 +130,50 @@ for i, c in enumerate(df.columns):
         colname = c
     elif weights_column == c:
         weightname = c
-print(colname, weightname)
-weights = df[weightname]
-delays = df[colname]
 
-if minval < 0:
-    minval = np.min(delays)
-if maxval <= 0:
-    maxval = np.max(delays)
+assert (
+    len(weightname) > 0 or len(weights_column) == 0
+), "weight column not found"
+assert len(colname) > 0, "value column not found"
+
+print(colname, weightname)
+
+delays = df[colname].values
+
+if len(weightname) > 0:
+    weights = df[weightname].values
+else:
+    weights = np.ones_like(delays)
+
+if binning != "linear":
+    min_positive_val = np.min(delays[delays > 0])
+    delays[delays <= 0] = (
+        min_positive_val  # replace zero delays with minimal positive value
+    )
+
+if use_quantile_values:
+    minval, maxval = weighted_quantile(
+        delays, [minval, maxval], sample_weight=weights
+    )
+    if minval == maxval:
+        print("ignoreing minval and maxval (empty range)")
+        minval = np.min(delays)
+        maxval = np.max(delays)
+else:
+    if minval == 0:
+        minval = np.min(delays)
+    if maxval == 0:
+        maxval = np.max(delays)
+
+if minval == maxval:
+    print("correcting minval and maxval (empty range)")
+    maxval = minval * 1.1 if minval > 0 else 1e-100
 
 from numpy import log10
 
 if binning == "linear":
     bins = np.linspace(minval, maxval, nbins + 1)
 else:
-    if minval == 0:
-        minval = np.min(df[colname])
-        if minval <= 0:
-            weights = weights[delays > 0]  # select only positive values
-            delays = delays[delays > 0]
-            minval = np.min(delays)
     bins = np.logspace(log10(minval), log10(maxval), nbins + 1)
 bins
 
