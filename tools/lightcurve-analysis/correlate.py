@@ -24,9 +24,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in ["light_curve_1", "light_curve_2", "mode"]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 from astropy.io import fits
 from astropy.time import Time
