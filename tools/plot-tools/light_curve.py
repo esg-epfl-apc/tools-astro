@@ -20,6 +20,7 @@ use_quantile_values = False  # https://odahub.io/ontology/#Boolean
 nbins = 15  # http://odahub.io/ontology#Integer
 xlabel = "time, s"  # http://odahub.io/ontology#String
 ylabel = "Ncounts"  # http://odahub.io/ontology#String
+plot_mode = "flux"  # http://odahub.io/ontology#String ; oda:allowed_value "counts", "flux"
 
 _galaxy_wd = os.getcwd()
 
@@ -42,12 +43,16 @@ for _vn in [
     "nbins",
     "xlabel",
     "ylabel",
+    "plot_mode",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+
+if plot_mode != "counts" and ylabel == "Ncounts":
+    ylabel = plot_mode  # replace default value
 
 assert minval >= 0 or not use_quantile_values
 assert maxval >= 0 or not use_quantile_values
@@ -176,6 +181,9 @@ if binning == "linear":
 else:
     bins = np.logspace(log10(minval), log10(maxval), nbins + 1)
 bins
+
+if plot_mode == "flux" and binning == "logarithmic":
+    weights = weights / delays
 
 plt.figure()
 h = plt.hist(delays, weights=weights, bins=bins)
