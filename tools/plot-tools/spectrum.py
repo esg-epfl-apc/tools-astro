@@ -9,13 +9,14 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-fn = "testfile_l.tsv"  # oda:POSIXPath
+fn = "data.tsv"  # oda:POSIXPath
+skiprows = 0  # http://odahub.io/ontology#Integer
 sep = "whitespace"  # http://odahub.io/ontology#String ; oda:allowed_value "auto", "comma", "tab", "whitespace", "semicolon"
-column = "c0"  # http://odahub.io/ontology#String
-weights = "c1"  # http://odahub.io/ontology#String
+column = "c1"  # http://odahub.io/ontology#String
+weight_col = ""  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
-minval = 1e10  # http://odahub.io/ontology#Float
-maxval = 1e13  # http://odahub.io/ontology#Float
+minval = 0  # http://odahub.io/ontology#Float
+maxval = 0  # http://odahub.io/ontology#Float
 nbins = 15  # http://odahub.io/ontology#Integer
 xlabel = "Energy, [eV]"  # http://odahub.io/ontology#String
 ylabel = "Flux E^2, [eV]"  # http://odahub.io/ontology#String
@@ -32,9 +33,10 @@ else:
 
 for _vn in [
     "fn",
+    "skiprows",
     "sep",
     "column",
-    "weights",
+    "weight_col",
     "binning",
     "minval",
     "maxval",
@@ -62,7 +64,7 @@ df = None
 if sep == "auto":
     for name, s in separators.items():
         try:
-            df = pd.read_csv(fn, sep=s, index_col=False)
+            df = pd.read_csv(fn, sep=s, index_col=False, skiprows=skiprows)
             if len(df.columns) > 2:
                 sep = s
                 print("Detected separator: ", name)
@@ -76,49 +78,38 @@ if df is None:
 
 df.columns
 
-weightname = ""
-colname = ""
+def read_data(df, colname, optional=False):
+    for i, c in enumerate(df.columns):
+        if colname == f"c{i+1}":
+            print(colname, c)
+            return df[c].values
+        elif colname == c:
+            print(colname, c)
+            return df[c].values
 
-for i, c in enumerate(df.columns):
+    assert optional, colname + " column not found"
+    return None
 
-    if column == f"c{i}":
-        colname = c
-    elif weights == f"c{i}":
-        weightname = c
-    elif column == c:
-        colname = c
-    elif weights == c:
-        weightname = c
-
-assert len(weightname) > 0 or len(weights) == 0, "weight column not found"
-assert len(colname) > 0, "value column not found"
-
-print(colname, weightname)
-
-values = df[colname].values
-
-if len(weightname) > 0:
-    weights = df[weightname].values
-else:
+values = read_data(df, column)
+weights = read_data(df, weight_col, optional=True)
+if weights is None:
     weights = np.ones_like(values)
 
 values, weights
 
 from numpy import log10
 
+if minval == 0:
+    minval = np.min(values)
+
+if maxval == 0:
+    maxval = np.max(values)
+
 if binning == "linear":
     bins = np.linspace(minval, maxval, nbins + 1)
 else:
     bins = np.logspace(log10(minval), log10(maxval), nbins + 1)
 bins
-
-# # generate test E^-alpha spec
-# alpha = -1
-# n_part = 100000
-# log10_E = np.log10(bins[0]) + np.random.rand(n_part) * (np.log10(bins[-1]) - np.log10(bins[0]))
-# values = np.power(10, log10_E)
-# weights = np.power(values, alpha + 1)
-# np.min(values)/minval, np.max(values)/maxval, len(values)
 
 bin_val, _ = np.histogram(values, weights=weights, bins=bins)
 len(bin_val), len(bins)

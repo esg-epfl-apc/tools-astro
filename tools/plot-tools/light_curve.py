@@ -9,10 +9,11 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-fn = "testfile_l.tsv"  # oda:POSIXPath
+fn = "data.tsv"  # oda:POSIXPath
+skiprows = 0  # http://odahub.io/ontology#Integer
 sep = "whitespace"  # http://odahub.io/ontology#String ; oda:allowed_value "comma", "tab", "space", "whitespace", "semicolon"
-column = "c5"  # http://odahub.io/ontology#String
-weights_column = ""  # http://odahub.io/ontology#String
+column = "T"  # http://odahub.io/ontology#String
+weight_col = ""  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
 minval = 0  # http://odahub.io/ontology#Float
 maxval = 0  # http://odahub.io/ontology#Float
@@ -33,9 +34,10 @@ else:
 
 for _vn in [
     "fn",
+    "skiprows",
     "sep",
     "column",
-    "weights_column",
+    "weight_col",
     "binning",
     "minval",
     "maxval",
@@ -73,7 +75,7 @@ df = None
 if sep == "auto":
     for name, s in separators.items():
         try:
-            df = pd.read_csv(fn, sep=s, index_col=False)
+            df = pd.read_csv(fn, sep=s, index_col=False, skiprows=skiprows)
             if len(df.columns) > 2:
                 sep = s
                 print("Detected separator: ", name)
@@ -122,32 +124,21 @@ def weighted_quantile(
         weighted_quantiles /= np.sum(sample_weight)
     return np.interp(quantiles, weighted_quantiles, values)
 
-weightname = ""
-colname = ""
+def read_data(df, colname, optional=False):
+    for i, c in enumerate(df.columns):
+        if colname == f"c{i+1}":
+            print(colname, c)
+            return df[c].values
+        elif colname == c:
+            print(colname, c)
+            return df[c].values
 
-for i, c in enumerate(df.columns):
+    assert optional, colname + " column not found"
+    return None
 
-    if column == f"c{i}":
-        colname = c
-    elif weights_column == f"c{i}":
-        weightname = c
-    elif column == c:
-        colname = c
-    elif weights_column == c:
-        weightname = c
-
-assert (
-    len(weightname) > 0 or len(weights_column) == 0
-), "weight column not found"
-assert len(colname) > 0, "value column not found"
-
-print(colname, weightname)
-
-delays = df[colname].values
-
-if len(weightname) > 0:
-    weights = df[weightname].values
-else:
+delays = read_data(df, column)
+weights = read_data(df, weight_col, optional=True)
+if weights is None:
     weights = np.ones_like(delays)
 
 if binning != "linear":

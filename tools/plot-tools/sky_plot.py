@@ -9,14 +9,16 @@ import shutil
 
 from oda_api.json import CustomJSONEncoder
 
-ra_col = 0  # http://odahub.io/ontology#Integer
-dec_col = 1  # http://odahub.io/ontology#Integer
-weight_col = 2  # http://odahub.io/ontology#Integer
-data_file = "data.tsv"  # oda:POSIXPath
+fn = "data.tsv"  # oda:POSIXPath
+skiprows = 0  # http://odahub.io/ontology#Integer
+sep = "whitespace"  # http://odahub.io/ontology#String ; oda:allowed_value "auto", "comma", "tab", "whitespace", "semicolon"
+
+ra_col = "c3"  # http://odahub.io/ontology#String
+dec_col = "c4"  # http://odahub.io/ontology#String
+weight_col = ""  # http://odahub.io/ontology#String
 binsz = 0.02  # http://odahub.io/ontology#Float
 window_size_RA = 2.0  # http://odahub.io/ontology#Degree
 window_size_DEC = 2.0  # http://odahub.io/ontology#Degree
-skiprows = 0  # http://odahub.io/ontology#Integer
 
 _galaxy_wd = os.getcwd()
 
@@ -28,38 +30,70 @@ else:
     inp_pdic = inp_dic
 
 for _vn in [
+    "fn",
+    "skiprows",
+    "sep",
     "ra_col",
     "dec_col",
     "weight_col",
-    "data_file",
     "binsz",
     "window_size_RA",
     "window_size_DEC",
-    "skiprows",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import astropy.units as u
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from astropy.coordinates import SkyCoord
 from gammapy.maps import Map
 from oda_api.data_products import ImageDataProduct, PictureProduct
 
-def create_test_data():
-    Nevents = 1000
-    ra = 45 + np.random.randn(Nevents)
-    dec = 45 + np.random.randn(Nevents)
-    w = np.abs(np.random.randn(Nevents)) + 0.1
-    data = np.vstack([ra, dec, w]).transpose()
-    np.savetxt(data_file, data)
+separators = {
+    "tab": "\t",
+    "comma": ",",
+    "semicolon": ";",
+    "whitespace": "\s+",
+    "space": " ",
+}
 
-# create_test_data()
+df = None
 
-data = np.loadtxt(data_file, skiprows=skiprows)
-w = data[:, weight_col]
-ra = data[:, ra_col]
-dec = data[:, dec_col]
+if sep == "auto":
+    for name, s in separators.items():
+        try:
+            df = pd.read_csv(fn, sep=s, index_col=False, skiprows=skiprows)
+            if len(df.columns) > 2:
+                sep = s
+                print("Detected separator: ", name)
+                break
+        except Exception as e:
+            print("Separator ", s, " failed", e)
+    assert sep != "auto", "Failed to find valid separator"
+
+if df is None:
+    df = pd.read_csv(fn, sep=separators[sep], index_col=False)
+
+df.columns
+
+def read_data(df, colname, optional=False):
+    for i, c in enumerate(df.columns):
+        if colname == f"c{i+1}":
+            print(colname, c)
+            return df[c].values
+        elif colname == c:
+            print(colname, c)
+            return df[c].values
+
+    assert optional, colname + " column not found"
+    return None
+
+ra = read_data(df, ra_col)
+dec = read_data(df, dec_col)
+w = read_data(df, weight_col, optional=True)
+if w is None:
+    w = np.ones_like(ra)
 
 source = SkyCoord(ra=np.mean(ra) * u.deg, dec=np.mean(dec) * u.deg)
 

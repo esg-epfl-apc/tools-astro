@@ -1,17 +1,9 @@
 <tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="8.32.0">ipython</requirement>
-    <requirement type="package" version="5.3.4">astropy</requirement>
-    <requirement type="package" version="1.26.4">numpy</requirement>
-    <requirement type="package" version="1.11.4">scipy</requirement>
-    <requirement type="package" version="2.30.1">iminuit</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
-    <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="0.70.17">multiprocess</requirement>
-    <requirement type="package" version="1.1">gammapy</requirement>
-    <requirement type="package" version="1.2.33">oda-api</requirement>
-    <requirement type="package" version="7.16.6">nbconvert</requirement>
-    <requirement type="package" version="0.12.0">pyirf</requirement>
+    <requirement type="package" version="1.2.36">oda-api</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
@@ -31,6 +23,7 @@
       </param>
       <when value="spectrum">
         <param name="fn" type="data" label="fn" format="data" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" />
         <param name="sep" type="select" label="sep">
           <option value="auto">auto</option>
           <option value="comma">comma</option>
@@ -38,31 +31,39 @@
           <option value="tab">tab</option>
           <option value="whitespace" selected="true">whitespace</option>
         </param>
-        <param name="column" type="text" value="c0" label="column" />
-        <param name="weights" type="text" value="c1" label="weights" />
+        <param name="column" type="text" value="c1" label="column" />
+        <param name="weight_col" type="text" value="" label="weight_col" />
         <param name="binning" type="select" label="binning">
           <option value="linear">linear</option>
           <option value="logarithmic" selected="true">logarithmic</option>
         </param>
-        <param name="minval" type="float" value="10000000000.0" label="minval" />
-        <param name="maxval" type="float" value="10000000000000.0" label="maxval" />
+        <param name="minval" type="float" value="0" label="minval" />
+        <param name="maxval" type="float" value="0" label="maxval" />
         <param name="nbins" type="integer" value="15" label="nbins" />
         <param name="xlabel" type="text" value="Energy, [eV]" label="xlabel" />
         <param name="ylabel" type="text" value="Flux E^2, [eV]" label="ylabel" />
         <param name="spec_power" type="float" value="2.0" label="spec_power" />
       </when>
       <when value="sky_plot">
-        <param name="ra_col" type="integer" value="0" label="ra_col" />
-        <param name="dec_col" type="integer" value="1" label="dec_col" />
-        <param name="weight_col" type="integer" value="2" label="weight_col" />
-        <param name="data_file" type="data" label="data_file" format="data" />
+        <param name="fn" type="data" label="fn" format="data" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" />
+        <param name="sep" type="select" label="sep">
+          <option value="auto">auto</option>
+          <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
+          <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
+        </param>
+        <param name="ra_col" type="text" value="c3" label="ra_col" />
+        <param name="dec_col" type="text" value="c4" label="dec_col" />
+        <param name="weight_col" type="text" value="" label="weight_col" />
         <param name="binsz" type="float" value="0.02" label="binsz" />
         <param name="window_size_RA" type="float" value="2.0" label="window_size_RA" />
         <param name="window_size_DEC" type="float" value="2.0" label="window_size_DEC" />
-        <param name="skiprows" type="integer" value="0" label="skiprows" />
       </when>
       <when value="light_curve">
         <param name="fn" type="data" label="fn" format="data" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" />
         <param name="sep" type="select" label="sep">
           <option value="comma">comma</option>
           <option value="semicolon">semicolon</option>
@@ -70,8 +71,8 @@
           <option value="tab">tab</option>
           <option value="whitespace" selected="true">whitespace</option>
         </param>
-        <param name="column" type="text" value="c5" label="column" />
-        <param name="weights_column" type="text" value="" label="weights_column" />
+        <param name="column" type="text" value="T" label="column" />
+        <param name="weight_col" type="text" value="" label="weight_col" />
         <param name="binning" type="select" label="binning">
           <option value="linear">linear</option>
           <option value="logarithmic" selected="true">logarithmic</option>
@@ -113,13 +114,14 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="spectrum" />
-        <param name="fn" value="fn.json" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/40e52a8ca062e1d862c7521c61931194134ca262/data.tsv" />
+        <param name="skiprows" value="0" />
         <param name="sep" value="whitespace" />
-        <param name="column" value="c0" />
-        <param name="weights" value="c1" />
+        <param name="column" value="c1" />
+        <param name="weight_col" value="" />
         <param name="binning" value="logarithmic" />
-        <param name="minval" value="10000000000.0" />
-        <param name="maxval" value="10000000000000.0" />
+        <param name="minval" value="0" />
+        <param name="maxval" value="0" />
         <param name="nbins" value="15" />
         <param name="xlabel" value="Energy, [eV]" />
         <param name="ylabel" value="Flux E^2, [eV]" />
@@ -132,14 +134,15 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="sky_plot" />
-        <param name="ra_col" value="0" />
-        <param name="dec_col" value="1" />
-        <param name="weight_col" value="2" />
-        <param name="data_file" value="data_file.json" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/40e52a8ca062e1d862c7521c61931194134ca262/data.tsv" />
+        <param name="skiprows" value="0" />
+        <param name="sep" value="whitespace" />
+        <param name="ra_col" value="c3" />
+        <param name="dec_col" value="c4" />
+        <param name="weight_col" value="" />
         <param name="binsz" value="0.02" />
         <param name="window_size_RA" value="2.0" />
         <param name="window_size_DEC" value="2.0" />
-        <param name="skiprows" value="0" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
@@ -148,10 +151,11 @@
     <test expect_num_outputs="2">
       <conditional name="_data_product">
         <param name="_selector" value="light_curve" />
-        <param name="fn" value="fn.json" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/40e52a8ca062e1d862c7521c61931194134ca262/data.tsv" />
+        <param name="skiprows" value="0" />
         <param name="sep" value="whitespace" />
-        <param name="column" value="c5" />
-        <param name="weights_column" value="" />
+        <param name="column" value="T" />
+        <param name="weight_col" value="" />
         <param name="binning" value="logarithmic" />
         <param name="minval" value="0" />
         <param name="maxval" value="0" />
@@ -174,6 +178,84 @@ Set of tools for astronomical data visualization
 - sky_plot - visualize sky map using set of events as input
 - light_cure - calculate and visualize light curve from a set of evebts
 - spectrum - calculate energy spectrum using set of events as input
+
+Parameters
+----------
+
+common parameters
+~~~~~~~~~~~~~~~~~
+
+fn - input data file
+
+skiprows - number of rows to skip
+
+sep - separator value
+
+sky_plot parameters
+~~~~~~~~~~~~~~~~~~~
+
+ra_col - RA column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+dec_col - DEC column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+weight_col - weight column (either column name of string cXX, where XX
+&gt;= 1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binsz - bin size in degrees
+
+window_size_RA - size of window (RA) in degrees
+
+window_size_DEC - size of window (DEC) in degrees
+
+light_cure parameters
+~~~~~~~~~~~~~~~~~~~~~
+
+column - time column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+weight_col - weight column (either column name of string cXX, where XX
+&gt;= 1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binning - binning type (&#8216;logarithmic&#8217; or &#8220;linear&#8221;)
+
+minval - minimal value (use 0 to infer from data)
+
+maxval - maximal value (use 0 to infer from data)
+
+use_quantile_values - interpret minval and maxval as quantiles
+
+nbins=15 - number of bins
+
+xlabel - plot x-label
+
+ylabel - plot y-label
+
+plot_mode - plotting mode (&#8220;counts&#8221; or &#8220;flux&#8221;)
+
+spectrum parameters
+~~~~~~~~~~~~~~~~~~~
+
+column - energy column (either column name of string cXX, where XX &gt;= 1
+is column number)
+
+weight_col- weight column (either column name of string cXX, where XX &gt;=
+1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binning - binning type (&#8216;logarithmic&#8217; or &#8220;linear&#8221;)
+
+minval - minimal value (use 0 to infer from data)
+
+maxval - maximal value (use 0 to infer from data)
+
+nbins - number of bins
+
+xlabel - plot x-label
+
+ylabel - plot y-label
+
+spec_power - multiply spectrum by energy in this power on plot
 </help>
   <citations>
     <citation type="bibtex">@misc{label,
