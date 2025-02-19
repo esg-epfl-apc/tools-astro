@@ -1,18 +1,24 @@
 <tool id="spectral_analysis_astro_tool" name="spectral-analysis" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="1.2.12">oda-api</requirement>
-    <requirement type="package" version="6.0.0">astropy</requirement>
-    <requirement type="package" version="3.8.3">matplotlib</requirement>
+    <requirement type="package" version="1.2.36">oda-api</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="2.2.3">pandas</requirement>
     <!--Requirements string 'ogip' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/fit.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <inputs>
-    <param name="spectrum" type="data" label="spectrum" />
-    <param name="rmf" type="data" label="rmf" />
-    <param name="arf" type="data" label="arf" />
+    <param name="spectrum" type="data" label="spectrum" format="data" />
+    <param name="rmf" type="data" label="rmf" format="data" />
+    <param name="arf" type="data" label="arf" format="data" />
     <param name="background" type="text" value="" label="background" />
     <param name="model" type="text" value="powerlaw" label="model" />
     <param name="e_min" type="integer" value="25" label="e_min" />
@@ -23,9 +29,9 @@
   </outputs>
   <tests>
     <test expect_num_outputs="1">
-      <param name="spectrum" value="None" />
-      <param name="rmf" value="None" />
-      <param name="arf" value="None" />
+      <param name="spectrum" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/spectrum.fits.gz" />
+      <param name="rmf" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/rmf.fits.gz" />
+      <param name="arf" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/arf.fits.gz" />
       <param name="background" value="" />
       <param name="model" value="powerlaw" />
       <param name="e_min" value="25" />
