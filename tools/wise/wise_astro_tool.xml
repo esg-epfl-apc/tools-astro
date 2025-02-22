@@ -25,7 +25,7 @@
     <param name="DEC" type="float" value="38.20883277777778" label="DEC (unit: deg)" />
     <param name="T1" type="text" value="2017-03-06T13:26:48.000" label="T1" />
     <param name="T2" type="text" value="2017-06-06T15:32:27.000" label="T2" />
-    <param name="Source_region_radius" type="float" value="1.0" label="Radius of the source region (unit: arcsec)" />
+    <param name="Source_region_radius" type="float" value="120.0" label="Radius of the source region (unit: arcsec)" />
   </inputs>
   <outputs>
     <data label="${tool.name} -&gt; Spectrum picture_png" name="out_Spectrum_picture_png" format="auto" from_work_dir="picture_png_galaxy.output" />
@@ -38,7 +38,7 @@
       <param name="DEC" value="38.20883277777778" />
       <param name="T1" value="2017-03-06T13:26:48.000" />
       <param name="T2" value="2017-06-06T15:32:27.000" />
-      <param name="Source_region_radius" value="1.0" />
+      <param name="Source_region_radius" value="120.0" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
       </assert_stdout>

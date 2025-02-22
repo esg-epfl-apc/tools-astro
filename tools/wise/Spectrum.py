@@ -20,7 +20,7 @@ RA = 166.1138083333333  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.20883277777778  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2017-03-06T13:26:48.000"  # http://odahub.io/ontology#StartTime
 T2 = "2017-06-06T15:32:27.000"  # http://odahub.io/ontology#EndTime
-Source_region_radius = 1.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Radius of the source region"
+Source_region_radius = 120.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Radius of the source region"
 
 _galaxy_wd = os.getcwd()
 
@@ -36,37 +36,43 @@ for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Source_region_radius"]:
 
 c = SkyCoord(RA, DEC, unit="degree")
 
+mins = int(Source_region_radius / 60.0)
+degs = int(mins / 60.0)
+secs = Source_region_radius - 60.0 * mins
+degs, mins, secs
+radius = str(degs) + "d" + str(mins) + "m" + str(secs) + "s"
+radius
+
 table = Irsa.query_region(
-    coordinates=c, catalog="allwise_p3as_psd", radius="0d0m10s"
+    coordinates=c, catalog="allwise_p3as_psd", radius=radius
 )
 if len(table) == 0:
     raise AnalysisError("No data found")
 
+table
+
 m_wise = np.array(
+    [table["w1mpro"], table["w2mpro"], table["w2mpro"], table["w3mpro"]]
+)
+m_wise_err = np.array(
     [
-        table["w1mpro"][0],
-        table["w2mpro"][0],
-        table["w2mpro"][0],
-        table["w3mpro"][0],
+        table["w1sigmpro"],
+        table["w2sigmpro"],
+        table["w2sigmpro"],
+        table["w3sigmpro"],
     ]
 )
-m_wise
+m_wise_err = np.nan_to_num(m_wise_err)
+F = 10 ** (-m_wise / 2.5)
+F_err = 10 ** (-(m_wise - m_wise_err) / 2.5) - F
+F = np.sum(F, axis=1)
+F_err = np.sqrt(np.sum(F_err**2, axis=1))
 
 nu_wise = np.array([8.8560e13, 6.4451e13, 2.6753e13, 1.3456e13])
 
-m_wise_err = np.array(
-    [
-        table["w1sigmpro"][0],
-        table["w2sigmpro"][0],
-        table["w2sigmpro"][0],
-        table["w3sigmpro"][0],
-    ]
-)
-m_wise_err
-
 F0_wise = np.array([309.54, 171.787, 31.674, 8.363]) * 1e-23
-F_wise = F0_wise * 10 ** (-m_wise / 2.5) * nu_wise
-F_wise_err = F0_wise * 10 ** (-(m_wise - m_wise_err) / 2.5) * nu_wise - F_wise
+F_wise = F0_wise * F * nu_wise
+F_wise_err = F0_wise * F_err * nu_wise
 F_wise, F_wise_err
 
 import astropy.units as u
