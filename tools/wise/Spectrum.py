@@ -20,7 +20,7 @@ RA = 166.1138083333333  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.20883277777778  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2017-03-06T13:26:48.000"  # http://odahub.io/ontology#StartTime
 T2 = "2017-06-06T15:32:27.000"  # http://odahub.io/ontology#EndTime
-Source_region_radius = 120.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Radius of the source region"
+Source_region_radius = 1.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Radius of the source region"
 
 _galaxy_wd = os.getcwd()
 
