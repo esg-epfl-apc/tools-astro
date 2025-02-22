@@ -13,12 +13,14 @@ from astropy.coordinates import SkyCoord
 from astroquery.ipac.irsa import Irsa
 from oda_api.json import CustomJSONEncoder
 
+class AnalysisError(RuntimeError): ...
+
 src_name = "Mrk 421"  # http://odahub.io/ontology#AstrophysicalObject
 RA = 166.1138083333333  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 38.20883277777778  # http://odahub.io/ontology#PointOfInterestDEC
 T1 = "2017-03-06T13:26:48.000"  # http://odahub.io/ontology#StartTime
 T2 = "2017-06-06T15:32:27.000"  # http://odahub.io/ontology#EndTime
-Source_region_radius = 1.0  # http://odahub.io/ontology#AngleArcsec ; oda:label "Radius of the source region"
+Source_region_radius = 1.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Radius of the source region"
 
 _galaxy_wd = os.getcwd()
 
@@ -33,11 +35,12 @@ for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Source_region_radius"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 c = SkyCoord(RA, DEC, unit="degree")
-RA, DEC
 
 table = Irsa.query_region(
     coordinates=c, catalog="allwise_p3as_psd", radius="0d0m10s"
 )
+if len(table) == 0:
+    raise AnalysisError("No data found")
 
 m_wise = np.array(
     [
@@ -72,7 +75,7 @@ from astropy.constants import h
 h.to(u.eV * u.s).value
 E_wise = h.to(u.eV * u.s).value * nu_wise
 
-plt.errorbar(E_wise, F_wise, F_wise_err)
+plt.errorbar(E_wise, F_wise, F_wise_err, marker="o")
 plt.xscale("log")
 plt.yscale("log")
 plt.xlabel("$E$, eV")
