@@ -22,7 +22,7 @@ from numpy import sqrt
 from oda_api.json import CustomJSONEncoder
 
 dN_dp = "pow(p/1e4, -1.99)*exp(-p/1e4)"  # http://odahub.io/ontology#String ; oda:label "Source spectrum dN/dp"
-sec = "nu_all"  # http://odahub.io/ontology#String ; oda:label "secondary particle channel ; oda:allowed_value "gam", "el", "pos", "nu_e", "anu_e", "nu_mu", "anu_mu", "nu_all"
+sec = "nu_all"  # http://odahub.io/ontology#String ; oda:label "secondary particle channel" ; oda:allowed_value "gam", "el", "pos", "nu_e", "anu_e", "nu_mu", "anu_mu", "nu_all"
 
 _galaxy_wd = os.getcwd()
 
