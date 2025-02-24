@@ -18,7 +18,7 @@
     <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
   </environment_variables>
   <inputs>
-    <param name="dN_dp" type="text" value="pow(p/1e4, -1.99)*exp(-p/1e4)" label="Source spectrum dN/dp" />
+    <param name="dN_dp" type="text" value="(p/1e4)**(-1.99)*exp(-p/1e4)" label="Source spectrum dN/dp" />
     <param name="sec" type="select" label="secondary particle channel">
       <option value="anu_e">anu_e</option>
       <option value="anu_mu">anu_mu</option>
@@ -36,7 +36,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="2">
-      <param name="dN_dp" value="pow(p/1e4, -1.99)*exp(-p/1e4)" />
+      <param name="dN_dp" value="(p/1e4)**(-1.99)*exp(-p/1e4)" />
       <param name="sec" value="nu_all" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
