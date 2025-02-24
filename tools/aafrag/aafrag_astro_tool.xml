@@ -1,0 +1,37 @@
+<tool id="aafrag_astro_tool" name="AAfrag" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="7.0.1">astropy</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <!--Requirements string 'aafragpy
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/Spectrum.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <inputs>
+    <param name="dN_dp" type="text" value="pow(p/1e4, -1.99)*exp(-p/1e4)" label="Source spectrum dN/dp" />
+    <param name="sec" type="text" value="nu_all" label="sec" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; Spectrum spectrum_png" name="out_Spectrum_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output" />
+    <data label="${tool.name} -&gt; Spectrum spectrum_table" name="out_Spectrum_spectrum_table" format="auto" from_work_dir="spectrum_table_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <param name="dN_dp" value="pow(p/1e4, -1.99)*exp(-p/1e4)" />
+      <param name="sec" value="nu_all" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>
