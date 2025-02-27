@@ -1,29 +1,28 @@
 <tool id="agn_cacades_astro_tool" name="AGN cacades" version="0.0.1+galaxy0" profile="23.0">
   <requirements>
-    <requirement type="package" version="3.31.4">cmake</requirement>
+    <requirement type="package" version="3.31.6">cmake</requirement>
     <requirement type="package" version="13.3.0">gfortran</requirement>
-    <requirement type="package" version="2.7">gsl</requirement>
+    <requirement type="package" version="2.8">gsl</requirement>
     <requirement type="package" version="1.9.0">compilers</requirement>
     <requirement type="package" version="3.3.0">xerces-c</requirement>
-    <requirement type="package" version="8.31.0">ipython</requirement>
-    <requirement type="package" version="7.0.0">astropy</requirement>
-    <requirement type="package" version="2.2.2">numpy</requirement>
-    <requirement type="package" version="1.15.1">scipy</requirement>
-    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="8.32.0">ipython</requirement>
+    <requirement type="package" version="7.0.1">astropy</requirement>
     <requirement type="package" version="3.10.0">matplotlib</requirement>
-    <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="0.70.17">multiprocess</requirement>
-    <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="0.4.9.post1">astroquery</requirement>
+    <requirement type="package" version="1.15.2">scipy</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="7.16.5">nbconvert</requirement>
-    <requirement type="package" version="0.4.8">astroquery</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/Simulate.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <inputs>
     <param name="Gamma" type="float" value="2.6" label="Gamma" />
     <param name="Emax" type="float" value="1000000000000000.0" label="Emax" />
@@ -59,8 +58,4 @@
       </assert_stdout>
     </test>
   </tests>
-  <environment_variables>
-    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
-    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
-  </environment_variables>
 </tool>
