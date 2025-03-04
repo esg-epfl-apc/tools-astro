@@ -84,7 +84,7 @@ def query_fink(name):
     
     query_name = name.replace("ztf", "ZTF")
     r = requests.post(
-        'https://fink-portal.org/api/v1/objects',
+        'https://api.fink-portal.org/api/v1/objects',
         json={
             'objectId': query_name,
             'output-format': 'json',
