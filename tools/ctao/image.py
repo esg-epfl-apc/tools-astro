@@ -20,6 +20,7 @@ Emax = (
     10.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "maximal energy"
 )
 radius = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Size of the Region-Of-Interest (ROI)"
+max_observations = 50  # http://odahub.io/ontology#Integer ; oda:label "limit total amount of observations to use"
 
 _galaxy_wd = os.getcwd()
 
@@ -40,6 +41,7 @@ for _vn in [
     "Emin",
     "Emax",
     "radius",
+    "max_observations",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
@@ -127,7 +129,7 @@ output_observations_table = ODAAstropyTable(Table(data, names=names))
 
 # ### Loading observations
 
-for obs_id in observations.ids:
+for _, obs_id in zip(range(max_observations), observations.ids):
     load_observation(obs_id)
 
 # ## View source image

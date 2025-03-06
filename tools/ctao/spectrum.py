@@ -22,6 +22,7 @@ Emax = (
 radius = 2.0  # http://odahub.io/ontology#AngleDegrees ;  oda:label "Size of the Region-Of-Interest (ROI)"
 on_region_radius = 0.2  # http://odahub.io/ontology#AngleDegrees ; oda:label "ON region radius"
 nbin_per_decade = 5  # http://odahub.io/ontology#Integer
+max_observations = 50  # http://odahub.io/ontology#Integer ; oda:label "limit total amount of observations to use"
 
 _galaxy_wd = os.getcwd()
 
@@ -44,6 +45,7 @@ for _vn in [
     "radius",
     "on_region_radius",
     "nbin_per_decade",
+    "max_observations",
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
@@ -145,7 +147,7 @@ output_observations_table = ODAAstropyTable(Table(data, names=names))
 
 # ### Loading observations
 
-for obs_id in observations.ids:
+for _, obs_id in zip(range(max_observations), observations.ids):
     load_observation(obs_id)
 
 # ### Define Target Region
