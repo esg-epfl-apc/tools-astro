@@ -6,9 +6,14 @@
 import json
 import os
 
-# import ctadata.direct
+# import ctadata
 
 src_name = "1ES 1218+304"  # http://odahub.io/ontology#AstrophysicalObject
+RA = 185.3414279  # http://odahub.io/ontology#PointOfInterestRA
+DEC = 30.17698848  # http://odahub.io/ontology#PointOfInterestDEC
+T1 = "2020-01-01T00:00:00.0"  # http://odahub.io/ontology#StartTime
+T2 = "2022-04-01T00:00:00.0"  # http://odahub.io/ontology#EndTime
+Radius = 15.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Size of the Region-Of-Interest (ROI)"
 
 _galaxy_wd = os.getcwd()
 
@@ -19,14 +24,8 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["src_name"]:
+for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
-
-RA = 185.3414279  # http://odahub.io/ontology#PointOfInterestRA
-DEC = 30.17698848  # http://odahub.io/ontology#PointOfInterestDEC
-T1 = "2020-01-01T00:00:00.0"  # http://odahub.io/ontology#StartTime
-T2 = "2022-04-01T00:00:00.0"  # http://odahub.io/ontology#EndTime
-Radius = 15.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Search cone radius"
 
 # output gathering
 _galaxy_meta_data = {}
