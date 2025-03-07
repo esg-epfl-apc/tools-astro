@@ -94,12 +94,11 @@ obs_ids = selected_obs_table["OBS_ID"]
 observations = data_store.get_observations(obs_ids)
 print(f"Number of selected observations : {len(observations)}")
 
-from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
 
 data = [obs_ids]
 names = ("Id",)
-output_observations_table = ODAAstropyTable(Table(data, names=names))
+output_observations_table = ODAAstropyTable(selected_obs_table)
 
 observations = (
     output_observations_table  # http://odahub.io/ontology#ODAAstropyTable
