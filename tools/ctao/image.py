@@ -214,7 +214,7 @@ from oda_api.data_products import PictureProduct
 output_source_image = PictureProduct.from_file(os.getcwd() + "/image.png")
 
 source_image = (
-    output_source_image  # https://odahub.io/ontology/#ODAPictureProduct
+    output_source_image  # https://odahub.io/ontology#ODAPictureProduct
 )
 observations = (
     output_observations_table  # http://odahub.io/ontology#ODAAstropyTable
