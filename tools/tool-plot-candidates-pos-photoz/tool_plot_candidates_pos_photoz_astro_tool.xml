@@ -4,7 +4,6 @@
     <requirement type="package" version="3.10.1">matplotlib</requirement>
     <requirement type="package" version="7.16.6">nbconvert</requirement>
     <requirement type="package" version="1.2.33">oda-api</requirement>
-    <requirement type="package" version="9.0.0">ipython</requirement>
     <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/scatter_plot_candidates_pos_photoz.py'</command>
@@ -21,6 +20,7 @@
     <param name="DEC" type="float" value="5.03019" label="DEC (unit: deg)" />
     <param name="desi_URL" type="data" label="desi_URL" format="data" />
     <param name="photoz_URL" type="data" label="photoz_URL" format="data" />
+    <param name="uncertainty" type="float" value="1.9" label="Real Redshift" />
     <param name="s_real_z" type="float" value="2.15" label="Real Redshift" />
   </inputs>
   <outputs />
@@ -31,6 +31,7 @@
       <param name="DEC" value="5.03019" />
       <param name="desi_URL" location="https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits" />
       <param name="photoz_URL" location="https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits" />
+      <param name="uncertainty" value="1.9" />
       <param name="s_real_z" value="2.15" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

@@ -5,6 +5,7 @@
 
 import json
 import os
+import subprocess
 
 import matplotlib.pyplot as pt
 import numpy as np
@@ -66,7 +67,9 @@ RA = 198.67654  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 5.03019  # http://odahub.io/ontology#PointOfInterestDEC
 desi_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
 photoz_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
-
+uncertainty = (
+    1.9  # http://odahub.io/ontology#float ; oda:label "Real Redshift"
+)
 s_real_z = 2.15  # http://odahub.io/ontology#float ; oda:label "Real Redshift"
 
 _galaxy_wd = os.getcwd()
@@ -78,7 +81,15 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in ["name", "RA", "DEC", "desi_URL", "photoz_URL", "s_real_z"]:
+for _vn in [
+    "name",
+    "RA",
+    "DEC",
+    "desi_URL",
+    "photoz_URL",
+    "uncertainty",
+    "s_real_z",
+]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 workdir = os.getcwd()
@@ -86,12 +97,12 @@ path_tmp = workdir + "/tmp/"
 os.makedirs(path_tmp, exist_ok=True)
 
 # get the input catalog and save it into tmp/ directory as Input_Catalog.fits
-input_file = path_tmp + "Input_Catalog.fits"
+desi_file = path_tmp + "DESI_Catalog.fits"
 
 read_from_url = False
 try:
-    output = subprocess.check_output(
-        "cp " + catalog_URL + " " + input_file, shell=True
+    desi_output = subprocess.check_output(
+        "cp " + desi_URL + " " + desi_file, shell=True
     ).decode()
 except:
     print("NOT a file")
@@ -99,18 +110,39 @@ except:
 
 if read_from_url:
     try:
-        # output = subprocess.check_output('wget -nv -O ' + input_file + catalog_URL, shell=True).decode()
-        output = subprocess.check_output(
-            "wget -O " + input_file + ' "' + catalog_URL + '"', shell=True
+        # output = subprocess.check_output('wget -nv -O ' + desi_file + desi_URL, shell=True).decode()
+        desi_output = subprocess.check_output(
+            "wget -O " + desi_file + ' "' + desi_URL + '"', shell=True
+        ).decode()
+    except:
+        raise RuntimeError("File NOT found")
+
+# get the input catalog and save it into tmp/ directory as Input_Catalog.fits
+photoz_file = path_tmp + "PhotoZ_Catalog.fits"
+
+read_from_url = False
+try:
+    photoz_output = subprocess.check_output(
+        "cp " + photoz_URL + " " + photoz_file, shell=True
+    ).decode()
+except:
+    print("NOT a file")
+    read_from_url = True
+
+if read_from_url:
+    try:
+        # output = subprocess.check_output('wget -nv -O ' + photoz_file + photoz_URL, shell=True).decode()
+        photoz_output = subprocess.check_output(
+            "wget -O " + photoz_file + ' "' + photoz_URL + '"', shell=True
         ).decode()
     except:
         raise RuntimeError("File NOT found")
 
 s_ra_dec = SkyCoord(ra=f"{RA} deg", dec=f"{DEC} deg")
-s_uncert = Angle("1.9 arcsec")
+s_uncert = Angle(f"{uncertainty} arcsec")
 
-ra_dec_h = fits.open(f"{name}_desi.fits")
-photoz_h = fits.open(f"{name}_photoz.fits")
+ra_dec_h = fits.open(f"{desi_file}")
+photoz_h = fits.open(f"{photoz_file}")
 
 ra = ra_dec_h[1].data["RA[deg]"]
 dec = ra_dec_h[1].data["DEC[deg]"]
