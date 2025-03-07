@@ -207,7 +207,6 @@ print(stacked)
 
 # stacked.counts.sum_over_axes().smooth(0.05 * u.deg).plot(stretch="sqrt", add_cbar=True)
 stacked.counts.sum_over_axes().plot(stretch="sqrt", add_cbar=True)
-plt.show()
 plt.savefig("image.png")
 
 from oda_api.data_products import PictureProduct

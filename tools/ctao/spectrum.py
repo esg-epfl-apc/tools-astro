@@ -258,7 +258,6 @@ ax_sqrt_ts.plot(
 ax_sqrt_ts.set_title("Sqrt(TS)")
 ax_sqrt_ts.set_xlabel("Livetime [h]")
 ax_sqrt_ts.set_ylabel("Sqrt(TS)")
-plt.show()
 plt.savefig("excess_events.png")
 from oda_api.data_products import PictureProduct
 
@@ -329,7 +328,6 @@ output_joined_model_params = ODAAstropyTable(joined_model_params_table)
 ax_spectrum, ax_residuals = datasets[0].plot_fit()
 ax_spectrum.set_ylim(0.1, 40)
 datasets[0].plot_masks(ax=ax_spectrum)
-plt.show()
 plt.savefig("counts_fit.png")
 from oda_api.data_products import PictureProduct
 
@@ -383,7 +381,6 @@ display(flux_points_table)   # noqa: F821
 fig, ax = plt.subplots()
 flux_points.plot(ax=ax, sed_type="e2dnde", color="darkorange")
 flux_points.plot_ts_profiles(ax=ax, sed_type="e2dnde")
-plt.show()
 plt.savefig("flux_points.png")
 output_flux_points_image = PictureProduct.from_file("flux_points.png")
 
@@ -397,7 +394,6 @@ flux_points_dataset = FluxPointsDataset(
     data=flux_points, models=model_best_joint
 )
 flux_points_dataset.plot_fit()
-plt.show()
 plt.savefig("spec_fit.png")
 output_spec_fit_image = PictureProduct.from_file("spec_fit.png")
 
