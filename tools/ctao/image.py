@@ -52,7 +52,7 @@ src_name = ""
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
+    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\npip install ctadata\n",
 )
 
 # ## SDC data access setup
