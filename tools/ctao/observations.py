@@ -15,10 +15,6 @@ T1 = "2028-01-01T00:00:00.0"  # http://odahub.io/ontology#StartTime
 T2 = "2028-12-31T23:59:59.0"  # http://odahub.io/ontology#EndTime
 RA = 0  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 0  # http://odahub.io/ontology#PointOfInterestDEC
-Emin = 0.1  # http://odahub.io/ontology#Energy_TeV ; oda:label "minimal energy"
-Emax = (
-    10.0  # http://odahub.io/ontology#Energy_TeV ; oda:label "maximal energy"
-)
 radius = 2.0  # http://odahub.io/ontology#AngleDegrees ; oda:label "Size of the Region-Of-Interest (ROI)"
 
 _galaxy_wd = os.getcwd()
@@ -30,17 +26,7 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for _vn in [
-    "token",
-    "src_name",
-    "T1",
-    "T2",
-    "RA",
-    "DEC",
-    "Emin",
-    "Emax",
-    "radius",
-]:
+for _vn in ["token", "src_name", "T1", "T2", "RA", "DEC", "radius"]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 get_ipython().run_cell_magic(   # noqa: F821

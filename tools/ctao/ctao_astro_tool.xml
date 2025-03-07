@@ -58,8 +58,6 @@
         <param name="T2" type="text" value="2028-12-31T23:59:59.0" label="T2" />
         <param name="RA" type="float" value="0" label="RA (unit: deg)" />
         <param name="DEC" type="float" value="0" label="DEC (unit: deg)" />
-        <param name="Emin" type="float" value="0.1" label="minimal energy (unit: TeV)" />
-        <param name="Emax" type="float" value="10.0" label="maximal energy (unit: TeV)" />
         <param name="radius" type="float" value="2.0" label="Size of the Region-Of-Interest (ROI) (unit: deg)" />
       </when>
       <when value="image">
@@ -158,8 +156,6 @@
         <param name="T2" value="2028-12-31T23:59:59.0" />
         <param name="RA" value="0" />
         <param name="DEC" value="0" />
-        <param name="Emin" value="0.1" />
-        <param name="Emax" value="10.0" />
         <param name="radius" value="2.0" />
       </conditional>
       <assert_stdout>
