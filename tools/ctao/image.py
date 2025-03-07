@@ -120,6 +120,9 @@ obs_ids = selected_obs_table["OBS_ID"]
 observations = data_store.get_observations(obs_ids)
 print(f"Number of selected observations : {len(observations)}")
 
+if len(observations) == 0:
+    raise Exception("No observations found")
+
 from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
 
