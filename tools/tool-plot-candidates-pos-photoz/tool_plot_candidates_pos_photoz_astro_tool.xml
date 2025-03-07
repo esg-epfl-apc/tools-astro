@@ -20,7 +20,7 @@
     <param name="DEC" type="float" value="5.03019" label="DEC (unit: deg)" />
     <param name="desi_URL" type="data" label="desi_URL" format="data" />
     <param name="photoz_URL" type="data" label="photoz_URL" format="data" />
-    <param name="uncertainty" type="float" value="1.9" label="Real Redshift" />
+    <param name="uncertainty" type="float" value="1.9" label="Uncertainty" />
     <param name="s_real_z" type="float" value="2.15" label="Real Redshift" />
   </inputs>
   <outputs>

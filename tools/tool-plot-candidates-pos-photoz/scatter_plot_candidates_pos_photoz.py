@@ -69,9 +69,7 @@ RA = 198.67654  # http://odahub.io/ontology#PointOfInterestRA
 DEC = 5.03019  # http://odahub.io/ontology#PointOfInterestDEC
 desi_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
 photoz_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
-uncertainty = (
-    1.9  # http://odahub.io/ontology#float ; oda:label "Real Redshift"
-)
+uncertainty = 1.9  # http://odahub.io/ontology#float ; oda:label "Uncertainty"
 s_real_z = 2.15  # http://odahub.io/ontology#float ; oda:label "Real Redshift"
 
 _galaxy_wd = os.getcwd()
@@ -219,7 +217,7 @@ for i, txt in enumerate(photoz):
 
 ax.set_xlabel("RA")
 ax.set_ylabel("Dec")
-ax.set_title(f"zreal = {s_real_z}")
+ax.set_title(f"zreal = {s_real_z}; uncertainty={uncertainty} arcsec")
 fig.savefig(f"candidates.png")
 
 from oda_api.data_products import PictureProduct
