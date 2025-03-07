@@ -52,7 +52,7 @@ for _vn in [
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
+    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\npip install ctadata\n",
 )
 
 # ## SDC data access setup
@@ -131,20 +131,19 @@ selection = dict(
 selected_obs_table = data_store.obs_table.select_observations(selection)
 print(f"Number of observations in selected region: {len(selected_obs_table)}")
 
-selected_obs_table = selected_obs_table.select_time_range((T1, T2))
+selected_obs_table = selected_obs_table.select_time_range((T1, T2))[
+    :max_observations
+]
 obs_ids = selected_obs_table["OBS_ID"]
-observations = data_store.get_observations(obs_ids[:max_observations])
+observations = data_store.get_observations(obs_ids)
 print(f"Number of selected observations : {len(observations)}")
 
 if len(observations) == 0:
     raise Exception("No observations found")
 
-from astropy.table import Table
 from oda_api.data_products import ODAAstropyTable
 
-data = [obs_ids]
-names = ("Id",)
-output_observations_table = ODAAstropyTable(Table(data, names=names))
+output_observations_table = ODAAstropyTable(selected_obs_table)
 
 # ### Loading observations
 
