@@ -3,16 +3,15 @@
     <requirement type="package" version="0.8.10">davix</requirement>
     <requirement type="package" version="6.0">unzip</requirement>
     <requirement type="package" version="9.0.0">ipython</requirement>
-    <requirement type="package" version="7.0.1">astropy</requirement>
-    <requirement type="package" version="2.2.3">numpy</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
     <!--Requirements string 'nb2workflow
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="1.2">gammapy</requirement>
     <!--Requirements string 'ctadata>=0.6.0
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="3.9.2">matplotlib</requirement>
-    <!--Requirements string 'oda-api>=1.2.38
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="1.2.37">oda-api</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
