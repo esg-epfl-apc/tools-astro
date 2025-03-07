@@ -135,7 +135,7 @@ print(f"Number of observations in selected region: {len(selected_obs_table)}")
 
 selected_obs_table = selected_obs_table.select_time_range((T1, T2))
 obs_ids = selected_obs_table["OBS_ID"]
-observations = data_store.get_observations(obs_ids)
+observations = data_store.get_observations(obs_ids[:max_observations])
 print(f"Number of selected observations : {len(observations)}")
 
 if len(observations) == 0:
@@ -150,7 +150,7 @@ output_observations_table = ODAAstropyTable(Table(data, names=names))
 
 # ### Loading observations
 
-for _, obs_id in zip(range(max_observations), observations.ids):
+for obs_id in observations.ids:
     load_observation(obs_id)
 
 # ### Define Target Region
