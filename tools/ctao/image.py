@@ -61,13 +61,11 @@ get_ipython().run_line_magic("matplotlib", "inline")   # noqa: F821
 import logging
 import os
 
+# Check package versions
 import astropy.units as u
 
 # %matplotlib inline
 import matplotlib.pyplot as plt
-
-# Check package versions
-import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
@@ -213,9 +211,7 @@ from oda_api.data_products import PictureProduct
 
 output_source_image = PictureProduct.from_file(os.getcwd() + "/image.png")
 
-source_image = (
-    output_source_image  # https://odahub.io/ontology#ODAPictureProduct
-)
+source_image = output_source_image  # oda:ODAPictureProduct
 observations = (
     output_observations_table  # http://odahub.io/ontology#ODAAstropyTable
 )
@@ -223,6 +219,9 @@ observations = (
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
+_oda_outs.append(
+    ("out_image_source_image", "source_image_galaxy.output", source_image)
+)
 _oda_outs.append(
     ("out_image_observations", "observations_galaxy.output", observations)
 )
@@ -242,25 +241,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-_simple_outs = []
-_simple_outs.append(
-    ("out_image_source_image", "source_image_galaxy.output", source_image)
-)
-_numpy_available = True
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)

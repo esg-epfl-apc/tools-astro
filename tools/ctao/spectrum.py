@@ -65,13 +65,11 @@ get_ipython().run_line_magic("matplotlib", "inline")   # noqa: F821
 import logging
 import os
 
+# Check package versions
 import astropy.units as u
 
 # %matplotlib inline
 import matplotlib.pyplot as plt
-
-# Check package versions
-import numpy as np
 from astropy import units as u
 from astropy.coordinates import Angle, SkyCoord
 from astropy.time import Time
@@ -445,18 +443,10 @@ observations = (
 )
 flux_points = output_flux_points  # http://odahub.io/ontology#ODAAstropyTable
 
-counts_fit_image = (
-    output_counts_fit_image  # https://odahub.io/ontology/#ODAPictureProduct
-)
-excess_events_image = (
-    output_excess_events_image  # https://odahub.io/ontology/#ODAPictureProduct
-)
-flux_points_image = (
-    output_flux_points_image  # https://odahub.io/ontology/#ODAPictureProduct
-)
-spec_fit_image = (
-    output_spec_fit_image  # https://odahub.io/ontology/#ODAPictureProduct
-)
+counts_fit_image = output_counts_fit_image  # oda:ODAPictureProduct
+excess_events_image = output_excess_events_image  # oda:ODAPictureProduct
+flux_points_image = output_flux_points_image  # oda:ODAPictureProduct
+spec_fit_image = output_spec_fit_image  # oda:ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
@@ -482,6 +472,34 @@ _oda_outs.append(
 _oda_outs.append(
     ("out_spectrum_flux_points", "flux_points_galaxy.output", flux_points)
 )
+_oda_outs.append(
+    (
+        "out_spectrum_counts_fit_image",
+        "counts_fit_image_galaxy.output",
+        counts_fit_image,
+    )
+)
+_oda_outs.append(
+    (
+        "out_spectrum_excess_events_image",
+        "excess_events_image_galaxy.output",
+        excess_events_image,
+    )
+)
+_oda_outs.append(
+    (
+        "out_spectrum_flux_points_image",
+        "flux_points_image_galaxy.output",
+        flux_points_image,
+    )
+)
+_oda_outs.append(
+    (
+        "out_spectrum_spec_fit_image",
+        "spec_fit_image_galaxy.output",
+        spec_fit_image,
+    )
+)
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
@@ -498,50 +516,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-_simple_outs = []
-_simple_outs.append(
-    (
-        "out_spectrum_counts_fit_image",
-        "counts_fit_image_galaxy.output",
-        counts_fit_image,
-    )
-)
-_simple_outs.append(
-    (
-        "out_spectrum_excess_events_image",
-        "excess_events_image_galaxy.output",
-        excess_events_image,
-    )
-)
-_simple_outs.append(
-    (
-        "out_spectrum_flux_points_image",
-        "flux_points_image_galaxy.output",
-        flux_points_image,
-    )
-)
-_simple_outs.append(
-    (
-        "out_spectrum_spec_fit_image",
-        "spec_fit_image_galaxy.output",
-        spec_fit_image,
-    )
-)
-_numpy_available = True
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
