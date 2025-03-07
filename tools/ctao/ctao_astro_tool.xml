@@ -11,7 +11,8 @@
     <!--Requirements string 'ctadata>=0.6.0
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="3.9.2">matplotlib</requirement>
-    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <!--Requirements string 'oda-api>=1.2.38
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
