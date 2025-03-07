@@ -23,9 +23,11 @@
     <param name="uncertainty" type="float" value="1.9" label="Real Redshift" />
     <param name="s_real_z" type="float" value="2.15" label="Real Redshift" />
   </inputs>
-  <outputs />
+  <outputs>
+    <data label="${tool.name} -&gt; scatter_plot_candidates_pos_photoz spectrum_png" name="out_scatter_plot_candidates_pos_photoz_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output" />
+  </outputs>
   <tests>
-    <test expect_num_outputs="0">
+    <test expect_num_outputs="1">
       <param name="name" value="GRB 250129A" />
       <param name="RA" value="198.67654" />
       <param name="DEC" value="5.03019" />

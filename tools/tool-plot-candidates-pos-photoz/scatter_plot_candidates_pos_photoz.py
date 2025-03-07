@@ -5,6 +5,7 @@
 
 import json
 import os
+import shutil
 import subprocess
 
 import matplotlib.pyplot as pt
@@ -17,6 +18,7 @@ from astropy.coordinates.matrix_utilities import (
 )
 from astropy.coordinates.representation import UnitSphericalRepresentation
 from astropy.io import fits
+from oda_api.json import CustomJSONEncoder
 
 ## GCN Circular 39418
 # name = "GRB 250221A"
@@ -218,10 +220,40 @@ for i, txt in enumerate(photoz):
 ax.set_xlabel("RA")
 ax.set_ylabel("Dec")
 ax.set_title(f"zreal = {s_real_z}")
-# fig.savefig(f"{name}.png")
+fig.savefig(f"candidates.png")
+
+from oda_api.data_products import PictureProduct
+
+bin_image = PictureProduct.from_file("candidates.png")
+
+spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
 
 # output gathering
 _galaxy_meta_data = {}
+_oda_outs = []
+_oda_outs.append(
+    (
+        "out_scatter_plot_candidates_pos_photoz_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
+)
+
+for _outn, _outfn, _outv in _oda_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif getattr(_outv, "write_fits_file", None):
+        _outv.write_fits_file(_galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "fits"}
+    elif getattr(_outv, "write_file", None):
+        _outv.write_file(_galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd, cls=CustomJSONEncoder)
+        _galaxy_meta_data[_outn] = {"ext": "json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
