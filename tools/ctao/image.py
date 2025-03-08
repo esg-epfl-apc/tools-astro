@@ -45,9 +45,9 @@ for _vn in [
 ]:
     globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
-RA = 265.97845833
-DEC = -29.74516667
-src_name = ""
+# RA=265.97845833
+# DEC=-29.74516667
+# src_name=''
 
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
@@ -144,7 +144,7 @@ for obs_id in observations.ids:
 # based geometry with a binsize of 0.02 deg and also define an energy
 # axis:
 
-energy_axis = MapAxis.from_energy_bounds(1.0, 10.0, 4, unit="TeV")
+energy_axis = MapAxis.from_energy_bounds(Emin, Emax, 2, unit="TeV")
 
 geom = WcsGeom.create(
     skydir=source,
@@ -157,7 +157,7 @@ geom = WcsGeom.create(
 
 # Reduced IRFs are defined in true energy (i.e. not measured energy).
 energy_axis_true = MapAxis.from_energy_bounds(
-    Emin, Emax, 10, unit="TeV", name="energy_true"
+    0.5 * Emin, 2 * Emax, 4, unit="TeV", name="energy_true"
 )
 
 # Now we can define the target dataset with this geometry.
@@ -183,26 +183,42 @@ maker_fov = FoVBackgroundMaker(method="fit", exclusion_mask=exclusion_mask)
 
 # Perform the data reduction loop
 
+import sys
+
 for obs in observations:
+    if obs.gti is None:
+        print(
+            "skipping observation", obs.obs_id, "no gti found", file=sys.stderr
+        )
+        continue
     # First a cutout of the target map is produced
     cutout = stacked.cutout(
         obs.get_pointing_icrs(obs.tmid),
         width=2 * offset_max,
         name=f"obs-{obs.obs_id}",
     )
-    # A MapDataset is filled in this cutout geometry
-    dataset = maker.run(cutout, obs)
-    # The data quality cut is applied
-    dataset = maker_safe_mask.run(dataset, obs)
-    # fit background model
-    dataset = maker_fov.run(dataset)
-    print(
-        f"Background norm obs {obs.obs_id}: {dataset.background_model.spectral_model.norm.value:.2f}"
-    )
-    # The resulting dataset cutout is stacked onto the final one
-    stacked.stack(dataset)
+    try:
+        # A MapDataset is filled in this cutout geometry
+        dataset = maker.run(cutout, obs)
+        # The data quality cut is applied
+        dataset = maker_safe_mask.run(dataset, obs)
+        # fit background model
+        dataset = maker_fov.run(dataset)
+        print(
+            f"Background norm obs {obs.obs_id}: {dataset.background_model.spectral_model.norm.value:.2f}"
+        )
+        # The resulting dataset cutout is stacked onto the final one
+        stacked.stack(dataset)
+    except ValueError as er:
+        print("skipping observation", obs.obs_id, er, file=sys.stderr)
 
 print(stacked)
+
+print(obs.obs_id)
+
+for o in observations:
+    if o is None:
+        print("none")
 
 # ### Inspect image summed over energy
 
