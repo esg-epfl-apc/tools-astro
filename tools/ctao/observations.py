@@ -96,8 +96,6 @@ print(f"Number of selected observations : {len(observations)}")
 
 from oda_api.data_products import ODAAstropyTable
 
-data = [obs_ids]
-names = ("Id",)
 output_observations_table = ODAAstropyTable(selected_obs_table)
 
 observations = (

@@ -113,6 +113,7 @@ else:
     RA = RA * u.deg
     DEC = DEC * u.deg
     source = SkyCoord(ra=RA, dec=DEC)
+    src_name = "coord_based"
 source
 
 # ### List observations available for the source selected
