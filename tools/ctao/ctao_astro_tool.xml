@@ -2,7 +2,7 @@
   <requirements>
     <requirement type="package" version="0.8.10">davix</requirement>
     <requirement type="package" version="6.0">unzip</requirement>
-    <requirement type="package" version="9.0.0">ipython</requirement>
+    <requirement type="package" version="9.0.2">ipython</requirement>
     <requirement type="package" version="6.1.4">astropy</requirement>
     <requirement type="package" version="1.26.4">numpy</requirement>
     <requirement type="package" version="1.2">gammapy</requirement>
@@ -26,6 +26,7 @@
     <conditional name="_data_product">
       <param name="_selector" type="select" label="Data Product">
         <option value="spectrum" selected="true">spectrum</option>
+        <option value="lightcurve" selected="false">lightcurve</option>
         <option value="Find_data" selected="false">Find_data</option>
         <option value="observations" selected="false">observations</option>
         <option value="image" selected="false">image</option>
@@ -43,6 +44,19 @@
         <param name="on_region_radius" type="float" value="0.2" label="ON region radius (unit: deg)" />
         <param name="nbin_per_decade" type="integer" value="5" label="nbin_per_decade" />
         <param name="max_observations" type="integer" value="50" label="limit total amount of observations to use" />
+      </when>
+      <when value="lightcurve">
+        <param name="token" type="text" value="" label="token used for data access" />
+        <param name="src_name" type="text" value="Mrk 501" label="source name" />
+        <param name="T1" type="text" value="2028-01-27T00:00:00.0" label="T1" />
+        <param name="T2" type="text" value="2028-01-30T23:59:59.0" label="T2" />
+        <param name="RA" type="float" value="0" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="0" label="DEC (unit: deg)" />
+        <param name="Emin" type="float" value="0.1" label="minimal energy (unit: TeV)" />
+        <param name="Emax" type="float" value="10.0" label="maximal energy (unit: TeV)" />
+        <param name="radius" type="float" value="2.0" label="Size of the Region-Of-Interest (ROI) (unit: deg)" />
+        <param name="max_observations" type="integer" value="500" label="limit total amount of observations to use" />
+        <param name="on_region_radius" type="float" value="0.1" label="Size of ON-Region (unit: deg)" />
       </when>
       <when value="Find_data">
         <param name="src_name" type="text" value="1ES 1218+304" label="src_name" />
@@ -103,6 +117,15 @@
     <data label="${tool.name} -&gt; spectrum spec_fit_image" name="out_spectrum_spec_fit_image" format="auto" from_work_dir="spec_fit_image_galaxy.output">
       <filter>_data_product['_selector'] == 'spectrum'</filter>
     </data>
+    <data label="${tool.name} -&gt; lightcurve lc_image" name="out_lightcurve_lc_image" format="auto" from_work_dir="lc_image_galaxy.output">
+      <filter>_data_product['_selector'] == 'lightcurve'</filter>
+    </data>
+    <data label="${tool.name} -&gt; lightcurve lc_table" name="out_lightcurve_lc_table" format="auto" from_work_dir="lc_table_galaxy.output">
+      <filter>_data_product['_selector'] == 'lightcurve'</filter>
+    </data>
+    <data label="${tool.name} -&gt; lightcurve observations" name="out_lightcurve_observations" format="auto" from_work_dir="observations_galaxy.output">
+      <filter>_data_product['_selector'] == 'lightcurve'</filter>
+    </data>
     <data label="${tool.name} -&gt; observations observations" name="out_observations_observations" format="auto" from_work_dir="observations_galaxy.output">
       <filter>_data_product['_selector'] == 'observations'</filter>
     </data>
@@ -129,6 +152,25 @@
         <param name="on_region_radius" value="0.2" />
         <param name="nbin_per_decade" value="5" />
         <param name="max_observations" value="50" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="3">
+      <conditional name="_data_product">
+        <param name="_selector" value="lightcurve" />
+        <param name="token" value="" />
+        <param name="src_name" value="Mrk 501" />
+        <param name="T1" value="2028-01-27T00:00:00.0" />
+        <param name="T2" value="2028-01-30T23:59:59.0" />
+        <param name="RA" value="0" />
+        <param name="DEC" value="0" />
+        <param name="Emin" value="0.1" />
+        <param name="Emax" value="10.0" />
+        <param name="radius" value="2.0" />
+        <param name="max_observations" value="500" />
+        <param name="on_region_radius" value="0.1" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
