@@ -10,7 +10,7 @@
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
-  <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
+  <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
@@ -93,7 +93,7 @@
         <param name="T" value="2.73" />
         <param name="Back_norm" value="1.0" />
         <param name="backgr_dN_dE" value="E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3" />
-        <param name="backgr_file" location="https://gitlab.renkulab.io/astronomy/mmoda/gallery/-/blob/master/data_2411.01640/CMB_EBL_z1.csv" />
+        <param name="backgr_file" value="backgr_file.json" />
       </conditional>
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

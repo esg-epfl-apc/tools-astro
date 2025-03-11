@@ -39,7 +39,7 @@ Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of
 backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3"  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
 # backgr_dN_dE = "" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
 # backgr_file = 'CMB_EBL_z1.csv' # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
-backgr_file = "https://gitlab.renkulab.io/astronomy/mmoda/gallery/-/blob/master/data_2411.01640/CMB_EBL_z1.csv"  # oda:POSIXPath, oda:optional ; oda:label "Background spectrum ascii file (overrides parameters above)"
+backgr_file = None  # oda:POSIXPath, oda:optional ; oda:label "Background spectrum ascii file (overrides parameters above)"
 
 _galaxy_wd = os.getcwd()
 
@@ -171,15 +171,13 @@ for i in range(NEbins):
 
 pr.report_progress(stage="inverse Compton", progress=20)
 
-get_ipython().system(" cat {backgr_file}")   # noqa: F821
-
 # thermal emission spectrum
 def Thermal(ee, T):
     T_eV = 8.6e-5 * T  # temperature in eV
     # thermal spectrum BG (2.58) [1/eV/cm3]
     return ee**2 / (exp(ee / T_eV) - 1) / pi**2 / (hbar * c) ** 3
 
-if len(backgr_file) > 0:
+if backgr_file is not None:
     d = np.genfromtxt(backgr_file)
     ee = d[:, 0]
     ff = d[:, 1]
