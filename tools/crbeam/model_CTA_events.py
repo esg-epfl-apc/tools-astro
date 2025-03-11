@@ -60,9 +60,25 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "z_start",
+    "Npart",
+    "particle_type",
+    "Emax",
+    "Emin",
+    "EminSource",
+    "Gamma",
+    "EGMF_fG",
+    "lmaxEGMF_Mpc",
+    "jet_half_size",
+    "jet_direction",
+    "window_size_RA",
+    "window_size_DEC",
+    "livetime",
+    "EBL",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 livetime = livetime * u.hr * 24
 
@@ -362,7 +378,9 @@ dataset.write("./event_sampling/dataset.fits", overwrite=True)
 
 def GetBinSpectralModel(E, bins_per_decade=20, norm=1):
     amplitude = 1e-12 * u.Unit("cm-2 s-1") * norm
-    from gammapy.modeling.models import GaussianSpectralModel
+    from gammapy.modeling.models import (
+        GaussianSpectralModel,
+    )
 
     sigma = (10 ** (1 / bins_per_decade) - 1) * E
     return GaussianSpectralModel(mean=E, sigma=sigma, amplitude=amplitude)

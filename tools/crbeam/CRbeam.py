@@ -40,9 +40,25 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "z_start",
+    "Npart",
+    "particle_type",
+    "Emax",
+    "Emin",
+    "EminSource",
+    "Gamma",
+    "EGMF_fG",
+    "lmaxEGMF_Mpc",
+    "jet_half_size",
+    "jet_direction",
+    "psf",
+    "window_size_RA",
+    "window_size_DEC",
+    "EBL",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",

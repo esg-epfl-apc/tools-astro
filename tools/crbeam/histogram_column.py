@@ -29,9 +29,19 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "fn",
+    "sep",
+    "column",
+    "weights",
+    "binning",
+    "minval",
+    "maxval",
+    "nbins",
+    "xlabel",
+    "ylabel",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 import numpy as np
 import pandas as pd
