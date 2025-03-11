@@ -28,7 +28,7 @@ from oda_api.json import CustomJSONEncoder
 pr = ProgressReporter()
 
 dN_dE = "2.0e-11*pow(E/5e10, -2.)*exp(-E/5e10)"  # http://odahub.io/ontology#String ; oda:label "Electron spectrum dN/dE"
-electron_file = ""  # oda:POSIXPath ; oda:label "Electron spectrum ascii file (overrides analytical formula)"
+electron_file = None  # oda:POSIXPath, oda:optional ; oda:label "Electron spectrum ascii file (overrides analytical formula)"
 Emin = 1e-10  # http://odahub.io/ontology#Energy_eV ; oda:label "minimal energy for calculations"
 Emax = 1e14  # http://odahub.io/ontology#Energy_eV ; oda:label "maximal energy for calculations"
 B = 3e-8  # http://odahub.io/ontology#Float ; oda:label "magnetic field [G]"
@@ -39,7 +39,7 @@ Back_norm = 1.0  # http://odahub.io/ontology#Float ; oda:label "Normalization of
 backgr_dN_dE = "E**2/(exp(E/(8.6e-5*2.73))-1)/3.14**2/(2e-5)**3"  # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
 # backgr_dN_dE = "" # http://odahub.io/ontology#String ; oda:label "Custom background spectral energy density [1/(eV cm3)]"
 # backgr_file = 'CMB_EBL_z1.csv' # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
-backgr_file = "https://gitlab.renkulab.io/astronomy/mmoda/gallery/-/blob/master/data_2411.01640/CMB_EBL_z1.csv"  # oda:POSIXPath ; oda:label "Background spectrum ascii file (overrides parameters above)"
+backgr_file = "https://gitlab.renkulab.io/astronomy/mmoda/gallery/-/blob/master/data_2411.01640/CMB_EBL_z1.csv"  # oda:POSIXPath, oda:optional ; oda:label "Background spectrum ascii file (overrides parameters above)"
 
 _galaxy_wd = os.getcwd()
 
