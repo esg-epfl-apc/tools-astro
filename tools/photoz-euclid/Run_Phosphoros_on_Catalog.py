@@ -61,6 +61,15 @@ VIRCAM --> VISTA
 SLOAN --> SDSS
 Subaru --> HSC
 
+New Instruments + new filters
+
+JWST|MIRI.* NIRCam.*
+HST|ACS_WFC.* WFC3_IR.*
+Spitzer|IRAC.I1,IRAC.I2
+DESI|bass.g,bass.r,MzLS.z
+HSCinter|HSC.*_filter
+SuprimeCam
+
 """
 
 print("Start")
@@ -69,16 +78,15 @@ print("Start")
 
 # input catalog
 catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
-# catalog_URL = 'data/Catalogs/Catalog_Galaxy_n1K.fits' #http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
 # for tests
-# catalog_URL = 'https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileURL ; oda:group "Catalog filter" ; oda:label ""
+# catalog_URL = 'data/Catalogs/Catalog_Galaxy_n1K.fits' #http://odahub.io/ontology#POSIXPath ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'data/Catalogs/Star_Cat_COSMOS.fits' #http://odahub.io/ontology#FileURL ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
+# catalog_URL = 'data/Catalogs/SpecZ_PhotoZ_South.fits'
 
 # oda:oda_token_access oda:InOdaContext .
 
 # filters - flux/error_flux column names
-# filters_table = {'filter': ['Euclid|VIS.vis','Euclid|NISP.Y','Euclid|NISP.J','Euclid|NISP.H','LSST|LSST.g','LSST|LSST.r','LSST|LSST.i','LSST|LSST.z'], 'flux': ['FLUX_DETECTION_TOTAL','FLUX_Y_TOTAL','FLUX_J_TOTAL','FLUX_H_TOTAL','FLUX_G_EXT_LSST_TOTAL','FLUX_R_EXT_LSST_TOTAL','FLUX_I_EXT_LSST_TOTAL','FLUX_Z_EXT_LSST_TOTAL'], 'flux_error': ['FLUXERR_DETECTION_TOTAL','FLUXERR_Y_TOTAL','FLUXERR_J_TOTAL','FLUXERR_H_TOTAL','FLUXERR_G_EXT_LSST_TOTAL','FLUXERR_R_EXT_LSST_TOTAL','FLUXERR_I_EXT_LSST_TOTAL','FLUXERR_Z_EXT_LSST_TOTAL']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
 filters_table = {
     "filter": [
         "Euclid|VIS.vis",
@@ -91,26 +99,28 @@ filters_table = {
         "LSST|LSST.z",
     ],
     "flux": [
-        "VIS_vis",
-        "NISP_Y",
-        "NISP_J",
-        "NISP_H",
-        "LSST_g",
-        "LSST_r",
-        "LSST_i",
-        "LSST_z",
+        "FLUX_DETECTION_TOTAL",
+        "FLUX_Y_TOTAL",
+        "FLUX_J_TOTAL",
+        "FLUX_H_TOTAL",
+        "FLUX_G_EXT_LSST_TOTAL",
+        "FLUX_R_EXT_LSST_TOTAL",
+        "FLUX_I_EXT_LSST_TOTAL",
+        "FLUX_Z_EXT_LSST_TOTAL",
     ],
     "flux_error": [
-        "eVIS_vis",
-        "eNISP_Y",
-        "eNISP_J",
-        "eNISP_H",
-        "eLSST_g",
-        "eLSST_r",
-        "eLSST_i",
-        "eLSST_z",
+        "FLUXERR_DETECTION_TOTAL",
+        "FLUXERR_Y_TOTAL",
+        "FLUXERR_J_TOTAL",
+        "FLUXERR_H_TOTAL",
+        "FLUXERR_G_EXT_LSST_TOTAL",
+        "FLUXERR_R_EXT_LSST_TOTAL",
+        "FLUXERR_I_EXT_LSST_TOTAL",
+        "FLUXERR_Z_EXT_LSST_TOTAL",
     ],
 }  # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
+# filters_table = {'filter': ['Euclid|VIS.vis','Euclid|NISP.Y','Euclid|NISP.J','Euclid|NISP.H','LSST|LSST.g','LSST|LSST.r','LSST|LSST.i','LSST|LSST.z'], 'flux': ['VIS_vis','NISP_Y','NISP_J','NISP_H','LSST_g','LSST_r','LSST_i','LSST_z'], 'flux_error': ['eVIS_vis','eNISP_Y','eNISP_J','eNISP_H','eLSST_g','eLSST_r','eLSST_i','eLSST_z']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
+# for tests
 # filters_table = {'filter': ['SLOAN|SDSS.g','Subaru|HSC.r','CTIO|DECam.i','PAN-STARRS|PS1.z','VIRCAM|VISTA.J','Euclid|VIS.vis','Euclid|NISP.Y',], 'flux': ['SDSS_g','HSC_r','DECam_i','PS1_z','VISTA_J','VIS_vis','NISP_Y'], 'flux_error': ['eSDSS_g','eHSC_r','eDECam_i','ePS1_z','eVISTA_J','eVIS_vis','eNISP_Y']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
 # filters_table = {'filter': ['SDSS|SDSS.g','HSC|HSC.r','DECam|DECam.i','PANSTARRS|PS1.z','VISTA|VISTA.J','Euclid|VIS.vis','Euclid|NISP.Y',], 'flux': ['SDSS_g','HSC_r','DECam_i','PS1_z','VISTA_J','VIS_vis','NISP_Y'], 'flux_error': ['eSDSS_g','eHSC_r','eDECam_i','ePS1_z','eVISTA_J','eVIS_vis','eNISP_Y']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
 # star catalog example
@@ -118,6 +128,23 @@ filters_table = {
 # filters_table = {'filter': ['CTIO|DECam.g','CTIO|DECam.r','CTIO|DECam.i','CTIO|DECam.z','VISTA|VISTA.Y','VISTA|VISTA.J','VISTA|VISTA.H'],
 #                 'flux': ['bdf_flux_dered_calib_g','bdf_flux_dered_calib_r','bdf_flux_dered_calib_i','bdf_flux_dered_calib_z','bdf_flux_dered_calib_Y','bdf_flux_dered_calib_J','bdf_flux_dered_calib_H'],
 #                 'flux_error': ['bdf_flux_err_dered_calib_g','bdf_flux_err_dered_calib_r','bdf_flux_err_dered_calib_i','bdf_flux_err_dered_calib_z','bdf_flux_err_dered_calib_Y','bdf_flux_err_dered_calib_J','bdf_flux_err_dered_calib_H']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
+#
+#
+# SPECZ
+# filters_table = {'filter': ['DECam|DECam.g','DECam|DECam.r','DECam|DECam.i','DECam|DECam.z','Euclid|VIS.vis','Euclid|NISP.Y','Euclid|NISP.J','Euclid|NISP.H',],
+#                 'flux': ['flux_g_ext_decam_unif', 'flux_r_ext_decam_unif', 'flux_i_ext_decam_unif', 'flux_z_ext_decam_unif', 'flux_vis_unif', 'flux_y_unif', 'flux_j_unif', 'flux_h_unif'],
+#                 'flux_error': ['fluxerr_g_ext_decam_unif', 'fluxerr_r_ext_decam_unif', 'fluxerr_i_ext_decam_unif', 'fluxerr_z_ext_decam_unif', 'fluxerr_vis_unif', 'fluxerr_y_unif', 'fluxerr_j_unif', 'fluxerr_h_unif']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
+
+# TESTS NEW FILTERS
+# filters_table = {'filter': ['JWST|MIRI.F1800W','JWST|NIRCam.F277W','HST|ACS_WFC.F555W','HST|ACS_WFC.G800L','HST|WFC3_IR.F140W','Euclid|VIS.vis'],
+#                 'flux': ['FLUX_J_TOTAL','FLUX_H_TOTAL','FLUX_G_EXT_LSST_TOTAL','FLUX_R_EXT_LSST_TOTAL','FLUX_Z_EXT_LSST_TOTAL','FLUX_DETECTION_TOTAL'],
+#                 'flux_error': ['FLUXERR_J_TOTAL','FLUXERR_H_TOTAL','FLUXERR_G_EXT_LSST_TOTAL','FLUXERR_R_EXT_LSST_TOTAL','FLUXERR_Z_EXT_LSST_TOTAL','FLUXERR_DETECTION_TOTAL']}
+# filters_table = {'filter': ['Spitzer|IRAC.I1','Spitzer|IRAC.I2','DESI|bass.g','DESI|bass.r','DESI|MzLS.z','Euclid|VIS.vis'],
+#                 'flux': ['FLUX_J_TOTAL','FLUX_H_TOTAL','FLUX_G_EXT_LSST_TOTAL','FLUX_R_EXT_LSST_TOTAL','FLUX_Z_EXT_LSST_TOTAL','FLUX_DETECTION_TOTAL'],
+#                 'flux_error': ['FLUXERR_J_TOTAL','FLUXERR_H_TOTAL','FLUXERR_G_EXT_LSST_TOTAL','FLUXERR_R_EXT_LSST_TOTAL','FLUXERR_Z_EXT_LSST_TOTAL','FLUXERR_DETECTION_TOTAL']}
+# filters_table = {'filter': ['VISTA|VISTA.NB118','SuprimeCam|Suprime.B','SuprimeCam|Suprime.r','SuprimeCam|Suprime.IB709','HSCinter|HSC.NB387_filter','HSCinter|HSC.NB973_filter'],
+#                 'flux': ['FLUX_J_TOTAL','FLUX_H_TOTAL','FLUX_G_EXT_LSST_TOTAL','FLUX_R_EXT_LSST_TOTAL','FLUX_Z_EXT_LSST_TOTAL','FLUX_DETECTION_TOTAL'],
+#                 'flux_error': ['FLUXERR_J_TOTAL','FLUXERR_H_TOTAL','FLUXERR_G_EXT_LSST_TOTAL','FLUXERR_R_EXT_LSST_TOTAL','FLUXERR_Z_EXT_LSST_TOTAL','FLUXERR_DETECTION_TOTAL']}
 
 # flux or magnitude?
 ab_magnitude = "Flux"  # http://odahub.io/ontology#String ; oda:allowed_value "Flux", "Magnitude" ; oda:label "Flux [microJy] or AB Magnitude"
@@ -127,7 +154,7 @@ object_type = "Galaxy"  # http://odahub.io/ontology#String ; oda:allowed_value "
 
 # first and last line
 skip_sources = 0  # http://odahub.io/ontology#Integer ; oda:label "Skip the first N sources"
-proc_sources = 0  # http://odahub.io/ontology#Integer ; oda:label "N sources to process (if >0)"
+proc_sources = 0  # http://odahub.io/ontology#Integer ; oda:label "N sources to process (all if = 0)"
 
 # more input parameters (OPTIONAL)
 # MW extinction correction (e.g., 'MW_EBV', 'RA', 'DEC')
@@ -217,8 +244,8 @@ if object_type == "Star":
     column_name_Ztrue = ""
     ZP_correction = False
     PDZ_output = False
-# priors only for Galaxy
-if object_type != "Galaxy":
+# priors only for Galaxy & QSO
+if object_type == "HighZ":
     priors = "None"
 
 # root path for Phosphoros
@@ -489,11 +516,20 @@ elif priors == "Top-Hat LF":
     print("TopHat LF prior")
     Phospho_para["luminosity-prior"] = "YES"
     Phospho_para["luminosity-function-expressed-in-magnitude"] = "YES"
-    Phospho_para["luminosity-sed-group-Cosmos"] = "CosmosEll,CosmosSB,CosmosSp"
+    Phospho_para["luminosity-sed-group-Cosmos"] = (
+        "CosmosEll,CosmosSB,CosmosSp,EuclidQSO"
+    )
     Phospho_para["luminosity-function-sed-group-1"] = "Cosmos"
     Phospho_para["luminosity-function-min-z-1"] = 0
     Phospho_para["luminosity-function-max-z-1"] = 6
-    Phospho_para["luminosity-function-curve-1"] = "TopHat_-28.000000_-8.000000"
+    if object_type == "QSO":
+        print("Range [-30,-20]")
+        Phospho_para["luminosity-function-curve-1"] = "TopHat_-30_-20"
+    else:
+        print("Range [-24,0]")
+        Phospho_para["luminosity-function-curve-1"] = (
+            "TopHat_-24_0"  #'TopHat_-28.000000_-8.000000'
+        )
     # Phospho_para['luminosity-prior-per-mpc3']='YES'
 else:
     print("No Priors")
@@ -524,7 +560,7 @@ def read_fits(f):
     s = s.replace("_new_el/", "/")
     return mg, s
 
-def download_mg(url):
+def download_mg_highz(url):
     tmp_path = path_data_MG + "highz.tar.gz "
     output = subprocess.check_output(
         "wget -nv -O " + tmp_path + url, shell=True
@@ -534,8 +570,30 @@ def download_mg(url):
     ).decode()
     return
 
+# MG_web = ['HSTACS','HSTWFC3','JWSTMIRI','JWSTNIRCam','HSCinter','SuprimeCam']
+MG_web = ["HST", "JWST", "SuprimeCam"]
+
+def download_mg_gal(group):
+    url = "https://www.astro.unige.ch/~tucci/Phosphoros/" + group + ".tar.gz"
+    tmp_path = path_data_MG + group + ".tar.gz "
+    output = subprocess.check_output(
+        "wget -nv -O " + tmp_path + url, shell=True
+    ).decode()
+    output = subprocess.check_output(
+        "tar -xvf " + tmp_path + "-C " + path_data_MG, shell=True
+    ).decode()
+    return
+
 if object_type == "HighZ":
-    download_mg("https://www.astro.unige.ch/~tucci/Phosphoros/highz.tar.gz")
+    download_mg_highz(
+        "https://www.astro.unige.ch/~tucci/Phosphoros/highz.tar.gz"
+    )
+
+if object_type == "Galaxy":
+    for xg in filter_groups:
+        if xg in MG_web:
+            print("Download MGs from WEB:", xg)
+            download_mg_gal(xg)
 
 # step 1
 for i, x in enumerate(mg_groups):
@@ -882,7 +940,7 @@ else:
 
         # photo-Z vs Spec-Z
         ax = axs[1]
-        zmax2 = max(max(cat["Ztrue"]), zmax) + 0.1
+        zmax2 = max(max(cat[column_name_Ztrue]), zmax) + 0.1
         ax.set_xlim(0, zmax2)
         ax.set_ylim(0, zmax2)
         ax.plot([0, zmax2], [0, zmax2], "-", c="black", alpha=0.5)
@@ -900,21 +958,22 @@ else:
             c="black",
             alpha=0.5,
         )
-        ax.scatter(cat["Z"], cat["Ztrue"], s=5, alpha=0.3)
+        ax.scatter(cat["Z"], cat[column_name_Ztrue], s=5, alpha=0.3)
         ax.set_xlabel("Photometric Redshift")
         ax.set_ylabel("Spectroscopic Redshift")
 
         # histogram (photoZ - specZ)/(1+speZ)
-        dz = (cat["Z"] - cat["Ztrue"]) / (1 + cat["Ztrue"])
+        dz = (cat["Z"] - cat[column_name_Ztrue]) / (1 + cat[column_name_Ztrue])
         mean = np.nanmean(dz)
         median = np.nanmedian(dz)
         mad = np.nanmedian(np.abs(dz - median))
+        nmad = 1.4826 * mad
         sigma = np.nanstd(dz)
         outliers = len(dz[np.abs(dz) > 0.15]) / len(dz)
         # print(mean,median,mad,sigma,outliers)
 
         ax = axs[2]
-        ndz = ax.hist(dz, bins=50)
+        ndz = ax.hist(dz, bins=100, range=(-2, 2))
         ax.plot(
             [-0.15, -0.15], [0, 0.9 * max(ndz[0])], ":", c="red", alpha=0.5
         )
@@ -922,7 +981,7 @@ else:
 
         ax.text(max(0.5 * ndz[1]), 0.8 * max(ndz[0]), f"Mean: {mean:.3f}")
         ax.text(max(0.5 * ndz[1]), 0.7 * max(ndz[0]), f"Median: {median:.3f}")
-        ax.text(max(0.5 * ndz[1]), 0.6 * max(ndz[0]), f"MAD: {mad:.3f}")
+        ax.text(max(0.5 * ndz[1]), 0.6 * max(ndz[0]), f"NMAD: {nmad:.3f}")
         ax.text(max(0.5 * ndz[1]), 0.5 * max(ndz[0]), f"Sigma: {sigma:.3f}")
         ax.text(
             max(0.5 * ndz[1]),
