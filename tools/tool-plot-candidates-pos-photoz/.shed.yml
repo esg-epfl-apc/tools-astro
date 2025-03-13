@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: tool-plot-candidates-pos-photoz
+homepage_url: null
+long_description: tool-plot-candidates-pos-photoz
+name: tool_plot_candidates_pos_photoz_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
