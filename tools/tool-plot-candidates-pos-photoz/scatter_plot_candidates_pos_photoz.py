@@ -217,7 +217,9 @@ for i, txt in enumerate(photoz):
 
 ax.set_xlabel("RA")
 ax.set_ylabel("Dec")
-ax.set_title(f"zreal = {s_real_z}; uncertainty={uncertainty} arcsec")
+ax.set_title(
+    f"name={name}; zreal = {s_real_z}; uncertainty={uncertainty} arcsec"
+)
 fig.savefig(f"candidates.png")
 
 from oda_api.data_products import PictureProduct
