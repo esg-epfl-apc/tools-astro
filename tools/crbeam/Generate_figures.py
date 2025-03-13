@@ -24,11 +24,11 @@ EminSource = 1.0  # http://odahub.io/ontology#Energy_TeV
 Gamma = 2.0  # http://odahub.io/ontology#Float
 EGMF_fG = 10  # http://odahub.io/ontology#Float
 lmaxEGMF_Mpc = 5  # http://odahub.io/ontology#Float
-jet_half_size = 5.0  # http://odahub.io/ontology#degree
-jet_direction = 0.0  # http://odahub.io/ontology#degree
-psf = 1.0  # http://odahub.io/ontology#degree
-window_size_RA = 2.0  # http://odahub.io/ontology#degree
-window_size_DEC = 1.0  # http://odahub.io/ontology#degree
+jet_half_size = 5.0  # oda:degree
+jet_direction = 0.0  # oda:degree
+psf = 1.0  # oda:degree
+window_size_RA = 2.0  # oda:degree
+window_size_DEC = 1.0  # oda:degree
 EBL = "Franceschini 2017"  # http://odahub.io/ontology#String ; oda:allowed_value "Franceschini 2017","Stecker 2016 lower limit","Stecker 2016 upper limit","Inoue 2012 Baseline","Inoue 2012 lower limit","Inoue 2012 upper limit"
 
 _galaxy_wd = os.getcwd()
@@ -63,7 +63,7 @@ for _vn in [
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
+    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n# http://odahub.io/ontology#degree\n",
 )
 
 from astropy import units as u
@@ -234,15 +234,10 @@ T_Mpc = lc.get_distance_Mpc(mc_file)
 T_Mpc
 
 # building the spectrum figure for total flux
+
 spec_file = mc_file + ".spec"
 spec_fig = plot_spec(
-    spec_file,
-    title="spectrum",
-    Emin=Emin,
-    Emax=Emax,
-    ext="png",
-    show=False,
-    logscale=True,
+    spec_file, title="spectrum", ext="png", show=False, logscale=True
 )
 spec_image = PictureProduct.from_file(spec_fig)
 
@@ -636,31 +631,35 @@ map4d = map4d  # https://odahub.io/ontology/#Spectrum
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_CRbeam_spectrum_png", "spectrum_png_galaxy.output", spectrum_png)
+    (
+        "out_Generate_figures_spectrum_png",
+        "spectrum_png_galaxy.output",
+        spectrum_png,
+    )
 )
 _oda_outs.append(
     (
-        "out_CRbeam_light_curve_png",
+        "out_Generate_figures_light_curve_png",
         "light_curve_png_galaxy.output",
         light_curve_png,
     )
 )
 _oda_outs.append(
     (
-        "out_CRbeam_total_spectrum_table",
+        "out_Generate_figures_total_spectrum_table",
         "total_spectrum_table_galaxy.output",
         total_spectrum_table,
     )
 )
 _oda_outs.append(
     (
-        "out_CRbeam_psf_spectrum_table",
+        "out_Generate_figures_psf_spectrum_table",
         "psf_spectrum_table_galaxy.output",
         psf_spectrum_table,
     )
 )
 _oda_outs.append(
-    ("out_CRbeam_lc_result", "lc_result_galaxy.output", lc_result)
+    ("out_Generate_figures_lc_result", "lc_result_galaxy.output", lc_result)
 )
 
 for _outn, _outfn, _outv in _oda_outs:
@@ -680,17 +679,21 @@ for _outn, _outfn, _outv in _oda_outs:
         _galaxy_meta_data[_outn] = {"ext": "json"}
 _simple_outs = []
 _simple_outs.append(
-    ("out_CRbeam_spectrum", "spectrum_galaxy.output", spectrum)
+    ("out_Generate_figures_spectrum", "spectrum_galaxy.output", spectrum)
 )
 _simple_outs.append(
     (
-        "out_CRbeam_spectrum_rotated",
+        "out_Generate_figures_spectrum_rotated",
         "spectrum_rotated_galaxy.output",
         spectrum_rotated,
     )
 )
-_simple_outs.append(("out_CRbeam_map3d", "map3d_galaxy.output", map3d))
-_simple_outs.append(("out_CRbeam_map4d", "map4d_galaxy.output", map4d))
+_simple_outs.append(
+    ("out_Generate_figures_map3d", "map3d_galaxy.output", map3d)
+)
+_simple_outs.append(
+    ("out_Generate_figures_map4d", "map4d_galaxy.output", map4d)
+)
 _numpy_available = True
 
 for _outn, _outfn, _outv in _simple_outs:
