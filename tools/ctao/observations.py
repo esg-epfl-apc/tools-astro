@@ -32,7 +32,7 @@ for _vn in ["token", "src_name", "T1", "T2", "RA", "DEC", "radius"]:
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\npip install git+https://github.com/cta-epfl/ctadata.git@54-temp-dir-creation-failure\n",
+    "if [ ! -f sdc_setup.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/ctao.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\npip install git+https://github.com/cta-epfl/ctadata.git\n",
 )
 
 # ## SDC data access setup
