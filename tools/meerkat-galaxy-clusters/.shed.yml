@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: Meerkat Galaxy clusters
+homepage_url: null
+long_description: Meerkat Galaxy clusters
+name: meerkat_galaxy_clusters_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
