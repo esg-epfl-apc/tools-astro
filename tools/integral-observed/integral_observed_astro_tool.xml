@@ -1,0 +1,30 @@
+<tool id="integral_observed_astro_tool" name="integral-observed" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="2.2.2">pandas</requirement>
+    <requirement type="package" version="1.2.20">oda-api</requirement>
+    <requirement type="package" version="3.9.0">matplotlib</requirement>
+    <requirement type="package" version="2.32.3">requests</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/find-observations.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="source_list_url" type="text" value="https://renkulab.io/gitlab/astronomy/mmoda/integral-observed/-/raw/master/tlist.txt" label="source_list_url" />
+    <param name="days_margin" type="float" value="3" label="days_margin" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; find-observations observations_preview" name="out_find_observations_observations_preview" format="auto" from_work_dir="observations_preview_galaxy.output" />
+    <data label="${tool.name} -&gt; find-observations log" name="out_find_observations_log" format="auto" from_work_dir="log_galaxy.output" />
+    <data label="${tool.name} -&gt; find-observations observations" name="out_find_observations_observations" format="auto" from_work_dir="observations_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="3">
+      <param name="source_list_url" value="https://renkulab.io/gitlab/astronomy/mmoda/integral-observed/-/raw/master/tlist.txt" />
+      <param name="days_margin" value="3" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>
