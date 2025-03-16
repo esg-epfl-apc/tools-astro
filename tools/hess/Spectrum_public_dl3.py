@@ -54,9 +54,21 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "RA",
+    "DEC",
+    "T1",
+    "T2",
+    "Radius",
+    "R_s",
+    "Emin",
+    "Emax",
+    "NEbins",
+    "Efit_min",
+    "Efit_max",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 E0 = 1.0
 
@@ -418,17 +430,17 @@ table_spectrum = spec  # http://odahub.io/ontology#ODAAstropyTable
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Spectrum_png", "png_galaxy.output", png))
+_oda_outs.append(("out_Spectrum_public_dl3_png", "png_galaxy.output", png))
 _oda_outs.append(
     (
-        "out_Spectrum_table_confidence_contour",
+        "out_Spectrum_public_dl3_table_confidence_contour",
         "table_confidence_contour_galaxy.output",
         table_confidence_contour,
     )
 )
 _oda_outs.append(
     (
-        "out_Spectrum_table_spectrum",
+        "out_Spectrum_public_dl3_table_spectrum",
         "table_spectrum_galaxy.output",
         table_spectrum,
     )
