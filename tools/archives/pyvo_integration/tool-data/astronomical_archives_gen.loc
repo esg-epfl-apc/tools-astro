@@ -9,7 +9,7 @@
 6	MAST STScI MissionMAST TAP service for HST Science Data	https://mast.stsci.edu/vo-tap/api/v0.1/missionmast/
 7	MAST STScI PanSTARRS 1 DR1 TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/ps1dr1
 8	MAST STScI PanSTARRS 1 DR2 TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/ps1dr2
-9	MAST STScI Registry TAP service	https://vao.stsci.edu/RegTAP/TapService.aspx
+9	MAST STScI Registry TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/registry
 10	MAST STScI Gaia DR3 TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/gaiadr3/
 11	MAST STScI 3D-HST HLSP TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/3dhst/
 12	MAST STScI CANDELS HLSP TAP service	https://mast.stsci.edu/vo-tap/api/v0.1/candels/
