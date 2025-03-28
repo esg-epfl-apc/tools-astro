@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -39,26 +43,22 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "src_name",
-    "z_start",
-    "Npart",
-    "particle_type",
-    "Emax",
-    "Emin",
-    "EminSource",
-    "Gamma",
-    "EGMF_fG",
-    "lmaxEGMF_Mpc",
-    "jet_half_size",
-    "jet_direction",
-    "psf",
-    "window_size_RA",
-    "window_size_DEC",
-    "EBL",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+src_name = str(inp_pdic["src_name"])
+z_start = float(inp_pdic["z_start"])
+Npart = int(inp_pdic["Npart"])
+particle_type = str(inp_pdic["particle_type"])
+Emax = float(inp_pdic["Emax"])
+Emin = float(inp_pdic["Emin"])
+EminSource = float(inp_pdic["EminSource"])
+Gamma = float(inp_pdic["Gamma"])
+EGMF_fG = float(inp_pdic["EGMF_fG"])
+lmaxEGMF_Mpc = float(inp_pdic["lmaxEGMF_Mpc"])
+jet_half_size = float(inp_pdic["jet_half_size"])
+jet_direction = float(inp_pdic["jet_direction"])
+psf = float(inp_pdic["psf"])
+window_size_RA = float(inp_pdic["window_size_RA"])
+window_size_DEC = float(inp_pdic["window_size_DEC"])
+EBL = str(inp_pdic["EBL"])
 
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
