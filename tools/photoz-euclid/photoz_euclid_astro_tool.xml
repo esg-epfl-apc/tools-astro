@@ -1,6 +1,6 @@
-<tool id="photoz_euclid_astro_tool" name="PhotoZ_Euclid" version="0.0.1+galaxy0" profile="23.0">
+<tool id="photoz_euclid_astro_tool" name="PhotoZ_Euclid" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
-    <requirement type="package" version="2.0.10">phosphoros</requirement>
+    <requirement type="package" version="2.0.8">phosphoros</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="9.0.2">ipython</requirement>
     <requirement type="package" version="0.7.0">jupyter_contrib_nbextensions</requirement>
@@ -15,44 +15,44 @@
     <requirement type="package" version="1.2.28">oda-api</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/Run_Phosphoros_on_Catalog.py'</command>
-  <configfiles>
-    <inputs name="inputs" filename="inputs.json" data_style="paths" />
-  </configfiles>
   <environment_variables>
     <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
     <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
   </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
   <inputs>
-    <param name="catalog_URL" type="data" label="" format="data" />
-    <param name="filters_table" type="data" label="filters_table" format="json" />
-    <param name="ab_magnitude" type="select" label="Flux [microJy] or AB Magnitude">
+    <param name="catalog_URL" type="data" label="" format="data" optional="false" />
+    <param name="filters_table" type="data" label="filters_table" format="json" optional="false" />
+    <param name="ab_magnitude" type="select" label="Flux [microJy] or AB Magnitude" optional="false">
       <option value="Flux" selected="true">Flux</option>
       <option value="Magnitude">Magnitude</option>
     </param>
-    <param name="object_type" type="select" label="Object Type">
+    <param name="object_type" type="select" label="Object Type" optional="false">
       <option value="Galaxy" selected="true">Galaxy</option>
       <option value="HighZ">HighZ</option>
       <option value="QSO">QSO</option>
       <option value="Star">Star</option>
     </param>
-    <param name="skip_sources" type="integer" value="0" label="Skip the first N sources" />
-    <param name="proc_sources" type="integer" value="0" label="N sources to process (all if = 0)" />
-    <param name="column_name_MW_EBV" type="text" value="" label="E(B-V)" />
-    <param name="column_name_RA" type="text" value="" label="Right Ascension" />
-    <param name="column_name_DEC" type="text" value="" label="Declination" />
-    <param name="priors" type="select" label="Priors (only for Galaxies)">
+    <param name="skip_sources" type="integer" value="0" label="Skip the first N sources" optional="false" />
+    <param name="proc_sources" type="integer" value="0" label="N sources to process (all if = 0)" optional="false" />
+    <param name="column_name_MW_EBV" type="text" value="" label="E(B-V)" optional="false" />
+    <param name="column_name_RA" type="text" value="" label="Right Ascension" optional="false" />
+    <param name="column_name_DEC" type="text" value="" label="Declination" optional="false" />
+    <param name="priors" type="select" label="Priors (only for Galaxies)" optional="false">
       <option value="None" selected="true">None</option>
       <option value="Redshift (Benitez 2000)">Redshift (Benitez 2000)</option>
       <option value="Top-Hat LF">Top-Hat LF</option>
       <option value="Volume">Volume</option>
     </param>
-    <param name="column_name_Nz_prior_I" type="text" value="" label="Redshift Prior: I Band" />
-    <param name="column_name_Ztrue" type="text" value="" label="Spectroscopic (Reference) Redshift" />
-    <param name="ZP_correction" type="select" label="Zero Point Correction">
+    <param name="column_name_Nz_prior_I" type="text" value="" label="Redshift Prior: I Band" optional="false" />
+    <param name="column_name_Ztrue" type="text" value="" label="Spectroscopic (Reference) Redshift" optional="false" />
+    <param name="ZP_correction" type="select" label="Zero Point Correction" optional="false">
       <option value="False">False</option>
       <option value="True">True</option>
     </param>
-    <param name="PDZ_output" type="select" label="Output: Redshift PDF">
+    <param name="PDZ_output" type="select" label="Output: Redshift PDF" optional="false">
       <option value="False">False</option>
       <option value="True">True</option>
     </param>

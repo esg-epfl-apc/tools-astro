@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -83,6 +87,7 @@ catalog_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1
 # catalog_URL = 'data/Catalogs/Star_Cat_COSMOS.fits' #http://odahub.io/ontology#FileURL ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'MultiBands_Catalog_1k.fits' #http://odahub.io/ontology#FileReference ; oda:group "Catalog filter" ; oda:label ""
 # catalog_URL = 'data/Catalogs/SpecZ_PhotoZ_South.fits'
+# catalog_URL = 'data/Catalogs/Galaxy_DESI.fits'
 
 # oda:oda_token_access oda:InOdaContext .
 
@@ -134,6 +139,10 @@ filters_table = {
 # filters_table = {'filter': ['DECam|DECam.g','DECam|DECam.r','DECam|DECam.i','DECam|DECam.z','Euclid|VIS.vis','Euclid|NISP.Y','Euclid|NISP.J','Euclid|NISP.H',],
 #                 'flux': ['flux_g_ext_decam_unif', 'flux_r_ext_decam_unif', 'flux_i_ext_decam_unif', 'flux_z_ext_decam_unif', 'flux_vis_unif', 'flux_y_unif', 'flux_j_unif', 'flux_h_unif'],
 #                 'flux_error': ['fluxerr_g_ext_decam_unif', 'fluxerr_r_ext_decam_unif', 'fluxerr_i_ext_decam_unif', 'fluxerr_z_ext_decam_unif', 'fluxerr_vis_unif', 'fluxerr_y_unif', 'fluxerr_j_unif', 'fluxerr_h_unif']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
+# Andrei's catalog
+# filters_table = {'filter': ['CTIO|DECam.g','CTIO|DECam.r','CTIO|DECam.i','CTIO|DECam.z','WISE|WISE.W1','WISE|WISE.W2'],
+#                 'flux': ['flux_g[Jy]','flux_r[Jy]','flux_i[Jy]','flux_z[Jy]','flux_w1[Jy]','flux_w2[Jy]'],
+#                 'flux_error': ['flux_g_err[Jy]','flux_r_err[Jy]','flux_i_err[Jy]','flux_z_err[Jy]','flux_w1_err[Jy]','flux_w2_err[Jy]']} # http://odahub.io/ontology#PhosphorosFiltersTable ; oda:group "Catalog filter"
 
 # TESTS NEW FILTERS
 # filters_table = {'filter': ['JWST|MIRI.F1800W','JWST|NIRCam.F277W','HST|ACS_WFC.F555W','HST|ACS_WFC.G800L','HST|WFC3_IR.F140W','Euclid|VIS.vis'],
@@ -184,28 +193,27 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "catalog_URL",
-    "ab_magnitude",
-    "object_type",
-    "skip_sources",
-    "proc_sources",
-    "column_name_MW_EBV",
-    "column_name_RA",
-    "column_name_DEC",
-    "priors",
-    "column_name_Nz_prior_I",
-    "column_name_Ztrue",
-    "ZP_correction",
-    "PDZ_output",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+catalog_URL = str(inp_pdic["catalog_URL"])
+ab_magnitude = str(inp_pdic["ab_magnitude"])
+object_type = str(inp_pdic["object_type"])
+skip_sources = int(inp_pdic["skip_sources"])
+proc_sources = int(inp_pdic["proc_sources"])
+column_name_MW_EBV = str(inp_pdic["column_name_MW_EBV"])
+column_name_RA = str(inp_pdic["column_name_RA"])
+column_name_DEC = str(inp_pdic["column_name_DEC"])
+priors = str(inp_pdic["priors"])
+column_name_Nz_prior_I = str(inp_pdic["column_name_Nz_prior_I"])
+column_name_Ztrue = str(inp_pdic["column_name_Ztrue"])
+ZP_correction = bool(inp_pdic["ZP_correction"])
+PDZ_output = bool(inp_pdic["PDZ_output"])
 
 for _vn in ["filters_table"]:
-    with open(inp_pdic[_vn], "r") as _this_fd:
-        _vv = json.load(_this_fd)
-        globals()[_vn] = _vv
+    if inp_pdic.get(_vn, None) is not None:
+        with open(inp_pdic[_vn], "r") as _this_fd:
+            _vv = json.load(_this_fd)
+            globals()[_vn] = _vv
+    else:
+        globals()[_vn] = None
 
 # check filters_table inputs
 
@@ -489,7 +497,7 @@ if priors == "Volume":
     print("Volume prior")
     Phospho_para["volume-prior"] = "YES"
     Phospho_para["volume-prior-effectiveness"] = 0.3
-elif priors == "Redshift":
+elif priors == "Redshift (Benitez 2000)":
     print("Redshift prior")
     # get the I filter from I flux
     for i, x in enumerate(filters_table["flux"]):
@@ -530,7 +538,7 @@ elif priors == "Top-Hat LF":
         Phospho_para["luminosity-function-curve-1"] = (
             "TopHat_-24_0"  #'TopHat_-28.000000_-8.000000'
         )
-    # Phospho_para['luminosity-prior-per-mpc3']='YES'
+    Phospho_para["luminosity-prior-per-mpc3"] = "YES"
 else:
     print("No Priors")
 
@@ -958,9 +966,9 @@ else:
             c="black",
             alpha=0.5,
         )
-        ax.scatter(cat["Z"], cat[column_name_Ztrue], s=5, alpha=0.3)
-        ax.set_xlabel("Photometric Redshift")
-        ax.set_ylabel("Spectroscopic Redshift")
+        ax.scatter(cat[column_name_Ztrue], cat["Z"], s=3, alpha=0.1)
+        ax.set_ylabel("Photometric Redshift")
+        ax.set_xlabel("Spectroscopic Redshift")
 
         # histogram (photoZ - specZ)/(1+speZ)
         dz = (cat["Z"] - cat[column_name_Ztrue]) / (1 + cat[column_name_Ztrue])
