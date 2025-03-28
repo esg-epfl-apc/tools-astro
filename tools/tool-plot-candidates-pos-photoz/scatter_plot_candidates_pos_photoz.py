@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -18,6 +22,9 @@ from astropy.coordinates.matrix_utilities import (
 )
 from astropy.coordinates.representation import UnitSphericalRepresentation
 from astropy.io import fits
+from astropy.wcs import WCS
+from desi import DESILegacySurvey
+from matplotlib.colors import LogNorm
 from oda_api.json import CustomJSONEncoder
 
 ## GCN Circular 39418
@@ -71,6 +78,13 @@ desi_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.f
 photoz_URL = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
 uncertainty = 1.9  # http://odahub.io/ontology#float ; oda:label "Uncertainty"
 s_real_z = 2.15  # http://odahub.io/ontology#float ; oda:label "Real Redshift"
+Radius = 1  # http://odahub.io/ontology#AngleMinutes
+pixsize = (
+    1.0  # http://odahub.io/ontology#AngleSeconds ; oda:label "Pixel size"
+)
+data_release = (
+    10  # http://odahub.io/ontology#Integer ; oda:label "Data Release"
+)
 
 _galaxy_wd = os.getcwd()
 
@@ -80,17 +94,22 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
+name = str(inp_pdic["name"])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+desi_URL = str(inp_pdic["desi_URL"])
+photoz_URL = str(inp_pdic["photoz_URL"])
+uncertainty = float(inp_pdic["uncertainty"])
+s_real_z = float(inp_pdic["s_real_z"])
+Radius = float(inp_pdic["Radius"])
+pixsize = float(inp_pdic["pixsize"])
+data_release = int(inp_pdic["data_release"])
 
-for _vn in [
-    "name",
-    "RA",
-    "DEC",
-    "desi_URL",
-    "photoz_URL",
-    "uncertainty",
-    "s_real_z",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+dr = data_release
+image_size = Angle(Radius * u.arcmin)
+pixsize = Angle(pixsize * u.arcsec)
+npix = int(2 * image_size / pixsize)
+source = SkyCoord(RA, DEC, unit="degree")
 
 workdir = os.getcwd()
 path_tmp = workdir + "/tmp/"
@@ -160,6 +179,67 @@ sep = s_ra_dec.separation(coords).arcmin
 indx = np.argmin(sep)
 print(photoz[indx], coords.ra[indx], coords.dec[indx])
 
+def query_image(source, dr, npix, image_size, band):
+    try:
+        query = DESILegacySurvey.get_images(
+            position=source,
+            survey="dr%d" % dr,
+            coordinates="icrs",
+            data_release=dr,
+            pixels=npix,
+            radius=image_size,
+            image_band=band,
+        )
+        return query[0][0].data, query[0][0].header
+
+    except:
+        return None, None
+
+blue, blue_h = query_image(source, dr, npix, image_size, "g")
+green, green_h = query_image(source, dr, npix, image_size, "r")
+red, red_h = query_image(source, dr, npix, image_size, "z")
+i_band, i_h = query_image(source, dr, npix, image_size, "i")
+
+rgb_l = []
+
+red_bool = False
+green_bool = False
+blue_bool = False
+i_bool = False
+
+if type(red) != type(None):
+    rgb_l.append(red)
+    header = red_h
+    red_bool = True
+
+if type(green) != type(None):
+    rgb_l.append(green)
+    header = green_h
+    green_bool = True
+
+if type(blue) != type(None):
+    rgb_l.append(blue)
+    header = blue_h
+    blue_bool = True
+
+if type(i_band) != type(None):
+    header = i_h
+    i_bool = True
+
+if red_bool or blue_bool or green_bool or i_bool:
+    w = WCS(header)
+    sky = w.pixel_to_world(0, 0)
+    ra_max_image = sky.ra.degree
+    dec_min_image = sky.dec.degree
+    sky = w.pixel_to_world(npix - 1, npix - 1)
+    ra_min_image = sky.ra.degree
+    dec_max_image = sky.dec.degree
+
+if red_bool or blue_bool or green_bool:
+    rgb = np.stack(rgb_l, axis=-1)
+    rgb = rgb.astype(np.float32)  # Convert to float for proper scaling
+    rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb))  # Normalize
+
 def _rotate_polygon(lon, lat, lon0, lat0):
     """
     Given a polygon with vertices defined by (lon, lat), rotate the polygon
@@ -196,30 +276,83 @@ def create_circle(center, radius, resolution=100, vertex_unit=u.degree):
     lat = lat.to_value(vertex_unit)
     return lon, lat
 
-fig, ax = pt.subplots()
+fig, ax = pt.subplots(1, 6, figsize=(35, 5))
 lon, lat = create_circle([s_ra_dec.ra, s_ra_dec.dec], s_uncert)
 
-ax.scatter(s_ra_dec.ra, s_ra_dec.dec, color="red", alpha=0.5, s=100)
-ax.scatter(lon, lat)
-ax.scatter(coords.ra[indx], coords.dec[indx], color="green", alpha=0.5, s=100)
-ax.scatter(ra, dec, color="blue")
+ax[0].scatter(
+    coords.ra[indx], coords.dec[indx], color="green", alpha=0.5, s=100
+)
 
 ra_lim_min = s_ra_dec.ra - 3 * s_uncert
 ra_lim_max = s_ra_dec.ra + 3 * s_uncert
 dec_lim_min = s_ra_dec.dec - 3 * s_uncert
 dec_lim_max = s_ra_dec.dec + 3 * s_uncert
 
-ax.set_xlim([ra_lim_min.value, ra_lim_max.value])
-ax.set_ylim([dec_lim_min.value, dec_lim_max.value])
+ax[0].set_xlim([ra_lim_min.value, ra_lim_max.value])
+ax[0].set_ylim([dec_lim_min.value, dec_lim_max.value])
 
 for i, txt in enumerate(photoz):
-    ax.annotate(round(txt, 2), (ra[i], dec[i]))
+    ax[0].annotate(round(txt, 2), (ra[i], dec[i]))
 
-ax.set_xlabel("RA")
-ax.set_ylabel("Dec")
-ax.set_title(
+for ax_ in ax:
+    ax_.set_xlabel("RA")
+    ax_.set_ylabel("Dec")
+    ax_.scatter(s_ra_dec.ra, s_ra_dec.dec, color="magenta", alpha=0.5, s=100)
+
+ax[0].scatter(lon, lat, s=4)
+for ax_ in ax[1:]:
+    ax_.scatter(lon, lat, s=0.5, alpha=0.5)
+
+ax[0].scatter(ra, dec, color="red", alpha=0.5, s=25)
+ax[1].scatter(ra, dec, color="magenta", alpha=0.5, s=2)
+
+for ax_ in ax[2:]:
+    ax_.scatter(ra, dec, color="red", alpha=0.5, s=2)
+
+ax[0].set_title(
     f"name={name}; zreal = {s_real_z}; uncertainty={uncertainty} arcsec"
 )
+ax[1].set_title(f"GRZ image")
+ax[2].set_title(f"G image")
+ax[3].set_title(f"R image")
+ax[4].set_title(f"Z image")
+ax[5].set_title(f"I image")
+
+if red_bool or blue_bool or green_bool:
+    ax[1].imshow(
+        rgb,
+        origin="lower",
+        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+    )
+    if i_bool:
+        ax[5].imshow(
+            i_band,
+            norm=LogNorm(vmax=np.max(i_band), vmin=np.max(i_band) / 1e3),
+            origin="lower",
+            extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        )
+    elif red_bool:
+        ax[4].imshow(
+            red,
+            norm=LogNorm(vmax=np.max(red), vmin=np.max(red) / 1e3),
+            origin="lower",
+            extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        )
+    elif green_bool:
+        ax[3].imshow(
+            green,
+            norm=LogNorm(vmax=np.max(green), vmin=np.max(green) / 1e3),
+            origin="lower",
+            extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        )
+    elif blue_bool:
+        ax[2].imshow(
+            blue,
+            norm=LogNorm(vmax=np.max(blue), vmin=np.max(blue) / 1e3),
+            origin="lower",
+            extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        )
+
 fig.savefig(f"candidates.png")
 
 from oda_api.data_products import PictureProduct
