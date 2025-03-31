@@ -235,7 +235,7 @@ if red_bool or blue_bool or green_bool or i_bool:
     ra_min_image = sky.ra.degree
     dec_max_image = sky.dec.degree
 
-if red_bool or blue_bool or green_bool:
+if len(rgb_l) >= 3:
     rgb = np.stack(rgb_l, axis=-1)
     rgb = rgb.astype(np.float32)  # Convert to float for proper scaling
     rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb))  # Normalize
@@ -318,7 +318,8 @@ ax[3].set_title(f"R image")
 ax[4].set_title(f"Z image")
 ax[5].set_title(f"I image")
 
-if red_bool or blue_bool or green_bool:
+if len(rgb_l) >= 3:
+    print(rgb.shape)
     ax[1].imshow(
         rgb,
         origin="lower",
