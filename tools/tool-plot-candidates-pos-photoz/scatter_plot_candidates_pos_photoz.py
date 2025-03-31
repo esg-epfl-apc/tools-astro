@@ -225,21 +225,25 @@ blue_bool = False
 i_bool = False
 
 if type(red) != type(None):
+    print("Z - band, OK")
     rgb_l.append(red)
     header = red_h
     red_bool = True
 
 if type(green) != type(None):
+    print("R - band, OK")
     rgb_l.append(green)
     header = green_h
     green_bool = True
 
 if type(blue) != type(None):
+    print("G - band, OK")
     rgb_l.append(blue)
     header = blue_h
     blue_bool = True
 
 if type(i_band) != type(None):
+    print("I - band, OK")
     header = i_h
     i_bool = True
 
