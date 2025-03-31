@@ -14,6 +14,7 @@ import subprocess
 
 import matplotlib.pyplot as pt
 import numpy as np
+import pandas as pd
 from astropy import units as u
 from astropy.coordinates import Angle, SkyCoord
 from astropy.coordinates.matrix_utilities import (
@@ -22,6 +23,7 @@ from astropy.coordinates.matrix_utilities import (
 )
 from astropy.coordinates.representation import UnitSphericalRepresentation
 from astropy.io import fits
+from astropy.table import Table
 from astropy.wcs import WCS
 from desi import DESILegacySurvey
 from matplotlib.colors import LogNorm
@@ -175,9 +177,24 @@ photoz = photoz_h[1].data["Z"]
 
 photoz
 
-sep = s_ra_dec.separation(coords).arcmin
+sep = s_ra_dec.separation(coords).arcsec
 indx = np.argmin(sep)
 print(photoz[indx], coords.ra[indx], coords.dec[indx])
+
+in_circle = sep < Angle(uncertainty * u.arcsec).arcsec
+
+dict_out = {"GRB": [], "GRB zreal": [], "photoz": [], "RA": [], "DEC": []}
+for phz, ra_i, dec_i in zip(
+    photoz[in_circle], coords.ra[in_circle], coords.dec[in_circle]
+):
+    dict_out["GRB"].append(name)
+    dict_out["GRB zreal"].append(2.15)
+    dict_out["photoz"].append(phz)
+    dict_out["RA"].append(ra_i.degree)
+    dict_out["DEC"].append(dec_i.degree)
+
+t_out = Table.from_pandas(pd.DataFrame(dict_out))
+print(t_out)
 
 def query_image(source, dr, npix, image_size, band):
     try:
@@ -356,11 +373,13 @@ if blue_bool:
 
 fig.savefig(f"candidates.png")
 
-from oda_api.data_products import PictureProduct
+from oda_api.data_products import ODAAstropyTable, PictureProduct
 
 bin_image = PictureProduct.from_file("candidates.png")
+cat = ODAAstropyTable(t_out)
 
 spectrum_png = bin_image  # http://odahub.io/ontology#ODAPictureProduct
+catalog_table = cat  # http://odahub.io/ontology#ODAAstropyTable
 
 # output gathering
 _galaxy_meta_data = {}
@@ -370,6 +389,13 @@ _oda_outs.append(
         "out_scatter_plot_candidates_pos_photoz_spectrum_png",
         "spectrum_png_galaxy.output",
         spectrum_png,
+    )
+)
+_oda_outs.append(
+    (
+        "out_scatter_plot_candidates_pos_photoz_catalog_table",
+        "catalog_table_galaxy.output",
+        catalog_table,
     )
 )
 
