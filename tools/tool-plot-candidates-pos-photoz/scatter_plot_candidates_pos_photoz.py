@@ -323,35 +323,35 @@ if len(rgb_l) >= 3:
     ax[1].imshow(
         rgb,
         origin="lower",
-        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
 if i_bool:
     ax[5].imshow(
         i_band,
         norm=LogNorm(vmax=np.max(i_band), vmin=np.max(i_band) / 1e3),
         origin="lower",
-        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
 if red_bool:
     ax[4].imshow(
         red,
         norm=LogNorm(vmax=np.max(red), vmin=np.max(red) / 1e3),
         origin="lower",
-        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
 if green_bool:
     ax[3].imshow(
         green,
         norm=LogNorm(vmax=np.max(green), vmin=np.max(green) / 1e3),
         origin="lower",
-        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
 if blue_bool:
     ax[2].imshow(
         blue,
         norm=LogNorm(vmax=np.max(blue), vmin=np.max(blue) / 1e3),
         origin="lower",
-        extent=(ra_min_image, ra_max_image, dec_min_image, dec_max_image),
+        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
 
 fig.savefig(f"candidates.png")
