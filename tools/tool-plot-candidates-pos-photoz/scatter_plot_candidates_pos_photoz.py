@@ -196,70 +196,31 @@ for phz, ra_i, dec_i in zip(
 t_out = Table.from_pandas(pd.DataFrame(dict_out))
 print(t_out)
 
-def query_image(source, dr, npix, image_size, band):
-    try:
-        query = DESILegacySurvey.get_images(
-            position=source,
-            survey="dr%d" % dr,
-            coordinates="icrs",
-            data_release=dr,
-            pixels=npix,
-            radius=image_size,
-            image_band=band,
-        )
-        return query[0][0].data, query[0][0].header
+try:
+    query = DESILegacySurvey.get_images(
+        position=source,
+        survey="dr%d" % dr,
+        coordinates="icrs",
+        data_release=dr,
+        pixels=npix,
+        radius=image_size,
+        image_band="griz",
+    )
+    griz, griz_h = query[0][0].data, query[0][0].header
+except:
+    raise RuntimeError("ERROR: Could not get the image data from LS")
 
-    except:
-        return None, None
+w = WCS(griz_h)
+sky = w.pixel_to_world(0, 0, 0)
+ra_max_image = sky[0].ra.degree
+dec_min_image = sky[0].dec.degree
+sky = w.pixel_to_world(npix - 1, npix - 1, npix - 1)
+ra_min_image = sky[0].ra.degree
+dec_max_image = sky[0].dec.degree
 
-blue, blue_h = query_image(source, dr, npix, image_size, "g")
-green, green_h = query_image(source, dr, npix, image_size, "r")
-red, red_h = query_image(source, dr, npix, image_size, "z")
-i_band, i_h = query_image(source, dr, npix, image_size, "i")
-
-rgb_l = []
-
-red_bool = False
-green_bool = False
-blue_bool = False
-i_bool = False
-
-if type(red) != type(None):
-    print("Z - band, OK")
-    rgb_l.append(red)
-    header = red_h
-    red_bool = True
-
-if type(green) != type(None):
-    print("R - band, OK")
-    rgb_l.append(green)
-    header = green_h
-    green_bool = True
-
-if type(blue) != type(None):
-    print("G - band, OK")
-    rgb_l.append(blue)
-    header = blue_h
-    blue_bool = True
-
-if type(i_band) != type(None):
-    print("I - band, OK")
-    header = i_h
-    i_bool = True
-
-if red_bool or blue_bool or green_bool or i_bool:
-    w = WCS(header)
-    sky = w.pixel_to_world(0, 0)
-    ra_max_image = sky.ra.degree
-    dec_min_image = sky.dec.degree
-    sky = w.pixel_to_world(npix - 1, npix - 1)
-    ra_min_image = sky.ra.degree
-    dec_max_image = sky.dec.degree
-
-if len(rgb_l) >= 3:
-    rgb = np.stack(rgb_l, axis=-1)
-    rgb = rgb.astype(np.float32)  # Convert to float for proper scaling
-    rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb))  # Normalize
+rgb = np.stack([griz[0], griz[1], griz[3]], axis=-1)
+rgb = rgb.astype(np.float32)  # Convert to float for proper scaling
+rgb = (rgb - np.min(rgb)) / (np.max(rgb) - np.min(rgb))  # Normalize
 
 def _rotate_polygon(lon, lat, lon0, lat0):
     """
@@ -333,44 +294,24 @@ for ax_ in ax[2:]:
 ax[0].set_title(
     f"name={name}; zreal = {s_real_z}; uncertainty={uncertainty} arcsec"
 )
+
+print(rgb.shape)
 ax[1].set_title(f"GRZ image")
+ax[1].imshow(
+    rgb,
+    origin="lower",
+    extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
+)
+
 ax[2].set_title(f"G image")
 ax[3].set_title(f"R image")
-ax[4].set_title(f"Z image")
-ax[5].set_title(f"I image")
+ax[4].set_title(f"I image")
+ax[5].set_title(f"Z image")
 
-if len(rgb_l) >= 3:
-    print(rgb.shape)
-    ax[1].imshow(
-        rgb,
-        origin="lower",
-        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
-    )
-if i_bool:
-    ax[5].imshow(
-        i_band,
-        norm=LogNorm(vmax=np.max(i_band), vmin=np.max(i_band) / 1e3),
-        origin="lower",
-        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
-    )
-if red_bool:
-    ax[4].imshow(
-        red,
-        norm=LogNorm(vmax=np.max(red), vmin=np.max(red) / 1e3),
-        origin="lower",
-        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
-    )
-if green_bool:
-    ax[3].imshow(
-        green,
-        norm=LogNorm(vmax=np.max(green), vmin=np.max(green) / 1e3),
-        origin="lower",
-        extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
-    )
-if blue_bool:
-    ax[2].imshow(
-        blue,
-        norm=LogNorm(vmax=np.max(blue), vmin=np.max(blue) / 1e3),
+for i, band_ in enumerate([griz[0], griz[1], griz[2], griz[3]]):
+    ax[i + 2].imshow(
+        band_,
+        norm=LogNorm(vmax=np.max(band_), vmin=np.max(band_) / 1e3),
         origin="lower",
         extent=(ra_max_image, ra_min_image, dec_min_image, dec_max_image),
     )
