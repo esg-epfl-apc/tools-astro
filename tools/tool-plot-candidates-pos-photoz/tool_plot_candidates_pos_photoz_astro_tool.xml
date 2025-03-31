@@ -46,4 +46,8 @@
       </assert_stdout>
     </test>
   </tests>
+  <help>description: Tool to plot optical candidates long_description: Tool to
+plot optical candidates of GRBs using Legacy Survey data.
+additional_files: - &#8217;\*.py&#8217; - &#8217;data/\*\*&#8217;
+</help>
 </tool>
