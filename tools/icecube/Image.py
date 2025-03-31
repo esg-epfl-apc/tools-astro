@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -42,22 +46,18 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "src_name",
-    "RA",
-    "DEC",
-    "IC40",
-    "IC59",
-    "IC79",
-    "IC86_I",
-    "IC86_II_VII",
-    "Radius",
-    "pixel_size",
-    "TSmap_type",
-    "Slope",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+src_name = str(inp_pdic["src_name"])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+IC40 = bool(inp_pdic["IC40"])
+IC59 = bool(inp_pdic["IC59"])
+IC79 = bool(inp_pdic["IC79"])
+IC86_I = bool(inp_pdic["IC86_I"])
+IC86_II_VII = bool(inp_pdic["IC86_II_VII"])
+Radius = float(inp_pdic["Radius"])
+pixel_size = float(inp_pdic["pixel_size"])
+TSmap_type = str(inp_pdic["TSmap_type"])
+Slope = float(inp_pdic["Slope"])
 
 from skyllh.analyses.i3.publicdata_ps.time_integrated_ps import create_analysis
 from skyllh.core.config import Config

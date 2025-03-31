@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -34,9 +38,9 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in ["RA", "DEC", "Slope"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+Slope = float(inp_pdic["Slope"])
 
 if os.path.exists("20210126_PS-IC40-IC86_VII.zip") == False:
     get_ipython().system(   # noqa: F821

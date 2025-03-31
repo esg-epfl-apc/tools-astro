@@ -1,22 +1,25 @@
-<tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="23.0">
+<tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
     <requirement type="package" version="6.0">unzip</requirement>
-    <requirement type="package" version="7.0.0">astropy</requirement>
-    <requirement type="package" version="2.2.2">numpy</requirement>
-    <requirement type="package" version="1.15.1">scipy</requirement>
+    <requirement type="package" version="9.0.2">ipython</requirement>
+    <requirement type="package" version="7.0.1">astropy</requirement>
+    <requirement type="package" version="2.2.4">numpy</requirement>
+    <requirement type="package" version="1.15.2">scipy</requirement>
     <requirement type="package" version="2.30.1">iminuit</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <requirement type="package" version="3.10.1">matplotlib</requirement>
+    <requirement type="package" version="24.1.0">skyllh</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="0.70.17">multiprocess</requirement>
-    <requirement type="package" version="1.3">gammapy</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="7.16.6">nbconvert</requirement>
-    <requirement type="package" version="8.31.0">ipython</requirement>
-    <requirement type="package" version="24.1.0">skyllh</requirement>
     <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
   <configfiles>
     <inputs name="inputs" filename="inputs.json" data_style="paths" />
   </configfiles>
@@ -28,41 +31,41 @@
         <option value="Lightcurve" selected="false">Lightcurve</option>
       </param>
       <when value="Image">
-        <param name="src_name" type="text" value="NGC 1068" label="src_name" />
-        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" />
-        <param name="IC40" type="boolean" label="IC40" />
-        <param name="IC59" type="boolean" label="IC59" />
-        <param name="IC79" type="boolean" label="IC79" />
-        <param name="IC86_I" type="boolean" checked="true" label="IC86_I" />
-        <param name="IC86_II_VII" type="boolean" checked="true" label="IC86_II_VII" />
-        <param name="Radius" type="float" value="1.0" label="Radius (unit: deg)" />
-        <param name="pixel_size" type="float" value="0.5" label="pixel_size (unit: deg)" />
-        <param name="TSmap_type" type="select" label="TSmap_type">
+        <param name="src_name" type="text" value="NGC 1068" label="src_name" optional="false" />
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" optional="false" />
+        <param name="DEC" type="float" value="-0.013294" label="DEC (unit: deg)" optional="false" />
+        <param name="IC40" type="boolean" label="IC40" optional="false" />
+        <param name="IC59" type="boolean" label="IC59" optional="false" />
+        <param name="IC79" type="boolean" label="IC79" optional="false" />
+        <param name="IC86_I" type="boolean" checked="true" label="IC86_I" optional="false" />
+        <param name="IC86_II_VII" type="boolean" checked="true" label="IC86_II_VII" optional="false" />
+        <param name="Radius" type="float" value="1.0" label="Radius (unit: deg)" optional="false" />
+        <param name="pixel_size" type="float" value="0.5" label="pixel_size (unit: deg)" optional="false" />
+        <param name="TSmap_type" type="select" label="TSmap_type" optional="false">
           <option value="Fixed_slope" selected="true">Fixed_slope</option>
           <option value="Free_slope">Free_slope</option>
         </param>
-        <param name="Slope" type="float" value="3.0" label="Slope" />
+        <param name="Slope" type="float" value="3.0" label="Slope" optional="false" />
       </when>
       <when value="Spectrum">
-        <param name="src_name" type="text" value="NGC 1068" label="src_name" />
-        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" />
-        <param name="IC40" type="boolean" label="IC40" />
-        <param name="IC59" type="boolean" label="IC59" />
-        <param name="IC79" type="boolean" label="IC79" />
-        <param name="IC86_I" type="boolean" checked="true" label="IC86_I" />
-        <param name="IC86_II_VII" type="boolean" checked="true" label="IC86_II_VII" />
-        <param name="Spectrum_type" type="select" label="Spectrum_type">
+        <param name="src_name" type="text" value="NGC 1068" label="src_name" optional="false" />
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" optional="false" />
+        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" optional="false" />
+        <param name="IC40" type="boolean" label="IC40" optional="false" />
+        <param name="IC59" type="boolean" label="IC59" optional="false" />
+        <param name="IC79" type="boolean" label="IC79" optional="false" />
+        <param name="IC86_I" type="boolean" checked="true" label="IC86_I" optional="false" />
+        <param name="IC86_II_VII" type="boolean" checked="true" label="IC86_II_VII" optional="false" />
+        <param name="Spectrum_type" type="select" label="Spectrum_type" optional="false">
           <option value="Fixed_slope">Fixed_slope</option>
           <option value="Free_slope" selected="true">Free_slope</option>
         </param>
-        <param name="Slope" type="float" value="3.0" label="Slope" />
+        <param name="Slope" type="float" value="3.0" label="Slope" optional="false" />
       </when>
       <when value="Lightcurve">
-        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" />
-        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" />
-        <param name="Slope" type="float" value="3.0" label="Slope" />
+        <param name="RA" type="float" value="40.669622" label="RA (unit: deg)" optional="false" />
+        <param name="DEC" type="float" value="0.013294" label="DEC (unit: deg)" optional="false" />
+        <param name="Slope" type="float" value="3.0" label="Slope" optional="false" />
       </when>
     </conditional>
   </inputs>
@@ -137,10 +140,6 @@
       </assert_stdout>
     </test>
   </tests>
-  <environment_variables>
-    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
-    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
-  </environment_variables>
   <help>This service provides analysis of publicly available data of IceCube
 neutrino telescope, described by `IceCube Collaboration
 (2021) &lt;https://arxiv.org/abs/2101.09836&gt;`__, using the
