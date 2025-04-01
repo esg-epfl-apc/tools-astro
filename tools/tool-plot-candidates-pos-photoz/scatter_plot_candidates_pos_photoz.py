@@ -188,7 +188,7 @@ for phz, ra_i, dec_i in zip(
     photoz[in_circle], coords.ra[in_circle], coords.dec[in_circle]
 ):
     dict_out["GRB"].append(name)
-    dict_out["GRB zreal"].append(2.15)
+    dict_out["GRB zreal"].append(s_real_z)
     dict_out["photoz"].append(phz)
     dict_out["RA"].append(ra_i.degree)
     dict_out["DEC"].append(dec_i.degree)
