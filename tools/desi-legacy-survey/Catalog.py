@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -35,9 +39,11 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in ["src_name", "RA", "DEC", "Radius", "data_release"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+src_name = str(inp_pdic["src_name"])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+Radius = float(inp_pdic["Radius"])
+data_release = int(inp_pdic["data_release"])
 
 # https://arxiv.org/pdf/2208.08513  Table 2
 # def compute_magnitude(flux, mw_transmission):
@@ -146,45 +152,38 @@ data = [
     ebv,
 ]
 names = (
-    "RA[deg]",
-    "DEC[deg]",
+    "RA",
+    "DEC",
     "Type",
-    "flux_g[Jy]",
-    "flux_g_err[Jy]",
-    "flux_r[Jy]",
-    "flux_r_err[Jy]",
-    "flux_z[Jy]",
-    "flux_z_err[Jy]",
-    "flux_i[Jy]",
-    "flux_i_err[Jy]",
-    "flux_w1[Jy]",
-    "flux_w1_err[Jy]",
-    "flux_w2[Jy]",
-    "flux_w2_err[Jy]",
-    "flux_w3[Jy]",
-    "flux_w3_err[Jy]",
-    "flux_w4[Jy]",
-    "flux_w4_err[Jy]",
+    "flux_g",
+    "flux_g_err",
+    "flux_r",
+    "flux_r_err",
+    "flux_z",
+    "flux_z_err",
+    "flux_i",
+    "flux_i_err",
+    "flux_w1",
+    "flux_w1_err",
+    "flux_w2",
+    "flux_w2_err",
+    "flux_w3",
+    "flux_w3_err",
+    "flux_w4",
+    "flux_w4_err",
     "ebv",
 )
 cat = ODAAstropyTable(Table(data, names=names))
 
 flux_error_list = [
-    "flux_i_err[Jy]",
-    "flux_g_err[Jy]",
-    "flux_r_err[Jy]",
-    "flux_z_err[Jy]",
-    "flux_w1_err[Jy]",
-    "flux_w2_err[Jy]",
+    "flux_i_err",
+    "flux_g_err",
+    "flux_r_err",
+    "flux_z_err",
+    "flux_w1_err",
+    "flux_w2_err",
 ]
-flux_list = [
-    "flux_i[Jy]",
-    "flux_g[Jy]",
-    "flux_r[Jy]",
-    "flux_z[Jy]",
-    "flux_w1[Jy]",
-    "flux_w2[Jy]",
-]
+flux_list = ["flux_i", "flux_g", "flux_r", "flux_z", "flux_w1", "flux_w2"]
 if case_ == 0:
     filter_list = [
         "DECam|DECam.i",

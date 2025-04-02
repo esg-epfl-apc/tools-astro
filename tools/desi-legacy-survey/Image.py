@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -53,17 +57,13 @@ if "_data_product" in inp_dic.keys():
     inp_pdic = inp_dic["_data_product"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "src_name",
-    "RA",
-    "DEC",
-    "Radius",
-    "pixsize",
-    "band",
-    "data_release",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+src_name = str(inp_pdic["src_name"])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+Radius = float(inp_pdic["Radius"])
+pixsize = float(inp_pdic["pixsize"])
+band = str(inp_pdic["band"])
+data_release = int(inp_pdic["data_release"])
 
 ra_s = RA
 dec_s = DEC
