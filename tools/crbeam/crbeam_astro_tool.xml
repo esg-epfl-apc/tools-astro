@@ -3,6 +3,7 @@
     <requirement type="package" version="1.1.1">crbeam</requirement>
     <requirement type="package" version="19.0.1">pyarrow</requirement>
     <requirement type="package" version="6.0">unzip</requirement>
+    <requirement type="package" version="2.49.0">git</requirement>
     <requirement type="package" version="9.0.2">ipython</requirement>
     <requirement type="package" version="1.2.37">oda-api</requirement>
     <requirement type="package" version="3.9.4">matplotlib</requirement>
