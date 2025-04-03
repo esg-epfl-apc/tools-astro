@@ -28,11 +28,11 @@ EminSource = 0.01  # http://odahub.io/ontology#Energy_TeV
 Gamma = 2.0  # http://odahub.io/ontology#Float
 EGMF_fG = 100  # http://odahub.io/ontology#Float
 lmaxEGMF_Mpc = 5  # http://odahub.io/ontology#Float
-jet_half_size = 180.0  # http://odahub.io/ontology#degree
-jet_direction = 0.0  # http://odahub.io/ontology#degree
-psf = 180.0  # http://odahub.io/ontology#degree
-window_size_RA = 4.0  # http://odahub.io/ontology#degree
-window_size_DEC = 4.0  # http://odahub.io/ontology#degree
+jet_half_size = 180.0  # http://odahub.io/ontology#AngleDegrees
+jet_direction = 0.0  # http://odahub.io/ontology#AngleDegrees
+psf = 180.0  # http://odahub.io/ontology#AngleDegrees
+window_size_RA = 4.0  # http://odahub.io/ontology#AngleDegrees
+window_size_DEC = 4.0  # http://odahub.io/ontology#AngleDegrees
 EBL = "Franceschini 2017"  # http://odahub.io/ontology#String ; oda:allowed_value "Franceschini 2017","Stecker 2016 lower limit","Stecker 2016 upper limit","Inoue 2012 Baseline","Inoue 2012 lower limit","Inoue 2012 upper limit"
 
 _galaxy_wd = os.getcwd()

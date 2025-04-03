@@ -28,11 +28,11 @@ EminSource = 1.0  # http://odahub.io/ontology#Energy_TeV
 Gamma = 2.0  # http://odahub.io/ontology#Float
 EGMF_fG = 10  # http://odahub.io/ontology#Float
 lmaxEGMF_Mpc = 5  # http://odahub.io/ontology#Float
-jet_half_size = 5.0  # oda:degree
-jet_direction = 0.0  # oda:degree
-psf = 1.0  # oda:degree
-window_size_RA = 2.0  # oda:degree
-window_size_DEC = 1.0  # oda:degree
+jet_half_size = 5.0  # oda:AngleDegrees
+jet_direction = 0.0  # oda:AngleDegrees
+psf = 1.0  # oda:AngleDegrees
+window_size_RA = 2.0  # oda:AngleDegrees
+window_size_DEC = 1.0  # oda:AngleDegrees
 EBL = "Franceschini 2017"  # http://odahub.io/ontology#String ; oda:allowed_value "Franceschini 2017","Stecker 2016 lower limit","Stecker 2016 upper limit","Inoue 2012 Baseline","Inoue 2012 lower limit","Inoue 2012 upper limit"
 
 _galaxy_wd = os.getcwd()
@@ -63,7 +63,7 @@ EBL = str(inp_pdic["EBL"])
 get_ipython().run_cell_magic(   # noqa: F821
     "bash",
     "",
-    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n# http://odahub.io/ontology#degree\n",
+    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
 )
 
 from astropy import units as u
