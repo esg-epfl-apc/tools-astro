@@ -619,10 +619,10 @@ light_curve_png = (
 total_spectrum_table = table  # http://odahub.io/ontology#ODAAstropyTable
 psf_spectrum_table = table1  # http://odahub.io/ontology#ODAAstropyTable
 lc_result = l_curve  # http://odahub.io/ontology#LightCurve
-spectrum = dp  # https://odahub.io/ontology#Spectrum
-spectrum_rotated = dp_rotated  # https://odahub.io/ontology#Spectrum
-map3d = map3d  # https://odahub.io/ontology#Spectrum
-map4d = map4d  # https://odahub.io/ontology#Spectrum
+spectrum = dp  # http://odahub.io/ontology#Spectrum
+spectrum_rotated = dp_rotated  # http://odahub.io/ontology#Spectrum
+map3d = map3d  # http://odahub.io/ontology#Spectrum
+map4d = map4d  # http://odahub.io/ontology#Spectrum
 
 # spec_png = spec_image # http://odahub.io/ontology#ODAPictureProduct
 # spec_rotated_png = spec_rotated_image # http://odahub.io/ontology#ODAPictureProduct
@@ -661,6 +661,18 @@ _oda_outs.append(
 _oda_outs.append(
     ("out_Generate_figures_lc_result", "lc_result_galaxy.output", lc_result)
 )
+_oda_outs.append(
+    ("out_Generate_figures_spectrum", "spectrum_galaxy.output", spectrum)
+)
+_oda_outs.append(
+    (
+        "out_Generate_figures_spectrum_rotated",
+        "spectrum_rotated_galaxy.output",
+        spectrum_rotated,
+    )
+)
+_oda_outs.append(("out_Generate_figures_map3d", "map3d_galaxy.output", map3d))
+_oda_outs.append(("out_Generate_figures_map4d", "map4d_galaxy.output", map4d))
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
@@ -677,38 +689,6 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
-_simple_outs = []
-_simple_outs.append(
-    ("out_Generate_figures_spectrum", "spectrum_galaxy.output", spectrum)
-)
-_simple_outs.append(
-    (
-        "out_Generate_figures_spectrum_rotated",
-        "spectrum_rotated_galaxy.output",
-        spectrum_rotated,
-    )
-)
-_simple_outs.append(
-    ("out_Generate_figures_map3d", "map3d_galaxy.output", map3d)
-)
-_simple_outs.append(
-    ("out_Generate_figures_map4d", "map4d_galaxy.output", map4d)
-)
-_numpy_available = True
-
-for _outn, _outfn, _outv in _simple_outs:
-    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
-    if isinstance(_outv, str) and os.path.isfile(_outv):
-        shutil.move(_outv, _galaxy_outfile_name)
-        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
-    elif _numpy_available and isinstance(_outv, np.ndarray):
-        with open(_galaxy_outfile_name, "wb") as fd:
-            np.savez(fd, _outv)
-        _galaxy_meta_data[_outn] = {"ext": "npz"}
-    else:
-        with open(_galaxy_outfile_name, "w") as fd:
-            json.dump(_outv, fd)
-        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
