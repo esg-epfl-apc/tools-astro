@@ -619,10 +619,10 @@ light_curve_png = (
 total_spectrum_table = table  # http://odahub.io/ontology#ODAAstropyTable
 psf_spectrum_table = table1  # http://odahub.io/ontology#ODAAstropyTable
 lc_result = l_curve  # http://odahub.io/ontology#LightCurve
-spectrum = dp  # https://odahub.io/ontology/#Spectrum
-spectrum_rotated = dp_rotated  # https://odahub.io/ontology/#Spectrum
-map3d = map3d  # https://odahub.io/ontology/#Spectrum
-map4d = map4d  # https://odahub.io/ontology/#Spectrum
+spectrum = dp  # https://odahub.io/ontology#Spectrum
+spectrum_rotated = dp_rotated  # https://odahub.io/ontology#Spectrum
+map3d = map3d  # https://odahub.io/ontology#Spectrum
+map4d = map4d  # https://odahub.io/ontology#Spectrum
 
 # spec_png = spec_image # http://odahub.io/ontology#ODAPictureProduct
 # spec_rotated_png = spec_rotated_image # http://odahub.io/ontology#ODAPictureProduct
