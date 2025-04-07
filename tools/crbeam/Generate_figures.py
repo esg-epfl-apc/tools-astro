@@ -60,12 +60,6 @@ window_size_RA = float(inp_pdic["window_size_RA"])
 window_size_DEC = float(inp_pdic["window_size_DEC"])
 EBL = str(inp_pdic["EBL"])
 
-get_ipython().run_cell_magic(   # noqa: F821
-    "bash",
-    "",
-    "if [ ! -f utils.py ]\nthen\n    git clone https://gitlab.renkulab.io/astronomy/mmoda/crbeam.git tmp_src\n    cp tmp_src/*.sh tmp_src/*.py ./\nfi\n",
-)
-
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.nddata import StdDevUncertainty
