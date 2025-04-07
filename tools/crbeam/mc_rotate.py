@@ -1,5 +1,6 @@
-import numpy as np
 import math
+
+import numpy as np
 
 
 def mc_rotate(
@@ -23,7 +24,8 @@ def mc_rotate(
     )
 
     if jet_direction > math.pi or jet_direction < 0:
-        raise ValueError("invalid jet_direction_deg param [0, 180] range expected")
+        raise ValueError(
+            "invalid jet_direction_deg param [0, 180] range expected")
 
     with open(mc_file, "r") as lines, open(rotated_file, "w") as rotated:
         column_names = []
@@ -48,7 +50,8 @@ def mc_rotate(
                 r = particle[2:5]
                 dz = r[
                     2
-                ]  # dz is roughly equal to time delay in units of full path (assuming very small deflection angle)
+                    # dz is roughly equal to time delay in units of full path (assuming very small deflection angle)
+                ]
 
                 # negative dz may apper in data as a result of rounding errors
                 dz = max(dz, 0)  # replacing negative values by zeros
@@ -98,8 +101,10 @@ def mc_rotate(
 
                     toCenter = np.array(
                         [
-                            [cos + ux * ux * (1 - cos), ux * uy * (1 - cos), uy * sin],
-                            [ux * uy * (1 - cos), cos + uy * uy * (1 - cos), -ux * sin],
+                            [cos + ux * ux * (1 - cos), ux *
+                             uy * (1 - cos), uy * sin],
+                            [ux * uy * (1 - cos), cos + uy *
+                             uy * (1 - cos), -ux * sin],
                             [-uy * sin, ux * sin, cos],
                         ]
                     )
@@ -137,7 +142,8 @@ def mc_rotate(
                             nFinal = np.dot(toCenter, n).transpose()
                             cosPhi = nFinal[0] / np.sin(
                                 beta
-                            )  # second angle (could be useful in assymetric tasks) if beta=0 it is undefined (could be any)
+                                # second angle (could be useful in assymetric tasks) if beta=0 it is undefined (could be any)
+                            )
                             if cosPhi < 1 and cosPhi > -1:
                                 phi = np.arccos(
                                     cosPhi

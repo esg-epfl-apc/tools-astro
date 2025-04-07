@@ -1,8 +1,8 @@
-import numpy as np
-import sys
 import os
+import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 Mpc_in_h = 2.8590868063e10
 
@@ -141,7 +141,8 @@ def light_curve(delay, weights, **kwargs):
     max_t = params["max_t"]
 
     if max_t < 0:
-        max_t = weighted_quantile(delay, [-0.01 * max_t], sample_weight=weights)[0]
+        max_t = weighted_quantile(
+            delay, [-0.01 * max_t], sample_weight=weights)[0]
 
     f = []
     t = []
@@ -168,7 +169,8 @@ def light_curve(delay, weights, **kwargs):
         )
         if xmin > max_t:
             break
-        bin_idx2 = np.where(delay[bin_idx + min_n_particles :] > xmin + min_bin_size)[0]
+        bin_idx2 = np.where(
+            delay[bin_idx + min_n_particles:] > xmin + min_bin_size)[0]
         if len(bin_idx2) == 0:
             break
         bin_idx2 = bin_idx2[0] + bin_idx + min_n_particles

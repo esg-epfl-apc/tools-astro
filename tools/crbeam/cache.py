@@ -1,6 +1,8 @@
-from minio import Minio
 import os
-import json
+import subprocess
+import tempfile
+
+from minio import Minio
 
 # from minio.error import S3Error
 
@@ -41,14 +43,15 @@ class CRbeamCache(object):
             obj_path = obj_name + f"-{idx}"
         else:
             obj_path = obj_name
-        self.client.fput_object(self.bucket_name, obj_path, file_path, metadata=params)
+        self.client.fput_object(
+            self.bucket_name, obj_path, file_path, metadata=params)
         return obj_path
 
     def get_cache_size(self, prefix):
         size = 0
         for obj in self.client.list_objects(self.bucket_name, prefix=prefix):
             size += int(
-                obj.object_name[len(prefix) :].split("-")[0]
+                obj.object_name[len(prefix):].split("-")[0]
             )  # todo: load number of particles from metadata
         return size
 
@@ -71,7 +74,8 @@ class CRbeamCache(object):
             print("found", obj.object_name)
             if obj.object_name not in skip_paths:
                 # Get data of an object.
-                response = self.client.get_object(self.bucket_name, obj.object_name)
+                response = self.client.get_object(
+                    self.bucket_name, obj.object_name)
                 try:
                     # Append the object data to a local file
                     with open(output_path, "ab") as file:

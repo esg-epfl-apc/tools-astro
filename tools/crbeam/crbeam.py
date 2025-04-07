@@ -1,8 +1,9 @@
+import subprocess
 import sys
+import tempfile
 from os import makedirs, path
 from os.path import join
-import subprocess
-import tempfile
+
 import numpy as np
 
 
@@ -37,7 +38,8 @@ class CRbeam(object):
         background=12,
     )
 
-    particles = dict(electron=0, positron=1, photon=2, gamma=2, neutron=9, proton=10)
+    particles = dict(electron=0, positron=1, photon=2,
+                     gamma=2, neutron=9, proton=10)
 
     prog_name = "crbeam"
 
@@ -84,12 +86,14 @@ class CRbeam(object):
     @property
     def command(self):
         result = f"{self.prog_name} "
-        result += " ".join([f"--{key} {value}" for key, value in self.p.items()])
+        result += " ".join([f"--{key} {value}" for key,
+                           value in self.p.items()])
         result += " --output " + self.output_dir
         power = 1 if self.p.emin_source < self.p.emax else -1000
         result += f" --power {power}"
         if self.p.EGMF > 0:
-            result += " -mft -mfr"  # use turbulent magnetic field with unique random orientation for all particles
+            # use turbulent magnetic field with unique random orientation for all particles
+            result += " -mft -mfr"
         return result
 
     @property
@@ -172,7 +176,8 @@ class CRbeam(object):
             self.p.nparticles = size
             return False
         self.p.nparticles = self.p.nparticles - size
-        self._size_per_step = max(100, int(np.ceil((self.p.nparticles) / n_steps)))
+        self._size_per_step = max(
+            100, int(np.ceil((self.p.nparticles) / n_steps)))
         self._step = 0
         return True
 
@@ -183,7 +188,8 @@ class CRbeam(object):
             return False
         save_output_dir = self._output_dir
         try:
-            adjusted_size_per_step = min(self._size_per_step, target_nparticles - size)
+            adjusted_size_per_step = min(
+                self._size_per_step, target_nparticles - size)
             self.p.nparticles = adjusted_size_per_step
             self._step += 1
             self._output_dir = f"{self._output_dir}_step{self._step}"
@@ -210,7 +216,8 @@ class CRbeam(object):
                 self._cache_name_prefix,
                 skip_paths=skip_paths,
             )
-            self.p.nparticles = self.cache.get_cache_size(self._cache_name_prefix)
+            self.p.nparticles = self.cache.get_cache_size(
+                self._cache_name_prefix)
         except Exception as ex:
             print(ex, file=sys.stderr)
         return self.output_path

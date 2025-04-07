@@ -1,8 +1,8 @@
-import numpy as np
-import sys
 import os
+import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 def plot_spec(spec_file, title="", Emin=0, Emax=0, ext="pdf", show=True, logscale=True):

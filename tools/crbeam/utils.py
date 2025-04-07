@@ -9,7 +9,8 @@ def find_redshift(src_name: str):
         # Extract the redshift from the result table
         z = float(result_table["Redshift"].data[0])
         if np.isnan(z):
-            raise NotImplementedError(f"Failed to find redshift for {src_name}")
+            raise NotImplementedError(
+                f"Failed to find redshift for {src_name}")
     else:
         raise ValueError(f"Object named {src_name} not found in NED database")
     return z
