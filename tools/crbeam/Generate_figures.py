@@ -61,9 +61,6 @@ window_size_DEC = float(inp_pdic["window_size_DEC"])
 EBL = str(inp_pdic["EBL"])
 
 import os
-import sys
-
-sys.path.append(os.environ.get("BASEDIR", os.getcwd()))
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
