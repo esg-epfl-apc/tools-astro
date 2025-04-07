@@ -60,6 +60,11 @@ window_size_RA = float(inp_pdic["window_size_RA"])
 window_size_DEC = float(inp_pdic["window_size_DEC"])
 EBL = str(inp_pdic["EBL"])
 
+import os
+import sys
+
+sys.path.append(os.environ.get("BASEDIR", os.getcwd()))
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.nddata import StdDevUncertainty
@@ -199,10 +204,13 @@ if Emax != EminSource:
 # how the data looks like
 get_ipython().system("cat {mc_file} | awk 'NR<=5'")   # noqa: F821
 
-#! . ./makeSpecE2.sh {mc_file}
-# the code above will not work on MMODA as of Sep 30 2023
-# here is workaround
-subprocess.run(["bash", "makeSpecE2.sh", mc_file])
+subprocess.run(
+    [
+        "bash",
+        os.path.join(os.environ.get("BASEDIR", os.getcwd()), "makeSpecE2.sh"),
+        mc_file,
+    ]
+)
 
 # rotating the beam
 
@@ -216,9 +224,13 @@ else:
     mc_rotated_file = mc_file
 mc_rotated_file
 
-# calculating the energy spectrum
-#! . ./makeSpecE2.sh {mc_rotated_file}
-subprocess.run(["bash", "makeSpecE2.sh", mc_rotated_file])
+subprocess.run(
+    [
+        "bash",
+        os.path.join(os.environ.get("BASEDIR", os.getcwd()), "makeSpecE2.sh"),
+        mc_rotated_file,
+    ]
+)
 
 # how the rotated data looks like
 get_ipython().system("cat {mc_rotated_file} | awk 'NR<=5'")   # noqa: F821
