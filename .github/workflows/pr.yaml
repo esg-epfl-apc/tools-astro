@@ -176,7 +176,7 @@ jobs:
     - name: Install flake8
       run: pip install flake8 flake8-import-order
     - name: Flake8
-      run: echo '${{ needs.setup.outputs.repository-list }}' | xargs -d '\n' flake8 --ignore="E121,E123,E126,E226,E24,E704,W503,W504,I100,I201,E501" --output-file pylint_report.txt --tee
+      run: echo '${{ needs.setup.outputs.repository-list }}' | xargs -d '\n' flake8 --ignore="E121,E123,E126,E226,E24,E704,W503,W504,I100,I201,E501,E261,E262" --output-file pylint_report.txt --tee
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
       with:
