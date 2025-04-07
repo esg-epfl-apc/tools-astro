@@ -1,6 +1,5 @@
 import os
-import subprocess
-import tempfile
+import json
 
 from minio import Minio
 
@@ -38,13 +37,16 @@ class CRbeamCache(object):
     def save(self, obj_name, file_path, append_mode=True, **params):
         if append_mode:
             idx = 0
-            for _ in self.client.list_objects(self.bucket_name, prefix=obj_name):
+            for _ in self.client.list_objects(
+                self.bucket_name, prefix=obj_name
+            ):
                 idx += 1
             obj_path = obj_name + f"-{idx}"
         else:
             obj_path = obj_name
         self.client.fput_object(
-            self.bucket_name, obj_path, file_path, metadata=params)
+            self.bucket_name, obj_path, file_path, metadata=params
+        )
         return obj_path
 
     def get_cache_size(self, prefix):
@@ -58,7 +60,7 @@ class CRbeamCache(object):
     def load_file(self, output_path, obj_name):
         try:
             response = self.client.get_object(self.bucket_name, obj_name)
-        except:
+        except Exception:
             raise ValueError("object not found")
         try:
             # Read data from response.
@@ -75,7 +77,8 @@ class CRbeamCache(object):
             if obj.object_name not in skip_paths:
                 # Get data of an object.
                 response = self.client.get_object(
-                    self.bucket_name, obj.object_name)
+                    self.bucket_name, obj.object_name
+                )
                 try:
                     # Append the object data to a local file
                     with open(output_path, "ab") as file:

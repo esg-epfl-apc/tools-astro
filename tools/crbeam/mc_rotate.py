@@ -45,7 +45,7 @@ def mc_rotate(
                     print(line.strip(), file=rotated)
             else:
                 particle = np.array(list(map(np.longdouble, columns)))
-                beta = phi = dTcalc = 0
+                beta = phi = 0 #dTcalc = 0
 
                 r = particle[2:5]
                 dz = r[

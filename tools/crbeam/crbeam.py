@@ -38,8 +38,9 @@ class CRbeam(object):
         background=12,
     )
 
-    particles = dict(electron=0, positron=1, photon=2,
-                     gamma=2, neutron=9, proton=10)
+    particles = dict(
+        electron=0, positron=1, photon=2, gamma=2, neutron=9, proton=10
+    )
 
     prog_name = "crbeam"
 
@@ -59,9 +60,13 @@ class CRbeam(object):
             f"{p.primary}_z{p.z}_E_{p.emin:g}_{p.emax:g}_{p.background}"
         )
         if p.emin_source < p.emax:
-            self._cache_name_prefix += f"_pow{self.power_law}_Emin{p.emin_source:g}"
+            self._cache_name_prefix += (
+                f"_pow{self.power_law}_Emin{p.emin_source:g}"
+            )
         if p.EGMF > 0:
-            self._cache_name_prefix += f"_B{p.EGMF:g}_turbL{p.lminEGMF}-{p.lmaxEGMF}"
+            self._cache_name_prefix += (
+                f"_B{p.EGMF:g}_turbL{p.lminEGMF}-{p.lmaxEGMF}"
+            )
 
         self._cache_name_prefix += "_N"
 
@@ -86,8 +91,9 @@ class CRbeam(object):
     @property
     def command(self):
         result = f"{self.prog_name} "
-        result += " ".join([f"--{key} {value}" for key,
-                           value in self.p.items()])
+        result += " ".join(
+            [f"--{key} {value}" for key, value in self.p.items()]
+        )
         result += " --output " + self.output_dir
         power = 1 if self.p.emin_source < self.p.emax else -1000
         result += f" --power {power}"
@@ -113,7 +119,9 @@ class CRbeam(object):
             with open(script_file.name, "wt") as out_script:
                 print("#!/bin/bash", file=out_script)
                 print(
-                    self.command + command_suffix, "2>&1 1>" + log_file, file=out_script
+                    self.command + command_suffix,
+                    "2>&1 1>" + log_file,
+                    file=out_script,
                 )
             subprocess.run(["bash", script_file.name])
         return log_file
@@ -177,7 +185,8 @@ class CRbeam(object):
             return False
         self.p.nparticles = self.p.nparticles - size
         self._size_per_step = max(
-            100, int(np.ceil((self.p.nparticles) / n_steps)))
+            100, int(np.ceil((self.p.nparticles) / n_steps))
+        )
         self._step = 0
         return True
 
@@ -189,7 +198,8 @@ class CRbeam(object):
         save_output_dir = self._output_dir
         try:
             adjusted_size_per_step = min(
-                self._size_per_step, target_nparticles - size)
+                self._size_per_step, target_nparticles - size
+            )
             self.p.nparticles = adjusted_size_per_step
             self._step += 1
             self._output_dir = f"{self._output_dir}_step{self._step}"
@@ -205,7 +215,8 @@ class CRbeam(object):
         with tempfile.NamedTemporaryFile() as script_file:
             with open(script_file.name, "wt") as task:
                 print(
-                    f"cat {self.output_dir}_step*/z0/photon > {self.output_path}/photon",
+                    f"cat {self.output_dir}_step*/z0/photon >"
+                    f" {self.output_path}/photon",
                     file=task,
                 )
             subprocess.run(["bash", script_file.name])
@@ -217,7 +228,8 @@ class CRbeam(object):
                 skip_paths=skip_paths,
             )
             self.p.nparticles = self.cache.get_cache_size(
-                self._cache_name_prefix)
+                self._cache_name_prefix
+            )
         except Exception as ex:
             print(ex, file=sys.stderr)
         return self.output_path
