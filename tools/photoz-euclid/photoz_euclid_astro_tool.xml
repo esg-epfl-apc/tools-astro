@@ -2,7 +2,7 @@
   <requirements>
     <requirement type="package" version="2.0.8">phosphoros</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="9.0.2">ipython</requirement>
+    <requirement type="package" version="9.1.0">ipython</requirement>
     <requirement type="package" version="0.7.0">jupyter_contrib_nbextensions</requirement>
     <!--Requirements string 'jupyterlab-novnc
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
