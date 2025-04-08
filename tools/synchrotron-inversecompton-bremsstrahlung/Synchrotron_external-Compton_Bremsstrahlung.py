@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import copy
@@ -45,25 +49,32 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
+dN_dE = str(inp_pdic["dN_dE"])
 
-for _vn in [
-    "dN_dE",
-    "electron_file",
-    "Emin",
-    "Emax",
-    "B",
-    "n",
-    "Z",
-    "T",
-    "Back_norm",
-    "backgr_dN_dE",
-    "backgr_file",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+electron_file = (
+    str(inp_pdic["electron_file"])
+    if inp_pdic.get("electron_file", None) is not None
+    else None
+)
+
+Emin = float(inp_pdic["Emin"])
+Emax = float(inp_pdic["Emax"])
+B = float(inp_pdic["B"])
+n = float(inp_pdic["n"])
+Z = float(inp_pdic["Z"])
+T = float(inp_pdic["T"])
+Back_norm = float(inp_pdic["Back_norm"])
+backgr_dN_dE = str(inp_pdic["backgr_dN_dE"])
+
+backgr_file = (
+    str(inp_pdic["backgr_file"])
+    if inp_pdic.get("backgr_file", None) is not None
+    else None
+)
 
 def parse_spectrum(input_str):
     dnde_str = copy.copy(input_str)
