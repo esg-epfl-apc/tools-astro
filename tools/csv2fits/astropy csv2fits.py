@@ -10,13 +10,12 @@
 import json
 import os
 import shutil
-from io import StringIO
 
 import pandas as pd
 from astropy.table import Table
 from oda_api.json import CustomJSONEncoder
 
-text_table = ""  # http://odahub.io/ontology#ODATextProduct
+input_file = "https://www.astro.unige.ch/~tucci/Phosphoros/MultiBands_Catalog_1k.fits"  # http://odahub.io/ontology#FileReference
 
 _galaxy_wd = os.getcwd()
 
@@ -26,10 +25,24 @@ if "C_data_product_" in inp_dic.keys():
     inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-text_table = str(inp_pdic["text_table"])
+input_file = str(inp_pdic["input_file"])
 
-stringdata = StringIO(text_table)
-df = pd.read_csv(stringdata, delimiter="\s+")
+workdir = os.getcwd()
+path_tmp = workdir + "/tmp/"
+os.makedirs(path_tmp, exist_ok=True)
+
+# get the input catalog and save it into tmp/ directory as Input_Catalog.fits
+csv_file = path_tmp + "file.csv"
+
+read_from_url = False
+try:
+    desi_output = subprocess.check_output(
+        "cp " + input_file + " " + csv_file, shell=True
+    ).decode()
+except:
+    RuntimeError("NOT a file")
+
+df = pd.read_csv(csv_file, delimiter="\s+")
 
 t = Table.from_pandas(df)
 
