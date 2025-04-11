@@ -1,7 +1,5 @@
 <tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
-    <requirement type="package" version="6.0">unzip</requirement>
-    <requirement type="package" version="9.1.0">ipython</requirement>
     <requirement type="package" version="7.0.1">astropy</requirement>
     <requirement type="package" version="2.2.4">numpy</requirement>
     <requirement type="package" version="1.15.2">scipy</requirement>
@@ -11,9 +9,8 @@
     <requirement type="package" version="1.21.4">wget</requirement>
     <requirement type="package" version="0.70.17">multiprocess</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
-    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="6.0">unzip</requirement>
+    <requirement type="package" version="9.1.0">ipython</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
   <environment_variables>
