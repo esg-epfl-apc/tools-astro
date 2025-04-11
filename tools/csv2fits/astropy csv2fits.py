@@ -10,7 +10,6 @@
 import json
 import os
 import shutil
-import subprocess
 
 import pandas as pd
 from astropy.table import Table
@@ -28,22 +27,7 @@ else:
     inp_pdic = inp_dic
 input_file = str(inp_pdic["input_file"])
 
-workdir = os.getcwd()
-path_tmp = workdir + "/tmp/"
-os.makedirs(path_tmp, exist_ok=True)
-
-# get the input catalog and save it into tmp/ directory as Input_Catalog.fits
-csv_file = path_tmp + "file.csv"
-
-read_from_url = False
-try:
-    desi_output = subprocess.check_output(
-        "cp " + input_file + " " + csv_file, shell=True
-    ).decode()
-except:
-    raise RuntimeError("NOT a file")
-
-df = pd.read_csv(csv_file, delimiter="\s+")
+df = pd.read_csv(input_file, delimiter="\s+")
 
 t = Table.from_pandas(df)
 
