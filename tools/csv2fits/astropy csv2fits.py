@@ -10,6 +10,7 @@
 import json
 import os
 import shutil
+import subprocess
 
 import pandas as pd
 from astropy.table import Table
@@ -40,7 +41,7 @@ try:
         "cp " + input_file + " " + csv_file, shell=True
     ).decode()
 except:
-    RuntimeError("NOT a file")
+    raise RuntimeError("NOT a file")
 
 df = pd.read_csv(csv_file, delimiter="\s+")
 
