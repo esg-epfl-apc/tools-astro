@@ -165,8 +165,8 @@ s_uncert = Angle(f"{uncertainty} arcsec")
 ra_dec_h = fits.open(f"{desi_file}")
 photoz_h = fits.open(f"{photoz_file}")
 
-ra = ra_dec_h[1].data["RA[deg]"]
-dec = ra_dec_h[1].data["DEC[deg]"]
+ra = ra_dec_h[1].data["RA"]
+dec = ra_dec_h[1].data["DEC"]
 coords = SkyCoord(ra=ra, dec=dec, unit="deg", frame="icrs")
 
 photoz_h[1].columns, ra_dec_h[1].data.size
