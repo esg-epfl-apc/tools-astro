@@ -95,6 +95,7 @@ from oda_api.data_products import ODAAstropyTable
 ra = tap_result["ra"]
 dec = tap_result["dec"]
 t = tap_result["type"]
+s_r = tap_result["shape_r"]
 
 flux_g, flux_g_err = clean_flux(
     tap_result["flux_g"], tap_result["flux_ivar_g"]
@@ -153,6 +154,7 @@ data = [
     flux_w4_err,
     ebv,
     ref_cat,
+    s_r,
 ]
 names = (
     "RA",
@@ -176,6 +178,7 @@ names = (
     "flux_w4_err",
     "ebv",
     "ref_cat",
+    "shape_r",
 )
 cat = ODAAstropyTable(Table(data, names=names))
 
