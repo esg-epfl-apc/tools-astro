@@ -178,10 +178,15 @@ photoz = photoz_h[1].data["Z"]
 photoz
 
 sep = s_ra_dec.separation(coords).arcsec
+region = (
+    Angle(uncertainty * u.arcsec).arcsec
+    + Angle(ra_dec_h[1].data["shape_r"] * u.arcsec).arcsec
+)
+
 indx = np.argmin(sep)
 print(photoz[indx], coords.ra[indx], coords.dec[indx])
 
-in_circle = sep < Angle(uncertainty * u.arcsec).arcsec
+in_circle = sep - region < 0
 
 dict_out = {"GRB": [], "GRB zreal": [], "photoz": [], "RA": [], "DEC": []}
 for phz, ra_i, dec_i in zip(
@@ -260,6 +265,7 @@ def create_circle(center, radius, resolution=100, vertex_unit=u.degree):
 
 fig, ax = pt.subplots(1, 6, figsize=(35, 5))
 lon, lat = create_circle([s_ra_dec.ra, s_ra_dec.dec], s_uncert)
+lon1, lat1 = create_circle([s_ra_dec.ra, s_ra_dec.dec], region[indx])
 
 ax[0].scatter(
     coords.ra[indx], coords.dec[indx], color="green", alpha=0.5, s=100
@@ -282,6 +288,7 @@ for ax_ in ax:
     ax_.scatter(s_ra_dec.ra, s_ra_dec.dec, color="magenta", alpha=0.5, s=100)
 
 ax[0].scatter(lon, lat, s=4)
+ax[0].scatter(lon1, lat1, s=4)
 for ax_ in ax[1:]:
     ax_.scatter(lon, lat, s=0.5, alpha=0.5)
 
