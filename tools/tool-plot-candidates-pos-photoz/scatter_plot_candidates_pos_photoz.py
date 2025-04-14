@@ -265,7 +265,10 @@ def create_circle(center, radius, resolution=100, vertex_unit=u.degree):
 
 fig, ax = pt.subplots(1, 6, figsize=(35, 5))
 lon, lat = create_circle([s_ra_dec.ra, s_ra_dec.dec], s_uncert)
-lon1, lat1 = create_circle([s_ra_dec.ra, s_ra_dec.dec], region[indx])
+lon1, lat1 = create_circle(
+    [s_ra_dec.ra, s_ra_dec.dec],
+    s_uncert + Angle(ra_dec_h[1].data["shape_r"] * u.arcsec)[indx],
+)
 
 ax[0].scatter(
     coords.ra[indx], coords.dec[indx], color="green", alpha=0.5, s=100
