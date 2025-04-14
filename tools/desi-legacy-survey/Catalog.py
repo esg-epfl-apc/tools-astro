@@ -120,6 +120,7 @@ flux_w4, flux_w4_err = clean_flux(
 
 ebv = tap_result["ebv"]
 ref_cat = tap_result["ref_cat"]
+ref_cat[ref_cat == ""] = "None"
 
 try:
     flux_i, flux_i_err = clean_flux(
