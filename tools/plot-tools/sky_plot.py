@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -24,23 +28,19 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "fn",
-    "skiprows",
-    "sep",
-    "ra_col",
-    "dec_col",
-    "weight_col",
-    "binsz",
-    "window_size_RA",
-    "window_size_DEC",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+fn = str(inp_pdic["fn"])
+skiprows = int(inp_pdic["skiprows"])
+sep = str(inp_pdic["sep"])
+ra_col = str(inp_pdic["ra_col"])
+dec_col = str(inp_pdic["dec_col"])
+weight_col = str(inp_pdic["weight_col"])
+binsz = float(inp_pdic["binsz"])
+window_size_RA = float(inp_pdic["window_size_RA"])
+window_size_DEC = float(inp_pdic["window_size_DEC"])
 
 import astropy.units as u
 import matplotlib.pyplot as plt

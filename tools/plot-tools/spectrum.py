@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -26,26 +30,22 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "fn",
-    "skiprows",
-    "sep",
-    "column",
-    "weight_col",
-    "binning",
-    "minval",
-    "maxval",
-    "nbins",
-    "xlabel",
-    "ylabel",
-    "spec_power",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+fn = str(inp_pdic["fn"])
+skiprows = int(inp_pdic["skiprows"])
+sep = str(inp_pdic["sep"])
+column = str(inp_pdic["column"])
+weight_col = str(inp_pdic["weight_col"])
+binning = str(inp_pdic["binning"])
+minval = float(inp_pdic["minval"])
+maxval = float(inp_pdic["maxval"])
+nbins = int(inp_pdic["nbins"])
+xlabel = str(inp_pdic["xlabel"])
+ylabel = str(inp_pdic["ylabel"])
+spec_power = float(inp_pdic["spec_power"])
 
 import matplotlib.pyplot as plt
 import numpy as np

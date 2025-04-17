@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -17,7 +21,7 @@ weight_col = ""  # http://odahub.io/ontology#String
 binning = "logarithmic"  # http://odahub.io/ontology#String ; oda:allowed_value "linear","logarithmic"
 minval = 0  # http://odahub.io/ontology#Float
 maxval = 0  # http://odahub.io/ontology#Float
-use_quantile_values = False  # https://odahub.io/ontology/#Boolean
+use_quantile_values = False  # http://odahub.io/ontology#Boolean
 nbins = 15  # http://odahub.io/ontology#Integer
 xlabel = "time, s"  # http://odahub.io/ontology#String
 ylabel = "Ncounts"  # http://odahub.io/ontology#String
@@ -27,27 +31,23 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "fn",
-    "skiprows",
-    "sep",
-    "column",
-    "weight_col",
-    "binning",
-    "minval",
-    "maxval",
-    "use_quantile_values",
-    "nbins",
-    "xlabel",
-    "ylabel",
-    "plot_mode",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+fn = str(inp_pdic["fn"])
+skiprows = int(inp_pdic["skiprows"])
+sep = str(inp_pdic["sep"])
+column = str(inp_pdic["column"])
+weight_col = str(inp_pdic["weight_col"])
+binning = str(inp_pdic["binning"])
+minval = float(inp_pdic["minval"])
+maxval = float(inp_pdic["maxval"])
+use_quantile_values = bool(inp_pdic["use_quantile_values"])
+nbins = int(inp_pdic["nbins"])
+xlabel = str(inp_pdic["xlabel"])
+ylabel = str(inp_pdic["ylabel"])
+plot_mode = str(inp_pdic["plot_mode"])
 
 import matplotlib.pyplot as plt
 import numpy as np
