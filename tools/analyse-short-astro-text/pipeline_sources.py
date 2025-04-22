@@ -28,10 +28,12 @@ def query_simbad(name):
     ra       = None
     dec      = None
     if table_ids:
-        df_ids = table_ids.to_pandas()            
+        df_ids = table_ids.to_pandas()
+        df_ids.columns = df_ids.columns.str.upper()
         list_ids = list(df_ids["ID"].str.decode("utf-8").values)
     if table_obj:
         df_obj  = table_obj.to_pandas()
+        df_obj.columns = df_obj.columns.str.upper()
         main_id = df_obj["MAIN_ID"].values[0]
         otype_  = df_obj["OTYPES"].values[0]
         str_ra_dec = table_obj["RA"][0] + " " + table_obj["DEC"][0]

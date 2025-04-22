@@ -3,20 +3,18 @@
     <requirement type="package" version="0.4.10">astroquery</requirement>
     <requirement type="package" version="2.2.3">pandas</requirement>
     <requirement type="package" version="7.1.4">rdflib</requirement>
-    <requirement type="package" version="4.13.3">beautifulsoup4</requirement>
+    <requirement type="package" version="4.13.4">beautifulsoup4</requirement>
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
-    <requirement type="package" version="3.2.1">networkx</requirement>
-    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="3.4.2">networkx</requirement>
+    <requirement type="package" version="3.10.1">matplotlib</requirement>
     <requirement type="package" version="1.26.4">numpy</requirement>
-    <requirement type="package" version="1.13.1">scipy</requirement>
-    <requirement type="package" version="6.0.1">astropy</requirement>
+    <requirement type="package" version="1.15.2">scipy</requirement>
+    <requirement type="package" version="6.1.6">astropy</requirement>
     <requirement type="package" version="2.6.0">pytorch-cpu</requirement>
     <requirement type="package" version="0.33.0">accelerate</requirement>
     <requirement type="package" version="4.43.2">transformers</requirement>
-    <requirement type="package" version="1.2.37">oda-api</requirement>
-    <requirement type="package" version="2.0.3">fake-useragent</requirement>
-    <requirement type="package" version="8.18.1">ipython</requirement>
-    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="1.2.28">oda-api</requirement>
+    <requirement type="package" version="2.2.0">fake-useragent</requirement>
     <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/extract_data_predict_workflow.py'</command>
