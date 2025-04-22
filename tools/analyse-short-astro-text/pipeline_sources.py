@@ -35,7 +35,7 @@ def query_simbad(name):
         df_obj  = table_obj.to_pandas()
         df_obj.columns = df_obj.columns.str.upper()
         main_id = df_obj["MAIN_ID"].values[0]
-        otype_  = df_obj["OTYPES"].values[0]
+        otype_  = '|'.join(list(set(df_obj["OTYPES.OTYPE"].values)))
         str_ra_dec = table_obj["RA"][0] + " " + table_obj["DEC"][0]
         ra_dec = SkyCoord(str_ra_dec, unit=(u.hourangle, u.deg))
         ra = ra_dec.ra.value
