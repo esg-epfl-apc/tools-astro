@@ -13,7 +13,7 @@
     ]]></command>
     <inputs>
         <param type="data" name="input_fits" format="fits" label="FITS file containing a sky image"/>
-        <param type="integer" name="hdu"  value="1" min="0" label="Select input HDU number"/>
+        <param type="integer" name="hdu"  value="0" min="0" label="Select input HDU number"/>
         <param type="select" name="stretch" label="Stretch image scale" help="Type of image scale stretching">
             <option value="linear">linear</option>
             <option value="sqrt">square root</option>
