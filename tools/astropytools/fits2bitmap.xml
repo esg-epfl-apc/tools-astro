@@ -1,4 +1,4 @@
-<tool id="astropy_fits2bitmap" name="astropy fits2bitmap" version="0.1.0+galaxy0" profile="21.05">
+<tool id="astropy_fits2bitmap" name="astropy fits2bitmap" version="0.1.1+galaxy0" profile="21.05">
     <requirements>
         <requirement type="package" version="5.2.2">astropy</requirement>
         <requirement type="package" version="3.6.0">matplotlib</requirement>
