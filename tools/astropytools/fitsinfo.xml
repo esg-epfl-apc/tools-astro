@@ -9,7 +9,7 @@
         <param type="data" name="input" format="fits" label="FITS file to inspect"/>
     </inputs>
     <outputs>
-        <data name="output" format="out" />
+        <data name="output" format="txt" />
     </outputs>
     <tests>
         <test>
