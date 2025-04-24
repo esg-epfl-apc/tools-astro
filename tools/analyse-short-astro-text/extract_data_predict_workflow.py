@@ -13,6 +13,7 @@ import shutil
 
 import pandas as pd
 from astropy.table import Table
+from fetch_atel import fetch_atel
 from oda_api.data_products import ODAAstropyTable
 from oda_api.json import CustomJSONEncoder
 from pipeline_astrobert import get_astroBERT_cleaned_result
@@ -24,8 +25,8 @@ from pipeline_telescope import rule_based_telescope_detector
 from pipeline_vectorize_text import vectorize_text
 from predict_vectorised_text import predict_vector
 
-text = "We received an alert about a candidate fast transient from the FINK broker (Peloton, Ishida & Moller et al.) on 2024-06-22 09:58:42.001 UTC, named ZTF24aasjjkf (https://fink-portal.org/ZTF24aasjjkf). This transient was classified by FINK on the same day with a 17 percent probability of being a fast transient. We triggered the TAROT-TCA and TRT-SRO telescopes for further investigation, observing in the R, r', and i' bands, and collecting data from 2024-06-23 around 04:55:14 UTC to 2024-06-24 01:00:00 UTC. Our results, along with public ZTF data, can be found here: https://skyportal-icare.ijclab.in2p3.fr/public/sources/ZTF24aasjjkf/version/07cf393bb53513abe80d3b7863938d8f TAROT-TCA telescope observations can be also labeled as generic in the plot. We utilized STDWeb (Karpov et al.) to perform our photometry, using the Pan-STARRS DR1 (PS1) catalog and subtracting the constant flux of background with a reference PS1 image. We note that in the TAROT-TCA data, we have slight contamination from other stars. However, we mitigated this effect by subtracting the PS1 reference image. According to the ZTF data in the r' band, both before and after our observations, as well as ATLAS data (in the orange band) and the Gaia Alert (2024LXA), the source might be 10 days old or more. Its multi-band light curve is not consistent with a fast transient like a kilonova (a decay rate of 0.15 per day in r-band) but resembles a supernova (also classified by FINK on 2024-06-24 at 08:00 UTC). The source has been independently classified by Jianlin Xu et al. as a CV. We thank the FINK team for their valuable collaboration with GRANDMA. GRANDMA is a worldwide telescope network (https://grandma.lal.in2p3.fr/) devoted to the observation of transients in the context of multi-messenger astrophysics (Antier et al. 2020 MNRAS 497, 5518). Kilonova-Catcher (KNC) is the citizen science program of GRANDMA (http://kilonovacatcher.in2p3.fr/)."  # http://odahub.io/ontology#LongString
-number = "ATel #16672"  # http://odahub.io/ontology#String
+text = ""  # http://odahub.io/ontology#LongString
+number = 16672  # http://odahub.io/ontology#Integer
 
 _galaxy_wd = os.getcwd()
 
@@ -36,10 +37,17 @@ if "C_data_product_" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 text = str(inp_pdic["text"])
-number = str(inp_pdic["number"])
+number = int(inp_pdic["number"])
 
-text_id_text = text
-text_id = number
+text_id = "ATel #{}".format(number)
+
+if text == "":
+    text_id_text = fetch_atel(number)
+    if text_id_text is None:
+        raise ValueError("Not possible to fetch ATel number #{number}.")
+else:
+    text_id_text = text
+
 ### Settings
 try:
     data_path = os.path.dirname(__file__) + "/data/"
