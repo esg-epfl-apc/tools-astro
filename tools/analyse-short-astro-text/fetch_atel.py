@@ -1,13 +1,15 @@
 import requests
 from bs4 import BeautifulSoup
 import os
+import re
 atel_number = 16672
 
 
 def fetch_atel(atel_number):
     """
     Fetches the ATel page for the given ATel number and returns the AteL text.
-    It assumes that the paragraph is the first one after the 'Tweet' paragraph.
+    It assumes that the paragraph is the first one after the paragraph that 
+    contains the string "Tweet".
     input : atel_number (int): The ATel number to fetch.
     output : response_text (str): The HTML content of the ATel text.
     If an error occurs, it returns None.
@@ -58,14 +60,14 @@ def fetch_atel(atel_number):
     twitter_index = -1
     for i, td in enumerate(tds):
         if 'Tweet' in td.get_text(strip=True):
-            # print(td)
             twitter_index = i
 
     para = tds[twitter_index + 1]
 
-    print(para.text)
+    cleaned_text = re.sub(r'[^\x00-\x7F]+', '', para.text)  # remove non-ASCII
+    print(cleaned_text)
     
-    return para.text
+    return cleaned_text
 
 
 if __name__ == "__main__":
