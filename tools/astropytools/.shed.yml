@@ -1,5 +1,5 @@
 name: astropytools
-owner: volodymyrss
+owner: astroteam
 type: unrestricted
 categories: 
 - Astronomy
@@ -15,6 +15,6 @@ auto_tool_repositories:
   name_template: "{{ tool_id }}"
   description_template: "{{ tool_name }} (from the astropy tool suite)"
 suite:
-  name: "astropytools"
+  name: "suite_astropytools"
   description: "A suite of Galaxy tools to manipulate astrophysical data"
   type: repository_suite_definition
