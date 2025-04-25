@@ -119,4 +119,7 @@
   </tests>
   <help>And here, the help text for the galaxy tool goes.
 </help>
+  <citations>
+    <citation type="doi">10.3847/1538-3881/ab089d</citation>
+  </citations>
 </tool>
