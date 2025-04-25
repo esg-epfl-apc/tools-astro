@@ -327,7 +327,7 @@ jobs:
   # deploy the tools to the toolsheds (first TTS for testing)
   deploy:
     name: Deploy
-    needs: [setup, lint, flake8, combine_outputs]
+    needs: [setup, lint, combine_outputs]
     if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'esg-epfl-apc' }}
     runs-on: ubuntu-latest
     strategy:
@@ -377,7 +377,7 @@ jobs:
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.PAT }}
+        # token: ${{ secrets.PAT }} # GITHUB_TOKEN (default) should be sufficient here
         issue-number: ${{ steps.getpr.outputs.number }}
         body: |
           Attention: deployment ${{ needs.deploy.result }}!

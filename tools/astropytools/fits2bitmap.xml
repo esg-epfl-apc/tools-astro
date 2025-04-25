@@ -1,7 +1,7 @@
-<tool id="astropy_fits2bitmap" name="astropy fits2bitmap" version="0.1.1+galaxy0" profile="21.05">
+<tool id="astropy_fits2bitmap" name="astropy fits2bitmap" version="0.2.0+galaxy0" profile="21.05">
     <requirements>
-        <requirement type="package" version="5.2.2">astropy</requirement>
-        <requirement type="package" version="3.6.0">matplotlib</requirement>
+        <requirement type="package" version="6.1.7">astropy</requirement>
+        <requirement type="package" version="3.10.1">matplotlib</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
         #if $reverse_cmap:
