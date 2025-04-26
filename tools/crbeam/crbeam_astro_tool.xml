@@ -1,4 +1,4 @@
-<tool id="crbeam_astro_tool" name="CRbeam" version="0.0.2+galaxy0" profile="24.0">
+<tool id="crbeam_astro_tool" name="CRbeam" version="0.0.3+galaxy0" profile="24.0">
   <requirements>
     <requirement type="package" version="1.1.1">crbeam</requirement>
     <requirement type="package" version="19.0.1">pyarrow</requirement>
