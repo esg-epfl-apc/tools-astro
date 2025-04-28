@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: csv2fits
+homepage_url: null
+long_description: csv2fits
+name: csv2fits_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
