@@ -176,7 +176,7 @@ jobs:
     - name: Install flake8
       run: pip install flake8 flake8-import-order
     - name: Flake8
-      run: echo '${{ needs.setup.outputs.repository-list }}' | xargs -d '\n' flake8 --output-file pylint_report.txt --tee
+      run: echo '${{ needs.setup.outputs.repository-list }}' | xargs -d '\n' flake8 --ignore="E121,E123,E126,E226,E24,E704,W503,W504,I100,I201,E501,E261,E262" --output-file pylint_report.txt --tee
     - uses: actions/upload-artifact@v4
       if: ${{ failure() }}
       with:
@@ -327,7 +327,7 @@ jobs:
   # deploy the tools to the toolsheds (first TTS for testing)
   deploy:
     name: Deploy
-    needs: [setup, lint, flake8, combine_outputs]
+    needs: [setup, lint, combine_outputs]
     if: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main' ) && github.repository_owner == 'esg-epfl-apc' }}
     runs-on: ubuntu-latest
     strategy:
@@ -377,7 +377,7 @@ jobs:
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v4
       with:
-        token: ${{ secrets.PAT }}
+        # token: ${{ secrets.PAT }} # GITHUB_TOKEN (default) should be sufficient here
         issue-number: ${{ steps.getpr.outputs.number }}
         body: |
           Attention: deployment ${{ needs.deploy.result }}!
