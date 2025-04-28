@@ -57,7 +57,6 @@ print(data_path)
 
 ### Required files
 telescope_ontology = f"{data_path}/telescope_observatory_survey.ttl"
-file_dict_uri_int = f"{data_path}/dictionary_telescope_uri_int_id.json"
 file_dict_sens_inst = (
     f"{data_path}/dictionary_telescope_type_2_instrument.json"
 )
@@ -66,7 +65,7 @@ simbad_node_file = f"{data_path}/simbad_otypes_nodes.csv"
 
 ### Run pipeline
 df_tel = rule_based_telescope_detector(
-    text_id, text_id_text, telescope_ontology, file_dict_uri_int
+    text_id, text_id_text, telescope_ontology
 )
 df_astrobert = get_astroBERT_cleaned_result(text_id, text_id_text)
 

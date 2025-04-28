@@ -8,16 +8,16 @@ atel_number = 16672
 def fetch_atel(atel_number):
     """
     Fetches the ATel page for the given ATel number and returns the AteL text.
-    It assumes that the paragraph is the first one after the paragraph that 
+    It assumes that the paragraph is the first one after the paragraph that
     contains the string "Tweet".
     input : atel_number (int): The ATel number to fetch.
     output : response_text (str): The HTML content of the ATel text.
     If an error occurs, it returns None.
     """
-    
+
     # URL of the ATel page
     url = 'https://www.astronomerstelegram.org/?read={}'.format(atel_number)
-    
+
     # To fake the User-Agent header
     # This is to avoid being blocked by the server for not having a User-Agent
     headers = {
@@ -37,7 +37,7 @@ def fetch_atel(atel_number):
         # Send a GET request to the URL
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
-            print("Page fetched successfully.")    
+            print("Page fetched successfully.")
             with open(fname, 'w', encoding='utf-8') as f:
                 f.write(response.text)
             response_text = response.text
@@ -66,7 +66,7 @@ def fetch_atel(atel_number):
 
     cleaned_text = re.sub(r'[^\x00-\x7F]+', '', para.text)  # remove non-ASCII
     print(cleaned_text)
-    
+
     return cleaned_text
 
 

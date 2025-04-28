@@ -6,9 +6,9 @@ from transformers import TokenClassificationPipeline
 
 
 def split_text_in_phrases(text_id, text_):
-    list_proto_phrases= re.split(r"(\. [A-Z])", text_)
+    list_proto_phrases = re.split(r"(\. [A-Z])", text_)
     for i in range(1, len(list_proto_phrases) - 1, 2):
-        back_  = list_proto_phrases[i][0]
+        back_ = list_proto_phrases[i][0]
         front_ = list_proto_phrases[i][-1]
         list_proto_phrases[i+1] = front_ + list_proto_phrases[i+1]
         list_proto_phrases[i-1] = list_proto_phrases[i-1] + back_
@@ -39,11 +39,11 @@ def apply_astroBERT(text_id, body_text_0):
         pretrained_model_name_or_path=remote_model_path,
         add_special_tokens=True,
         do_lower_case=False,
-        model_max_length = 512,
+        model_max_length=512,
     )
 
     # use the Hugginface Pipeline class
-    NER_pipeline=TokenClassificationPipeline(
+    NER_pipeline = TokenClassificationPipeline(
         model=astroBERT_NER_DEAL,
         tokenizer=astroBERT_tokenizer,
         task='astroBERT NER_DEAL',
@@ -51,9 +51,9 @@ def apply_astroBERT(text_id, body_text_0):
         ignore_labels=['O']
     )
 
-    dict_out = {"TEXT_ID": [], "word":[], "start":[], "end":[], "score":[], "entity_group":[], "Phrase":[]}
+    dict_out = {"TEXT_ID": [], "word": [], "start": [], "end": [], "score": [], "entity_group": [], "Phrase": []}
 
-    text = " ".join(body_text_0.split()).replace("Â°", "o").replace("Âº", "o").replace("−","-").replace('°', "o")
+    text = " ".join(body_text_0.split()).replace("Â°", "o").replace("Âº", "o").replace("−", "-").replace('°', "o")
     list_phrases = split_text_in_phrases(text_id, text)
 
     for phrase_ in list_phrases:
@@ -70,7 +70,7 @@ def apply_astroBERT(text_id, body_text_0):
                 dict_out["start"].append(u["start"])
                 dict_out["end"].append(u["end"])
                 dict_out["entity_group"].append(ent_)
-    
+
     return pd.DataFrame(dict_out)
 
 
@@ -78,14 +78,14 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
     list_entities = ["Instrument", "Telescope", "Wavelength", "CelestialObject", "CelestialRegion", "EntityOfFutureInterest", "Mission", "Observatory", "Survey"]
 
     df_raw = apply_astroBERT(text_id, body_text_0)
-    dict_out = {"TEXT_ID": [], "word":[], "start":[], "end":[], "Score":[], "Phrase":[], "entity_group":[]}
+    dict_out = {"TEXT_ID": [], "word": [], "start": [], "end": [], "Score": [], "Phrase": [], "entity_group": []}
 
     for entity_to_study in list_entities:
-        df_tmp0 = df_raw[df_raw["entity_group"] == entity_to_study] 
+        df_tmp0 = df_raw[df_raw["entity_group"] == entity_to_study]
         phrases_ = np.unique(df_tmp0["Phrase"])
 
         for phrase_ in phrases_:
-            df_tmp1 = df_tmp0[df_tmp0["Phrase"]==phrase_]
+            df_tmp1 = df_tmp0[df_tmp0["Phrase"] == phrase_]
             if len(df_tmp1) == 1:
                 dict_out["TEXT_ID"].append(text_id)
                 dict_out["Phrase"].append(df_tmp1.Phrase.values[0])
@@ -101,14 +101,12 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
                     if s_i == 0:
                         s_o = s_
                         e_o = e_
-                        sc_o = sc_
                         sc_s = sc_
                         word_size = 1
                     else:
 
                         if s_ <= e_o + 1:
                             e_o = e_
-                            sc_o = sc_
                             sc_s += sc_
                             word_size += 1
 
@@ -120,10 +118,9 @@ def get_astroBERT_cleaned_result(text_id, body_text_0):
                             dict_out["end"].append(e_o)
                             dict_out["Score"].append(sc_s / word_size)
                             dict_out["entity_group"].append(entity_to_study)
-                            
+
                             s_o = s_
                             e_o = e_
-                            sc_o = sc_
                             sc_s = sc_
                             word_size = 1
 
