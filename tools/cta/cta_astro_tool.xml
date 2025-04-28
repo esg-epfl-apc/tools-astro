@@ -1,0 +1,183 @@
+<tool id="cta_astro_tool" name="CTA" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="6.0">unzip</requirement>
+    <requirement type="package" version="2.31.0">requests</requirement>
+    <requirement type="package" version="1.2">gammapy</requirement>
+    <requirement type="package" version="5.3">astropy</requirement>
+    <requirement type="package" version="3.8.4">matplotlib</requirement>
+    <requirement type="package" version="1.11.4">scipy</requirement>
+    <requirement type="package" version="1.2.15">oda-api</requirement>
+    <requirement type="package" version="8.22.2">ipython</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+    <requirement type="package" version="7.16.3">nbconvert</requirement>
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/${_data_product._selector}.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="_data_product">
+      <param name="_selector" type="select" label="Data Product">
+        <option value="pre-defined_model" selected="true">pre-defined_model</option>
+        <option value="model_cube_file" selected="false">model_cube_file</option>
+      </param>
+      <when value="pre-defined_model">
+        <param name="RA" type="float" value="166.113809" label="RA (unit: deg)" />
+        <param name="DEC" type="float" value="38.208833" label="DEC (unit: deg)" />
+        <param name="OffAxis_angle" type="float" value="0.78" label="OffAxis_angle (unit: deg)" />
+        <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
+        <param name="z" type="float" value="0.03" label="z" />
+        <param name="F0" type="float" value="1e-11" label="F0" />
+        <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
+        <param name="Gamma" type="float" value="2.0" label="Gamma" />
+        <param name="Radius_spectal_extraction" type="float" value="0.2" label="Radius_spectal_extraction" />
+        <param name="Radius_sky_image" type="float" value="2.5" label="Radius_sky_image (unit: deg)" />
+        <param name="Site" type="select" label="Site">
+          <option value="North" selected="true">North</option>
+          <option value="South">South</option>
+        </param>
+        <param name="Telescope_LST" type="boolean" checked="true" label="Telescope_LST" />
+        <param name="Telescope_MST" type="boolean" checked="true" label="Telescope_MST" />
+        <param name="Telescope_SST" type="boolean" label="Telescope_SST" />
+      </when>
+      <when value="model_cube_file">
+        <param name="data_cube" type="data" label="data_cube" format="data" />
+        <param name="F0" type="float" value="1e-11" label="F0" />
+        <param name="E0" type="float" value="1.0" label="E0 (unit: TeV)" />
+        <param name="OffAxis_angle" type="float" value="0.4" label="OffAxis_angle (unit: deg)" />
+        <param name="Radius_spectal_extraction" type="float" value="0.2" label="Radius_spectal_extraction (unit: deg)" />
+        <param name="Radius_sky_image" type="float" value="2.5" label="Radius_sky_image (unit: deg)" />
+        <param name="Site" type="select" label="Site">
+          <option value="North" selected="true">North</option>
+          <option value="South">South</option>
+        </param>
+        <param name="Telescopes_LST" type="boolean" checked="true" label="Telescopes_LST" />
+        <param name="Telescopes_MST" type="boolean" checked="true" label="Telescopes_MST" />
+        <param name="Telescopes_SST" type="boolean" label="Telescopes_SST" />
+        <param name="Texp" type="float" value="1.0" label="Texp (unit: hour)" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; pre-defined_model image_png" name="out_pre_defined_model_image_png" format="auto" from_work_dir="image_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'pre-defined_model'</filter>
+    </data>
+    <data label="${tool.name} -&gt; pre-defined_model theta2_png" name="out_pre_defined_model_theta2_png" format="auto" from_work_dir="theta2_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'pre-defined_model'</filter>
+    </data>
+    <data label="${tool.name} -&gt; pre-defined_model spectrum_png" name="out_pre_defined_model_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'pre-defined_model'</filter>
+    </data>
+    <data label="${tool.name} -&gt; pre-defined_model event_list_fits" name="out_pre_defined_model_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
+      <filter>_data_product['_selector'] == 'pre-defined_model'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_cube_file spectrum_png" name="out_model_cube_file_spectrum_png" format="auto" from_work_dir="spectrum_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_cube_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_cube_file theta2_png" name="out_model_cube_file_theta2_png" format="auto" from_work_dir="theta2_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_cube_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_cube_file image_png" name="out_model_cube_file_image_png" format="auto" from_work_dir="image_png_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_cube_file'</filter>
+    </data>
+    <data label="${tool.name} -&gt; model_cube_file event_list_fits" name="out_model_cube_file_event_list_fits" format="auto" from_work_dir="event_list_fits_galaxy.output">
+      <filter>_data_product['_selector'] == 'model_cube_file'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="4">
+      <conditional name="_data_product">
+        <param name="_selector" value="pre-defined_model" />
+        <param name="RA" value="166.113809" />
+        <param name="DEC" value="38.208833" />
+        <param name="OffAxis_angle" value="0.78" />
+        <param name="Texp" value="1.0" />
+        <param name="z" value="0.03" />
+        <param name="F0" value="1e-11" />
+        <param name="E0" value="1.0" />
+        <param name="Gamma" value="2.0" />
+        <param name="Radius_spectal_extraction" value="0.2" />
+        <param name="Radius_sky_image" value="2.5" />
+        <param name="Site" value="North" />
+        <param name="Telescope_LST" value="True" />
+        <param name="Telescope_MST" value="True" />
+        <param name="Telescope_SST" value="False" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="4">
+      <conditional name="_data_product">
+        <param name="_selector" value="model_cube_file" />
+        <param name="data_cube" location="https://gitlab.renkulab.io/astronomy/mmoda/cta/-/raw/b3f69b091ce942c05ad035220501ea078d54de26/3d.fits" />
+        <param name="F0" value="1e-11" />
+        <param name="E0" value="1.0" />
+        <param name="OffAxis_angle" value="0.4" />
+        <param name="Radius_spectal_extraction" value="0.2" />
+        <param name="Radius_sky_image" value="2.5" />
+        <param name="Site" value="North" />
+        <param name="Telescopes_LST" value="True" />
+        <param name="Telescopes_MST" value="True" />
+        <param name="Telescopes_SST" value="False" />
+        <param name="Texp" value="1.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>This service provides simulaiton of observations with `Cherenkov
+Telescope Array (CTA) &lt;https://www.cta-observatory.org/&gt;`__ observatory
+(now in construction), based on the Instrument Response Funcitons (IRF)
+from Monte-Carlo Production 5: |DOI|. The simulation is done using
+`Gammapy &lt;https://gammapy.org/&gt;`__ package.
+
+Two possibilities for defining the sky model are available:
+``Simulate_pointing_using_pre-defined_model`` and
+``Simulate_pointing_using_model_cube_file``. The &#8220;pre-defined model&#8221;
+option provides a possibility to simulate a source at sky position
+``RA``, ``DEC``, with a power-law spectrum,
+``dN/dE=F0 (E/E0)^{-\Gamma}``, considering also the effect of absorption
+on the Extragalactic Backgorund Light (EBL, based on `Franceschini et
+al.&#160;(2017) &lt;https://arxiv.org/abs/1705.10256&gt;`__ model. In the &#8220;model
+cube file&#8221; approach, the sky model is loaded from a datacube file (to be
+uploaded from an URL to be given in the parameter box). The model cube
+describes source counts as a function of ``RA``, ``DEC`` and energy
+``E``. Hence, both the source position on the sky and the model source
+spectrum are encoded directly in the data cube.
+
+Parameters that can be adjusted are the source position (``RA``,
+``DEC``), the off-axis angle in the telescope field-of-view, ``R_s``,
+Radius of the sky image around the source position, ``Radius`` (used in
+the image preview), the exposure time in hours, ``Texp``, source
+redshift ``z``, the powerlaw flux normalisation ``F0`` and the reference
+energy of normalisation ``E0`` (in TeV), the slope of the powerlaw
+spectrum ``Gamma``, radius of the spectral extraction region ``R_s``
+used in the count-spectrum preview.
+
+For the sources visible from both South and North CTA sites, it is
+possible to choose between ``South`` and ``North`` sites. It is also
+possible to simulate observations with different CTA sub-arrays: Large
+Size Telescopes (LST), Medium Size Telescopes (MST), Small Size
+Telescopes (SST). Note that in the &#8220;Production 5&#8221; Monte-Carlo
+simulations of the telescope responses it was assumed that the Northern
+site will host only LST and MST sub-arrays (no SST available), while the
+Southern site will have MST and SST sub-arrays (no LST available).
+
+Four data products are generated: the Data Level 3 (DL3) event list (a
+FITS file), a sky image, a &#8220;theta-square plot&#8221; showsing distribution of
+gamma-like events around the the source position, and the count-spectrum
+showing the excess counts as a funciton of energy. The image, spectrum
+and theta-square plot are for &#8220;preview&#8221; of the event set, further
+analysis of the simulated events can be done with deticated imaging and
+spectral analysis tools.
+
+.. |DOI| image:: https://zenodo.org/badge/DOI/10.5281/zenodo.5499840.svg
+   :target: https://doi.org/10.5281/zenodo.5499840
+</help>
+  <citations>
+    <citation type="doi">10.1007/s10686-011-9247-0</citation>
+  </citations>
+</tool>
