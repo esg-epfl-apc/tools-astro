@@ -255,7 +255,7 @@ def astropy_test(df_init):
                 ra_dec_n = ra_dec_n.replace(",", " ")
                 cc = SkyCoord(ra_dec_n, unit=(u.hourangle, u.deg))
                 good_ra_dec.append(cc)
-            except:
+            except ValueError:
                 ra_s = re.findall(ra_text, ra_dec)
                 dec_s = re.findall(dec_text, ra_dec)
                 if len(ra_s) > 0 and len(dec_s) > 0:
@@ -264,7 +264,7 @@ def astropy_test(df_init):
                     try:
                         cc = SkyCoord(ra_dec_n, unit=(u.hourangle, u.deg))
                         good_ra_dec.append(cc)
-                    except:
+                    except ValueError:
                         rest_ra_dec.append(ra_dec)
 
                 elif len(ra_s) > 0:
@@ -296,11 +296,11 @@ def astropy_test(df_init):
                 try:
                     cc = SkyCoord(ra=c_ra, dec=c_dec, unit=(u.hourangle, u.deg))
                     good_ra_dec.append(cc)
-                except:
+                except ValueError:
                     try:
                         cc = SkyCoord(ra=c_ra, dec=c_dec, unit=(u.deg, u.deg))
                         good_ra_dec.append(cc)
-                    except:
+                    except ValueError:
                         rest_ra_dec.append(f"{ra_}|{dec_pair}")
         else:
 
@@ -318,11 +318,11 @@ def astropy_test(df_init):
                 try:
                     cc = SkyCoord(ra=c_ra, dec=c_dec, unit=(u.hourangle, u.deg))
                     good_ra_dec.append(cc)
-                except:
+                except ValueError:
                     try:
                         cc = SkyCoord(ra=c_ra, dec=c_dec, unit=(u.deg, u.deg))
                         good_ra_dec.append(cc)
-                    except:
+                    except ValueError:
                         rest_ra_dec.append(f"{ra_pair}|{dec_}")
 
     return good_ra_dec
