@@ -174,17 +174,21 @@
     </outputs>
     <tests>
         <test expect_num_outputs="2">
-            <param name="output_selection" value="i"/>
-            <param name="number_of_files" value="1"/>
+            <section name="output_section">
+              <param name="output_selection" value="i"/>
+              <param name="number_of_files" value="1"/>
+            </section>
             <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807041_AP_B001" />
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807041_AP_B001" />
+              </conditional>
+            </section>
             <output name="output" count="1">
               <assert_contents>
                   <has_text_matching expression="SIMPLE  =" />
@@ -200,11 +204,13 @@
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807041_AP_B001"/>
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807041_AP_B001"/>
+              </conditional>
+            </section>
             <output name="output_csv" count="1">
               <assert_contents>
                   <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807041_AP_B001/image_mf_02.fits," />
@@ -220,11 +226,13 @@
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807042_AP_B006"/>
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807042_AP_B006"/>
+              </conditional>
+            </section>
             <output name="output_csv" count="1">
               <assert_contents>
                   <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807042_AP_B006/image_mf_04.fits," />
@@ -240,9 +248,11 @@
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="simbad"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="obscore_query" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+            </conditional>
+          </section>
           <output name="output_error" count="1">
             <assert_contents>
                 <has_text text="No obscore table in the archive"/>
@@ -258,11 +268,13 @@
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="apertif"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="raw_query" />
-              <param name="table" value="unknown_table" />
-              <param name="url_field" value="unknown_field" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="raw_query" />
+                <param name="table" value="unknown_table" />
+                <param name="url_field" value="unknown_field" />
+            </conditional>
+          </section>
           <output name="output_error" count="1">
             <assert_contents>
                 <has_text text="Error in query"/>
@@ -278,11 +290,13 @@
               <param name="archive_type" value="custom"/>
               <param name="access_url" value="https://datalab.noirlab.edu/tap"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="raw_query" />
-              <param name="table" value="allwise.source" />
-              <param name="url_field" value="random_id" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="raw_query" />
+                <param name="table" value="allwise.source" />
+                <param name="url_field" value="random_id" />
+            </conditional>
+          </section>
           <output name="output_csv" count="1">
             <assert_contents>
                 <has_text_matching expression=".*\S+.*" />
@@ -298,9 +312,11 @@
               <param name="archive_type" value="custom"/>
               <param name="access_url" value="http://voparis-tap-he.obspm.fr/tap"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="obscore_query" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+            </conditional>
+          </section>
           <output name="output_csv" count="1">
             <assert_contents>
                 <has_text_matching expression=".*\S+.*" />
