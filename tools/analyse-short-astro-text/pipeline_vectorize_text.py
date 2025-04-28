@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from aux_functions import bits, find_sensitivity, find_name_workflow
+from aux_functions import bits, find_name_workflow, find_sensitivity
 
 import warnings
 warnings.filterwarnings("ignore", 'This pattern is interpreted as a regular expression, and has match groups')

@@ -8,7 +8,7 @@ from astroquery.simbad import Simbad
 from astropy.coordinates import SkyCoord
 from astropy import units as u
 
-from query_tns_aux import query_tns_survey_name, parse_data, query_tns_main_name
+from query_tns_aux import parse_data, query_tns_main_name, query_tns_survey_name
 
 
 def query_simbad(name):

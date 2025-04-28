@@ -2,9 +2,9 @@ import pandas as pd
 import re
 
 from rdflib import Graph, Namespace
-from rdflib.namespace import SKOS, RDF, RDFS
+from rdflib.namespace import RDF, RDFS, SKOS
 
-from aux_functions import list_tel, compute_sensitivity, compute_sensitivity_int
+from aux_functions import compute_sensitivity, compute_sensitivity_int, list_tel
 
 ODA = Namespace("https://odahub.io/ontology#")
 g_label_site = len("http://www.w3.org/2000/01/rdf-schema#label")
