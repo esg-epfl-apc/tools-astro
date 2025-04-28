@@ -1,6 +1,6 @@
 <tool id="odarequest" name="request ODA tool" version="0.1.1+galaxy0" profile="21.05">
     <requirements>
-        <requirement type="package" version="1.2.26">oda-api</requirement>
+        <requirement type="package" version="1.2.37">oda-api</requirement>
     </requirements>
     <command detect_errors="exit_code"><![CDATA[
         oda-api get -i spi_acs -p spi_acs_lc -a time_bin=$time_bin -a T1=$T1 -a T2=$T2 > '$output1' 2>&1
