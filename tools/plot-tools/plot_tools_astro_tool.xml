@@ -1,0 +1,270 @@
+<tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="3.9.2">matplotlib</requirement>
+    <requirement type="package" version="5.3">astropy</requirement>
+    <requirement type="package" version="1.2.37">oda-api</requirement>
+    <requirement type="package" version="1.2">gammapy</requirement>
+    <requirement type="package" version="9.1.0">ipython</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="C_data_product_">
+      <param name="DPselector_" type="select" label="Data Product">
+        <option value="light_curve" selected="true">light_curve</option>
+        <option value="spectrum" selected="false">spectrum</option>
+        <option value="sky_plot" selected="false">sky_plot</option>
+      </param>
+      <when value="light_curve">
+        <param name="fn" type="data" label="fn" format="data" optional="false" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
+          <option value="space">space</option>
+          <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
+        </param>
+        <param name="column" type="text" value="T" label="column" optional="false" />
+        <param name="weight_col" type="text" value="" label="weight_col" optional="false" />
+        <param name="binning" type="select" label="binning" optional="false">
+          <option value="linear">linear</option>
+          <option value="logarithmic" selected="true">logarithmic</option>
+        </param>
+        <param name="minval" type="float" value="0" label="minval" optional="false" />
+        <param name="maxval" type="float" value="0" label="maxval" optional="false" />
+        <param name="use_quantile_values" type="boolean" label="use_quantile_values" optional="false" />
+        <param name="nbins" type="integer" value="15" label="nbins" optional="false" />
+        <param name="xlabel" type="text" value="time, s" label="xlabel" optional="false" />
+        <param name="ylabel" type="text" value="Ncounts" label="ylabel" optional="false" />
+        <param name="plot_mode" type="select" label="plot_mode" optional="false">
+          <option value="counts">counts</option>
+          <option value="flux" selected="true">flux</option>
+        </param>
+      </when>
+      <when value="spectrum">
+        <param name="fn" type="data" label="fn" format="data" optional="false" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="auto">auto</option>
+          <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
+          <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
+        </param>
+        <param name="column" type="text" value="c1" label="column" optional="false" />
+        <param name="weight_col" type="text" value="" label="weight_col" optional="false" />
+        <param name="binning" type="select" label="binning" optional="false">
+          <option value="linear">linear</option>
+          <option value="logarithmic" selected="true">logarithmic</option>
+        </param>
+        <param name="minval" type="float" value="0" label="minval" optional="false" />
+        <param name="maxval" type="float" value="0" label="maxval" optional="false" />
+        <param name="nbins" type="integer" value="15" label="nbins" optional="false" />
+        <param name="xlabel" type="text" value="Energy, [eV]" label="xlabel" optional="false" />
+        <param name="ylabel" type="text" value="Flux E^2, [eV]" label="ylabel" optional="false" />
+        <param name="spec_power" type="float" value="2.0" label="spec_power" optional="false" />
+      </when>
+      <when value="sky_plot">
+        <param name="fn" type="data" label="fn" format="data" optional="false" />
+        <param name="skiprows" type="integer" value="0" label="skiprows" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="auto">auto</option>
+          <option value="comma">comma</option>
+          <option value="semicolon">semicolon</option>
+          <option value="tab">tab</option>
+          <option value="whitespace" selected="true">whitespace</option>
+        </param>
+        <param name="ra_col" type="text" value="c3" label="ra_col" optional="false" />
+        <param name="dec_col" type="text" value="c4" label="dec_col" optional="false" />
+        <param name="weight_col" type="text" value="" label="weight_col" optional="false" />
+        <param name="binsz" type="float" value="0.02" label="binsz" optional="false" />
+        <param name="window_size_RA" type="float" value="2.0" label="window_size_RA" optional="false" />
+        <param name="window_size_DEC" type="float" value="2.0" label="window_size_DEC" optional="false" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; light_curve histogram_data" name="out_light_curve_histogram_data" format="auto" from_work_dir="histogram_data_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'light_curve'</filter>
+    </data>
+    <data label="${tool.name} -&gt; light_curve histogram_picture" name="out_light_curve_histogram_picture" format="auto" from_work_dir="histogram_picture_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'light_curve'</filter>
+    </data>
+    <data label="${tool.name} -&gt; spectrum histogram_data" name="out_spectrum_histogram_data" format="auto" from_work_dir="histogram_data_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; spectrum histogram_picture" name="out_spectrum_histogram_picture" format="auto" from_work_dir="histogram_picture_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'spectrum'</filter>
+    </data>
+    <data label="${tool.name} -&gt; sky_plot plot" name="out_sky_plot_plot" format="auto" from_work_dir="plot_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'sky_plot'</filter>
+    </data>
+    <data label="${tool.name} -&gt; sky_plot fits_image" name="out_sky_plot_fits_image" format="auto" from_work_dir="fits_image_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'sky_plot'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="light_curve" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="skiprows" value="0" />
+        <param name="sep" value="whitespace" />
+        <param name="column" value="T" />
+        <param name="weight_col" value="" />
+        <param name="binning" value="logarithmic" />
+        <param name="minval" value="0" />
+        <param name="maxval" value="0" />
+        <param name="use_quantile_values" value="False" />
+        <param name="nbins" value="15" />
+        <param name="xlabel" value="time, s" />
+        <param name="ylabel" value="Ncounts" />
+        <param name="plot_mode" value="flux" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="spectrum" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="skiprows" value="0" />
+        <param name="sep" value="whitespace" />
+        <param name="column" value="c1" />
+        <param name="weight_col" value="" />
+        <param name="binning" value="logarithmic" />
+        <param name="minval" value="0" />
+        <param name="maxval" value="0" />
+        <param name="nbins" value="15" />
+        <param name="xlabel" value="Energy, [eV]" />
+        <param name="ylabel" value="Flux E^2, [eV]" />
+        <param name="spec_power" value="2.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="sky_plot" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="skiprows" value="0" />
+        <param name="sep" value="whitespace" />
+        <param name="ra_col" value="c3" />
+        <param name="dec_col" value="c4" />
+        <param name="weight_col" value="" />
+        <param name="binsz" value="0.02" />
+        <param name="window_size_RA" value="2.0" />
+        <param name="window_size_DEC" value="2.0" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>Plot Tools
+==========
+
+Set of tools for astronomical data visualization
+
+- sky_plot - visualize sky map using set of events as input
+- light_cure - calculate and visualize light curve from a set of evebts
+- spectrum - calculate energy spectrum using set of events as input
+
+Parameters
+----------
+
+common parameters
+~~~~~~~~~~~~~~~~~
+
+fn - input data file
+
+skiprows - number of rows to skip
+
+sep - separator value
+
+sky_plot parameters
+~~~~~~~~~~~~~~~~~~~
+
+ra_col - RA column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+dec_col - DEC column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+weight_col - weight column (either column name of string cXX, where XX
+&gt;= 1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binsz - bin size in degrees
+
+window_size_RA - size of window (RA) in degrees
+
+window_size_DEC - size of window (DEC) in degrees
+
+light_cure parameters
+~~~~~~~~~~~~~~~~~~~~~
+
+column - time column (either column name of string cXX, where XX &gt;= 1 is
+column number)
+
+weight_col - weight column (either column name of string cXX, where XX
+&gt;= 1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binning - binning type (&#8216;logarithmic&#8217; or &#8220;linear&#8221;)
+
+minval - minimal value (use 0 to infer from data)
+
+maxval - maximal value (use 0 to infer from data)
+
+use_quantile_values - interpret minval and maxval as quantiles
+
+nbins=15 - number of bins
+
+xlabel - plot x-label
+
+ylabel - plot y-label
+
+plot_mode - plotting mode (&#8220;counts&#8221; or &#8220;flux&#8221;)
+
+spectrum parameters
+~~~~~~~~~~~~~~~~~~~
+
+column - energy column (either column name of string cXX, where XX &gt;= 1
+is column number)
+
+weight_col- weight column (either column name of string cXX, where XX &gt;=
+1 is column number, or empty string if data doesn&#8217;t contain weights)
+
+binning - binning type (&#8216;logarithmic&#8217; or &#8220;linear&#8221;)
+
+minval - minimal value (use 0 to infer from data)
+
+maxval - maximal value (use 0 to infer from data)
+
+nbins - number of bins
+
+xlabel - plot x-label
+
+ylabel - plot y-label
+
+spec_power - multiply spectrum by energy in this power on plot
+</help>
+  <citations>
+    <citation type="bibtex">@misc{label,
+			title = {Tool repository},
+			url = {https://renkulab.io/projects/astronomy/mmoda/plot-tools},
+			author = {Oleg Kalashev},
+			year = {2024},
+			note = {}
+		}</citation>
+  </citations>
+</tool>
