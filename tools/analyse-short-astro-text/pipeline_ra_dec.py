@@ -54,7 +54,7 @@ def create_pattern_list():
     pattern_list_ra += [f"\\b({ra_text}{assignment_char}{ra_value})\\b"]
     pattern_list_dec += [f"\\b({dec_text}{assignment_char}{dec_value})\\b"]
 
-    pattern_J2000 = "( |)(-|)((\((((j|)2000(.0|))|(deg))\))|(2000))"
+    pattern_J2000 = r"( |)(-|)((\((((j|)2000(.0|))|(deg))\))|(2000))"
     pattern_list_ra += [f"({ra_text}{pattern_J2000}{assignment_char}{ra_value})"]
     pattern_list_dec += [f"({dec_text}{pattern_J2000}{assignment_char}{dec_value})"]
 
@@ -64,18 +64,18 @@ def create_pattern_list():
     pattern_list_table += [f"([0-9]{{1,2}}(h)[0-9]{{1,2}}{units_minutes}[0-9]{{1,2}}(\\.|)[0-9]{{0,}}{units_seconds})((( |)(,|\\|)( |))|( ))(\\+|-|)([0-9]{{1,2}}(d|(deg))[0-9]{{1,2}}{units_minutes}[0-9]{{1,2}}(\\.|)[0-9]{{0,}}{units_seconds})"]
 
     # PAIRS
-    pattern_list_ra_dec += [f"\(j2000 {ra_dec}\){assignment_char}\({ra_value_deg}( |)(,|)( |){dec_value_deg}\)( |){degree_}"]
-    pattern_list_ra_dec += [f"\({ra_dec}( |)(j|)2000(.0|)\){assignment_char}(\(|){ra_value}( |)(,|)( |){dec_value}(\)|)"]
-    pattern_list_ra_dec += [f"\({ra_dec} {ra_value}( |)(,)( |){dec_value}\)"]
-    pattern_list_ra_dec += [f"({ra_text}( |)\((j|)2000(.0|)\) {ra_value}), ({dec_text}( |)\((j|)2000(.0|)\) {dec_value})"]
+    pattern_list_ra_dec += [fr"\(j2000 {ra_dec}\){assignment_char}\({ra_value_deg}( |)(,|)( |){dec_value_deg}\)( |){degree_}"]
+    pattern_list_ra_dec += [fr"\({ra_dec}( |)(j|)2000(.0|)\){assignment_char}(\(|){ra_value}( |)(,|)( |){dec_value}(\)|)"]
+    pattern_list_ra_dec += [fr"\({ra_dec} {ra_value}( |)(,)( |){dec_value}\)"]
+    pattern_list_ra_dec += [fr"({ra_text}( |)\((j|)2000(.0|)\) {ra_value}), ({dec_text}( |)\((j|)2000(.0|)\) {dec_value})"]
 
     pattern_list_ra_dec += [f"\\b({ra_text} {ra_value}(, | |; |,|;){dec_text} {dec_value})\\b"]
     pattern_list_ra_dec += [f"\\b({ra_text}{assignment_char}{ra_value})( )({dec_text}{assignment_char}{dec_value})\\b"]
 
     pattern_list_ra_dec += [f"\\b{ra_dec}{assignment_char}{ra_value}( |)(,|)( |){dec_value}\\b"]
-    pattern_list_ra_dec += [f"\({ra_dec}\){assignment_char}(\(|){ra_value}( |)(,|)( |){dec_value}(\)|)"]
+    pattern_list_ra_dec += [fr"\({ra_dec}\){assignment_char}(\(|){ra_value}( |)(,|)( |){dec_value}(\)|)"]
 
-    pattern_list_ra_dec += [f"({ra_text}(\\/|,|, ){dec_text}( |)(\((j|)2000(.0|)\)|){assignment_char}{ra_value}( |,|, ){dec_value})"]
+    pattern_list_ra_dec += [fr"({ra_text}(\\/|,|, ){dec_text}( |)(\((j|)2000(.0|)\)|){assignment_char}{ra_value}( |,|, ){dec_value})"]
 
     pattern_list_ra_dec += [f"({ra_text}( and ){dec_text} {ra_value}( and ){dec_value})"]
 
@@ -144,7 +144,7 @@ def clean_ra(ra, ra_text, pattern_J2000):
     ra_new = re.sub(f"{ra_text}{pattern_J2000}", "", ra_new)
     ra_new = re.sub(f"{ra_text}", "", ra_new)
 
-    ra_new = re.sub("[^0-9+-\.deg]", ":", ra_new)
+    ra_new = re.sub(r"[^0-9+-\.deg]", ":", ra_new)
 
     while len(ra_new) > 1 and (ra_new[-1] in [":", "."]):
         ra_new = ra_new[:-1]
@@ -175,7 +175,7 @@ def clean_dec(dec, dec_text, pattern_J2000):
     dec_new = re.sub(f"{dec_text}{pattern_J2000}", "", dec_new)
     dec_new = re.sub(f"{dec_text}", "", dec_new)
 
-    dec_new = re.sub("[^0-9+-\.deg]", ":", dec_new)
+    dec_new = re.sub(r"[^0-9+-\.deg]", ":", dec_new)
 
     while len(dec_new) != 1 and (dec_new[-1] in [":", "."]):
         dec_new = dec_new[:-1]
@@ -213,7 +213,7 @@ def clean_ra_dec(ra_dec, ra_text, dec_text, pattern_J2000):
     ra_dec_n = re.sub("(o)", "d", ra_dec_n)
     ra_dec_n = re.sub("('')", "", ra_dec_n)
     ra_dec_n = re.sub("(')", "m", ra_dec_n)
-    ra_dec_n = re.sub("[^0-9+-\.hmd\s:]", "", ra_dec_n)
+    ra_dec_n = re.sub(r"[^0-9+-\.hmd\s:]", "", ra_dec_n)
 
     ra_dec_n = re.sub("[,]", "", ra_dec_n)
     while len(ra_dec_n) != 1 and (ra_dec_n[-1] in [":", ".", " "]):
@@ -230,7 +230,7 @@ def astropy_test(df_init):
     dec_text = "(dec(l|)(\\.|\\:|))"
 
     # ra_dec_pattern = f"({ra_text},( |){dec_text})"
-    pattern_J2000 = "( |)(-|)((\((((j|)2000(.0|))|(deg))\))|(2000))"
+    pattern_J2000 = r"( |)(-|)((\((((j|)2000(.0|))|(deg))\))|(2000))"
 
     rest_ra_dec = []
     counter_rest = 0
