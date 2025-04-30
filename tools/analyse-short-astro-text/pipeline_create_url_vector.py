@@ -96,7 +96,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
                         dict_[f"URL_{counter}{source_name}"] = url_vec_telescope_telescope_type
 
                         url_norm_vector = (url_vec_telescope_telescope_type)/np.sum(url_vec_telescope_telescope_type**2)
-                        score = np.dot(url_norm_vector, pred_norm_vector)
+                        score = np.round(np.dot(url_norm_vector, pred_norm_vector), decimals=5)
                         dict_url_scores["URL Name"].append(f"URL_{counter}{source_name}")
                         dict_url_scores["Scores"].append(score)
                         dict_url_scores["URL"].append(get_link(dict_source_to_type_indx[source_name]["RA"], dict_source_to_type_indx[source_name]["Dec"], "AAA", "BBB", inst_, source_name))
@@ -115,7 +115,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
                 dict_[f"URL_{counter}{source_name}"] = url_vec_telescope_telescope_type
 
                 url_norm_vector = (url_vec_telescope_telescope_type)/np.sum(url_vec_telescope_telescope_type**2)
-                score = np.dot(url_norm_vector, pred_norm_vector)
+                score = np.round(np.dot(url_norm_vector, pred_norm_vector), decimals=5)
 
                 for inst_ in dict_sens_inst[legend[indx_tel_type]]:
                     if inst_ not in inst_2_inst_name.keys():

@@ -26,9 +26,9 @@ from pipeline_telescope import rule_based_telescope_detector
 from pipeline_vectorize_text import vectorize_text
 from predict_vectorised_text import predict_vector
 
+origin_type = "ATel"  # oda:String ; oda:allowed_value "ATel","GCN","Other" ; oda:label "Origin of the text"
+number = 16672  # http://odahub.io/ontology#Integer ; oda:label "Text ID (e.g. ATel number)"
 text = ""  # http://odahub.io/ontology#LongString ; oda:label "Text (optional)"
-number = 16672  # http://odahub.io/ontology#Integer ; oda:label "Number of ATEL or GCN"
-origin_type = "ATEL"  # oda:String ; oda:allowed_value "atel","gcn" ; oda:label "Select ATEL or GCN"
 
 _galaxy_wd = os.getcwd()
 
@@ -38,11 +38,11 @@ if "C_data_product_" in inp_dic.keys():
     inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-text = str(inp_pdic["text"])
-number = int(inp_pdic["number"])
 origin_type = str(inp_pdic["origin_type"])
+number = int(inp_pdic["number"])
+text = str(inp_pdic["text"])
 
-if origin_type == "ATEL":
+if origin_type == "ATel":
     text_id = "ATel #{}".format(number)
 
     if text == "":
@@ -51,7 +51,7 @@ if origin_type == "ATEL":
             raise ValueError("Not possible to fetch ATel number #{number}.")
     else:
         text_id_text = text
-else:
+elif origin_type == "GCN":
     text_id = "GCN #{}".format(number)
 
     if text == "":
@@ -60,6 +60,11 @@ else:
             raise ValueError("Not possible to fetch GCN number #{number}.")
     else:
         text_id_text = text
+else:
+    text_id = "Other #{}".format(number)
+
+    if text == "":
+        raise ValueError("No text to analyse.")
 
 ### Settings
 try:
@@ -161,6 +166,7 @@ print(df_tel)
 print(df_cla)
 print(df_astrobert)
 print(df_vec_init_pred)
+print(df_url_scores)
 
 table_telescopes = t_tel  # http://odahub.io/ontology#ODAAstropyTable
 table_sources = t_sor  # http://odahub.io/ontology#ODAAstropyTable

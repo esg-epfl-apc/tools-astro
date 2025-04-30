@@ -6,7 +6,7 @@ gcn_number = 40274
 def fetch_gcn(gcn_number):
     """
     Fetches the GCN page for the given GCN number and returns the GCN text.
-    
+
     input : gcn_number (int): The GCN number to fetch.
     output : response_text (str): The content of the GCN body.
     If an error occurs, it returns None.
@@ -22,7 +22,7 @@ def fetch_gcn(gcn_number):
 
     # Get the "body" field
     body = data.get("body")
-    
+
     # cleans non-ASCII characters
     cleaned_text = re.sub(r'[^\x00-\x7F]+', '', body)  # remove non-ASCII
     print(cleaned_text)
@@ -32,4 +32,3 @@ def fetch_gcn(gcn_number):
 
 if __name__ == "__main__":
     fetch_gcn(gcn_number)
-
