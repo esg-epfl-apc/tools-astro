@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -21,13 +25,17 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in ["spectrum", "rmf", "arf", "background", "model", "e_min", "e_max"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+spectrum = str(inp_pdic["spectrum"])
+rmf = str(inp_pdic["rmf"])
+arf = str(inp_pdic["arf"])
+background = str(inp_pdic["background"])
+model = str(inp_pdic["model"])
+e_min = int(inp_pdic["e_min"])
+e_max = int(inp_pdic["e_max"])
 
 import numpy as np
 from astropy.io import fits
