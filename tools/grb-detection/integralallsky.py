@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -37,23 +41,19 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "RA",
-    "Dec",
-    "tstart_rel_mseconds",
-    "tstop_rel_seconds",
-    "t0_utc",
-    "required_completeness",
-    "mode",
-    "global_snr_threshold",
-    "negative_excesses",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+RA = float(inp_pdic["RA"])
+Dec = float(inp_pdic["Dec"])
+tstart_rel_mseconds = float(inp_pdic["tstart_rel_mseconds"])
+tstop_rel_seconds = float(inp_pdic["tstop_rel_seconds"])
+t0_utc = str(inp_pdic["t0_utc"])
+required_completeness = float(inp_pdic["required_completeness"])
+mode = str(inp_pdic["mode"])
+global_snr_threshold = float(inp_pdic["global_snr_threshold"])
+negative_excesses = int(inp_pdic["negative_excesses"])
 
 t0_utc
 

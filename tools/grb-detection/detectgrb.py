@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -20,20 +24,16 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "T1",
-    "T2",
-    "detection_time_scales",
-    "lc_time_scale",
-    "background_age",
-    "min_sn",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+T1 = str(inp_pdic["T1"])
+T2 = str(inp_pdic["T2"])
+detection_time_scales = str(inp_pdic["detection_time_scales"])
+lc_time_scale = float(inp_pdic["lc_time_scale"])
+background_age = float(inp_pdic["background_age"])
+min_sn = int(inp_pdic["min_sn"])
 
 import numpy as np
 from astropy.time import Time
