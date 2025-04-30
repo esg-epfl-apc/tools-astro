@@ -193,11 +193,31 @@ The tool produces **9 tables**:
 
 --------------
 
-ToDo: For Developers
---------------------
+For Developers
+--------------
 
-Explain what files should be changed when an additional tool is added on
-MMODA
+::
+
+   A) New tools on the MMODA platform
+
+In order to include newly added tools on the MMODA platform, one should
+modify the `json
+file &lt;./data/dictionary_telescope_type_2_instrument.json&gt;`__ that links
+a telescope type to a MMODA tool. In case a tool is removed from the
+MMODA platform, the same file should be changed. However, one should be
+very careful about the tools that have a direct connection to an
+instrument, see `aux_functions.py &lt;aux_functions.py&gt;`__, since this has
+not been tested.
+
+::
+
+   C) Change the number of instruments or telescope types in the input/output vector
+
+This modification requires more changes in the following files
+`aux_functions.py &lt;aux_functions.py&gt;`__,
+`pipeline_vectorize_text.py &lt;pipeline_vectorize_text.py&gt;`__,
+`predict_vectorised_text.py &lt;predict_vectorised_text.py&gt;`__. In
+addition, the CNN should be retrained on the new types of vectors.
 </help>
   <citations>
     <citation type="bibtex">@article{2021arXiv211200590G,

@@ -113,6 +113,7 @@ df_cla = detect_source_classes(
     text_id, text_id_text.lower(), df_sor, simbad_node_file
 )
 
+### If there are changes in MMODA tools and telescope types, pay attention to the next three functions
 df_vec = vectorize_text(text_id, data_path, df_tel, df_sor, df_astrobert)
 
 df_vec_init_pred = predict_vector(text_id, data_path, df_vec)

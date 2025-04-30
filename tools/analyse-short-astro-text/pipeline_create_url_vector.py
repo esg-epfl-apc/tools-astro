@@ -73,8 +73,8 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
         counter = 0
 
         # Loop through the telescope types: gamma-ray, x-ray, etc.
-        for i, (value, name) in enumerate(zip(pred, legend)):
-            if i >= 41 and i < 50 and name in dict_sens_inst.keys():
+        for i in range(41, 50):
+            if legend[i] in dict_sens_inst.keys():
 
                 # Loop through the instruments corresponding to a telescope type: e.g.for gamma-ray, there are spi_acs, polar, grb_detection, magic, etc (see the file file_dict_sens_inst)
                 for inst_ in dict_sens_inst[legend[i]]:
@@ -93,7 +93,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
 
                         dict_[f"URL_{counter}{source_name}"] = url_vec_telescope_telescope_type
 
-                        url_norm_vector = (url_vec_telescope_telescope_type)/np.sum(url_vec_telescope_telescope_type**2)
+                        url_norm_vector = (url_vec_telescope_telescope_type)/np.linalg.norm(url_vec_telescope_telescope_type)
                         score = np.round(np.dot(url_norm_vector, pred_norm_vector), decimals=5)
                         dict_url_scores["URL Name"].append(f"URL_{counter}{source_name}")
                         dict_url_scores["Scores"].append(score)
@@ -101,8 +101,8 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
 
                         counter += 1
 
-        # add only the telescope type in order to represent the instruments like Polar, CTA/CTAO, and workflows LegacySurvey DESI, SGWB that are not part of the size 59 vector
-        for indx_tel_type in [41, 44, 45, 48]:
+        # add only the telescope type in order to represent the instruments like Polar, and workflows like LegacySurvey DESI, SGWB that are not part of the size 59 vector
+        for indx_tel_type in range(41, 50):
             if pred[indx_tel_type] != 0:
                 url_vec_telescope_telescope_type = np.zeros(len(legend))
                 for indx_ in dict_source_to_type_indx[source_name]["Indices"]:
@@ -112,7 +112,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
 
                 dict_[f"URL_{counter}{source_name}"] = url_vec_telescope_telescope_type
 
-                url_norm_vector = (url_vec_telescope_telescope_type)/np.sum(url_vec_telescope_telescope_type**2)
+                url_norm_vector = (url_vec_telescope_telescope_type)/np.linalg.norm(url_vec_telescope_telescope_type)
                 score = np.round(np.dot(url_norm_vector, pred_norm_vector), decimals=5)
 
                 for inst_ in dict_sens_inst[legend[indx_tel_type]]:
