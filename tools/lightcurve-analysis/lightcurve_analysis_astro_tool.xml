@@ -1,39 +1,40 @@
-<tool id="lightcurve_analysis_astro_tool" name="lightcurve-analysis" version="0.0.1+galaxy0" profile="23.0">
+<tool id="lightcurve_analysis_astro_tool" name="lightcurve-analysis" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
+    <requirement type="package" version="9.2.0">ipython</requirement>
     <requirement type="package" version="7.0.1">astropy</requirement>
-    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <requirement type="package" version="3.10.1">matplotlib</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
     <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
-  <command detect_errors="exit_code">python '$__tool_directory__/${_data_product._selector}.py'</command>
-  <configfiles>
-    <inputs name="inputs" filename="inputs.json" data_style="paths" />
-  </configfiles>
+  <command detect_errors="exit_code">python '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
   <environment_variables>
     <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
     <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
   </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
   <inputs>
-    <conditional name="_data_product">
-      <param name="_selector" type="select" label="Data Product">
+    <conditional name="C_data_product_">
+      <param name="DPselector_" type="select" label="Data Product">
         <option value="correlate" selected="true">correlate</option>
         <option value="detect_impulsive" selected="false">detect_impulsive</option>
       </param>
       <when value="correlate">
-        <param name="light_curve_1" type="data" label="light_curve_1" format="data" />
-        <param name="light_curve_2" type="data" label="light_curve_2" format="data" />
-        <param name="mode" type="select" label="mode">
+        <param name="light_curve_1" type="data" label="light_curve_1" format="data" optional="false" />
+        <param name="light_curve_2" type="data" label="light_curve_2" format="data" optional="false" />
+        <param name="mode" type="select" label="mode" optional="false">
           <option value="Background" selected="true">Background</option>
           <option value="Focus">Focus</option>
           <option value="Peak">Peak</option>
         </param>
       </when>
       <when value="detect_impulsive">
-        <param name="light_curve" type="data" label="light_curve" format="data" />
-        <param name="time_column" type="text" value="TIME" label="time_column" />
-        <param name="rate_column" type="text" value="FLUX" label="rate_column" />
-        <param name="rate_err_column" type="text" value="FLUX_ERR" label="rate_err_column" />
-        <param name="mode" type="select" label="mode">
+        <param name="light_curve" type="data" label="light_curve" format="data" optional="false" />
+        <param name="time_column" type="text" value="TIME" label="time_column" optional="false" />
+        <param name="rate_column" type="text" value="FLUX" label="rate_column" optional="false" />
+        <param name="rate_err_column" type="text" value="FLUX_ERR" label="rate_err_column" optional="false" />
+        <param name="mode" type="select" label="mode" optional="false">
           <option value="Background" selected="true">Background</option>
           <option value="Focus">Focus</option>
           <option value="Peak">Peak</option>
@@ -44,22 +45,22 @@
   </inputs>
   <outputs>
     <data label="${tool.name} -&gt; correlate detection_image" name="out_correlate_detection_image" format="auto" from_work_dir="detection_image_galaxy.output">
-      <filter>_data_product['_selector'] == 'correlate'</filter>
+      <filter>C_data_product_['DPselector_'] == 'correlate'</filter>
     </data>
     <data label="${tool.name} -&gt; correlate processed_lc" name="out_correlate_processed_lc" format="auto" from_work_dir="processed_lc_galaxy.output">
-      <filter>_data_product['_selector'] == 'correlate'</filter>
+      <filter>C_data_product_['DPselector_'] == 'correlate'</filter>
     </data>
     <data label="${tool.name} -&gt; detect_impulsive detection_image" name="out_detect_impulsive_detection_image" format="auto" from_work_dir="detection_image_galaxy.output">
-      <filter>_data_product['_selector'] == 'detect_impulsive'</filter>
+      <filter>C_data_product_['DPselector_'] == 'detect_impulsive'</filter>
     </data>
     <data label="${tool.name} -&gt; detect_impulsive processed_lc" name="out_detect_impulsive_processed_lc" format="auto" from_work_dir="processed_lc_galaxy.output">
-      <filter>_data_product['_selector'] == 'detect_impulsive'</filter>
+      <filter>C_data_product_['DPselector_'] == 'detect_impulsive'</filter>
     </data>
   </outputs>
   <tests>
     <test expect_num_outputs="2">
-      <conditional name="_data_product">
-        <param name="_selector" value="correlate" />
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="correlate" />
         <param name="light_curve_1" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/fdeef1d7e716c836601f41dc961ebfb288fa456f/spiacs_lc_query.fits" />
         <param name="light_curve_2" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/fdeef1d7e716c836601f41dc961ebfb288fa456f/spiacs_lc_query.fits" />
         <param name="mode" value="Background" />
@@ -69,8 +70,8 @@
       </assert_stdout>
     </test>
     <test expect_num_outputs="2">
-      <conditional name="_data_product">
-        <param name="_selector" value="detect_impulsive" />
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="detect_impulsive" />
         <param name="light_curve" location="https://gitlab.renkulab.io/astronomy/mmoda/lightcurve-analysis/-/raw/fdeef1d7e716c836601f41dc961ebfb288fa456f/spiacs_lc_query.fits" />
         <param name="time_column" value="TIME" />
         <param name="rate_column" value="FLUX" />

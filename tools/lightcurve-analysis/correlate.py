@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -19,13 +23,13 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in ["light_curve_1", "light_curve_2", "mode"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+light_curve_1 = str(inp_pdic["light_curve_1"])
+light_curve_2 = str(inp_pdic["light_curve_2"])
+mode = str(inp_pdic["mode"])
 
 from astropy.io import fits
 from astropy.time import Time
