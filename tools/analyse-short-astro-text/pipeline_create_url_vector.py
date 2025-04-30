@@ -36,12 +36,15 @@ def source_to_source_type_index(df_dict, df_sor):
         dict_out = {}
         for main_id, input_otypes, ra_, dec_ in zip(df_sor["Main ID Name"].values, df_sor["OTYPE"].values, df_sor["RA"].values, df_sor["Dec"].values):
             output_otype = []
-            if main_id != "NotKnown" and input_otypes != "NotKnown":
-                for input_otype in set(input_otypes.split("|")):
-                    output_otype.append(input_otype)
+            if main_id != "NotKnown":
+                if input_otypes != "NotKnown":
+                    for input_otype in set(input_otypes.split("|")):
+                        output_otype.append(input_otype)
 
-                output_otype = set(output_otype)
-                dict_out[main_id] = {"Indices": otype_to_index(output_otype, df_dict), "RA": ra_, "Dec": dec_}
+                    output_otype = set(output_otype)
+                    dict_out[main_id] = {"Indices": otype_to_index(output_otype, df_dict), "RA": ra_, "Dec": dec_}
+                else:
+                    dict_out[main_id] = {"Indices": [], "RA": ra_, "Dec": dec_}
 
         if len(dict_out.keys()) != 0:
             return dict_out
