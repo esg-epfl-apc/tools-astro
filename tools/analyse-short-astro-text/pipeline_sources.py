@@ -83,7 +83,6 @@ def query_fink(name):
 
     query_name = name.replace("ztf", "ZTF")
     r = requests.post('https://api.fink-portal.org/api/v1/objects', json={'objectId': query_name, 'output-format': 'json', 'columns': 'i:ra,i:dec,i:objectId'})
-
     # Format output in a DataFrame
     df = pd.read_json(io.BytesIO(r.content))
     if not df.empty:
@@ -213,7 +212,16 @@ def query_info_sources(text_id, sources):
         dict_unknown = {}
         dict_unknown = {"Raw Source Name": []}
 
-        for source_name in sources:
+        for source_name_0 in sources:
+            # TODO:  remove all non a-z0-9 characters from the beginning and ending of the source name
+            # Now: remove "," from the beginning and ending of the source name
+            if source_name_0[0] == ",":
+                source_name = source_name_0[1:]
+            elif source_name_0[-1] == ",":
+                source_name = source_name_0[:-1]
+            else:
+                source_name = source_name_0
+
             if pattern_string.findall(source_name.lower()):
                 dict_otype = query_simbad(source_name)
                 if dict_otype[source_name]["MAIN_ID"] is None:
@@ -230,7 +238,7 @@ def query_info_sources(text_id, sources):
                     dec_list.append(dict_otype[source_name]["DEC"])
                     source_list.append(source_name)
             else:
-                dict_unknown["Raw Source Name"].append(source_name)
+                dict_unknown["Raw Source Name"].append(source_name_0)
 
         dict_data = {"TEXT_ID": [text_id] * len(source_list), "Raw Source Name": source_list, "Main ID Name": mainid_list, "OTYPE": otype_list, "RA": ra_list, "Dec": dec_list}
         df_save = pd.DataFrame(dict_data)

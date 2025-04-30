@@ -71,9 +71,15 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
 
     for source_name in dict_source_to_type_indx.keys():
         counter = 0
+
+        # Loop through the telescope types: gamma-ray, x-ray, etc.
         for i, (value, name) in enumerate(zip(pred, legend)):
             if i >= 41 and i < 50 and name in dict_sens_inst.keys():
+
+                # Loop through the instruments corresponding to a telescope type: e.g.for gamma-ray, there are spi_acs, polar, grb_detection, magic, etc (see the file file_dict_sens_inst)
                 for inst_ in dict_sens_inst[legend[i]]:
+
+                    # if the instrument is explicitly part of the input/output URL vector
                     if inst_ in inst_2_inst_name.keys():
                         url_vec_telescope_telescope_type = np.zeros(len(legend))
                         url_vec_telescope_telescope_type[i] = 1
