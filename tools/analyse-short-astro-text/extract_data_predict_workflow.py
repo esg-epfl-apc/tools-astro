@@ -14,6 +14,7 @@ import shutil
 import pandas as pd
 from astropy.table import Table
 from fetch_atel import fetch_atel
+from fetch_gcn import fetch_gcn
 from oda_api.data_products import ODAAstropyTable
 from oda_api.json import CustomJSONEncoder
 from pipeline_astrobert import get_astroBERT_cleaned_result
@@ -25,8 +26,9 @@ from pipeline_telescope import rule_based_telescope_detector
 from pipeline_vectorize_text import vectorize_text
 from predict_vectorised_text import predict_vector
 
-text = ""  # http://odahub.io/ontology#LongString
-number = 16672  # http://odahub.io/ontology#Integer
+text = ""  # http://odahub.io/ontology#LongString ; oda:label "Text (optional)"
+number = 16672  # http://odahub.io/ontology#Integer ; oda:label "Number of ATEL or GCN"
+origin_type = "ATEL"  # oda:String ; oda:allowed_value "atel","gcn" ; oda:label "Select ATEL or GCN"
 
 _galaxy_wd = os.getcwd()
 
@@ -38,15 +40,26 @@ else:
     inp_pdic = inp_dic
 text = str(inp_pdic["text"])
 number = int(inp_pdic["number"])
+origin_type = str(inp_pdic["origin_type"])
 
-text_id = "ATel #{}".format(number)
+if origin_type == "ATEL":
+    text_id = "ATel #{}".format(number)
 
-if text == "":
-    text_id_text = fetch_atel(number)
-    if text_id_text is None:
-        raise ValueError("Not possible to fetch ATel number #{number}.")
+    if text == "":
+        text_id_text = fetch_atel(number)
+        if text_id_text is None:
+            raise ValueError("Not possible to fetch ATel number #{number}.")
+    else:
+        text_id_text = text
 else:
-    text_id_text = text
+    text_id = "GCN #{}".format(number)
+
+    if text == "":
+        text_id_text = fetch_gcn(number)
+        if text_id_text is None:
+            raise ValueError("Not possible to fetch GCN number #{number}.")
+    else:
+        text_id_text = text
 
 ### Settings
 try:
