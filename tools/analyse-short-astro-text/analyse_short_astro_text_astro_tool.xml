@@ -192,6 +192,12 @@ The tool produces **9 tables**:
    URL generated.
 
 --------------
+
+ToDo: For Developers
+--------------------
+
+Explain what files should be changed when an additional tool is added on
+MMODA
 </help>
   <citations>
     <citation type="bibtex">@article{2021arXiv211200590G,

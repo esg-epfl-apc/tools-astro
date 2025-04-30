@@ -158,3 +158,20 @@ def find_name_workflow(list_telescopes):
     if "https://odahub.io/ontology#cherenkov-telescope-array-observatory" in list_telescopes:
         indices.append(58)
     return indices
+
+
+def get_list_instruments_CNN_MMODA():
+    return ["INTEGRAL", "ISGRI", "JEM-X", "SPI-ACS", "ANTARES", "LIGO/VIRGO", "IceCube", "HESS", "CTA/CTAO"]
+
+
+def get_dict_instruments_URL_MMODA():
+    return {
+        "spi_acs": ["INTEGRAL", "SPI-ACS"],
+        "cta": ["CTA/CTAO"],
+        "hess": ["HESS"],
+        "isgri": ["INTEGRAL", "ISGRI"],
+        "jemx": ["INTEGRAL", "JEM-X"],
+        "icecube": ["IceCube"],
+        "antares": ["ANTARES"],
+        "gw": ["LIGO/VIRGO"]
+    }

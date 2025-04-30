@@ -1,1 +1,10 @@
-{"gamma-ray": ["spi_acs", "polar", "cta", "hess", "grb_detection"], "x-ray": ["isgri", "jemx"], "optical": ["legacysurvey"], "infrared": ["legacysurvey"], "gravitational-wave": ["gw", "sgwb"], "neutrino": ["icecube", "antares"]}
+{
+    "gamma-ray": ["spi_acs", "polar", "grb_detection", "magic", "combine_integral_gallery_products", "fermi_lat", "lst", "hess", "iact_simulators", "cta"],
+    "x-ray": ["isgri", "jemx", "solar_orbiter_stix"],
+    "optical": ["desi_legacy_survey", "gaia"],
+    "infrared": ["desi_legacy_survey", "wise"],
+    "radio": ["mwa_telescope", "mwa"],
+    "gravitational-wave": ["gw", "sgwb"],
+    "neutrino": ["icecube", "antares"],
+    "cosmic-ray": ["auger"]
+}

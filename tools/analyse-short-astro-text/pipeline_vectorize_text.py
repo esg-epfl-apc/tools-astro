@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from aux_functions import bits, find_name_workflow, find_sensitivity
+from aux_functions import bits, find_name_workflow, find_sensitivity, get_list_instruments_CNN_MMODA
 
 import warnings
 warnings.filterwarnings("ignore", 'This pattern is interpreted as a regular expression, and has match groups')
@@ -10,7 +10,7 @@ warnings.filterwarnings("ignore", 'This pattern is interpreted as a regular expr
 
 # From 41 (41 + log2(bit)) to 49 represent the telescope type
 
-# From 50 to 58 represent the workflow (telescope/instrument)
+# From 50 to 58 represent the workflow (telescope/instrument) (could be changed in aux_functions)
 
 
 def otype_to_index(list_otype, df_dict):
@@ -57,8 +57,8 @@ def vectorize_text(text_id, data_path, df_regex_telescopes, df_celestialobj, df_
     df_dict = pd.read_csv(otype_label)
     dict_out = {}
 
-    dict_out["Legend"] = list(df_dict[["Representatives", "Index in vector"]].drop_duplicates().sort_values('Index in vector').Representatives.values) + ["gamma-ray", "x-ray", "ultraviolet", "optical", "infrared", "radio", "cosmic-ray", "gravitational-wave", "neutrino"] + ["INTEGRAL", "ISGRI", "JEM-X", "SPI-ACS", "ANTARES", "LIGO/VIRGO", "IceCube", "HESS", "CTA/CTAO"]
-    data_vector = np.zeros(59, dtype='int32')
+    dict_out["Legend"] = list(df_dict[["Representatives", "Index in vector"]].drop_duplicates().sort_values('Index in vector').Representatives.values) + ["gamma-ray", "x-ray", "ultraviolet", "optical", "infrared", "radio", "cosmic-ray", "gravitational-wave", "neutrino"] + get_list_instruments_CNN_MMODA()
+    data_vector = np.zeros(len(dict_out["Legend"]), dtype='int32')
 
     # REGEX
     # Telescope Type

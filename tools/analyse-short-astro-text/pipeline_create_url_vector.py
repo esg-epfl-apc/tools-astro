@@ -4,6 +4,7 @@ import json
 import urllib
 
 from pipeline_vectorize_text import otype_to_index
+from aux_functions import get_dict_instruments_URL_MMODA
 
 
 def get_link(ra, dec, T1, T2, instrument, src_name):
@@ -53,16 +54,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
     df_dict = pd.read_csv(otype_label)
 
     dict_source_to_type_indx = source_to_source_type_index(df_dict, df_sor)
-    inst_2_inst_name = {
-        "spi_acs": ["INTEGRAL", "SPI-ACS"],
-        "cta": ["CTA/CTAO"],
-        "hess": ["HESS"],
-        "isgri": ["INTEGRAL", "ISGRI"],
-        "jemx": ["INTEGRAL", "JEM-X"],
-        "icecube": ["IceCube"],
-        "antares": ["ANTARES"],
-        "gw": ["LIGO/VIRGO"]
-    }
+    inst_2_inst_name = get_dict_instruments_URL_MMODA()
 
     with open(file_dict_sens_inst, "r") as fp:
         dict_sens_inst = json.load(fp)
@@ -74,7 +66,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
     dict_[text_id] = df_vec_init_pred[text_id].values
     dict_["Follow-up"] = pred
 
-    pred_norm_vector = pred / np.sum(pred**2)
+    pred_norm_vector = pred / np.linalg.norm(pred)
     dict_url_scores = {"URL Name": [], "Scores": [], "URL": []}
 
     for source_name in dict_source_to_type_indx.keys():
@@ -83,7 +75,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
             if i >= 41 and i < 50 and name in dict_sens_inst.keys():
                 for inst_ in dict_sens_inst[legend[i]]:
                     if inst_ in inst_2_inst_name.keys():
-                        url_vec_telescope_telescope_type = np.zeros(59)
+                        url_vec_telescope_telescope_type = np.zeros(len(legend))
                         url_vec_telescope_telescope_type[i] = 1
 
                         for indx_ in dict_source_to_type_indx[source_name]["Indices"]:
@@ -106,7 +98,7 @@ def create_url_vector(text_id, data_path, file_dict_sens_inst, df_vec_init_pred,
         # add only the telescope type in order to represent the instruments like Polar, CTA/CTAO, and workflows LegacySurvey DESI, SGWB that are not part of the size 59 vector
         for indx_tel_type in [41, 44, 45, 48]:
             if pred[indx_tel_type] != 0:
-                url_vec_telescope_telescope_type = np.zeros(59)
+                url_vec_telescope_telescope_type = np.zeros(len(legend))
                 for indx_ in dict_source_to_type_indx[source_name]["Indices"]:
                     url_vec_telescope_telescope_type[indx_] = 1
 
