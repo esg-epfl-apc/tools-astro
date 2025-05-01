@@ -112,13 +112,14 @@ observatories, surveys - Wavelengths (extracted via astroBERT only)
 Text Vectorization
 ~~~~~~~~~~~~~~~~~~
 
-After entity extraction, each text is embedded into a vector of size 59.
-This vector includes:
+After entity extraction, each **text** is embedded into a vector of size
+59. This vector includes:
 
 1. **41 source classes**
 
    - selected from 226 IVOA classes, using the hierarchy of classes and
-     subclasses developed by IVOA.
+     subclasses developed by IVOA, see `this
+     file &lt;./data/dict_source_otypes_considered_for_prediction.csv&gt;`__.
 
 2. **9 telescope types**
 
@@ -134,8 +135,8 @@ This vector includes:
 
 3. **9 MMODA tools**
 
-   - the MMODA tools directly linked to telescopes (9 tools as of April
-     28, 2025).
+   - the MMODA tools directly linked to telescopes (9 tools as of
+     December, 2024).
 
 Follow-up Tool Prediction
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,20 +177,50 @@ Output
 The tool produces **9 tables**:
 
 1. **``table_astrobert_results``** &#8212; All entities detected by astroBERT.
+
 2. **``table_source_classes``** &#8212; All detected source classes.
+
 3. **``table_source_positions``** &#8212; All sources with known positions and
    all detected positions.
+
 4. **``table_sources``** &#8212; All detected source names.
+
 5. **``table_telescopes``** &#8212; All detected telescopes, instruments,
    observatories, and surveys.
+
 6. **``table_unknown_sources``** &#8212; Source names that could not be found
    in SIMBAD, TNS, or FINK.
-7. **``table_vectorized_text``** &#8212; The input-output vector pair used in
-   the CNN.
+
+7. **``table_vectorized_text``** &#8212; contains:
+
+   a) the input vector of the CNN as the vectorized **text**
+
+   b) the output vector of the CNN
+
 8. **``table_vectorized_url``** &#8212; All generated MMODA tool URL vectors
-   based on the CNN output vector.
+   based on the CNN output vector. The URL vectors are obtained as
+   follows:
+
+   a) Each URL vector represents a single astrophysical source, i.e.,
+      the corresponding source classes are encoded as 1s at the
+      appropriate indices in a 59-sized vector.
+
+   b) For each astrophysical source, we create different URL vectors
+      corresponding to different instruments/tools from MMODA or
+      telescope types. For tools that are not part of the 59-sized
+      vector, we create URL vectors that have values of 1 only at the
+      positions corresponding to the telescope type: *e.g.&#160;1) For
+      SPI-ACS, the values of the vector at the positions of SPI-ACS,
+      INTEGRAL and gamma-ray are 1; e.g.&#160;2) For Auger, the value of the
+      vector at the position of cosmic-ray is 1.*
+
 9. **``table_vectorized_url_scores``** &#8212; Scores for each possible MMODA
    URL generated.
+
+Each URL score, shown in **``table_vectorized_url_scores``** , is
+computed as the dot product between the normalized
+(`numpy.linalg.norm &lt;https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html&gt;`__)
+CNN output vector and the normalized URL vector:
 
 --------------
 

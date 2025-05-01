@@ -22,7 +22,7 @@ def split_text_in_phrases(text_id, text_):
         print(text_id)
     return list_phrases
 
-
+### Try to change the  tmp file module for astroBERT storage tmpdir
 def apply_astroBERT(text_id, body_text_0):
 
     # load astroBERT for NER-DEAL
