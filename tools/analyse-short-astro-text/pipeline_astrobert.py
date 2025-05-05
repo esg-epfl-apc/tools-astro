@@ -1,6 +1,7 @@
 import re
 import pandas as pd
 import numpy as np
+import tempfile
 from transformers import AutoModelForTokenClassification, AutoTokenizer
 from transformers import TokenClassificationPipeline
 
@@ -22,9 +23,10 @@ def split_text_in_phrases(text_id, text_):
         print(text_id)
     return list_phrases
 
-### Try to change the  tmp file module for astroBERT storage tmpdir
+
 def apply_astroBERT(text_id, body_text_0):
 
+    tmpdir_ = tempfile.TemporaryDirectory()
     # load astroBERT for NER-DEAL
     remote_model_path = 'adsabs/astroBERT'
     # you need to load the astroBERT trained for NER-DEAL, which is on a seperate branch
@@ -33,6 +35,7 @@ def apply_astroBERT(text_id, body_text_0):
     astroBERT_NER_DEAL = AutoModelForTokenClassification.from_pretrained(
         pretrained_model_name_or_path=remote_model_path,
         revision=revision,
+        cache_dir=tmpdir_.name
     )
 
     astroBERT_tokenizer = AutoTokenizer.from_pretrained(
@@ -40,6 +43,7 @@ def apply_astroBERT(text_id, body_text_0):
         add_special_tokens=True,
         do_lower_case=False,
         model_max_length=512,
+        cache_dir=tmpdir_.name
     )
 
     # use the Hugginface Pipeline class
@@ -71,6 +75,7 @@ def apply_astroBERT(text_id, body_text_0):
                 dict_out["end"].append(u["end"])
                 dict_out["entity_group"].append(ent_)
 
+    tmpdir_.cleanup()
     return pd.DataFrame(dict_out)
 
 
