@@ -111,7 +111,7 @@ After entity extraction, each **text** is embedded into a vector of size
 
    - selected from 226 IVOA classes, using the hierarchy of classes and
      subclasses developed by IVOA, see `this
-     file &lt;./data/dict_source_otypes_considered_for_prediction.csv&gt;`__.
+     file &lt;https://gitlab.renkulab.io/astronomy/mmoda/analyse-short-astro-text/-/blob/master/data/dict_source_otypes_considered_for_prediction.csv?ref_type=heads&gt;`__.
 
 2. **9 telescope types**
 
