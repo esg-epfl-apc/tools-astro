@@ -25,57 +25,61 @@ def split_text_in_phrases(text_id, text_):
 
 
 def apply_astroBERT(text_id, body_text_0):
-
-    tmpdir_ = tempfile.TemporaryDirectory()
-    # load astroBERT for NER-DEAL
-    remote_model_path = 'adsabs/astroBERT'
-    # you need to load the astroBERT trained for NER-DEAL, which is on a seperate branch
-    revision = 'NER-DEAL'
-
-    astroBERT_NER_DEAL = AutoModelForTokenClassification.from_pretrained(
-        pretrained_model_name_or_path=remote_model_path,
-        revision=revision,
-        cache_dir=tmpdir_.name
-    )
-
-    astroBERT_tokenizer = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=remote_model_path,
-        add_special_tokens=True,
-        do_lower_case=False,
-        model_max_length=512,
-        cache_dir=tmpdir_.name
-    )
-
-    # use the Hugginface Pipeline class
-    NER_pipeline = TokenClassificationPipeline(
-        model=astroBERT_NER_DEAL,
-        tokenizer=astroBERT_tokenizer,
-        task='astroBERT NER_DEAL',
-        aggregation_strategy='average',
-        ignore_labels=['O']
-    )
-
     dict_out = {"TEXT_ID": [], "word": [], "start": [], "end": [], "score": [], "entity_group": [], "Phrase": []}
 
-    text = " ".join(body_text_0.split()).replace("Â°", "o").replace("Âº", "o").replace("−", "-").replace('°', "o")
-    list_phrases = split_text_in_phrases(text_id, text)
+    tmpdir_ = tempfile.TemporaryDirectory()
 
-    for phrase_ in list_phrases:
-        result = NER_pipeline(phrase_)
+    try:
+        # load astroBERT for NER-DEAL
+        remote_model_path = 'adsabs/astroBERT'
+        # you need to load the astroBERT trained for NER-DEAL, which is on a seperate branch
+        revision = 'NER-DEAL'
 
-        for u in result:
-            ent_ = u["entity_group"]
-            if ent_ in ["Instrument", "Telescope", "Wavelength", "CelestialObject", "CelestialRegion", "EntityOfFutureInterest", "Mission", "Observatory", "Survey"]:
-                dict_out["TEXT_ID"].append(text_id)
-                dict_out["Phrase"].append(phrase_)
+        astroBERT_NER_DEAL = AutoModelForTokenClassification.from_pretrained(
+            pretrained_model_name_or_path=remote_model_path,
+            revision=revision,
+            cache_dir=tmpdir_.name
+        )
 
-                dict_out["word"].append(u["word"])
-                dict_out["score"].append(u["score"])
-                dict_out["start"].append(u["start"])
-                dict_out["end"].append(u["end"])
-                dict_out["entity_group"].append(ent_)
+        astroBERT_tokenizer = AutoTokenizer.from_pretrained(
+            pretrained_model_name_or_path=remote_model_path,
+            add_special_tokens=True,
+            do_lower_case=False,
+            model_max_length=512,
+            cache_dir=tmpdir_.name
+        )
 
-    tmpdir_.cleanup()
+        # use the Hugginface Pipeline class
+        NER_pipeline = TokenClassificationPipeline(
+            model=astroBERT_NER_DEAL,
+            tokenizer=astroBERT_tokenizer,
+            task='astroBERT NER_DEAL',
+            aggregation_strategy='average',
+            ignore_labels=['O']
+        )
+
+        text = " ".join(body_text_0.split()).replace("Â°", "o").replace("Âº", "o").replace("−", "-").replace('°', "o")
+        list_phrases = split_text_in_phrases(text_id, text)
+
+        for phrase_ in list_phrases:
+            result = NER_pipeline(phrase_)
+
+            for u in result:
+                ent_ = u["entity_group"]
+                if ent_ in ["Instrument", "Telescope", "Wavelength", "CelestialObject", "CelestialRegion", "EntityOfFutureInterest", "Mission", "Observatory", "Survey"]:
+                    dict_out["TEXT_ID"].append(text_id)
+                    dict_out["Phrase"].append(phrase_)
+
+                    dict_out["word"].append(u["word"])
+                    dict_out["score"].append(u["score"])
+                    dict_out["start"].append(u["start"])
+                    dict_out["end"].append(u["end"])
+                    dict_out["entity_group"].append(ent_)
+    except Exception as e:
+        print(f"An error occurred in apply_astroBERT: {e}")
+    finally:
+        tmpdir_.cleanup()
+
     return pd.DataFrame(dict_out)
 
 
