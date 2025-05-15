@@ -1,0 +1,34 @@
+
+<tool id="astropy_fits2csv" name="fits2csv" version="0.1.0+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.1.7">astropy</requirement>
+  </requirements>
+      <command detect_errors="exit_code"><![CDATA[
+        python '$py_script_file' 
+    ]]></command>
+
+    <configfiles>
+      <configfile name="py_script_file">
+from astropy.io import ascii
+
+t = ascii.read("$input_file", delimiter='$input_file.metadata.delimiter')
+t.write("$output", format='fits', overwrite=True)
+      </configfile>
+    </configfiles>
+  <inputs>
+    <param name="input_file" type="data" label="Input File" format="csv,tsv" optional="false" />
+  </inputs>
+  <outputs>
+    <data name="output" format="fits" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="1">
+      <param name="input_file" value="fitstable.csv" />
+      <output name="output" file="fitstable.fits" />
+    </test>
+    <test expect_num_outputs="1">
+      <param name="input_file" value="fitstable.tsv" />
+      <output name="output" file="fitstable.fits" />
+    </test>
+  </tests>
+</tool>
