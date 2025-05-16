@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: PhotoZ_Euclid
+homepage_url: null
+long_description: PhotoZ_Euclid
+name: photoz_euclid_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
