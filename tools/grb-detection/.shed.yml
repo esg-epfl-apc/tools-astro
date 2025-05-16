@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: GRB detection
+homepage_url: null
+long_description: GRB detection
+name: grb_detection_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
