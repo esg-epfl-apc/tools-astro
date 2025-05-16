@@ -1,0 +1,50 @@
+<tool id="spectral_analysis_astro_tool" name="spectral-analysis" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="9.2.0">ipython</requirement>
+    <requirement type="package" version="7.0.1">astropy</requirement>
+    <requirement type="package" version="3.10.1">matplotlib</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <requirement type="package" version="2.2.5">numpy</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.3">gcn-kafka</requirement>
+    <requirement type="package" version="0.14.2">xmltodict</requirement>
+    <requirement type="package" version="0.11.0">hop-client</requirement>
+    <requirement type="package" version="2.3.0">ligo.skymap</requirement>
+    <!--Requirements string 'ogip' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/fit.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="spectrum" type="data" label="spectrum" format="data" optional="false" />
+    <param name="rmf" type="data" label="rmf" format="data" optional="false" />
+    <param name="arf" type="data" label="arf" format="data" optional="false" />
+    <param name="background" type="text" value="" label="background" optional="false" />
+    <param name="model" type="text" value="powerlaw" label="model" optional="false" />
+    <param name="e_min" type="integer" value="25" label="e_min" optional="false" />
+    <param name="e_max" type="integer" value="100" label="e_max" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; fit fitpng" name="out_fit_fitpng" format="auto" from_work_dir="fitpng_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="1">
+      <param name="spectrum" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/spectrum.fits.gz" />
+      <param name="rmf" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/rmf.fits.gz" />
+      <param name="arf" location="https://gitlab.renkulab.io/astronomy/mmoda/spectral-analysis/-/raw/3421786c89f70deae6b4a6556c49c3cd9255b028/arf.fits.gz" />
+      <param name="background" value="" />
+      <param name="model" value="powerlaw" />
+      <param name="e_min" value="25" />
+      <param name="e_max" value="100" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>
