@@ -64,7 +64,7 @@
 61	FAI archives TAP service	https://dachs.fai.kz/tap
 62	Planetary web services @ FUB TAP service	http://dachs.planet.fu-berlin.de/tap
 63	Gaia@AIP TAP Service	https://gaia.aip.de/tap
-64	GEOPS/IPSL DaCHS Server TAP service	https://dachs-vo.ipsl.fr/tap
+64	GEOPS/IPSL DaCHS Server TAP service	/tap
 65	Laurino et al 2011 Catalog of WGE photometric redshifts for SDSS candidate qsos and galaxies	http://ia2-tap.oats.inaf.it:8080/wgetap
 66	INAF IA2 Project Resources TAP Service	http://archives.ia2.inaf.it:80/vo/tap/projects
 67	INAF-OATs VESPA Data Service Hub TAP service	http://vespa.ia2.inaf.it/tap
