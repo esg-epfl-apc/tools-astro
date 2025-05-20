@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: IACT simulators
+homepage_url: null
+long_description: IACT simulators
+name: iact_simulators_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
