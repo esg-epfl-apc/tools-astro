@@ -60,8 +60,7 @@ window_size_RA = float(inp_pdic["window_size_RA"])
 window_size_DEC = float(inp_pdic["window_size_DEC"])
 EBL = str(inp_pdic["EBL"])
 
-import os
-
+import numpy as np
 from astropy.coordinates import SkyCoord
 from astropy.table import Table
 from oda_api.api import ProgressReporter
@@ -83,7 +82,6 @@ pr.report_progress(
 )
 
 import light_curve as lc
-import numpy as np
 from crbeam import CRbeam
 
 EGMF = EGMF_fG * 1e-15
@@ -198,17 +196,16 @@ mc_rotated_file
 T_Mpc = lc.get_distance_Mpc(mc_file)
 T_Mpc
 
-from oda_api.data_products import ODAAstropyTable
-
 d = np.genfromtxt(mc_rotated_file, skip_header=3)
-# E/eV,weight,Theta,Phi,dT_raw/T	dT_calc/T,z_cascade_production,N_interactions,z_src,E_src/eV,z_prod
+T_sec = T_Mpc * 1.0292712503e14  # source light travel time in seconds
+d[:, 5] = d[:, 5] * T_sec  # convert delay to absolute units (seconds)
 names = (
     "E/eV",
     "weight",
     "Theta",
     "Phi",
     "dT_raw/T",
-    "dT_calc/T",
+    "dT_calc/sec",
     "z_cascade_production",
     "N_interactions",
     "z_src",
