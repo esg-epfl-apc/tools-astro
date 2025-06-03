@@ -1064,10 +1064,10 @@ class ADQLConeSearchQuery:
                 self._query += self._get_search_time()
 
     def _get_search_circle(self, ra, dec, radius):
-        return "(CONTAINS" \
+        return "(1 = CONTAINS" \
                "(POINT('ICRS', s_ra, s_dec), " \
                "CIRCLE('ICRS', "+str(ra)+", "+str(dec)+", "+str(radius)+")" \
-               ") = 1)"
+               "))"
 
     def _get_search_time(self):
         return " AND t_min <= "+self.time+" AND t_max >= "+self.time
@@ -1077,10 +1077,10 @@ class ADQLConeSearchQuery:
 
     @staticmethod
     def get_search_circle_condition(ra, dec, radius):
-        return "(CONTAINS" \
+        return "(1 = CONTAINS" \
                "(POINT('ICRS', s_ra, s_dec)," \
                "CIRCLE('ICRS', "+str(ra)+", "+str(dec)+", "+str(radius)+")" \
-               ") = 1) "
+               ")) "
 
 
 class CelestialObject:
