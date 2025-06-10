@@ -1,4 +1,4 @@
-<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.2">
+<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.21">
     <description>queries astronomical archives through Virtual Observatory protocols</description>
     <edam_operations>
         <edam_operation>operation_0224</edam_operation>
