@@ -1,4 +1,5 @@
-<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.21">
+
+<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.22">
     <description>queries astronomical archives through Virtual Observatory protocols</description>
     <edam_operations>
         <edam_operation>operation_0224</edam_operation>
@@ -50,7 +51,8 @@
             </when>
             <when value="custom">
               <param name="access_url" type="text" label="TAP archive access url">
-                <validator type="regex" message="URL seems invalid">^https?://[A-Za-z0-9]([A-Za-z0-9-\.]{0,61}[A-Za-z0-9])?\.[A-Za-z]{2,6}(:\d+)?(/[^\s]*)?$</validator>
+                <!-- <validator type="regex" message="URL seems invalid">^https?://[A-Za-z0-9]([A-Za-z0-9-\.]{0,61}[A-Za-z0-9])?\.[A-Za-z]{2,6}(:\d+)?(/[^\s]*)?$</validator> -->
+                <validator type="regex" message="Url seems invalid">^https?://(?:((?:[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,6})|localhost|(?:\d{1,3}(?:\.\d{1,3}){3}))(:\d+)?(/[^\s]*)?$</validator>
               </param>
             </when>
         </conditional>
