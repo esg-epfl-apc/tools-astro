@@ -212,6 +212,13 @@ The output includes:
 - **Figure** &#8211; A plot showing the flux as a function of the average
   energy (or wavelength) of each filter band, providing a basic spectral
   energy distribution (SED) overview.
+
+Acknowledgement
+---------------
+
+This project uses a simplified version of the `astroquery DESI
+module &lt;https://github.com/oda-hub/astroquery/tree/master/astroquery/desi&gt;`__,
+implemented in ```desi.py`` &lt;desi.py&gt;`__.
 </help>
   <citations>
     <citation type="doi">10.3847/1538-3881/ab089d</citation>
