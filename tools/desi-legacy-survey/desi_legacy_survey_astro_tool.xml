@@ -117,7 +117,101 @@
       </assert_stdout>
     </test>
   </tests>
-  <help>And here, the help text for the galaxy tool goes.
+  <help>Query DESI Legacy Surveys data
+==============================
+
+This tool can be used to query the DESI `Legacy
+Surveys &lt;https://www.legacysurvey.org/&gt;`__ data, i.e.&#160;`catalogs of
+sources &lt;Catalog.ipynb&gt;`__ and `sky Images &lt;Image.ipynb&gt;`__.
+Additionally, using the third `sub-tool &lt;Spectrum.ipynb&gt;`__, one can
+compute the total flux per filter (band) for a catalog of sources
+queried around a given region.
+
+Input
+-----
+
+All sub-tools share the following required input parameters:
+
+1. **R.A.** - Right Ascension in degrees *(float)*
+2. **Dec** &#8211; Declination in degrees *(float)*
+3. **Radius** &#8211; Image size or cone search radius in arcminutes *(float)*
+4. **Data Release (DR)** &#8211; Legacy Surveys data release, e.g., ``9`` or
+   ``10``
+
+In order to query images, the following parameters are required as well:
+
+5. **Pixel size** &#8211; Image pixel size in arcseconds *(float)*
+6. **Band** &#8211; Photometric filter for the image:
+
+   - ``i`` (for DR10)
+   - ``g``, ``r``, ``z``
+
+Output
+------
+
+Catalog of sources (first sub-tool)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The resulting catalog includes the following columns (see full
+descriptions on the `Legacy Surveys tractor catalog
+page &lt;https://www.legacysurvey.org/dr10/catalogs/&gt;`__):
+
+- **Coordinates &amp; Object Info:**
+
+  - ``RA``, ``DEC`` &#8211; Right ascension and declination in degrees
+  - ``Type`` &#8211; Object type (e.g., PSF, EXP, DEV, COMP)
+
+- **Fluxes (in &#181;Jy):**
+
+  - ``flux_g``, ``flux_g_err`` &#8211; g-band flux and associated error
+  - ``flux_r``, ``flux_r_err`` &#8211; r-band flux and associated error
+  - ``flux_z``, ``flux_z_err`` &#8211; z-band flux and associated error
+  - ``flux_i``, ``flux_i_err`` &#8211; i-band flux and associated error (only
+    in DR10)
+  - ``flux_w1``, ``flux_w1_err`` &#8211; WISE W1 band flux and error
+  - ``flux_w2``, ``flux_w2_err`` &#8211; WISE W2 band flux and error
+  - ``flux_w3``, ``flux_w3_err`` &#8211; WISE W3 band flux and error
+  - ``flux_w4``, ``flux_w4_err`` &#8211; WISE W4 band flux and error
+
+- **Additional Information:**
+
+  - ``ebv`` &#8211; Galactic extinction E(B&#8211;V)
+  - ``ref_cat`` &#8211; Reference catalogs the stars in the catalog
+  - ``shape_r`` &#8211; Half-light radius of galaxy model for galaxy type (in
+    arcseconds)
+
+All fluxes are provided in **microJanskys (&#181;Jy)**.
+
+In addition, this sub-tool outputs a **dictionary** that maps the flux
+column names to the corresponding filter names expected by the `mmoda
+photoz-euclid
+tool &lt;https://gitlab.renkulab.io/astronomy/mmoda/photoz-euclid&gt;`__. This
+facilitates seamless integration between the catalog output and the
+photometric redshift estimation pipeline.
+
+Image querying (second sub-tool)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The output of the sky image query from the Legacy Survey includes:
+
+- **FITS file** &#8211; The raw image data as returned by the Legacy Survey
+  servers, stored in standard FITS format.
+- **PNG image** &#8211; A visual rendering of the FITS image generated using
+  ``matplotlib.pyplot.imshow()`` for quick inspection and visualization.
+
+The PNG image provides a convenient preview, while the FITS file can be
+used for scientific analysis and further processing.
+
+Spectral flux computation (third sub-tool)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The output includes:
+
+- **Table of integrated fluxes** &#8211; A table listing the total
+  fluxmeasured in each photometric band over the queried region.
+- **Figure** &#8211; A plot showing the flux as a function of the average
+  energy (or wavelength) of each filter band, providing a basic spectral
+  energy distribution (SED) overview.
 </help>
   <citations>
     <citation type="doi">10.3847/1538-3881/ab089d</citation>
