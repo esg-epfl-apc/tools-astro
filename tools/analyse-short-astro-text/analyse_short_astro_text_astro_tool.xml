@@ -101,9 +101,9 @@ To extract entities from the input text, we implemented two methods:
 - Names of astronomical sources - Classes of astronomical sources
 (extracted via REGEX and by querying the source names on
 `SIMBAD &lt;https://simbad.u-strasbg.fr/simbad/&gt;`__,
-`TNS &lt;https://www.wis-tns.org/&gt;`__, and
-`FINK &lt;https://fink-portal.org/&gt;`__) - Telescopes, instruments,
-observatories, surveys - Wavelengths (extracted via astroBERT only)
+`TNS &lt;www.wis-tns.org/&gt;`__, and `FINK &lt;https://fink-portal.org/&gt;`__) -
+Telescopes, instruments, observatories, surveys - Wavelengths (extracted
+via astroBERT only)
 
 Text Vectorization
 ~~~~~~~~~~~~~~~~~~
