@@ -1,11 +1,11 @@
 <tool id="analyse_short_astro_text_astro_tool" name="analyse-short-astro-text" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
     <requirement type="package" version="0.4.10">astroquery</requirement>
-    <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="2.3.0">pandas</requirement>
     <requirement type="package" version="7.1.4">rdflib</requirement>
     <requirement type="package" version="4.13.4">beautifulsoup4</requirement>
     <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
-    <requirement type="package" version="3.4.2">networkx</requirement>
+    <requirement type="package" version="3.5">networkx</requirement>
     <requirement type="package" version="3.10.3">matplotlib</requirement>
     <requirement type="package" version="1.26.4">numpy</requirement>
     <requirement type="package" version="1.15.2">scipy</requirement>
@@ -15,6 +15,7 @@
     <requirement type="package" version="4.43.2">transformers</requirement>
     <requirement type="package" version="1.2.28">oda-api</requirement>
     <requirement type="package" version="2.2.0">fake-useragent</requirement>
+    <requirement type="package" version="9.3.0">ipython</requirement>
     <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/extract_data_predict_workflow.py'</command>
@@ -69,8 +70,11 @@ astronomical objects.
 Pipeline
 --------
 
-The analysis process consists of three main steps: 1. **Entity
-extraction** 2. **Text vectorization** 3. **Follow-up tool prediction**
+The analysis process consists of three main steps:
+
+1. **Entity extraction**
+2. **Text vectorization**
+3. **Follow-up tool prediction**
 
 Entity Extraction
 ~~~~~~~~~~~~~~~~~
@@ -97,7 +101,7 @@ To extract entities from the input text, we implemented two methods:
 - Names of astronomical sources - Classes of astronomical sources
 (extracted via REGEX and by querying the source names on
 `SIMBAD &lt;https://simbad.u-strasbg.fr/simbad/&gt;`__,
-`TNS &lt;www.wis-tns.org&gt;`__, and
+`TNS &lt;https://www.wis-tns.org/&gt;`__, and
 `FINK &lt;https://fink-portal.org/&gt;`__) - Telescopes, instruments,
 observatories, surveys - Wavelengths (extracted via astroBERT only)
 
