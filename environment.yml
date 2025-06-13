@@ -5,3 +5,4 @@ channels:
 dependencies:
   - pip:
       - planemo==0.75.20
+      - oda-api==1.2.28

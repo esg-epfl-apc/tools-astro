@@ -1,0 +1,267 @@
+<tool id="analyse_short_astro_text_astro_tool" name="analyse-short-astro-text" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="0.4.10">astroquery</requirement>
+    <requirement type="package" version="2.3.0">pandas</requirement>
+    <requirement type="package" version="7.1.4">rdflib</requirement>
+    <requirement type="package" version="4.13.4">beautifulsoup4</requirement>
+    <requirement type="package" version="2.0.0">sparqlwrapper</requirement>
+    <requirement type="package" version="3.5">networkx</requirement>
+    <requirement type="package" version="3.10.3">matplotlib</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="1.15.2">scipy</requirement>
+    <requirement type="package" version="6.1.7">astropy</requirement>
+    <requirement type="package" version="2.7.0">pytorch-cpu</requirement>
+    <requirement type="package" version="0.33.0">accelerate</requirement>
+    <requirement type="package" version="4.43.2">transformers</requirement>
+    <requirement type="package" version="1.2.28">oda-api</requirement>
+    <requirement type="package" version="2.2.0">fake-useragent</requirement>
+    <requirement type="package" version="9.3.0">ipython</requirement>
+    <!--Requirements string 'nb2workflow' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/extract_data_predict_workflow.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="origin_type" type="select" label="Origin of the text" optional="false">
+      <option value="ATel" selected="true">ATel</option>
+      <option value="GCN">GCN</option>
+      <option value="Other">Other</option>
+    </param>
+    <param name="number" type="integer" value="16672" label="Text ID (e.g. ATel number)" optional="false" />
+    <param name="text" type="text" value="" label="Text (optional)" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_telescopes" name="out_extract_data_predict_workflow_table_telescopes" format="auto" from_work_dir="table_telescopes_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_sources" name="out_extract_data_predict_workflow_table_sources" format="auto" from_work_dir="table_sources_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_source_positions" name="out_extract_data_predict_workflow_table_source_positions" format="auto" from_work_dir="table_source_positions_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_unknown_sources" name="out_extract_data_predict_workflow_table_unknown_sources" format="auto" from_work_dir="table_unknown_sources_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_source_classes" name="out_extract_data_predict_workflow_table_source_classes" format="auto" from_work_dir="table_source_classes_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_astrobert_results" name="out_extract_data_predict_workflow_table_astrobert_results" format="auto" from_work_dir="table_astrobert_results_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_vectorized_text" name="out_extract_data_predict_workflow_table_vectorized_text" format="auto" from_work_dir="table_vectorized_text_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_vectorized_url" name="out_extract_data_predict_workflow_table_vectorized_url" format="auto" from_work_dir="table_vectorized_url_galaxy.output" />
+    <data label="${tool.name} -&gt; extract_data_predict_workflow table_vectorized_url_scores" name="out_extract_data_predict_workflow_table_vectorized_url_scores" format="auto" from_work_dir="table_vectorized_url_scores_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="9">
+      <param name="origin_type" value="ATel" />
+      <param name="number" value="16672" />
+      <param name="text" value="" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>Analyse Short Astrophysical Texts
+=================================
+
+This tool is part of a pilot study demonstrating how a research text can
+be matched to a pool of analysis tools described using an appropriate
+ontology and stored in a knowledge graph. Based on the wavelength range
+and the type of phenomenon extracted from the text, it suggests possible
+follow-up analysis tools from
+`MMODA &lt;https://www.astro.unige.ch/mmoda/&gt;`__ to study the identified
+astronomical objects.
+
+Pipeline
+--------
+
+The analysis process consists of three main steps:
+
+1. **Entity extraction**
+2. **Text vectorization**
+3. **Follow-up tool prediction**
+
+Entity Extraction
+~~~~~~~~~~~~~~~~~
+
+To extract entities from the input text, we implemented two methods:
+
+1. **Regular Expressions
+   (**\ `REGEX &lt;https://docs.python.org/3/howto/regex.html&gt;`__\ **)**
+
+   - `ontology of telescopes and
+     observatories &lt;https://github.com/oda-hub/astro-ontologies/tree/main&gt;`__.
+   - IVOA `ontology of astronomical source
+     types &lt;https://www.ivoa.net/rdf/object-type/2020-10-06/object-type.html&gt;`__.
+   - patterns inspired by `typical source name
+     formats &lt;https://cds.unistra.fr/Dic/formats.html&gt;`__.
+
+2. **Language Model
+   (**\ `astroBERT &lt;https://huggingface.co/adsabs/astroBERT&gt;`__\ **)**
+
+   - A language model trained to perform Named-Entity Recognition (NER)
+     on astrophysical texts.
+
+**Extracted entities:** - Right Ascension (R.A.) and Declination (Dec.)
+- Names of astronomical sources - Classes of astronomical sources
+(extracted via REGEX and by querying the source names on
+`SIMBAD &lt;https://simbad.u-strasbg.fr/simbad/&gt;`__,
+`TNS &lt;www.wis-tns.org/&gt;`__, and `FINK &lt;https://fink-portal.org/&gt;`__) -
+Telescopes, instruments, observatories, surveys - Wavelengths (extracted
+via astroBERT only)
+
+Text Vectorization
+~~~~~~~~~~~~~~~~~~
+
+After entity extraction, each **text** is embedded into a vector of size
+59. This vector includes:
+
+1. **41 source classes**
+
+   - selected from 226 IVOA classes, using the hierarchy of classes and
+     subclasses developed by IVOA, see `this
+     file &lt;https://gitlab.renkulab.io/astronomy/mmoda/analyse-short-astro-text/-/blob/master/data/dict_source_otypes_considered_for_prediction.csv?ref_type=heads&gt;`__.
+
+2. **9 telescope types**
+
+   - Radio
+   - Infrared
+   - Optical
+   - Ultraviolet
+   - X-ray
+   - Gamma-ray
+   - Cosmic-ray
+   - Gravitational wave
+   - Neutrino telescopes
+
+3. **9 MMODA tools**
+
+   - the MMODA tools directly linked to telescopes (9 tools as of
+     December, 2024).
+
+Follow-up Tool Prediction
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+| To suggest a follow-up analysis tool, we developed a Convolutional
+  Neural Network (CNN) trained on vectorized texts.
+| The training pairs correspond to (first, follow-up) texts from
+  `ATels &lt;https://astronomerstelegram.org/&gt;`__ and `GCN
+  Circulars &lt;https://gcn.nasa.gov/circulars&gt;`__.
+
+Based on the CNN output vector we generate direct links to the relevant
+MMODA tools.
+
+--------------
+
+Input
+-----
+
+The tool accepts the following inputs:
+
+- A selector for the origin of the text:
+  `ATel &lt;https://www.astronomerstelegram.org&gt;`__, `GCN
+  Circular &lt;https://gcn.nasa.gov/&gt;`__ or other.
+- The corresponding ATel or GCN Circular number to fetch the text from
+  the online archive.
+- Alternatively, a short astrophysical text can be provided directly.
+  *If a custom text is given, it takes precedence and the tool will skip
+  fetching from external sources.*
+
+In both cases, a unique identifier (e.g.&#160;the circular number) is
+required to label the input and structure the outputs.
+
+--------------
+
+Output
+------
+
+The tool produces **9 tables**:
+
+1. **``table_astrobert_results``** &#8212; All entities detected by astroBERT.
+
+2. **``table_source_classes``** &#8212; All detected source classes.
+
+3. **``table_source_positions``** &#8212; All sources with known positions and
+   all detected positions.
+
+4. **``table_sources``** &#8212; All detected source names.
+
+5. **``table_telescopes``** &#8212; All detected telescopes, instruments,
+   observatories, and surveys.
+
+6. **``table_unknown_sources``** &#8212; Source names that could not be found
+   in SIMBAD, TNS, or FINK.
+
+7. **``table_vectorized_text``** &#8212; contains:
+
+   a) the input vector of the CNN as the vectorized **text**
+
+   b) the output vector of the CNN
+
+8. **``table_vectorized_url``** &#8212; All generated MMODA tool URL vectors
+   based on the CNN output vector. The URL vectors are obtained as
+   follows:
+
+   a) Each URL vector represents a single astrophysical source, i.e.,
+      the corresponding source classes are encoded as 1s at the
+      appropriate indices in a 59-sized vector.
+
+   b) For each astrophysical source, we create different URL vectors
+      corresponding to different instruments/tools from MMODA or
+      telescope types. For tools that are not part of the 59-sized
+      vector, we create URL vectors that have values of 1 only at the
+      positions corresponding to the telescope type: *e.g.&#160;1) For
+      SPI-ACS, the values of the vector at the positions of SPI-ACS,
+      INTEGRAL and gamma-ray are 1; e.g.&#160;2) For Auger, the value of the
+      vector at the position of cosmic-ray is 1.*
+
+9. **``table_vectorized_url_scores``** &#8212; Scores for each possible MMODA
+   URL generated.
+
+Each URL score, shown in **``table_vectorized_url_scores``** , is
+computed as the dot product between the normalized
+(`numpy.linalg.norm &lt;https://numpy.org/doc/stable/reference/generated/numpy.linalg.norm.html&gt;`__)
+CNN output vector and the normalized URL vector:
+
+--------------
+
+For Developers
+--------------
+
+::
+
+   A) New tools on the MMODA platform
+
+In order to include newly added tools on the MMODA platform, one should
+modify the `json
+file &lt;./data/dictionary_telescope_type_2_instrument.json&gt;`__ that links
+a telescope type to a MMODA tool. In case a tool is removed from the
+MMODA platform, the same file should be changed. However, one should be
+very careful about the tools that have a direct connection to an
+instrument, see `aux_functions.py &lt;aux_functions.py&gt;`__, since this has
+not been tested.
+
+::
+
+   C) Change the number of instruments or telescope types in the input/output vector
+
+This modification requires more changes in the following files
+`aux_functions.py &lt;aux_functions.py&gt;`__,
+`pipeline_vectorize_text.py &lt;pipeline_vectorize_text.py&gt;`__,
+`predict_vectorised_text.py &lt;predict_vectorised_text.py&gt;`__. In
+addition, the CNN should be retrained on the new types of vectors.
+</help>
+  <citations>
+    <citation type="bibtex">@article{2021arXiv211200590G,
+			author = {{Grezes}, Felix and {Blanco-Cuaresma}, Sergi and {Accomazzi}, Alberto and {Kurtz}, Michael J. and {Shapurian}, Golnaz and {Henneken}, Edwin and {Grant}, Carolyn S. and {Thompson}, Donna M. and {Chyla}, Roman and {McDonald}, Stephen and {Hostetler}, Timothy W. and {Templeton}, Matthew R. and {Lockhart}, Kelly E. and {Martinovic}, Nemanja and {Chen}, Shinyi and {Tanner}, Chris and {Protopapas}, Pavlos},
+			title = {{Building astroBERT, a language model for Astronomy \&amp; Astrophysics}},
+			journal = {arXiv e-prints},
+			keywords = {Computer Science - Computation and Language, Astrophysics - Instrumentation and Methods for Astrophysics},
+			year = {2021},
+			month = {dec},
+			eid = {arXiv:2112.00590},
+			pages = {arXiv:2112.00590},
+			archivePrefix = {arXiv},
+			eprint = {2112.00590},
+			primaryClass = {cs.CL},
+			adsurl = {https://ui.adsabs.harvard.edu/abs/2021arXiv211200590G},
+			adsnote = {Provided by the SAO/NASA Astrophysics Data System}
+		}</citation>
+    <citation type="doi">10.1051/aas:2000332</citation>
+  </citations>
+</tool>
