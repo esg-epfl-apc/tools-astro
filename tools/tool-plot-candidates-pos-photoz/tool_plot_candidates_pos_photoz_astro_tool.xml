@@ -48,7 +48,8 @@
       </assert_stdout>
     </test>
   </tests>
-  <help>
+  <help>Tool to make plots of optical candidates with their estimated
+photometric redshift
 </help>
   <citations>
     <citation type="doi">10.3847/1538-4357/ac7c74</citation>
