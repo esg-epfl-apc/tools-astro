@@ -64,7 +64,7 @@
 61	FAI archives TAP service	https://dachs.fai.kz/tap
 62	Planetary web services @ FUB TAP service	http://dachs.planet.fu-berlin.de/tap
 63	Gaia@AIP TAP Service	https://gaia.aip.de/tap
-64	GEOPS/IPSL DaCHS Server TAP service	https://dachs-vo.ipsl.fr/tap
+64	GEOPS/IPSL DaCHS Server TAP service	/tap
 65	Laurino et al 2011 Catalog of WGE photometric redshifts for SDSS candidate qsos and galaxies	http://ia2-tap.oats.inaf.it:8080/wgetap
 66	INAF IA2 Project Resources TAP Service	http://archives.ia2.inaf.it:80/vo/tap/projects
 67	INAF-OATs VESPA Data Service Hub TAP service	http://vespa.ia2.inaf.it/tap
@@ -124,20 +124,18 @@
 121	PADC TAP Server on voparis-tap-maser.obspm.fr TAP service	http://voparis-tap-maser.obspm.fr/tap
 122	CDN VO Server TAP service	http://vogate.obs-nancay.fr/tap
 123	PADC TAP Server on voparis-tap-planeto.obspm.fr TAP service	http://voparis-tap-planeto.obspm.fr/tap
-124	PDS-PPI VO server TAP service	https://vo-pds-ppi.igpp.ucla.edu/tap
-125	OCA Data Center TAP service	https://dachs.oca.eu/tap
+124	OCA Data Center TAP service	https://dachs.oca.eu/tap
+125	Data Central TAP	https://datacentral.org.au:443/vo/tap
 126	PADC TAP Server on voparis-rr.obspm.fr TAP service	http://voparis-rr.obspm.fr/tap
 127	PVOL EPN-TAP TAP service	http://pvol2.ehu.eus:8083/tap
 128	Cross section values TAP service	http://spectrum.iaa.es/tap
 129	Pithia VO datacenter TAP service	http://pithia.cbk.waw.pl/tap
 130	SSDC TAP Service	https://tools.ssdc.asi.it/TAPSSDC/tap
 131	ARI's Gaia TAP Service	https://gaia.ari.uni-heidelberg.de/tap
-132	Gaia catalog release 2	https://gaia.obspm.fr/tap-server/tap
-133	Nancay Decameter Array observation database	http://vogate.obs-nancay.fr/__system__/tap/run/tap
-134	VOXastro Data Center TAP service	http://rcsed-vo.sai.msu.ru/tap
-135	OSA VST ATLAS Survey	http://tap.roe.ac.uk/osa
-136	SuperCOSMOS Science Archive (SSA)	http://tap.roe.ac.uk/ssa
-137	VSA - VISTA Science Archive	http://tap.roe.ac.uk/vsa
-138	WSA - WFCAM Science Archive	http://tap.roe.ac.uk/wsa
-139	APPLAUSE (Archives of Photographic PLates for Astronomical USE) TAP Service	https://www.plate-archive.org/tap
-140	TAP interface of the 4XMM XMM-Newton Catalogue	https://xcatdb.unistra.fr/xtapdb
+132	VOXastro Data Center TAP service	http://rcsed-vo.sai.msu.ru/tap
+133	OSA VST ATLAS Survey	http://tap.roe.ac.uk/osa
+134	SuperCOSMOS Science Archive (SSA)	http://tap.roe.ac.uk/ssa
+135	VSA - VISTA Science Archive	http://tap.roe.ac.uk/vsa
+136	WSA - WFCAM Science Archive	http://tap.roe.ac.uk/wsa
+137	APPLAUSE (Archives of Photographic PLates for Astronomical USE) TAP Service	https://www.plate-archive.org/tap
+138	TAP interface of the 4XMM XMM-Newton Catalogue	https://xcatdb.unistra.fr/xtapdb
