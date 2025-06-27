@@ -46,9 +46,19 @@ if "_data_product" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+for _vn in [
+    "src_name",
+    "RA",
+    "DEC",
+    "T1",
+    "T2",
+    "Radius",
+    "R_s",
+    "Emin",
+    "Emax",
+    "NTbins",
+]:
+    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
 
 T1 = Time(T1, format="isot", scale="utc").mjd
 T2 = Time(T2, format="isot", scale="utc").mjd
@@ -222,8 +232,10 @@ table = lc  # http://odahub.io/ontology#ODAAstropyTable
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(("out_Lightcurve_png", "png_galaxy.output", png))
-_oda_outs.append(("out_Lightcurve_table", "table_galaxy.output", table))
+_oda_outs.append(("out_Lightcurve_public_dl3_png", "png_galaxy.output", png))
+_oda_outs.append(
+    ("out_Lightcurve_public_dl3_table", "table_galaxy.output", table)
+)
 
 for _outn, _outfn, _outv in _oda_outs:
     _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
