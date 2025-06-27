@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: WISE
+homepage_url: null
+long_description: WISE
+name: wise_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
