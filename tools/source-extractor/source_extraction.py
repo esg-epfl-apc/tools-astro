@@ -14,6 +14,7 @@ import shutil
 import matplotlib.pyplot as plt
 import numpy as np
 import sep
+import tifffile
 from astropy.io import fits
 from astropy.table import Table
 from matplotlib import rcParams
@@ -24,23 +25,22 @@ get_ipython().run_line_magic("matplotlib", "inline")   # noqa: F821
 
 rcParams["figure.figsize"] = [10.0, 8.0]
 
-input_file = "./input.fits"  # oda:POSIXPath
+input_file = "./input.fits"  # oda:POSIXPath; oda:label "Input file"
 
-### sep.extract()
+### These params are for sep.extract()
 thresh = 1.5  # oda:Float
 err_option = "float_globalrms"  # oda:String; oda:allowed_value 'float_globalrms','array_rms'
 # gain = None
 # mask = None
 minarea = 5  # oda:Integer
-# filter_kernel=default_kernel
+# filter_kernel = default_kernel
 filter_type = "matched"  # oda:String; oda:allowed_value 'matched','conv'
 deblend_nthresh = 32  # oda:Integer
 deblend_cont = 0.005  # oda:Float
-clean = True  # oda:Boolean ; oda:allowed_value True,False
+clean = True  # oda:Boolean
 clean_param = 1.0  # oda:Float
-# segmentation_map=False
 
-### sep.Background()
+### These params are for sep.Background()
 # mask = None
 # maskthresh = 0.0
 bw = 64  # oda:Integer
@@ -100,10 +100,10 @@ data_sub = data - bkg
 if err_option == "float_globalrms":
     err = bkg.globalrms
 else:
-    err = bkg.rms()
+    err = bkg_rms
 
 # extract sources:
-objects = sep.extract(
+objects, segmap = sep.extract(
     data_sub,
     thresh,
     err=err,
@@ -115,6 +115,7 @@ objects = sep.extract(
     deblend_cont=deblend_cont,
     clean=clean,
     clean_param=clean_param,
+    segmentation_map=True,
 )
 
 # show the background
@@ -126,6 +127,7 @@ fig.savefig("bkg_image.png", format="png", bbox_inches="tight")
 # show the background noise
 fig, ax = plt.subplots()
 im = ax.imshow(bkg_rms, interpolation="nearest", cmap="gray", origin="lower")
+ax.set_title(f"This is array_rms. While float_globalrms={bkg.globalrms}")
 fig.colorbar(im)
 fig.savefig("bkg_rms.png", format="png", bbox_inches="tight")
 
@@ -142,6 +144,19 @@ im = ax.imshow(
 )
 fig.colorbar(im)
 fig.savefig("fits2image.png", format="png", bbox_inches="tight")
+
+# show the segmentation map
+fig, ax = plt.subplots()
+im = ax.imshow(
+    segmap,
+    interpolation="nearest",
+    cmap="gray",
+    origin="lower",
+    vmin=0,
+    vmax=1,
+)
+fig.colorbar(im)
+fig.savefig("segmap.png", format="png", bbox_inches="tight")
 
 # plot background-subtracted image
 fig, ax = plt.subplots()
@@ -177,29 +192,56 @@ bin_bkg_image = PictureProduct.from_file("bkg_image.png")
 bin_rms_image = PictureProduct.from_file("bkg_rms.png")
 bin_dat_image = PictureProduct.from_file("fits2image.png")
 bin_sor_image = PictureProduct.from_file("sources.png")
+bin_seg_image = PictureProduct.from_file("segmap.png")
 
 cat = ODAAstropyTable(Table(data=objects))
+tifffile.imwrite("./segmentation_map.tiff", segmap.astype("uint32"))
 
-picture1 = bin_bkg_image  # oda:ODAPictureProduct
-picture2 = bin_rms_image  # oda:ODAPictureProduct
-picture3 = bin_dat_image  # oda:ODAPictureProduct
-picture4 = bin_sor_image  # oda:ODAPictureProduct
+bkg_picture = bin_bkg_image  # oda:ODAPictureProduct
+rms_picture = bin_rms_image  # oda:ODAPictureProduct
+data_picture = bin_dat_image  # oda:ODAPictureProduct
+sources_picture = bin_sor_image  # oda:ODAPictureProduct
+segmentation_map_picture = bin_seg_image  # oda:ODAPictureProduct
 catalog_table = cat  # oda:ODAAstropyTable
+segmentation_map = "./segmentation_map.tiff"  # oda:POSIXPath
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
 _oda_outs.append(
-    ("out_source_extraction_picture1", "picture1_galaxy.output", picture1)
+    (
+        "out_source_extraction_bkg_picture",
+        "bkg_picture_galaxy.output",
+        bkg_picture,
+    )
 )
 _oda_outs.append(
-    ("out_source_extraction_picture2", "picture2_galaxy.output", picture2)
+    (
+        "out_source_extraction_rms_picture",
+        "rms_picture_galaxy.output",
+        rms_picture,
+    )
 )
 _oda_outs.append(
-    ("out_source_extraction_picture3", "picture3_galaxy.output", picture3)
+    (
+        "out_source_extraction_data_picture",
+        "data_picture_galaxy.output",
+        data_picture,
+    )
 )
 _oda_outs.append(
-    ("out_source_extraction_picture4", "picture4_galaxy.output", picture4)
+    (
+        "out_source_extraction_sources_picture",
+        "sources_picture_galaxy.output",
+        sources_picture,
+    )
+)
+_oda_outs.append(
+    (
+        "out_source_extraction_segmentation_map_picture",
+        "segmentation_map_picture_galaxy.output",
+        segmentation_map_picture,
+    )
 )
 _oda_outs.append(
     (
@@ -224,6 +266,29 @@ for _outn, _outfn, _outv in _oda_outs:
         with open(_galaxy_outfile_name, "w") as fd:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
+_simple_outs = []
+_simple_outs.append(
+    (
+        "out_source_extraction_segmentation_map",
+        "segmentation_map_galaxy.output",
+        segmentation_map,
+    )
+)
+_numpy_available = True
+
+for _outn, _outfn, _outv in _simple_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif _numpy_available and isinstance(_outv, np.ndarray):
+        with open(_galaxy_outfile_name, "wb") as fd:
+            np.savez(fd, _outv)
+        _galaxy_meta_data[_outn] = {"ext": "npz"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd)
+        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
