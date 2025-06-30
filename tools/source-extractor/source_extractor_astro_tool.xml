@@ -1,0 +1,119 @@
+<tool id="source_extractor_astro_tool" name="source-extractor" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="3.10.3">matplotlib</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="1.4.1">sep</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="9.3.0">ipython</requirement>
+    <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/source_extraction.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="input_file" type="data" label="input_file" format="data" optional="false" />
+    <param name="thresh" type="float" value="1.5" label="thresh" optional="false" />
+    <param name="err_option" type="select" label="err_option" optional="false">
+      <option value="array_rms">array_rms</option>
+      <option value="float_globalrms" selected="true">float_globalrms</option>
+    </param>
+    <param name="minarea" type="integer" value="5" label="minarea" optional="false" />
+    <param name="filter_type" type="select" label="filter_type" optional="false">
+      <option value="conv">conv</option>
+      <option value="matched" selected="true">matched</option>
+    </param>
+    <param name="deblend_nthresh" type="integer" value="32" label="deblend_nthresh" optional="false" />
+    <param name="deblend_cont" type="float" value="0.005" label="deblend_cont" optional="false" />
+    <param name="clean" type="boolean" checked="true" label="clean" optional="false" />
+    <param name="clean_param" type="float" value="1.0" label="clean_param" optional="false" />
+    <param name="bw" type="integer" value="64" label="bw" optional="false" />
+    <param name="bh" type="integer" value="64" label="bh" optional="false" />
+    <param name="fw" type="integer" value="3" label="fw" optional="false" />
+    <param name="fh" type="integer" value="3" label="fh" optional="false" />
+    <param name="fthresh" type="float" value="0.0" label="fthresh" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; source_extraction picture1" name="out_source_extraction_picture1" format="auto" from_work_dir="picture1_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction picture2" name="out_source_extraction_picture2" format="auto" from_work_dir="picture2_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction picture3" name="out_source_extraction_picture3" format="auto" from_work_dir="picture3_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction picture4" name="out_source_extraction_picture4" format="auto" from_work_dir="picture4_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction catalog_table" name="out_source_extraction_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="5">
+      <param name="input_file" value="input_file.json" />
+      <param name="thresh" value="1.5" />
+      <param name="err_option" value="float_globalrms" />
+      <param name="minarea" value="5" />
+      <param name="filter_type" value="matched" />
+      <param name="deblend_nthresh" value="32" />
+      <param name="deblend_cont" value="0.005" />
+      <param name="clean" value="True" />
+      <param name="clean_param" value="1.0" />
+      <param name="bw" value="64" />
+      <param name="bh" value="64" />
+      <param name="fw" value="3" />
+      <param name="fh" value="3" />
+      <param name="fthresh" value="0.0" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>Source extractor
+================
+
+This tool can be used to extract luminous sources from sky images. It is
+entirely based on the
+`sep &lt;https://sep.readthedocs.io/en/stable/index.html&gt;`__ package, which
+is built on `Source
+Extractor &lt;https://sextractor.readthedocs.io/en/latest/Introduction.html&gt;`__.
+
+Input
+-----
+
+The tool accepts as input a FITS file. Moreover, most arguments from
+`sep.Background &lt;https://sep.readthedocs.io/en/stable/api/sep.Background.html#sep.Background&gt;`__
+and
+`sep.extract &lt;https://sep.readthedocs.io/en/stable/api/sep.extract.html#sep.extract&gt;`__
+have been included as possible tunable parameters.
+
+Output
+------
+
+Catalog of sources
+~~~~~~~~~~~~~~~~~~
+
+The catalogue of sources, explained
+`here &lt;https://sep.readthedocs.io/en/stable/api/sep.extract.html#sep.extract&gt;`__.
+
+Images
+~~~~~~
+
+There are 4 images as output: - **Background image** &#8211; The output of
+``sep.Background`` function, i.e.&#160;the estimated 2D background of the
+input image. - **Background noise** &#8211; The RMS of the background image. -
+**Input image** &#8211; The gray-scale input image. - **Sources** &#8211; The
+sources on the background subtracted input image
+
+Acknowledgement
+---------------
+
+Bertin, E. &amp; Arnouts, S. 1996: `SExtractor: Software for source
+extraction &lt;https://ui.adsabs.harvard.edu/abs/1996A%26AS..117..393B/abstract&gt;`__,
+Astronomy &amp; Astrophysics Supplement 317, 393
+
+Barbary, (2016), SEP: Source Extractor as a library, Journal of Open
+Source Software, 1(6), 58, doi:10.21105/joss.00058
+</help>
+  <citations>
+    <citation type="doi">10.1051/aas:1996164</citation>
+    <citation type="doi">10.21105/joss.00058</citation>
+  </citations>
+</tool>
