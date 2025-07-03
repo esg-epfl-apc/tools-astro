@@ -46,8 +46,8 @@
     <data label="${tool.name} -&gt; source_extraction data_picture" name="out_source_extraction_data_picture" format="auto" from_work_dir="data_picture_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction sources_picture" name="out_source_extraction_sources_picture" format="auto" from_work_dir="sources_picture_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction segmentation_map_picture" name="out_source_extraction_segmentation_map_picture" format="auto" from_work_dir="segmentation_map_picture_galaxy.output" />
-    <data label="${tool.name} -&gt; source_extraction catalog_table" name="out_source_extraction_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction segmentation_map" name="out_source_extraction_segmentation_map" format="auto" from_work_dir="segmentation_map_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction catalog_table" name="out_source_extraction_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output" />
   </outputs>
   <tests>
     <test expect_num_outputs="7">
