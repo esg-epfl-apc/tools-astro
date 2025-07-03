@@ -155,14 +155,14 @@ objects, segmap = sep.extract(
 fig, ax = plt.subplots()
 im = ax.imshow(bkg_image, interpolation="nearest", cmap="gray", origin="lower")
 fig.colorbar(im)
-fig.savefig("bkg_image.png", format="png", bbox_inches="tight")
+fig.savefig("./bkg_image.png", format="png", bbox_inches="tight")
 
 # show the background noise
 fig, ax = plt.subplots()
 im = ax.imshow(bkg_rms, interpolation="nearest", cmap="gray", origin="lower")
 ax.set_title(f"This is array_rms. While float_globalrms={bkg.globalrms}")
 fig.colorbar(im)
-fig.savefig("bkg_rms.png", format="png", bbox_inches="tight")
+fig.savefig("./bkg_rms.png", format="png", bbox_inches="tight")
 
 # plot image
 fig, ax = plt.subplots()
@@ -176,7 +176,7 @@ im = ax.imshow(
     origin="lower",
 )
 fig.colorbar(im)
-fig.savefig("fits2image.png", format="png", bbox_inches="tight")
+fig.savefig("./fits2image.png", format="png", bbox_inches="tight")
 
 # show the segmentation map
 fig, ax = plt.subplots()
@@ -189,7 +189,7 @@ im = ax.imshow(
     vmax=1,
 )
 fig.colorbar(im)
-fig.savefig("segmap.png", format="png", bbox_inches="tight")
+fig.savefig("./segmap.png", format="png", bbox_inches="tight")
 
 # plot background-subtracted image
 fig, ax = plt.subplots()
@@ -215,7 +215,7 @@ for i in range(len(objects)):
     e.set_edgecolor("red")
     ax.add_artist(e)
 
-fig.savefig("sources.png", format="png", bbox_inches="tight")
+fig.savefig("./sources.png", format="png", bbox_inches="tight")
 
 plt.show()
 
@@ -224,12 +224,12 @@ from oda_api.data_products import ODAAstropyTable
 cat = ODAAstropyTable(Table(data=objects))
 tifffile.imwrite("./segmentation_map.tiff", segmap.astype("uint32"))
 
-bkg_picture = "bkg_image.png"  # oda:POSIXPath
-rms_picture = "bkg_rms.png"  # oda:POSIXPath
-data_picture = "fits2image.png"  # oda:POSIXPath
-sources_picture = "sources.png"  # oda:POSIXPath
-segmentation_map_picture = "segmap.png"  # oda:POSIXPath
-segmentation_map = "segmentation_map.tiff"  # oda:POSIXPath
+bkg_picture = "./bkg_image.png"  # oda:POSIXPath
+rms_picture = "./bkg_rms.png"  # oda:POSIXPath
+data_picture = "./fits2image.png"  # oda:POSIXPath
+sources_picture = "./sources.png"  # oda:POSIXPath
+segmentation_map_picture = "./segmap.png"  # oda:POSIXPath
+segmentation_map = "./segmentation_map.tiff"  # oda:POSIXPath
 catalog_table = cat  # oda:ODAAstropyTable
 
 # output gathering
