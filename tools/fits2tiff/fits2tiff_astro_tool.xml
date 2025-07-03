@@ -16,9 +16,11 @@
   <inputs>
     <param name="file_input" type="data" label="Input file" format="data" optional="false" />
   </inputs>
-  <outputs />
+  <outputs>
+    <data label="${tool.name} -&gt; fits2tiff file_output" name="out_fits2tiff_file_output" format="auto" from_work_dir="file_output_galaxy.output" />
+  </outputs>
   <tests>
-    <test expect_num_outputs="0">
+    <test expect_num_outputs="1">
       <param name="file_input" value="file_input.json" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />

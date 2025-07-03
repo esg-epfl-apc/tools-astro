@@ -9,6 +9,7 @@
 
 import json
 import os
+import shutil
 
 import tifffile
 from astropy.io import fits
@@ -39,6 +40,31 @@ file_output = image_out_path
 
 # output gathering
 _galaxy_meta_data = {}
+_simple_outs = []
+_simple_outs.append(
+    ("out_fits2tiff_file_output", "file_output_galaxy.output", file_output)
+)
+
+try:
+    import numpy as np  # noqa: E402
+
+    _numpy_available = True
+except ImportError:
+    _numpy_available = False
+
+for _outn, _outfn, _outv in _simple_outs:
+    _galaxy_outfile_name = os.path.join(_galaxy_wd, _outfn)
+    if isinstance(_outv, str) and os.path.isfile(_outv):
+        shutil.move(_outv, _galaxy_outfile_name)
+        _galaxy_meta_data[_outn] = {"ext": "_sniff_"}
+    elif _numpy_available and isinstance(_outv, np.ndarray):
+        with open(_galaxy_outfile_name, "wb") as fd:
+            np.savez(fd, _outv)
+        _galaxy_meta_data[_outn] = {"ext": "npz"}
+    else:
+        with open(_galaxy_outfile_name, "w") as fd:
+            json.dump(_outv, fd)
+        _galaxy_meta_data[_outn] = {"ext": "expression.json"}
 
 with open(os.path.join(_galaxy_wd, "galaxy.json"), "w") as fd:
     json.dump(_galaxy_meta_data, fd)
