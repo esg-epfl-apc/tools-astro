@@ -36,7 +36,12 @@ except:
 
 image_out_path = "./output.tiff"
 tifffile.imwrite(image_out_path, data)
-dict_json = dict(header)
+
+dict_old = dict(header)
+dict_json = {}
+for key in dict_old.keys():
+    if key != "COMMENT":
+        dict_json[key] = dict_old[key]
 
 file_output = image_out_path
 header_json = dict_json
