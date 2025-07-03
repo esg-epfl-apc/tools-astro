@@ -1,0 +1,28 @@
+<tool id="fits2tiff_astro_tool" name="fits2tiff" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="2025.6.11">tifffile</requirement>
+    <requirement type="package" version="1.2.37">oda-api</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/fits2tiff.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="file_input" type="data" label="Input file" format="data" optional="false" />
+  </inputs>
+  <outputs />
+  <tests>
+    <test expect_num_outputs="0">
+      <param name="file_input" value="file_input.json" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>

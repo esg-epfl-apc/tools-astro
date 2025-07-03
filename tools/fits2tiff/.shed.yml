@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: fits2tiff
+homepage_url: null
+long_description: fits2tiff
+name: fits2tiff_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
