@@ -36,9 +36,10 @@ except:
 
 image_out_path = "./output.tiff"
 tifffile.imwrite(image_out_path, data)
+dict_json = dict(header)
 
 file_output = image_out_path
-header_json = dict(header)
+header_json = dict_json
 
 # output gathering
 _galaxy_meta_data = {}
