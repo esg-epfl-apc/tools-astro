@@ -224,13 +224,13 @@ from oda_api.data_products import ODAAstropyTable
 cat = ODAAstropyTable(Table(data=objects))
 tifffile.imwrite("./segmentation_map.tiff", segmap.astype("uint32"))
 
-bkg_picture = "./bkg_image.png"
-rms_picture = "./bkg_rms.png"
-data_picture = "./fits2image.png"
-sources_picture = "./sources.png"
-segmentation_map_picture = "./segmap.png"
+bkg_picture = "./bkg_image.png"  # oda:POSIXPath
+rms_picture = "./bkg_rms.png"  # oda:POSIXPath
+data_picture = "./fits2image.png"  # oda:POSIXPath
+sources_picture = "./sources.png"  # oda:POSIXPath
+segmentation_map_picture = "./segmap.png"  # oda:POSIXPath
 catalog_table = cat  # oda:ODAAstropyTable
-segmentation_map = "./segmentation_map.tiff"
+segmentation_map = "./segmentation_map.tiff"  # oda:POSIXPath
 
 # output gathering
 _galaxy_meta_data = {}
