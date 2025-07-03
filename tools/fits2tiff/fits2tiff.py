@@ -29,6 +29,7 @@ file_input = str(inp_pdic["file_input"])
 try:
     hdul = fits.open(file_input)
     data = hdul[0].data
+    header = hdul[0].header
     data = data.astype(data.dtype.newbyteorder("="))
 except:
     raise RuntimeError("The input file should have the FITS format.")
@@ -37,12 +38,16 @@ image_out_path = "./output.tiff"
 tifffile.imwrite(image_out_path, data)
 
 file_output = image_out_path
+header_json = dict(header)
 
 # output gathering
 _galaxy_meta_data = {}
 _simple_outs = []
 _simple_outs.append(
     ("out_fits2tiff_file_output", "file_output_galaxy.output", file_output)
+)
+_simple_outs.append(
+    ("out_fits2tiff_header_json", "header_json_galaxy.output", header_json)
 )
 
 try:
