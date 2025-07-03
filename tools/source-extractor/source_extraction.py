@@ -27,11 +27,14 @@ rcParams["figure.figsize"] = [10.0, 8.0]
 
 input_file = "./input.fits"  # oda:POSIXPath; oda:label "Input file"
 
+### These params are for both functions
+mask_file = None  # oda:POSIXPath, oda:optional; oda:label "Mask file"
+
 ### These params are for sep.extract()
 thresh = 1.5  # oda:Float
 err_option = "float_globalrms"  # oda:String; oda:allowed_value 'float_globalrms','array_rms'
 # gain = None
-# mask = None
+# maskthresh = 0.0
 minarea = 5  # oda:Integer
 # filter_kernel = default_kernel
 filter_type = "matched"  # oda:String; oda:allowed_value 'matched','conv'
@@ -41,7 +44,6 @@ clean = True  # oda:Boolean
 clean_param = 1.0  # oda:Float
 
 ### These params are for sep.Background()
-# mask = None
 # maskthresh = 0.0
 bw = 64  # oda:Integer
 bh = 64  # oda:Integer
@@ -58,6 +60,13 @@ if "C_data_product_" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 input_file = str(inp_pdic["input_file"])
+
+mask_file = (
+    str(inp_pdic["mask_file"])
+    if inp_pdic.get("mask_file", None) is not None
+    else None
+)
+
 thresh = float(inp_pdic["thresh"])
 err_option = str(inp_pdic["err_option"])
 minarea = int(inp_pdic["minarea"])
@@ -72,14 +81,37 @@ fw = int(inp_pdic["fw"])
 fh = int(inp_pdic["fh"])
 fthresh = float(inp_pdic["fthresh"])
 
-hdul = fits.open(input_file)
-data = hdul[0].data
-data = data.astype(data.dtype.newbyteorder("="))
+try:
+    hdul = fits.open(input_file)
+    data = hdul[0].data
+    data = data.astype(data.dtype.newbyteorder("="))
+except:
+    try:
+        data = tifffile.imread(input_file)
+    except:
+        raise RuntimeError(
+            "The input file should have the FITS or TIFF format."
+        )
+
+if mask_file is not None:
+    try:
+        hdul = fits.open(mask_file)
+        mask = hdul[0].data
+        mask = mask.astype(mask.dtype.newbyteorder("="))
+    except:
+        try:
+            mask = tifffile.imread(mask_file)
+        except:
+            raise RuntimeError(
+                "The mask file should have the FITS or TIFF format."
+            )
+else:
+    mask = None
 
 # measure a spatially varying background on the image
 bkg = sep.Background(
     data,
-    mask=None,
+    mask=mask,
     maskthresh=0.0,
     bw=bw,
     bh=bh,
@@ -108,7 +140,8 @@ objects, segmap = sep.extract(
     thresh,
     err=err,
     gain=None,
-    mask=None,
+    mask=mask,
+    maskthresh=0.0,
     minarea=minarea,
     filter_type=filter_type,
     deblend_nthresh=deblend_nthresh,
@@ -186,63 +219,22 @@ fig.savefig("sources.png", format="png", bbox_inches="tight")
 
 plt.show()
 
-from oda_api.data_products import ODAAstropyTable, PictureProduct
-
-bin_bkg_image = PictureProduct.from_file("bkg_image.png")
-bin_rms_image = PictureProduct.from_file("bkg_rms.png")
-bin_dat_image = PictureProduct.from_file("fits2image.png")
-bin_sor_image = PictureProduct.from_file("sources.png")
-bin_seg_image = PictureProduct.from_file("segmap.png")
+from oda_api.data_products import ODAAstropyTable
 
 cat = ODAAstropyTable(Table(data=objects))
 tifffile.imwrite("./segmentation_map.tiff", segmap.astype("uint32"))
 
-bkg_picture = bin_bkg_image  # oda:ODAPictureProduct
-rms_picture = bin_rms_image  # oda:ODAPictureProduct
-data_picture = bin_dat_image  # oda:ODAPictureProduct
-sources_picture = bin_sor_image  # oda:ODAPictureProduct
-segmentation_map_picture = bin_seg_image  # oda:ODAPictureProduct
+bkg_picture = "./bkg_image.png"
+rms_picture = "./bkg_rms.png"
+data_picture = "./fits2image.png"
+sources_picture = "./sources.png"
+segmentation_map_picture = "./segmap.png"
 catalog_table = cat  # oda:ODAAstropyTable
-segmentation_map = "./segmentation_map.tiff"  # oda:POSIXPath
+segmentation_map = "./segmentation_map.tiff"
 
 # output gathering
 _galaxy_meta_data = {}
 _oda_outs = []
-_oda_outs.append(
-    (
-        "out_source_extraction_bkg_picture",
-        "bkg_picture_galaxy.output",
-        bkg_picture,
-    )
-)
-_oda_outs.append(
-    (
-        "out_source_extraction_rms_picture",
-        "rms_picture_galaxy.output",
-        rms_picture,
-    )
-)
-_oda_outs.append(
-    (
-        "out_source_extraction_data_picture",
-        "data_picture_galaxy.output",
-        data_picture,
-    )
-)
-_oda_outs.append(
-    (
-        "out_source_extraction_sources_picture",
-        "sources_picture_galaxy.output",
-        sources_picture,
-    )
-)
-_oda_outs.append(
-    (
-        "out_source_extraction_segmentation_map_picture",
-        "segmentation_map_picture_galaxy.output",
-        segmentation_map_picture,
-    )
-)
 _oda_outs.append(
     (
         "out_source_extraction_catalog_table",
@@ -267,6 +259,41 @@ for _outn, _outfn, _outv in _oda_outs:
             json.dump(_outv, fd, cls=CustomJSONEncoder)
         _galaxy_meta_data[_outn] = {"ext": "json"}
 _simple_outs = []
+_simple_outs.append(
+    (
+        "out_source_extraction_bkg_picture",
+        "bkg_picture_galaxy.output",
+        bkg_picture,
+    )
+)
+_simple_outs.append(
+    (
+        "out_source_extraction_rms_picture",
+        "rms_picture_galaxy.output",
+        rms_picture,
+    )
+)
+_simple_outs.append(
+    (
+        "out_source_extraction_data_picture",
+        "data_picture_galaxy.output",
+        data_picture,
+    )
+)
+_simple_outs.append(
+    (
+        "out_source_extraction_sources_picture",
+        "sources_picture_galaxy.output",
+        sources_picture,
+    )
+)
+_simple_outs.append(
+    (
+        "out_source_extraction_segmentation_map_picture",
+        "segmentation_map_picture_galaxy.output",
+        segmentation_map_picture,
+    )
+)
 _simple_outs.append(
     (
         "out_source_extraction_segmentation_map",
