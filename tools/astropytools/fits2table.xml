@@ -1,4 +1,4 @@
-<tool id="astropy_fits2csv" name="astropy fits2csv" version="0.2.0+galaxy1" profile="21.05">
+<tool id="astropy_fits2csv" name="astropy fits2csv" version="0.2.0+galaxy2" profile="21.05">
     <requirements>
         <requirement type="package" version="6.1.7">astropy</requirement>
     </requirements>
