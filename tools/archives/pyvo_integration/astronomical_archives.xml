@@ -1,11 +1,11 @@
-<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.22">
+<tool id="astronomical_archives" name="Astronomical Archives (IVOA)" version="0.10.22" profile="24.2">
     <description>queries astronomical archives through Virtual Observatory protocols</description>
     <edam_operations>
         <edam_operation>operation_0224</edam_operation>
     </edam_operations>
     <requirements>
-        <requirement type="package" version="5.2.2">astropy</requirement>
-        <requirement type="package" version="1.4.1">pyvo</requirement>
+        <requirement type="package" version="7.1.0">astropy</requirement>
+        <requirement type="package" version="1.7">pyvo</requirement>
     </requirements>
     <command detect_errors="exit_code">
       <![CDATA[
@@ -63,7 +63,6 @@
             </param>
             <when value="none"></when>
             <when value="obscore_query">
-              <!-- Fields defined https://www.ivoa.net/documents/ObsCore/20160224/WD-ObsCore-v1.1-20160224.pdf -->
               <param name="target_name" type="text" label="Observation target name" help="Typically name of the astronomical object observed" />
               <section name="cone_section" title="Cone search parameters">
                 <conditional name="cone_search_target_selection">
@@ -83,7 +82,6 @@
               </section>
               <param name="t_min" type="float" optional="true" label="Start time in MJD" />
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
-              <!-- Dataproduct_type field values definition https://www.ivoa.net/rdf/product-type/2023-06-26/product-type.html  -->
               <param name="dataproduct_type" type="text" label="Data product type" optional="true" help="Logical data product type (link to reference in Help section)">
                 <option value="image">Image</option>
                 <option value="cube">Cube</option>
@@ -174,17 +172,21 @@
     </outputs>
     <tests>
         <test expect_num_outputs="2">
-            <param name="output_selection" value="i"/>
-            <param name="number_of_files" value="1"/>
+            <section name="output_section">
+              <param name="output_selection" value="i"/>
+              <param name="number_of_files" value="1"/>
+            </section>
             <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807041_AP_B001" />
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807041_AP_B001" />
+              </conditional>
+            </section>
             <output name="output" count="1">
               <assert_contents>
                   <has_text_matching expression="SIMPLE  =" />
@@ -192,17 +194,21 @@
             </output>
         </test>
         <test expect_num_outputs="2">
-            <param name="output_selection" value="c"/>
-            <param name="number_of_files" value="1"/>
+            <section name="output_section">
+              <param name="output_selection" value="c"/>
+              <param name="number_of_files" value="1"/>
+            </section>
             <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807041_AP_B001"/>
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807041_AP_B001"/>
+              </conditional>
+            </section>
             <output name="output_csv" count="1">
               <assert_contents>
                   <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807041_AP_B001/image_mf_02.fits," />
@@ -210,17 +216,21 @@
             </output>
         </test>
         <test expect_num_outputs="2">
-            <param name="output_selection" value="c"/>
-            <param name="number_of_files" value="1"/>
+            <section name="output_section">
+              <param name="output_selection" value="c"/>
+              <param name="number_of_files" value="1"/>
+            </section>
             <conditional name="archive_selection">
                 <param name="archive_type" value="registry"/>
                 <param name="keyword" value="apertif"/>
             </conditional>
-            <conditional name="query_selection">
-                <param name="query_type" value="obscore_query" />
-                <param name="dataproduct_type" value="image" />
-                <param name="obs_title" value="190807042_AP_B006"/>
-            </conditional>
+            <section name="query_section">
+              <conditional name="query_selection">
+                  <param name="query_type" value="obscore_query" />
+                  <param name="dataproduct_type" value="image" />
+                  <param name="obs_title" value="190807042_AP_B006"/>
+              </conditional>
+            </section>
             <output name="output_csv" count="1">
               <assert_contents>
                   <has_line line="https://vo.astron.nl/getproduct/APERTIF_DR1/190807042_AP_B006/image_mf_04.fits," />
@@ -228,15 +238,19 @@
             </output>
         </test>
         <test expect_num_outputs="2">
-          <param name="output_selection" value="c"/>
-          <param name="number_of_files" value="1"/>
+          <section name="output_section">
+            <param name="output_selection" value="c"/>
+            <param name="number_of_files" value="1"/>
+          </section>
           <conditional name="archive_selection">
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="simbad"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="obscore_query" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+            </conditional>
+          </section>
           <output name="output_error" count="1">
             <assert_contents>
                 <has_text text="No obscore table in the archive"/>
@@ -244,17 +258,21 @@
           </output>
         </test>
         <test expect_num_outputs="2">
-          <param name="output_selection" value="c"/>
-          <param name="number_of_files" value="1"/>
+          <section name="output_section">
+            <param name="output_selection" value="c"/>
+            <param name="number_of_files" value="1"/>
+          </section>
           <conditional name="archive_selection">
               <param name="archive_type" value="registry"/>
               <param name="keyword" value="apertif"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="raw_query" />
-              <param name="table" value="unknown_table" />
-              <param name="url_field" value="unknown_field" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="raw_query" />
+                <param name="table" value="unknown_table" />
+                <param name="url_field" value="unknown_field" />
+            </conditional>
+          </section>
           <output name="output_error" count="1">
             <assert_contents>
                 <has_text text="Error in query"/>
@@ -262,17 +280,21 @@
           </output>
         </test>
         <test expect_num_outputs="2">
-          <param name="output_selection" value="c"/>
-          <param name="number_of_files" value="1"/>
+          <section name="output_section">
+            <param name="output_selection" value="c"/>
+            <param name="number_of_files" value="1"/>
+          </section>
           <conditional name="archive_selection">
               <param name="archive_type" value="custom"/>
               <param name="access_url" value="https://datalab.noirlab.edu/tap"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="raw_query" />
-              <param name="table" value="allwise.source" />
-              <param name="url_field" value="random_id" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="raw_query" />
+                <param name="table" value="allwise.source" />
+                <param name="url_field" value="random_id" />
+            </conditional>
+          </section>
           <output name="output_csv" count="1">
             <assert_contents>
                 <has_text_matching expression=".*\S+.*" />
@@ -280,15 +302,19 @@
           </output>
         </test>
         <test expect_num_outputs="2">
-          <param name="output_selection" value="c"/>
-          <param name="number_of_files" value="1"/>
+          <section name="output_section">
+            <param name="output_selection" value="c"/>
+            <param name="number_of_files" value="1"/>
+          </section>
           <conditional name="archive_selection">
               <param name="archive_type" value="custom"/>
               <param name="access_url" value="http://voparis-tap-he.obspm.fr/tap"/>
           </conditional>
-          <conditional name="query_selection">
-              <param name="query_type" value="obscore_query" />
-          </conditional>
+          <section name="query_section">
+            <conditional name="query_selection">
+                <param name="query_type" value="obscore_query" />
+            </conditional>
+          </section>
           <output name="output_csv" count="1">
             <assert_contents>
                 <has_text_matching expression=".*\S+.*" />
@@ -410,7 +436,7 @@ Tables exposed through this endpoint include: dens256, fof, redshifts from the b
 
 -----
 
-**STScI CAOMTAP** https://vao.stsci.edu/CAOMTAP/TapService.aspx MAST STScI CAOM and ObsCore TAP service
+**STScI CAOMTAP** vao.stsci.edu/CAOMTAP/TapService.aspx MAST STScI CAOM and ObsCore TAP service
 
 -----
 
@@ -448,7 +474,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-**MissionMAST TAP** https://vao.stsci.edu/MissionMAST/TapService.aspx MAST STScI MissionMAST TAP service for HST Science Data
+**MissionMAST TAP** vao.stsci.edu/MissionMAST/TapService.aspx MAST STScI MissionMAST TAP service for HST Science Data
 
 -----
 
@@ -456,7 +482,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-**PS1DR2 TAP** https://vao.stsci.edu/PS1DR2/TapService.aspx MAST STScI PanSTARRS 1 DR2 TAP service
+**PS1DR2 TAP** vao.stsci.edu/PS1DR2/TapService.aspx MAST STScI PanSTARRS 1 DR2 TAP service
 
 -----
 
@@ -466,7 +492,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-**STScI RegTAP** https://vao.stsci.edu/RegTAP/TapService.aspx MAST STScI Registry TAP service
+**STScI RegTAP** vao.stsci.edu/RegTAP/TapService.aspx MAST STScI Registry TAP service
 
 -----
 
@@ -476,7 +502,7 @@ Tables exposed through this endpoint include are only for the Registry Relationa
 
 -----
 
-**HLSP CLASSY TAP** https://vao.stsci.edu/HLSP_CLASSY/TapService.aspx MAST STScI CLASSY HLSP TAP service
+**HLSP CLASSY TAP** vao.stsci.edu/HLSP_CLASSY/TapService.aspx MAST STScI CLASSY HLSP TAP service
 
 -----
 
@@ -486,7 +512,7 @@ The Table Access Protocol (TAP) lets you execute queries against our database ta
 
 -----
 
-**HLSP ULLYSES TAP** https://vao.stsci.edu/HLSP_ULLYSES/TapService.aspx MAST STScI ULLYSES HLSP TAP service
+**HLSP ULLYSES TAP** vao.stsci.edu/HLSP_ULLYSES/TapService.aspx MAST STScI ULLYSES HLSP TAP service
 
 -----
 
@@ -615,7 +641,7 @@ Query service for observation metadata for all CADC archival data holdings. This
 
 -----
 
-**YouCat** https://ws-cadc.canfar.net/youcat CANFAR User Catalogue Query Service
+**YouCat** ws-cadc.canfar.net/youcat CANFAR User Catalogue Query Service
 
 -----
 
@@ -636,7 +662,7 @@ YouCat is a query service for catalogues hosted by CANFAR. This service
 
 -----
 
-**AMDA** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Planetary and heliophysics plasma data at CDPP/AMDA
+**AMDA** cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Planetary and heliophysics plasma data at CDPP/AMDA
 
 -----
 
@@ -644,7 +670,7 @@ Planetary and heliophysics plasma data at CDPP/AMDA
 
 -----
 
-**ILLU67P** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Illumination maps of 67P
+**ILLU67P** cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Illumination maps of 67P
 
 -----
 
@@ -659,7 +685,7 @@ Illumination by the Sun of each face of the comet 67P/Churyumov-Gerasimenko base
 
 -----
 
-**PSWS Transplanet** http://cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Magnetosphere Ionosphere coupling simulation runs
+**PSWS Transplanet** cdpp-epntap.irap.omp.eu/__system__/tap/run/tap Magnetosphere Ionosphere coupling simulation runs
 
 -----
 
