@@ -4,8 +4,8 @@
         <edam_operation>operation_0224</edam_operation>
     </edam_operations>
     <requirements>
-        <requirement type="package" version="7.1.0">astropy</requirement>
-        <requirement type="package" version="1.7">pyvo</requirement>
+        <requirement type="package" version="5.2.2">astropy</requirement>
+        <requirement type="package" version="1.4.1">pyvo</requirement>
     </requirements>
     <command detect_errors="exit_code">
       <![CDATA[
