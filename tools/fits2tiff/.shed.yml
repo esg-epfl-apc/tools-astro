@@ -1,8 +1,8 @@
 categories:
 - Astronomy
-description: fits2tiff
+description: Tool to convert FITS files to TIFF
 homepage_url: null
-long_description: fits2tiff
+long_description: Tool to convert FITS files to TIFF
 name: fits2tiff_astro_tool
 owner: astroteam
 remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
