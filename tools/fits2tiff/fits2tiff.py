@@ -15,6 +15,7 @@ import tifffile
 from astropy.io import fits
 
 file_input = "./input.fits"  # oda:POSIXPath; oda:label "Input file"
+input_hdu_no = 0  # oda:Integer; "Input HDU number"
 
 _galaxy_wd = os.getcwd()
 
@@ -25,11 +26,12 @@ if "C_data_product_" in inp_dic.keys():
 else:
     inp_pdic = inp_dic
 file_input = str(inp_pdic["file_input"])
+input_hdu_no = int(inp_pdic["input_hdu_no"])
 
 try:
     hdul = fits.open(file_input)
-    data = hdul[0].data
-    header = hdul[0].header
+    data = hdul[input_hdu_no].data
+    header = hdul[input_hdu_no].header
     data = data.astype(data.dtype.newbyteorder("="))
 except:
     raise RuntimeError("The input file should have the FITS format.")
