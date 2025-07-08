@@ -15,7 +15,7 @@ import tifffile
 from astropy.io import fits
 
 file_input = "./input.fits"  # oda:POSIXPath; oda:label "Input file"
-input_hdu_no = 0  # oda:Integer; "Input HDU number"
+input_hdu_no = 0  # oda:Integer; oda:label "Input HDU number"
 
 _galaxy_wd = os.getcwd()
 
