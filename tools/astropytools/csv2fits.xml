@@ -1,5 +1,5 @@
 
-<tool id="astropy_csv2fits" name="csv2fits" version="0.1.0+galaxy0" profile="24.0">
+<tool id="astropy_csv2fits" name="csv2fits" version="0.1.0+galaxy1" profile="24.0">
   <requirements>
     <requirement type="package" version="6.1.7">astropy</requirement>
   </requirements>
