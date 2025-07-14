@@ -51,7 +51,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="7">
-      <param name="input_file" value="input_file.json" />
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/56c38bca15055f2a32266ac5aff23ad412097c83/./input.fits" />
       <param name="mask_file" value="mask_file.json" />
       <param name="thresh" value="1.5" />
       <param name="err_option" value="float_globalrms" />
