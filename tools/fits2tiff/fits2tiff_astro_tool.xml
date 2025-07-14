@@ -2,6 +2,7 @@
   <requirements>
     <requirement type="package" version="6.1.7">astropy</requirement>
     <requirement type="package" version="2025.6.11">tifffile</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/fits2tiff.py'</command>
   <environment_variables>
@@ -21,7 +22,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="2">
-      <param name="file_input" value="file_input.json" />
+      <param name="file_input" location="https://gitlab.renkulab.io/astronomy/mmoda/fits2tiff/-/raw/7dc859ec5a3030113618895399761f003b396eea/./input.fits" />
       <param name="input_hdu_no" value="0" />
       <assert_stdout>
         <has_text text="*** Job finished successfully ***" />
