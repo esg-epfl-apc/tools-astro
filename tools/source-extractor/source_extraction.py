@@ -93,6 +93,8 @@ except:
             "The input file should have the FITS or TIFF format."
         )
 
+print(data.shape)
+
 if mask_file is not None:
     try:
         hdul = fits.open(mask_file)
