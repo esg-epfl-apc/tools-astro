@@ -84,10 +84,10 @@ fthresh = float(inp_pdic["fthresh"])
 try:
     hdul = fits.open(input_file)
     data = hdul[0].data
-    data = data.astype(data.dtype.newbyteorder("="))
+    data = data.astype(data.dtype.newbyteorder("=")).astype(float)
 except:
     try:
-        data = tifffile.imread(input_file)
+        data = tifffile.imread(input_file).astype(float)
     except:
         raise RuntimeError(
             "The input file should have the FITS or TIFF format."
