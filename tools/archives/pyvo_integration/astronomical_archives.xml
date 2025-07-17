@@ -67,18 +67,21 @@
               <section name="cone_section" title="Cone search parameters">
                 <conditional name="cone_search_target_selection">
                   <param name="target_selection" type="select" label="Search center">
+                    <option value="none">No cone search</option>
                     <option value="coordinates">Coordinates</option>
                     <option value="object_name">Source name</option>
                   </param>
+                  <when value="none"></when>
                   <when value="coordinates">
                     <param name="ra" type="text" label="Right ascension" optional="false" help="In degree e.g. 27.1" />
                     <param name="dec" type="text" label="Declination" optional="false" help="In degree e.g. 30.5" />
+                    <param name="radius" type="text" label="Search radius" optional="false" help="In degree e.g. 0.1"/>
                   </when>
                   <when value="object_name">
                     <param name="cone_object_name" type="text" label="Observation target name" optional="false" help="e.g. mrk 421" />
+                    <param name="radius" type="text" label="Search radius" optional="false" help="In degree e.g. 0.1"/>
                   </when>
                 </conditional>
-                <param name="radius" type="text" label="Search radius" optional="false" help="In degree e.g. 0.1"/>
               </section>
               <param name="t_min" type="float" optional="true" label="Start time in MJD" />
               <param name="t_max" type="float" optional="true" label="Stop time in MJD" />
