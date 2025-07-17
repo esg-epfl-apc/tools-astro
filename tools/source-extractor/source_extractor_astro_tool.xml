@@ -25,7 +25,14 @@
       <option value="array_rms">array_rms</option>
       <option value="float_globalrms" selected="true">float_globalrms</option>
     </param>
+    <param name="maskthresh" type="float" value="0.0" label="maskthresh" optional="false" />
     <param name="minarea" type="integer" value="5" label="minarea" optional="false" />
+    <param name="filter_case" type="select" label="Filter Case" optional="false">
+      <option value="default" selected="true">default</option>
+      <option value="file">file</option>
+      <option value="none">none</option>
+    </param>
+    <param name="filter_file" type="data" label="Filter file" format="data" optional="true" />
     <param name="filter_type" type="select" label="filter_type" optional="false">
       <option value="conv">conv</option>
       <option value="matched" selected="true">matched</option>
@@ -51,11 +58,14 @@
   </outputs>
   <tests>
     <test expect_num_outputs="7">
-      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/a35e6c22489162a2a7b9e999ac27a5abb43f3ad7/./input.fits" />
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/6f9bfcb9e95358a432a8cccb4f18dcc46c1d8201/./input.fits" />
       <param name="mask_file" value="mask_file.json" />
       <param name="thresh" value="1.5" />
       <param name="err_option" value="float_globalrms" />
+      <param name="maskthresh" value="0.0" />
       <param name="minarea" value="5" />
+      <param name="filter_case" value="default" />
+      <param name="filter_file" value="filter_file.json" />
       <param name="filter_type" value="matched" />
       <param name="deblend_nthresh" value="32" />
       <param name="deblend_cont" value="0.005" />

@@ -34,9 +34,10 @@ mask_file = None  # oda:POSIXPath, oda:optional; oda:label "Mask file"
 thresh = 1.5  # oda:Float
 err_option = "float_globalrms"  # oda:String; oda:allowed_value 'float_globalrms','array_rms'
 # gain = None
-# maskthresh = 0.0
+maskthresh = 0.0  # oda:Float
 minarea = 5  # oda:Integer
-# filter_kernel = default_kernel
+filter_case = "default"  # oda:String; oda:label "Filter Case"; oda:allowed_value 'none', 'default', 'file'
+filter_file = None  # oda:POSIXPath, oda:optional; oda:label "Filter file"
 filter_type = "matched"  # oda:String; oda:allowed_value 'matched','conv'
 deblend_nthresh = 32  # oda:Integer
 deblend_cont = 0.005  # oda:Float
@@ -69,7 +70,16 @@ mask_file = (
 
 thresh = float(inp_pdic["thresh"])
 err_option = str(inp_pdic["err_option"])
+maskthresh = float(inp_pdic["maskthresh"])
 minarea = int(inp_pdic["minarea"])
+filter_case = str(inp_pdic["filter_case"])
+
+filter_file = (
+    str(inp_pdic["filter_file"])
+    if inp_pdic.get("filter_file", None) is not None
+    else None
+)
+
 filter_type = str(inp_pdic["filter_type"])
 deblend_nthresh = int(inp_pdic["deblend_nthresh"])
 deblend_cont = float(inp_pdic["deblend_cont"])
@@ -93,7 +103,7 @@ except:
             "The input file should have the FITS or TIFF format."
         )
 
-print(data.shape)
+print("INFO: Data shape:", data.shape)
 
 if mask_file is not None:
     try:
@@ -110,11 +120,28 @@ if mask_file is not None:
 else:
     mask = None
 
+print("INFO: Mask type:", type(mask))
+
+filter_kernel = None
+if filter_case == "none":
+    filter_kernel = None
+elif filter_case == "default":
+    filter_kernel = np.array([[1, 2, 1], [2, 4, 2], [1, 2, 1]])
+elif filter_case == "file":
+    try:
+        filter_kernel = np.loadtxt(filter_file)
+    except:
+        raise RuntimeError(
+            "The filter file should be a text file that is loaded with numpy.loadtxt"
+        )
+
+print("INFO: Filter kernel:", filter_kernel)
+
 # measure a spatially varying background on the image
 bkg = sep.Background(
     data,
     mask=mask,
-    maskthresh=0.0,
+    maskthresh=maskthresh,
     bw=bw,
     bh=bh,
     fw=fw,
@@ -143,8 +170,9 @@ objects, segmap = sep.extract(
     err=err,
     gain=None,
     mask=mask,
-    maskthresh=0.0,
+    maskthresh=maskthresh,
     minarea=minarea,
+    filter_kernel=filter_kernel,
     filter_type=filter_type,
     deblend_nthresh=deblend_nthresh,
     deblend_cont=deblend_cont,
