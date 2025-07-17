@@ -32,7 +32,7 @@ mask_file = None  # oda:POSIXPath, oda:optional; oda:label "Mask file"
 
 ### These params are for sep.extract()
 thresh = 1.5  # oda:Float
-err_option = "float_globalrms"  # oda:String; oda:allowed_value 'float_globalrms','array_rms'
+err_option = "float_globalrms"  # oda:String; oda:allowed_value 'float_globalrms','array_rms', 'none'
 # gain = None
 maskthresh = 0.0  # oda:Float
 minarea = 5  # oda:Integer
@@ -160,8 +160,10 @@ data_sub = data - bkg
 
 if err_option == "float_globalrms":
     err = bkg.globalrms
-else:
+elif err_option == "array_rms":
     err = bkg_rms
+else:
+    err = None
 
 # extract sources:
 objects, segmap = sep.extract(

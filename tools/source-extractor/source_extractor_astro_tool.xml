@@ -24,6 +24,7 @@
     <param name="err_option" type="select" label="err_option" optional="false">
       <option value="array_rms">array_rms</option>
       <option value="float_globalrms" selected="true">float_globalrms</option>
+      <option value="none">none</option>
     </param>
     <param name="maskthresh" type="float" value="0.0" label="maskthresh" optional="false" />
     <param name="minarea" type="integer" value="5" label="minarea" optional="false" />
@@ -58,7 +59,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="7">
-      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/6f9bfcb9e95358a432a8cccb4f18dcc46c1d8201/./input.fits" />
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/926029bfce4f0f599d46cc3f2a43ca7d4fee8655/./input.fits" />
       <param name="mask_file" value="mask_file.json" />
       <param name="thresh" value="1.5" />
       <param name="err_option" value="float_globalrms" />
