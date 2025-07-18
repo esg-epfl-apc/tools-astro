@@ -61,7 +61,7 @@
   </outputs>
   <tests>
     <test expect_num_outputs="9">
-      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/ed650c51427d6912316517872a922b321935fc08/input.fits" />
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/5680fc685979c56c69f98eec8153673422abfa72/input.fits" />
       <param name="thresh" value="1.5" />
       <param name="err_option" value="float_globalrms" />
       <param name="maskthresh" value="0.0" />
@@ -99,9 +99,10 @@ Important input parameters:
 1. **Input file** (``.fits`` or ``.tiff``) - A single-channel sky image
    to analyze.
 
-2. **Mask file** (``.fits`` or ``.tiff``; optional) - A binary 2D array
-   (values 0 and 1). Pixels with value ``1`` are ignored during source
-   extraction.
+2. **Mask file** (``.fits`` or ``.tiff``; optional) - A 2D numpy array.
+   True values, or numeric values greater than **maskthresh**, are
+   considered masked. Masking a pixel is equivalent to setting data to
+   zero and noise (if present) to infinity.
 
 3. **thresh** - Threshold pixel value for detection:
    ``thresh * err[j, i]``, where ``err[j, i]`` is given by the
@@ -110,6 +111,8 @@ Important input parameters:
 4. **err_option** - Sets the error that is taken into account into the
    detection of sources:
 
+   - ``none`` - The value of **thresh** is taken as an absolute
+     threshold.
    - ``array_rms`` - An array of the background RMS, i.e.&#160;for each
      individual pixel.
    - ``float_globalrms`` - A float value of the global background RMS.
@@ -133,14 +136,22 @@ Images
 
 There are 4 images as output:
 
-- **Background image** - The output of ``sep.Background`` function,
-  i.e.&#160;the estimated 2D background of the input image.
-- **Background noise** - The RMS of the background image.
+- **Background**:
+
+  - ``.fits``: The output of ``sep.Background`` function, i.e.&#160;the
+    estimated 2D background of the input image.
+  - ``.png``: The gray-scale image of the previously described array
+
+- **Background noise**:
+
+  - ``.fits``: The RMS of the background image.
+  - ``.png``: The gray-scale image of the previously described array
+
 - **Input image** - The gray-scale input image.
 - **Sources** - The sources on the background subtracted input image
 - **Segmentation map**:
 
-  - ``.tiff``: Each pixel is labeled with 0 or object ID (``0`` =
+  - ``.fits``: Each pixel is labeled with 0 or object ID (``0`` =
     background; ``i+1`` = object ``i``).
   - ``.png``: Binary mask (``1`` = source, ``0`` = background).
 
