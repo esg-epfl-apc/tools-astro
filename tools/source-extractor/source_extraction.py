@@ -150,10 +150,14 @@ bkg = sep.Background(
 )
 
 # evaluate background as 2-d array, same size as original image
-bkg_image = bkg.back()
+bkg_array = bkg.back()
+hdu_bkg = fits.PrimaryHDU(bkg_array)
+hdu_bkg.writeto("bkg_array.fits")
 
 # evaluate the background noise as 2-d array, same size as original image
 bkg_rms = bkg.rms()
+hdu_rms = fits.PrimaryHDU(bkg_rms)
+hdu_rms.writeto("bkg_rms.fits")
 
 # subtract the background
 data_sub = data - bkg
@@ -185,7 +189,7 @@ objects, segmap = sep.extract(
 
 # show the background
 fig, ax = plt.subplots()
-im = ax.imshow(bkg_image, interpolation="nearest", cmap="gray", origin="lower")
+im = ax.imshow(bkg_array, interpolation="nearest", cmap="gray", origin="lower")
 fig.colorbar(im)
 fig.savefig("./bkg_image.png", format="png", bbox_inches="tight")
 
@@ -254,14 +258,17 @@ plt.show()
 from oda_api.data_products import ODAAstropyTable
 
 cat = ODAAstropyTable(Table(data=objects))
-tifffile.imwrite("./segmentation_map.tiff", segmap.astype("uint32"))
+hdu_rms = fits.PrimaryHDU(segmap.astype("uint32"))
+hdu_rms.writeto("segmentation_map.fits")
 
 bkg_picture = "./bkg_image.png"  # oda:POSIXPath
 rms_picture = "./bkg_rms.png"  # oda:POSIXPath
 data_picture = "./fits2image.png"  # oda:POSIXPath
 sources_picture = "./sources.png"  # oda:POSIXPath
 segmentation_map_picture = "./segmap.png"  # oda:POSIXPath
-segmentation_map = "./segmentation_map.tiff"  # oda:POSIXPath
+segmentation_map = "./segmentation_map.fits"  # oda:POSIXPath
+bkg_array = "./bkg_array.fits"  # oda:POSIXPath
+rms_array = "./bkg_rms.fits"  # oda:POSIXPath
 catalog_table = cat  # oda:ODAAstropyTable
 
 # output gathering
@@ -332,6 +339,12 @@ _simple_outs.append(
         "segmentation_map_galaxy.output",
         segmentation_map,
     )
+)
+_simple_outs.append(
+    ("out_source_extraction_bkg_array", "bkg_array_galaxy.output", bkg_array)
+)
+_simple_outs.append(
+    ("out_source_extraction_rms_array", "rms_array_galaxy.output", rms_array)
 )
 _numpy_available = True
 

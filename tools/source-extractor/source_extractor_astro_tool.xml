@@ -55,18 +55,18 @@
     <data label="${tool.name} -&gt; source_extraction sources_picture" name="out_source_extraction_sources_picture" format="auto" from_work_dir="sources_picture_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction segmentation_map_picture" name="out_source_extraction_segmentation_map_picture" format="auto" from_work_dir="segmentation_map_picture_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction segmentation_map" name="out_source_extraction_segmentation_map" format="auto" from_work_dir="segmentation_map_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction bkg_array" name="out_source_extraction_bkg_array" format="auto" from_work_dir="bkg_array_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction rms_array" name="out_source_extraction_rms_array" format="auto" from_work_dir="rms_array_galaxy.output" />
     <data label="${tool.name} -&gt; source_extraction catalog_table" name="out_source_extraction_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output" />
   </outputs>
   <tests>
-    <test expect_num_outputs="7">
-      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/926029bfce4f0f599d46cc3f2a43ca7d4fee8655/./input.fits" />
-      <param name="mask_file" value="mask_file.json" />
+    <test expect_num_outputs="9">
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/ed650c51427d6912316517872a922b321935fc08/input.fits" />
       <param name="thresh" value="1.5" />
       <param name="err_option" value="float_globalrms" />
       <param name="maskthresh" value="0.0" />
       <param name="minarea" value="5" />
       <param name="filter_case" value="default" />
-      <param name="filter_file" value="filter_file.json" />
       <param name="filter_type" value="matched" />
       <param name="deblend_nthresh" value="32" />
       <param name="deblend_cont" value="0.005" />
