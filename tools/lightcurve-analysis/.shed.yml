@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: lightcurve-analysis
+homepage_url: null
+long_description: lightcurve-analysis
+name: lightcurve_analysis_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
