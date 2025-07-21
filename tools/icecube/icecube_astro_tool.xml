@@ -1,16 +1,16 @@
 <tool id="icecube_astro_tool" name="IceCube" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
-    <requirement type="package" version="7.0.1">astropy</requirement>
-    <requirement type="package" version="2.2.4">numpy</requirement>
-    <requirement type="package" version="1.15.2">scipy</requirement>
+    <requirement type="package" version="7.1.0">astropy</requirement>
+    <requirement type="package" version="2.3.1">numpy</requirement>
+    <requirement type="package" version="1.16.0">scipy</requirement>
     <requirement type="package" version="2.31.1">iminuit</requirement>
-    <requirement type="package" version="3.10.1">matplotlib</requirement>
+    <requirement type="package" version="3.10.3">matplotlib</requirement>
     <requirement type="package" version="24.1.0">skyllh</requirement>
     <requirement type="package" version="1.21.4">wget</requirement>
-    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <requirement type="package" version="0.70.18">multiprocess</requirement>
     <requirement type="package" version="1.2.27">oda-api</requirement>
     <requirement type="package" version="6.0">unzip</requirement>
-    <requirement type="package" version="9.1.0">ipython</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
   </requirements>
   <command detect_errors="exit_code">ipython '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
   <environment_variables>
