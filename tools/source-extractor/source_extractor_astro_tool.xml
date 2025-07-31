@@ -1,0 +1,172 @@
+<tool id="source_extractor_astro_tool" name="source-extractor" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="3.10.3">matplotlib</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="1.4.1">sep</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="2025.6.11">tifffile</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
+    <!--Requirements string 'nb2workflow>=1.3.30' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/source_extraction.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="input_file" type="data" label="Input file" format="data" optional="false" />
+    <param name="mask_file" type="data" label="Mask file" format="data" optional="true" />
+    <param name="thresh" type="float" value="1.5" label="thresh" optional="false" />
+    <param name="err_option" type="select" label="err_option" optional="false">
+      <option value="array_rms">array_rms</option>
+      <option value="float_globalrms" selected="true">float_globalrms</option>
+      <option value="none">none</option>
+    </param>
+    <param name="maskthresh" type="float" value="0.0" label="maskthresh" optional="false" />
+    <param name="minarea" type="integer" value="5" label="minarea" optional="false" />
+    <param name="filter_case" type="select" label="Filter Case" optional="false">
+      <option value="default" selected="true">default</option>
+      <option value="file">file</option>
+      <option value="none">none</option>
+    </param>
+    <param name="filter_file" type="data" label="Filter file" format="data" optional="true" />
+    <param name="filter_type" type="select" label="filter_type" optional="false">
+      <option value="conv">conv</option>
+      <option value="matched" selected="true">matched</option>
+    </param>
+    <param name="deblend_nthresh" type="integer" value="32" label="deblend_nthresh" optional="false" />
+    <param name="deblend_cont" type="float" value="0.005" label="deblend_cont" optional="false" />
+    <param name="clean" type="boolean" checked="true" label="clean" optional="false" />
+    <param name="clean_param" type="float" value="1.0" label="clean_param" optional="false" />
+    <param name="bw" type="integer" value="64" label="bw" optional="false" />
+    <param name="bh" type="integer" value="64" label="bh" optional="false" />
+    <param name="fw" type="integer" value="3" label="fw" optional="false" />
+    <param name="fh" type="integer" value="3" label="fh" optional="false" />
+    <param name="fthresh" type="float" value="0.0" label="fthresh" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; source_extraction bkg_picture" name="out_source_extraction_bkg_picture" format="auto" from_work_dir="bkg_picture_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction rms_picture" name="out_source_extraction_rms_picture" format="auto" from_work_dir="rms_picture_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction data_picture" name="out_source_extraction_data_picture" format="auto" from_work_dir="data_picture_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction sources_picture" name="out_source_extraction_sources_picture" format="auto" from_work_dir="sources_picture_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction segmentation_map_picture" name="out_source_extraction_segmentation_map_picture" format="auto" from_work_dir="segmentation_map_picture_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction segmentation_map" name="out_source_extraction_segmentation_map" format="auto" from_work_dir="segmentation_map_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction bkg_array" name="out_source_extraction_bkg_array" format="auto" from_work_dir="bkg_array_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction rms_array" name="out_source_extraction_rms_array" format="auto" from_work_dir="rms_array_galaxy.output" />
+    <data label="${tool.name} -&gt; source_extraction catalog_table" name="out_source_extraction_catalog_table" format="auto" from_work_dir="catalog_table_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="9">
+      <param name="input_file" location="https://gitlab.renkulab.io/astronomy/mmoda/source-extractor/-/raw/5680fc685979c56c69f98eec8153673422abfa72/input.fits" />
+      <param name="thresh" value="1.5" />
+      <param name="err_option" value="float_globalrms" />
+      <param name="maskthresh" value="0.0" />
+      <param name="minarea" value="5" />
+      <param name="filter_case" value="default" />
+      <param name="filter_type" value="matched" />
+      <param name="deblend_nthresh" value="32" />
+      <param name="deblend_cont" value="0.005" />
+      <param name="clean" value="True" />
+      <param name="clean_param" value="1.0" />
+      <param name="bw" value="64" />
+      <param name="bh" value="64" />
+      <param name="fw" value="3" />
+      <param name="fh" value="3" />
+      <param name="fthresh" value="0.0" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>Source extractor
+================
+
+This tool can be used to extract luminous sources from sky images. It is
+entirely based on the
+`sep &lt;https://sep.readthedocs.io/en/stable/index.html&gt;`__ package, which
+is built on `Source
+Extractor &lt;https://sextractor.readthedocs.io/en/latest/Introduction.html&gt;`__.
+
+Input
+-----
+
+Important input parameters:
+
+1. **Input file** (``.fits`` or ``.tiff``) - A single-channel sky image
+   to analyze.
+
+2. **Mask file** (``.fits`` or ``.tiff``; optional) - A 2D numpy array.
+   True values, or numeric values greater than **maskthresh**, are
+   considered masked. Masking a pixel is equivalent to setting data to
+   zero and noise (if present) to infinity.
+
+3. **thresh** - Threshold pixel value for detection:
+   ``thresh * err[j, i]``, where ``err[j, i]`` is given by the
+   **err_option** parameter; ``j`` and ``i`` represent the pixel indices
+
+4. **err_option** - Sets the error that is taken into account into the
+   detection of sources:
+
+   - ``none`` - The value of **thresh** is taken as an absolute
+     threshold.
+   - ``array_rms`` - An array of the background RMS, i.e.&#160;for each
+     individual pixel.
+   - ``float_globalrms`` - A float value of the global background RMS.
+
+The rest of the parameters are described in the documentations of
+`sep.Background &lt;https://sep.readthedocs.io/en/stable/api/sep.Background.html#sep.Background&gt;`__
+and
+`sep.extract &lt;https://sep.readthedocs.io/en/stable/api/sep.extract.html#sep.extract&gt;`__.
+
+Output
+------
+
+Source Catalog
+~~~~~~~~~~~~~~
+
+The catalogue of sources is explained
+`here &lt;https://sep.readthedocs.io/en/stable/api/sep.extract.html#sep.extract&gt;`__.
+
+Images
+~~~~~~
+
+There are 4 images as output:
+
+- **Background**:
+
+  - ``.fits``: The output of ``sep.Background`` function, i.e.&#160;the
+    estimated 2D background of the input image.
+  - ``.png``: The gray-scale image of the previously described array
+
+- **Background noise**:
+
+  - ``.fits``: The RMS of the background image.
+  - ``.png``: The gray-scale image of the previously described array
+
+- **Input image** - The gray-scale input image.
+- **Sources** - The sources on the background subtracted input image
+- **Segmentation map**:
+
+  - ``.fits``: Each pixel is labeled with 0 or object ID (``0`` =
+    background; ``i+1`` = object ``i``).
+  - ``.png``: Binary mask (``1`` = source, ``0`` = background).
+
+Acknowledgement
+---------------
+
+Bertin, E. &amp; Arnouts, S. 1996: `SExtractor: Software for source
+extraction &lt;https://ui.adsabs.harvard.edu/abs/1996A%26AS..117..393B/abstract&gt;`__,
+Astronomy &amp; Astrophysics Supplement 317, 393
+
+Barbary, (2016), SEP: Source Extractor as a library, Journal of Open
+Source Software, 1(6), 58, doi:10.21105/joss.00058
+</help>
+  <citations>
+    <citation type="doi">10.1051/aas:1996164</citation>
+    <citation type="doi">10.21105/joss.00058</citation>
+  </citations>
+</tool>
