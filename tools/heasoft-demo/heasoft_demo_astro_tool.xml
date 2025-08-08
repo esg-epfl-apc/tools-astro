@@ -1,0 +1,882 @@
+<tool id="heasoft_demo_astro_tool" name="heasoft-demo" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.35.2">heasoft</requirement>
+    <requirement type="package" version="25.2">pip</requirement>
+    <requirement type="package" version="1.2.27">oda-api</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
+  </requirements>
+  <command detect_errors="exit_code">ipython '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="C_data_product_">
+      <param name="DPselector_" type="select" label="Data Product">
+        <option value="batwarpimg" selected="true">batwarpimg</option>
+        <option value="batdetmask" selected="false">batdetmask</option>
+        <option value="batdrmgen-multi" selected="false">batdrmgen-multi</option>
+        <option value="batsurvey-catmux" selected="false">batsurvey-catmux</option>
+        <option value="batsurvey-erebin" selected="false">batsurvey-erebin</option>
+        <option value="batglobalgti" selected="false">batglobalgti</option>
+        <option value="batdph2dpi" selected="false">batdph2dpi</option>
+        <option value="batsurvey-gti" selected="false">batsurvey-gti</option>
+        <option value="batbinevt" selected="false">batbinevt</option>
+        <option value="batsurvey-aspect" selected="false">batsurvey-aspect</option>
+        <option value="batphasyserr" selected="false">batphasyserr</option>
+        <option value="batsurvey-detmask" selected="false">batsurvey-detmask</option>
+        <option value="battsplit" selected="false">battsplit</option>
+        <option value="batsumdph" selected="false">batsumdph</option>
+        <option value="batupdatephakw" selected="false">batupdatephakw</option>
+        <option value="bat-burst-advocate" selected="false">bat-burst-advocate</option>
+        <option value="bathotpix" selected="false">bathotpix</option>
+        <option value="batphasimerr" selected="false">batphasimerr</option>
+        <option value="batgrbproduct" selected="false">batgrbproduct</option>
+      </param>
+      <when value="batwarpimg">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="rows" type="text" value="-" label="rows" optional="true" />
+        <param name="distfile" type="data" label="distfile" format="data" optional="true" />
+        <param name="outcoord" type="select" label="outcoord" optional="true">
+          <option value="APPARENT">APPARENT</option>
+          <option value="TRUE" selected="true">TRUE</option>
+        </param>
+        <param name="copyall" type="boolean" checked="true" label="copyall" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batdetmask">
+        <param name="date" type="text" value="" label="date" optional="false" />
+        <param name="keyword" type="text" value="TSTART" label="keyword" optional="true" />
+        <param name="detmask" type="data" label="detmask" format="data" optional="true" />
+        <param name="outcaldbmask" type="text" value="" label="outcaldbmask" optional="true" />
+        <param name="outdetmask" type="text" value="" label="outdetmask" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batdrmgen-multi">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="outroot" type="text" value="response" label="outroot" optional="false" />
+        <param name="hkfile" type="data" label="hkfile" format="data" optional="true" />
+        <param name="opts" type="text" value="NONE" label="opts" optional="true" />
+        <param name="rows" type="text" value="-" label="rows" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsurvey-catmux">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="keycolumn" type="text" value="CATNUM" label="keycolumn" optional="false" />
+        <param name="exclude" type="text" value="NONE" label="exclude" optional="true" />
+        <param name="translate_map" type="text" value="NONE" label="translate_map" optional="true" />
+        <param name="logfile" type="data" label="logfile" format="data" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsurvey-erebin">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="calfile" type="data" label="calfile" format="data" optional="false" />
+        <param name="residfile" type="data" label="residfile" format="data" optional="true" />
+        <param name="pulserfile" type="data" label="pulserfile" format="data" optional="true" />
+        <param name="fltpulserfile" type="data" label="fltpulserfile" format="data" optional="true" />
+        <param name="outmap" type="text" value="NONE" label="outmap" optional="true" />
+        <param name="baterebin_opts" type="text" value="" label="baterebin_opts" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batglobalgti">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="expr" type="text" value="QUALITY &lt;= 1" label="expr" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batdph2dpi">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="rows" type="integer" value="1" label="rows" optional="false" />
+        <param name="levels" type="text" value="-" label="levels" optional="false" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsurvey-gti">
+        <param name="indir" type="text" value="" label="indir" optional="false" />
+        <param name="dphfiles" type="data" label="dphfiles" format="data" optional="false" />
+        <param name="outdir" type="text" value="" label="outdir" optional="false" />
+        <param name="gtifile" type="data" label="gtifile" format="data" optional="true" />
+        <param name="totexpo" type="float" value="-1.0" label="totexpo" optional="true" />
+        <param name="goodexpo" type="float" value="-1.0" label="goodexpo" optional="true" />
+        <param name="ngti" type="integer" value="-1" label="ngti" optional="true" />
+        <param name="filters" type="text" value="all" label="filters" optional="true" />
+        <param name="elimits" type="text" value="14-195" label="elimits" optional="true" />
+        <param name="rateminthresh" type="float" value="3000.0" label="rateminthresh" min="0.0" optional="true" />
+        <param name="ratemaxthresh" type="float" value="12000.0" label="ratemaxthresh" min="0.0" optional="true" />
+        <param name="detthresh" type="integer" value="24000" label="detthresh" min="0" optional="true" />
+        <param name="ra" type="text" value="NONE" label="ra" optional="true" />
+        <param name="dec" type="text" value="NONE" label="dec" optional="true" />
+        <param name="pcodethresh" type="float" value="0.1" label="pcodethresh" min="0.0" optional="true" />
+        <param name="batoccultgti_opts" type="text" value="" label="batoccultgti_opts" optional="true" />
+        <param name="stlossfcnthresh" type="float" value="1e-09" label="stlossfcnthresh" min="0.0" optional="true" />
+        <param name="filtexpr" type="text" value="NONE" label="filtexpr" optional="true" />
+        <param name="saofiltexpr" type="text" value="ELV &gt; 30.0" label="saofiltexpr" optional="true" />
+        <param name="dphfiltexpr" type="text" value="DATA_FLAGS == 0" label="dphfiltexpr" optional="true" />
+        <param name="surveyslop" type="float" value="5.0" label="surveyslop" optional="true" />
+        <param name="sepdph" type="boolean" checked="true" label="sepdph" optional="true" />
+        <param name="maxgtigap" type="float" value="5.0" label="maxgtigap" min="0.0" optional="true" />
+        <param name="mingti" type="float" value="30.0" label="mingti" min="0.0" optional="true" />
+        <param name="mjdrefi" type="integer" value="51910" label="mjdrefi" min="0" optional="true" />
+        <param name="mjdreff" type="float" value="0.00074287037" label="mjdreff" min="0.0" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batbinevt">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="outtype" type="select" label="outtype" optional="false">
+          <option value="DPH">DPH</option>
+          <option value="DPI">DPI</option>
+          <option value="DPITAB">DPITAB</option>
+          <option value="LC">LC</option>
+          <option value="PHA">PHA</option>
+        </param>
+        <param name="timedel" type="float" value="1.0" label="timedel" min="0.0" optional="false" />
+        <param name="timebinalg" type="select" label="timebinalg" optional="false">
+          <option value="gti">gti</option>
+          <option value="highsnr">highsnr</option>
+          <option value="infile">infile</option>
+          <option value="matchlc">matchlc</option>
+          <option value="snr">snr</option>
+          <option value="uniform" selected="true">uniform</option>
+        </param>
+        <param name="energybins" type="text" value="-" label="energybins" optional="false" />
+        <param name="gtifile" type="data" label="gtifile" format="data" optional="true" />
+        <param name="ecol" type="select" label="ecol" optional="true">
+          <option value="ENERGY" selected="true">ENERGY</option>
+          <option value="PHA">PHA</option>
+          <option value="PI">PI</option>
+        </param>
+        <param name="weighted" type="select" label="weighted" optional="true">
+          <option value="INDEF" selected="true">INDEF</option>
+          <option value="no">no</option>
+          <option value="yes">yes</option>
+        </param>
+        <param name="outunits" type="select" label="outunits" optional="true">
+          <option value="COUNTS">COUNTS</option>
+          <option value="RATE">RATE</option>
+        </param>
+        <param name="timepixr" type="float" value="-1.0" label="timepixr" min="-1.0" max="1.0" optional="true" />
+        <param name="maskwt" type="data" label="maskwt" format="data" optional="true" />
+        <param name="tstart" type="text" value="INDEF" label="tstart" optional="true" />
+        <param name="tstop" type="text" value="INDEF" label="tstop" optional="true" />
+        <param name="snrthresh" type="float" value="6.0" label="snrthresh" min="0.01" optional="true" />
+        <param name="detmask" type="data" label="detmask" format="data" optional="true" />
+        <param name="tcol" type="text" value="TIME" label="tcol" optional="true" />
+        <param name="countscol" type="text" value="DPH_COUNTS" label="countscol" optional="true" />
+        <param name="xcol" type="text" value="DETX" label="xcol" optional="true" />
+        <param name="ycol" type="text" value="DETY" label="ycol" optional="true" />
+        <param name="maskwtcol" type="text" value="MASK_WEIGHT" label="maskwtcol" optional="true" />
+        <param name="ebinquant" type="float" value="0.1" label="ebinquant" min="1e-06" max="1000000.0" optional="true" />
+        <param name="delzeroes" type="boolean" checked="true" label="delzeroes" optional="true" />
+        <param name="minfracexp" type="float" value="0.1" label="minfracexp" min="0.0" max="1.0" optional="true" />
+        <param name="min_dph_frac_overlap" type="float" value="0.999" label="min_dph_frac_overlap" min="0.0" max="1.0" optional="true" />
+        <param name="min_dph_time_overlap" type="float" value="0.0" label="min_dph_time_overlap" min="0.0" optional="true" />
+        <param name="max_dph_time_nonoverlap" type="float" value="0.5" label="max_dph_time_nonoverlap" min="0.0" optional="true" />
+        <param name="buffersize" type="integer" value="16384" label="buffersize" min="8" max="33554432" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsurvey-aspect">
+        <param name="gtifile" type="data" label="gtifile" format="data" optional="false" />
+        <param name="attfile" type="data" label="attfile" format="data" optional="false" />
+        <param name="outattfile" type="data" label="outattfile" format="data" optional="false" />
+        <param name="outgtifile" type="data" label="outgtifile" format="data" optional="false" />
+        <param name="med_ra" type="float" value="-999.0" label="med_ra" optional="true" />
+        <param name="med_dec" type="float" value="-999.0" label="med_dec" optional="true" />
+        <param name="med_roll" type="float" value="-999.0" label="med_roll" optional="true" />
+        <param name="expotot" type="float" value="-1.0" label="expotot" optional="true" />
+        <param name="expobad" type="float" value="-1.0" label="expobad" optional="true" />
+        <param name="point_toler" type="float" value="0.025" label="point_toler" min="0.0" optional="true" />
+        <param name="roll_toler" type="float" value="0.083" label="roll_toler" min="0.0" optional="true" />
+        <param name="alignfile" type="data" label="alignfile" format="data" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batphasyserr">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="syserrfile" type="data" label="syserrfile" format="data" optional="false" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsurvey-detmask">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="detflagfile" type="data" label="detflagfile" format="data" optional="true" />
+        <param name="patternmask" type="text" value="NONE" label="patternmask" optional="true" />
+        <param name="detmask" type="data" label="detmask" format="data" optional="true" />
+        <param name="repoquery" type="boolean" checked="true" label="repoquery" optional="true" />
+        <param name="totalmap" type="boolean" checked="true" label="totalmap" optional="true" />
+        <param name="outenamask" type="text" value="INDEF" label="outenamask" optional="true" />
+        <param name="outcaldbmask" type="text" value="INDEF" label="outcaldbmask" optional="true" />
+        <param name="cleanup" type="boolean" checked="true" label="cleanup" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="battsplit">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="gtifile" type="data" label="gtifile" format="data" optional="true" />
+        <param name="tolerance" type="float" value="5.0" label="tolerance" min="0.0" optional="true" />
+        <param name="expr" type="text" value="SQRT((IMX-IMX{-1})^2 + (IMY-IMY{-1})^2)/#deg" label="expr" optional="true" />
+        <param name="diffcol" type="text" value="_DIFF" label="diffcol" optional="true" />
+        <param name="cleanup" type="boolean" checked="true" label="cleanup" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batsumdph">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="rows" type="text" value="-" label="rows" optional="false" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batupdatephakw">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="auxfile" type="data" label="auxfile" format="data" optional="false" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="bat-burst-advocate">
+        <param name="indir" type="text" value="" label="indir" optional="false" />
+        <param name="outdir" type="text" value="" label="outdir" optional="false" />
+        <param name="ra" type="text" value="BAT" label="ra" optional="true" />
+        <param name="dec" type="text" value="BAT" label="dec" optional="true" />
+        <param name="trigtime" type="float" value="0.0" label="trigtime" optional="true" />
+        <param name="trigstop" type="float" value="0.0" label="trigstop" optional="true" />
+        <param name="backstrt" type="float" value="0.0" label="backstrt" optional="true" />
+        <param name="backstop" type="float" value="0.0" label="backstop" optional="true" />
+        <param name="shortfix" type="text" value="scaledmap,expand" label="shortfix" optional="true" />
+        <param name="tbkgsub" type="boolean" checked="true" label="tbkgsub" optional="true" />
+        <param name="tnear" type="float" value="2000.0" label="tnear" min="0.0" optional="true" />
+        <param name="tbinmax" type="float" value="1000.0" label="tbinmax" min="0.0" optional="true" />
+        <param name="pcodethresh" type="float" value="0.0" label="pcodethresh" min="0.0" max="1.0" optional="true" />
+        <param name="imgpcodethresh" type="float" value="0.05" label="imgpcodethresh" min="0.0" max="1.0" optional="true" />
+        <param name="aperture" type="text" value="CALDB:FLUX" label="aperture" optional="true" />
+        <param name="date_obs" type="text" value="INDEF" label="date_obs" optional="true" />
+        <param name="extractor" type="text" value="fextract-events" label="extractor" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="bathotpix">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="detmask" type="data" label="detmask" format="data" optional="true" />
+        <param name="row" type="integer" value="-1" label="row" min="-1" optional="true" />
+        <param name="keepfract" type="float" value="0.98" label="keepfract" min="0.01" max="1.0" optional="true" />
+        <param name="guardfract" type="float" value="0.25" label="guardfract" min="0.0" optional="true" />
+        <param name="guardval" type="float" value="5.0" label="guardval" min="0.0" optional="true" />
+        <param name="applygaps" type="boolean" checked="true" label="applygaps" optional="true" />
+        <param name="mergemask" type="boolean" checked="true" label="mergemask" optional="true" />
+        <param name="zerothresh" type="float" value="20.0" label="zerothresh" min="0.0" optional="true" />
+        <param name="goodval" type="integer" value="0" label="goodval" optional="true" />
+        <param name="badval" type="integer" value="1" label="badval" optional="true" />
+        <param name="hotval" type="integer" value="1" label="hotval" optional="true" />
+        <param name="coldval" type="integer" value="1" label="coldval" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batphasimerr">
+        <param name="infile" type="data" label="infile" format="data" optional="false" />
+        <param name="exposure" type="float" value="0.0" label="exposure" min="0.0" optional="false" />
+        <param name="bkgfile" type="data" label="bkgfile" format="data" optional="false" />
+        <param name="eboundfile" type="data" label="eboundfile" format="data" optional="false" />
+        <param name="pcodefr" type="float" value="1.0" label="pcodefr" min="1e-05" max="1.0" optional="true" />
+        <param name="alpha" type="float" value="0.28" label="alpha" min="0.0" optional="true" />
+        <param name="chatter" type="integer" value="2" label="chatter" min="0" max="5" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+      <when value="batgrbproduct">
+        <param name="indir" type="text" value="" label="indir" optional="false" />
+        <param name="outdir" type="text" value="" label="outdir" optional="false" />
+        <param name="ra" type="text" value="BAT" label="ra" optional="true" />
+        <param name="dec" type="text" value="BAT" label="dec" optional="true" />
+        <param name="trigtime" type="float" value="0.0" label="trigtime" optional="true" />
+        <param name="trigstop" type="float" value="0.0" label="trigstop" optional="true" />
+        <param name="backstrt" type="float" value="0.0" label="backstrt" optional="true" />
+        <param name="backstop" type="float" value="0.0" label="backstop" optional="true" />
+        <param name="shortfix" type="text" value="scaledmap,expand" label="shortfix" optional="true" />
+        <param name="tbkgsub" type="boolean" checked="true" label="tbkgsub" optional="true" />
+        <param name="tnear" type="float" value="2000.0" label="tnear" min="0.0" optional="true" />
+        <param name="tbinmax" type="float" value="1000.0" label="tbinmax" min="0.0" optional="true" />
+        <param name="pcodethresh" type="float" value="0.0" label="pcodethresh" min="0.0" max="1.0" optional="true" />
+        <param name="imgpcodethresh" type="float" value="0.05" label="imgpcodethresh" min="0.0" max="1.0" optional="true" />
+        <param name="aperture" type="text" value="CALDB:FLUX" label="aperture" optional="true" />
+        <param name="date_obs" type="text" value="INDEF" label="date_obs" optional="true" />
+        <param name="extractor" type="text" value="fextract-events" label="extractor" optional="true" />
+        <param name="chatter" type="integer" value="1" label="chatter" min="0" max="5" optional="true" />
+        <param name="clobber" type="boolean" checked="true" label="clobber" optional="true" />
+        <param name="history" type="boolean" checked="true" label="history" optional="true" />
+        <param name="mode" type="text" value="ql" label="mode" optional="true" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; batwarpimg result" name="out_batwarpimg_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batwarpimg'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batdetmask result" name="out_batdetmask_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batdetmask'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batdrmgen-multi result" name="out_batdrmgen_multi_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batdrmgen-multi'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsurvey-catmux result" name="out_batsurvey_catmux_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsurvey-catmux'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsurvey-erebin result" name="out_batsurvey_erebin_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsurvey-erebin'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batglobalgti result" name="out_batglobalgti_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batglobalgti'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batdph2dpi result" name="out_batdph2dpi_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batdph2dpi'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsurvey-gti result" name="out_batsurvey_gti_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsurvey-gti'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batbinevt result" name="out_batbinevt_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batbinevt'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsurvey-aspect result" name="out_batsurvey_aspect_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsurvey-aspect'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batphasyserr result" name="out_batphasyserr_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batphasyserr'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsurvey-detmask result" name="out_batsurvey_detmask_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsurvey-detmask'</filter>
+    </data>
+    <data label="${tool.name} -&gt; battsplit result" name="out_battsplit_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'battsplit'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batsumdph result" name="out_batsumdph_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batsumdph'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batupdatephakw result" name="out_batupdatephakw_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batupdatephakw'</filter>
+    </data>
+    <data label="${tool.name} -&gt; bat-burst-advocate result" name="out_bat_burst_advocate_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'bat-burst-advocate'</filter>
+    </data>
+    <data label="${tool.name} -&gt; bathotpix result" name="out_bathotpix_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'bathotpix'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batphasimerr result" name="out_batphasimerr_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batphasimerr'</filter>
+    </data>
+    <data label="${tool.name} -&gt; batgrbproduct result" name="out_batgrbproduct_result" format="auto" from_work_dir="result_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'batgrbproduct'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batwarpimg" />
+        <param name="infile" value="NONE" />
+        <param name="rows" value="-" />
+        <param name="distfile" value="distfile.json" />
+        <param name="outcoord" value="TRUE" />
+        <param name="copyall" value="True" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batdetmask" />
+        <param name="date" value="" />
+        <param name="keyword" value="TSTART" />
+        <param name="detmask" value="NONE" />
+        <param name="outcaldbmask" value="" />
+        <param name="outdetmask" value="" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batdrmgen-multi" />
+        <param name="infile" value="infile.json" />
+        <param name="outroot" value="response" />
+        <param name="hkfile" value="NONE" />
+        <param name="opts" value="NONE" />
+        <param name="rows" value="-" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsurvey-catmux" />
+        <param name="infile" value="NONE" />
+        <param name="keycolumn" value="CATNUM" />
+        <param name="exclude" value="NONE" />
+        <param name="translate_map" value="NONE" />
+        <param name="logfile" value="NONE" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsurvey-erebin" />
+        <param name="infile" value="NONE" />
+        <param name="calfile" value="NONE" />
+        <param name="residfile" value="residfile.json" />
+        <param name="pulserfile" value="pulserfile.json" />
+        <param name="fltpulserfile" value="fltpulserfile.json" />
+        <param name="outmap" value="NONE" />
+        <param name="baterebin_opts" value="" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batglobalgti" />
+        <param name="infile" value="infile.json" />
+        <param name="expr" value="QUALITY &lt;= 1" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batdph2dpi" />
+        <param name="infile" value="NONE" />
+        <param name="rows" value="1" />
+        <param name="levels" value="-" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="1" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsurvey-gti" />
+        <param name="indir" value="" />
+        <param name="dphfiles" value="NONE" />
+        <param name="outdir" value="" />
+        <param name="gtifile" value="NONE" />
+        <param name="totexpo" value="-1.0" />
+        <param name="goodexpo" value="-1.0" />
+        <param name="ngti" value="-1" />
+        <param name="filters" value="all" />
+        <param name="elimits" value="14-195" />
+        <param name="rateminthresh" value="3000.0" />
+        <param name="ratemaxthresh" value="12000.0" />
+        <param name="detthresh" value="24000" />
+        <param name="ra" value="NONE" />
+        <param name="dec" value="NONE" />
+        <param name="pcodethresh" value="0.1" />
+        <param name="batoccultgti_opts" value="" />
+        <param name="stlossfcnthresh" value="1e-09" />
+        <param name="filtexpr" value="NONE" />
+        <param name="saofiltexpr" value="ELV &gt; 30.0" />
+        <param name="dphfiltexpr" value="DATA_FLAGS == 0" />
+        <param name="surveyslop" value="5.0" />
+        <param name="sepdph" value="True" />
+        <param name="maxgtigap" value="5.0" />
+        <param name="mingti" value="30.0" />
+        <param name="mjdrefi" value="51910" />
+        <param name="mjdreff" value="0.00074287037" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batbinevt" />
+        <param name="infile" value="NONE" />
+        <param name="outtype" value="" />
+        <param name="timedel" value="1.0" />
+        <param name="timebinalg" value="uniform" />
+        <param name="energybins" value="-" />
+        <param name="gtifile" value="NONE" />
+        <param name="ecol" value="ENERGY" />
+        <param name="weighted" value="INDEF" />
+        <param name="outunits" value="INDEF" />
+        <param name="timepixr" value="-1.0" />
+        <param name="maskwt" value="NONE" />
+        <param name="tstart" value="INDEF" />
+        <param name="tstop" value="INDEF" />
+        <param name="snrthresh" value="6.0" />
+        <param name="detmask" value="NONE" />
+        <param name="tcol" value="TIME" />
+        <param name="countscol" value="DPH_COUNTS" />
+        <param name="xcol" value="DETX" />
+        <param name="ycol" value="DETY" />
+        <param name="maskwtcol" value="MASK_WEIGHT" />
+        <param name="ebinquant" value="0.1" />
+        <param name="delzeroes" value="True" />
+        <param name="minfracexp" value="0.1" />
+        <param name="min_dph_frac_overlap" value="0.999" />
+        <param name="min_dph_time_overlap" value="0.0" />
+        <param name="max_dph_time_nonoverlap" value="0.5" />
+        <param name="buffersize" value="16384" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsurvey-aspect" />
+        <param name="gtifile" value="NONE" />
+        <param name="attfile" value="NONE" />
+        <param name="outattfile" value="NONE" />
+        <param name="outgtifile" value="NONE" />
+        <param name="med_ra" value="-999.0" />
+        <param name="med_dec" value="-999.0" />
+        <param name="med_roll" value="-999.0" />
+        <param name="expotot" value="-1.0" />
+        <param name="expobad" value="-1.0" />
+        <param name="point_toler" value="0.025" />
+        <param name="roll_toler" value="0.083" />
+        <param name="alignfile" value="alignfile.json" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batphasyserr" />
+        <param name="infile" value="NONE" />
+        <param name="syserrfile" value="NONE" />
+        <param name="chatter" value="2" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsurvey-detmask" />
+        <param name="infile" value="NONE" />
+        <param name="detflagfile" value="NONE" />
+        <param name="patternmask" value="NONE" />
+        <param name="detmask" value="NONE" />
+        <param name="repoquery" value="True" />
+        <param name="totalmap" value="True" />
+        <param name="outenamask" value="INDEF" />
+        <param name="outcaldbmask" value="INDEF" />
+        <param name="cleanup" value="True" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="battsplit" />
+        <param name="infile" value="infile.json" />
+        <param name="gtifile" value="NONE" />
+        <param name="tolerance" value="5.0" />
+        <param name="expr" value="SQRT((IMX-IMX{-1})^2 + (IMY-IMY{-1})^2)/#deg" />
+        <param name="diffcol" value="_DIFF" />
+        <param name="cleanup" value="True" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batsumdph" />
+        <param name="infile" value="NONE" />
+        <param name="rows" value="-" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="1" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batupdatephakw" />
+        <param name="infile" value="NONE" />
+        <param name="auxfile" value="NONE" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="bat-burst-advocate" />
+        <param name="indir" value="" />
+        <param name="outdir" value="" />
+        <param name="ra" value="BAT" />
+        <param name="dec" value="BAT" />
+        <param name="trigtime" value="0.0" />
+        <param name="trigstop" value="0.0" />
+        <param name="backstrt" value="0.0" />
+        <param name="backstop" value="0.0" />
+        <param name="shortfix" value="scaledmap,expand" />
+        <param name="tbkgsub" value="True" />
+        <param name="tnear" value="2000.0" />
+        <param name="tbinmax" value="1000.0" />
+        <param name="pcodethresh" value="0.0" />
+        <param name="imgpcodethresh" value="0.05" />
+        <param name="aperture" value="CALDB:FLUX" />
+        <param name="date_obs" value="INDEF" />
+        <param name="extractor" value="fextract-events" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="bathotpix" />
+        <param name="infile" value="NONE" />
+        <param name="detmask" value="NONE" />
+        <param name="row" value="-1" />
+        <param name="keepfract" value="0.98" />
+        <param name="guardfract" value="0.25" />
+        <param name="guardval" value="5.0" />
+        <param name="applygaps" value="True" />
+        <param name="mergemask" value="True" />
+        <param name="zerothresh" value="20.0" />
+        <param name="goodval" value="0" />
+        <param name="badval" value="1" />
+        <param name="hotval" value="1" />
+        <param name="coldval" value="1" />
+        <param name="clobber" value="True" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batphasimerr" />
+        <param name="infile" value="NONE" />
+        <param name="exposure" value="0.0" />
+        <param name="bkgfile" value="bkgfile.json" />
+        <param name="eboundfile" value="NONE" />
+        <param name="pcodefr" value="1.0" />
+        <param name="alpha" value="0.28" />
+        <param name="chatter" value="2" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="batgrbproduct" />
+        <param name="indir" value="" />
+        <param name="outdir" value="" />
+        <param name="ra" value="BAT" />
+        <param name="dec" value="BAT" />
+        <param name="trigtime" value="0.0" />
+        <param name="trigstop" value="0.0" />
+        <param name="backstrt" value="0.0" />
+        <param name="backstop" value="0.0" />
+        <param name="shortfix" value="scaledmap,expand" />
+        <param name="tbkgsub" value="True" />
+        <param name="tnear" value="2000.0" />
+        <param name="tbinmax" value="1000.0" />
+        <param name="pcodethresh" value="0.0" />
+        <param name="imgpcodethresh" value="0.05" />
+        <param name="aperture" value="CALDB:FLUX" />
+        <param name="date_obs" value="INDEF" />
+        <param name="extractor" value="fextract-events" />
+        <param name="chatter" value="1" />
+        <param name="clobber" value="True" />
+        <param name="history" value="True" />
+        <param name="mode" value="ql" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>HEASOFT
+=======
+
+This service provides access to Swift BAT HEASOFT tools. The list of
+parameters corresponds to one defined in standard HEASOFT par files.
+
+References
+----------
+
+- **HEASoft (FTOOLS/XANADU Unified Package)** HEASARC. *HEASoft: Unified
+  Release of FTOOLS and XANADU*. Version 6.35.2, 2025.
+  https://heasarc.gsfc.nasa.gov/docs/software/heasoft/
+
+- **HEASoftPy (Python Interface for HEASoft Tools)** HEASARC.
+  *HEASoftPy: Python Interface for HEASoft Tools*. Accessed August 2025.
+  https://heasarc.gsfc.nasa.gov/lheasoft/heasoftpy/
+
+- **Swift BAT Toolset** NASA/Swift Team. *Swift BAT Software Tools*.
+  Includes ``batbinevt``, ``batmaskwtevt``, ``batgrbproduct``, etc.
+  https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/swift.html
+
+- **``batsurvey``: Swift BAT Survey Mode Data Processing Tool**
+  NASA/Swift Team. *batsurvey Tool Help Page*. Accessed August 2025.
+  https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batsurvey.html
+
+- **``batgrbproduct``: Swift GRB Processing Pipeline** NASA/Swift Team.
+  *batgrbproduct Tool Help Page*. Accessed August 2025.
+  https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batgrbproduct.html
+</help>
+  <citations>
+    <citation type="bibtex">@misc{heasoft,
+			author = {{HEASARC}},
+			title = {HEASoft: Unified Release of FTOOLS and XANADU},
+			year = {2025},
+			url = {https://heasarc.gsfc.nasa.gov/docs/software/heasoft/},
+			note = {Version 6.35.2, NASA High Energy Astrophysics Science Archive Research Center (HEASARC)},
+			howpublished = {\url{https://heasarc.gsfc.nasa.gov/docs/software/heasoft/}}
+		}</citation>
+    <citation type="bibtex">@misc{heasoftpy,
+			author = {{HEASARC}},
+			title = {HEASoftPy: Python Interface for HEASoft Tools},
+			year = {2025},
+			url = {https://heasarc.gsfc.nasa.gov/lheasoft/heasoftpy/},
+			note = {Accessed August 2025},
+			howpublished = {\url{https://heasarc.gsfc.nasa.gov/lheasoft/heasoftpy/}}
+		}</citation>
+    <citation type="bibtex">@misc{swiftbat,
+			author = {{NASA/Swift Team}},
+			title = {Swift BAT Software Tools},
+			year = {2025},
+			url = {https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/swift.html},
+			note = {Includes batbinevt, batmaskwtevt, batgrbproduct, etc.},
+			howpublished = {\url{https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/swift.html}}
+		}</citation>
+    <citation type="bibtex">@misc{batsurvey,
+			author = {{NASA/Swift Team}},
+			title = {batsurvey: Swift BAT Survey Mode Data Processing Tool},
+			year = {2025},
+			url = {https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batsurvey.html},
+			note = {Accessed August 2025},
+			howpublished = {\url{https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batsurvey.html}}
+		}</citation>
+    <citation type="bibtex">@misc{batgrbproduct,
+			author = {{NASA/Swift Team}},
+			title = {batgrbproduct: Swift GRB Data Processing Pipeline},
+			year = {2025},
+			url = {https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batgrbproduct.html},
+			note = {Accessed August 2025},
+			howpublished = {\url{https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/help/batgrbproduct.html}}
+		}</citation>
+  </citations>
+</tool>
