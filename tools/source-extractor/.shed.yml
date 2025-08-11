@@ -1,0 +1,10 @@
+categories:
+- Astronomy
+description: Tool to extract luminous sources from astronomical sky images
+homepage_url: null
+long_description: Tool to extract luminous sources from astronomical sky images, based
+  on SEP library
+name: source_extractor_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted

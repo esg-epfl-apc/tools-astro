@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: Basic simulation of CTA telescope observations using gammapy package
+homepage_url: null
+long_description: Basic simulation of CTA telescope observations using gammapy package
+name: cta_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted

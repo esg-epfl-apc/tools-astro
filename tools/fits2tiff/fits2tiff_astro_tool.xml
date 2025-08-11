@@ -1,0 +1,48 @@
+<tool id="fits2tiff_astro_tool" name="fits2tiff" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="6.1.7">astropy</requirement>
+    <requirement type="package" version="2025.6.11">tifffile</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/fits2tiff.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="file_input" type="data" label="Input file" format="data" optional="false" />
+    <param name="input_hdu_no" type="integer" value="0" label="Input HDU number" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; fits2tiff file_output" name="out_fits2tiff_file_output" format="auto" from_work_dir="file_output_galaxy.output" />
+    <data label="${tool.name} -&gt; fits2tiff header_json" name="out_fits2tiff_header_json" format="auto" from_work_dir="header_json_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <param name="file_input" location="https://gitlab.renkulab.io/astronomy/mmoda/fits2tiff/-/raw/425c43b8429eceea946865e1ba475aa82ad33a79/input.fits" />
+      <param name="input_hdu_no" value="0" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>This tool converts images stored in FITS files to TIFF format. If the
+FITS file contains multiple HDUs, the desired HDU index can be
+specified.
+
+**Important**: The image data itself is not altered during the
+conversion.
+
+In addition to the TIFF file, the tool also outputs a JSON file
+containing the metadata from the header of the selected FITS HDU.
+</help>
+  <citations>
+    <citation type="doi">10.1051/0004-6361/201322068</citation>
+    <citation type="doi">10.3847/1538-3881/aabc4f</citation>
+    <citation type="doi">10.3847/1538-4357/ac7c74</citation>
+    <citation type="doi">10.5281/zenodo.15645336</citation>
+  </citations>
+</tool>

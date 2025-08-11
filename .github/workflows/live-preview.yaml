@@ -16,7 +16,7 @@ on:
       - '*'
 env:
   GALAXY_FORK: galaxyproject
-  GALAXY_BRANCH: release_23.1
+  GALAXY_BRANCH: release_24.2
 
 jobs:
   setup:
@@ -26,10 +26,10 @@ jobs:
     outputs:
       tool-list: ${{ steps.discover.outputs.tool-list }}
     steps:
-    - uses: actions/setup-python@v4
+    - uses: actions/setup-python@v5
       with:
-        python-version: "3.8"
-    - uses: actions/checkout@v3
+        python-version: "3.11"
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Fake a Planemo run to determine tool list
@@ -38,7 +38,7 @@ jobs:
       with:
         galaxy-fork: ${{ env.GALAXY_FORK }}
         galaxy-branch: ${{ env.GALAXY_BRANCH }}
-        python-version: "3.7"
+        python-version: "3.11"
     - name: Show tool list
       run: echo '${{ steps.discover.outputs.tool-list }}'
 
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Install requirenments
       run: sudo apt-get install -y ansible
     - name: Install SSH key
@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Install requirenments
         run: sudo apt-get install -y ansible
       - name: Install SSH key

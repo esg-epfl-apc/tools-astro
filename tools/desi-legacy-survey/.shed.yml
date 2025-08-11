@@ -1,0 +1,10 @@
+categories:
+- Astronomy
+description: Tool to query Legacy Survey data
+homepage_url: null
+long_description: Tool to query Legacy Survey photometric data, i.e. grzw1w2 fluxes,
+  useful to estimate photometric redshifts ...
+name: desi_legacy_survey_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
