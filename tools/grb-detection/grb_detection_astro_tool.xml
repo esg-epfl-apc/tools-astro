@@ -1,17 +1,19 @@
 <tool id="grb_detection_astro_tool" name="GRB detection" version="0.0.1+galaxy0" profile="24.0">
   <requirements>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="1.2.41">oda-api</requirement>
+    <requirement type="package" version="3.12.11">python</requirement>
     <requirement type="package" version="9.4.0">ipython</requirement>
-    <requirement type="package" version="7.1.0">astropy</requirement>
-    <requirement type="package" version="3.10.5">matplotlib</requirement>
-    <requirement type="package" version="1.2.27">oda-api</requirement>
-    <requirement type="package" version="2.3.2">numpy</requirement>
-    <!--Requirements string 'renku-aqs>=1.0.4
-' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <requirement type="package" version="7.16.6">nbconvert</requirement>
     <requirement type="package" version="5.10.4">nbformat</requirement>
     <requirement type="package" version="0.3.4">gcn-kafka</requirement>
     <requirement type="package" version="0.14.2">xmltodict</requirement>
     <requirement type="package" version="0.11.1">hop-client</requirement>
+    <requirement type="package" version="2.4.0">ligo.skymap</requirement>
+    <!--Requirements string 'renku-aqs>=1.0.4
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'integral-client
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'isdc-client
@@ -20,7 +22,6 @@
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'integral-visibility
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
-    <requirement type="package" version="2.4.0">ligo.skymap</requirement>
     <!--Requirements string 'git+https://github.com/volodymyrss/oda-function.git
 ' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
     <!--Requirements string 'matrix-client
@@ -132,4 +133,28 @@
       </assert_stdout>
     </test>
   </tests>
+  <help>This service provides simple detection process for a gamma-ray burst in
+SPI-ACS data.
+
+It queries MMODA platform to get SPI-ACS lightcurve in the interval
+between ``T1`` and ``T2`` and detects GRB as a peak above the background
+(calculated in the window of the ``background_age`` width) with given
+minimal S/N ratio. The detection is performed in the rescaled lightcurve
+(scales given as comma-separated list).
+</help>
+  <citations>
+    <citation type="bibtex">@article{Neronov_2021,
+			title = {Online data analysis system of the INTEGRAL telescope},
+			volume = {651},
+			ISSN = {1432-0746},
+			url = {http://dx.doi.org/10.1051/0004-6361/202037850},
+			DOI = {10.1051/0004-6361/202037850},
+			journal = {Astronomy &amp;amp; Astrophysics},
+			publisher = {EDP Sciences},
+			author = {Neronov, A. and Savchenko, V. and Tramacere, A. and Meharga, M. and Ferrigno, C. and Paltani, S.},
+			year = {2021},
+			month = {jul},
+			pages = {A97}
+		}</citation>
+  </citations>
 </tool>
