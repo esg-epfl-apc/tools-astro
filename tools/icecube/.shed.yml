@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: Basic analysis of IceCube public data using skyllh package
+homepage_url: null
+long_description: Basic analysis of IceCube public data using skyllh package
+name: icecube_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
