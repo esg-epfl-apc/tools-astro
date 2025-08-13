@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: spectral-analysis
+homepage_url: null
+long_description: spectral-analysis
+name: spectral_analysis_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
