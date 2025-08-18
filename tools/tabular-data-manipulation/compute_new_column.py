@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -19,14 +23,16 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for vn, vv in inp_pdic.items():
-    if vn != "_selector":
-        globals()[vn] = type(globals()[vn])(vv)
+fn = str(inp_pdic["fn"])
+new_column = str(inp_pdic["new_column"])
+expression = str(inp_pdic["expression"])
+variables = str(inp_pdic["variables"])
+sep = str(inp_pdic["sep"])
+action = str(inp_pdic["action"])
 
 # this is a patch due to some anomaly in the ODA bot
 for k, v in [
