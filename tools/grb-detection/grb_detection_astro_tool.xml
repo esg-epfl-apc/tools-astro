@@ -1,0 +1,75 @@
+<tool id="grb_detection_astro_tool" name="GRB detection" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="6.1.4">astropy</requirement>
+    <requirement type="package" version="3.9.4">matplotlib</requirement>
+    <requirement type="package" version="1.2.41">oda-api</requirement>
+    <requirement type="package" version="3.12.11">python</requirement>
+    <requirement type="package" version="9.4.0">ipython</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.4">gcn-kafka</requirement>
+    <requirement type="package" version="0.14.2">xmltodict</requirement>
+    <requirement type="package" version="0.11.1">hop-client</requirement>
+    <requirement type="package" version="2.4.0">ligo.skymap</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/detectgrb.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="T1" type="text" value="2023-01-16T04:53:33.9" label="T1" optional="false" />
+    <param name="T2" type="text" value="2023-01-16T04:55:33.9" label="T2" optional="false" />
+    <param name="detection_time_scales" type="text" value="1,10" label="detection_time_scales" optional="false" />
+    <param name="lc_time_scale" type="float" value="0.1" label="lc_time_scale" optional="false" />
+    <param name="background_age" type="float" value="10" label="background_age (unit: s)" optional="false" />
+    <param name="min_sn" type="integer" value="5" label="min_sn" optional="false" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; detectgrb lc" name="out_detectgrb_lc" format="auto" from_work_dir="lc_galaxy.output" />
+    <data label="${tool.name} -&gt; detectgrb detection_comment" name="out_detectgrb_detection_comment" format="auto" from_work_dir="detection_comment_galaxy.output" />
+    <data label="${tool.name} -&gt; detectgrb image_output" name="out_detectgrb_image_output" format="auto" from_work_dir="image_output_galaxy.output" />
+    <data label="${tool.name} -&gt; detectgrb image_fits" name="out_detectgrb_image_fits" format="auto" from_work_dir="image_fits_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="4">
+      <param name="T1" value="2023-01-16T04:53:33.9" />
+      <param name="T2" value="2023-01-16T04:55:33.9" />
+      <param name="detection_time_scales" value="1,10" />
+      <param name="lc_time_scale" value="0.1" />
+      <param name="background_age" value="10" />
+      <param name="min_sn" value="5" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <help>This service provides simple detection process for a gamma-ray burst in
+SPI-ACS data.
+
+It queries MMODA platform to get SPI-ACS lightcurve in the interval
+between ``T1`` and ``T2`` and detects GRB as a peak above the background
+(calculated in the window of the ``background_age`` width) with given
+minimal S/N ratio. The detection is performed in the rescaled lightcurve
+(scales given as comma-separated list).
+</help>
+  <citations>
+    <citation type="bibtex">@article{Neronov_2021,
+			title = {Online data analysis system of the INTEGRAL telescope},
+			volume = {651},
+			ISSN = {1432-0746},
+			url = {http://dx.doi.org/10.1051/0004-6361/202037850},
+			DOI = {10.1051/0004-6361/202037850},
+			journal = {Astronomy &amp;amp; Astrophysics},
+			publisher = {EDP Sciences},
+			author = {Neronov, A. and Savchenko, V. and Tramacere, A. and Meharga, M. and Ferrigno, C. and Paltani, S.},
+			year = {2021},
+			month = {jul},
+			pages = {A97}
+		}</citation>
+  </citations>
+</tool>
