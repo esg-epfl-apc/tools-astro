@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -32,13 +36,16 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in ["src_name", "RA", "DEC", "T1", "T2", "Radius"]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+src_name = str(inp_pdic["src_name"])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+T1 = str(inp_pdic["T1"])
+T2 = str(inp_pdic["T2"])
+Radius = float(inp_pdic["Radius"])
 
 Imsize = 0.2  # http://odahub.io/ontology#AngleDegrees
 pixsize = 0.01
