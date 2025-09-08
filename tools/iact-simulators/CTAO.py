@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+#!/usr/bin/env python
+
+# This script is generated with nb2galaxy
+
 # flake8: noqa
 
 import json
@@ -26,7 +30,10 @@ from gammapy.datasets import MapDataset, MapDatasetEventSampler
 from gammapy.irf import load_irf_dict_from_file
 from gammapy.makers import MapDatasetMaker
 from gammapy.maps import MapAxis, WcsGeom
-from gammapy.modeling.models import FoVBackgroundModel, Models
+from gammapy.modeling.models import (
+    FoVBackgroundModel,
+    Models,
+)
 from numpy import cos, exp, pi, sqrt
 from oda_api.api import ProgressReporter
 from oda_api.data_products import BinaryProduct, PictureProduct
@@ -59,28 +66,24 @@ _galaxy_wd = os.getcwd()
 
 with open("inputs.json", "r") as fd:
     inp_dic = json.load(fd)
-if "_data_product" in inp_dic.keys():
-    inp_pdic = inp_dic["_data_product"]
+if "C_data_product_" in inp_dic.keys():
+    inp_pdic = inp_dic["C_data_product_"]
 else:
     inp_pdic = inp_dic
-
-for _vn in [
-    "RA",
-    "DEC",
-    "OffAxis_angle",
-    "Texp",
-    "z",
-    "F0",
-    "E0",
-    "Gamma",
-    "Radius_spectal_extraction",
-    "Radius_sky_image",
-    "Site",
-    "Telescope_LST",
-    "Telescope_MST",
-    "Telescope_SST",
-]:
-    globals()[_vn] = type(globals()[_vn])(inp_pdic[_vn])
+RA = float(inp_pdic["RA"])
+DEC = float(inp_pdic["DEC"])
+OffAxis_angle = float(inp_pdic["OffAxis_angle"])
+Texp = float(inp_pdic["Texp"])
+z = float(inp_pdic["z"])
+F0 = float(inp_pdic["F0"])
+E0 = float(inp_pdic["E0"])
+Gamma = float(inp_pdic["Gamma"])
+Radius_spectal_extraction = float(inp_pdic["Radius_spectal_extraction"])
+Radius_sky_image = float(inp_pdic["Radius_sky_image"])
+Site = str(inp_pdic["Site"])
+Telescope_LST = bool(inp_pdic["Telescope_LST"])
+Telescope_MST = bool(inp_pdic["Telescope_MST"])
+Telescope_SST = bool(inp_pdic["Telescope_SST"])
 
 LSTs = Telescope_LST
 MSTs = Telescope_MST
