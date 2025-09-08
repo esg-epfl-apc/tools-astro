@@ -1,11 +1,21 @@
-<tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.1+galaxy0" profile="24.0">
+<tool id="plot_tools_astro_tool" name="Plot Tools" version="0.0.2+galaxy0" profile="24.0">
   <requirements>
-    <requirement type="package" version="2.2.3">pandas</requirement>
+    <requirement type="package" version="2.3.2">pandas</requirement>
     <requirement type="package" version="3.9.2">matplotlib</requirement>
     <requirement type="package" version="5.3">astropy</requirement>
-    <requirement type="package" version="1.2.37">oda-api</requirement>
+    <requirement type="package" version="1.2.41">oda-api</requirement>
     <requirement type="package" version="1.2">gammapy</requirement>
-    <requirement type="package" version="9.1.0">ipython</requirement>
+    <requirement type="package" version="9.5.0">ipython</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.4">gcn-kafka</requirement>
+    <requirement type="package" version="0.15.0">xmltodict</requirement>
+    <requirement type="package" version="0.11.1">hop-client</requirement>
+    <requirement type="package" version="2.0.0">ligo.skymap</requirement>
+    <requirement type="package" version="0.4.10">astroquery</requirement>
+    <requirement type="package" version="1.16.1">scipy</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
   </requirements>
   <command detect_errors="exit_code">python '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
   <environment_variables>
@@ -115,7 +125,7 @@
     <test expect_num_outputs="2">
       <conditional name="C_data_product_">
         <param name="DPselector_" value="light_curve" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/b392644651a0353596eafc3daeab0dd7ef180d98/data.tsv" />
         <param name="skiprows" value="0" />
         <param name="sep" value="whitespace" />
         <param name="column" value="T" />
@@ -136,7 +146,7 @@
     <test expect_num_outputs="2">
       <conditional name="C_data_product_">
         <param name="DPselector_" value="spectrum" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/b392644651a0353596eafc3daeab0dd7ef180d98/data.tsv" />
         <param name="skiprows" value="0" />
         <param name="sep" value="whitespace" />
         <param name="column" value="c1" />
@@ -156,7 +166,7 @@
     <test expect_num_outputs="2">
       <conditional name="C_data_product_">
         <param name="DPselector_" value="sky_plot" />
-        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/57cc7b8180fa6c1a286114a9e7b903923f786631/data.tsv" />
+        <param name="fn" location="https://gitlab.renkulab.io/astronomy/mmoda/plot-tools/-/raw/b392644651a0353596eafc3daeab0dd7ef180d98/data.tsv" />
         <param name="skiprows" value="0" />
         <param name="sep" value="whitespace" />
         <param name="ra_col" value="c3" />
