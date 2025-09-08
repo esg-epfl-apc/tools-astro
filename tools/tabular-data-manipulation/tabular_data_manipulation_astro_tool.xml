@@ -1,0 +1,141 @@
+<tool id="tabular_data_manipulation_astro_tool" name="Tabular Data Manipulation" version="0.0.1+galaxy0" profile="24.0">
+  <requirements>
+    <requirement type="package" version="9.5.0">ipython</requirement>
+    <requirement type="package" version="5.3.4">astropy</requirement>
+    <requirement type="package" version="3.10.6">matplotlib</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="5.10.4">nbformat</requirement>
+    <requirement type="package" version="0.3.4">gcn-kafka</requirement>
+    <requirement type="package" version="0.15.0">xmltodict</requirement>
+    <requirement type="package" version="0.11.1">hop-client</requirement>
+    <requirement type="package" version="2.0.0">ligo.skymap</requirement>
+    <requirement type="package" version="2.3.2">pandas</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="0.4.10">astroquery</requirement>
+    <requirement type="package" version="1.16.1">scipy</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/${C_data_product_.DPselector_}.py'</command>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <conditional name="C_data_product_">
+      <param name="DPselector_" type="select" label="Data Product">
+        <option value="compute_new_column" selected="true">compute_new_column</option>
+        <option value="merge_tables" selected="false">merge_tables</option>
+        <option value="histogram_column" selected="false">histogram_column</option>
+      </param>
+      <when value="compute_new_column">
+        <param name="fn" type="data" label="fn" format="data" optional="false" />
+        <param name="new_column" type="text" value="sum" label="new_column" optional="false" />
+        <param name="expression" type="text" value="c1 __gt__ (c2 + v0 - v1)" label="expression" optional="false" />
+        <param name="variables" type="text" value="1 2" label="variables" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="auto" selected="true">auto</option>
+          <option value="comma">comma</option>
+          <option value="tab">tab</option>
+        </param>
+        <param name="action" type="select" label="action" optional="false">
+          <option value="add" selected="true">add</option>
+          <option value="filter">filter</option>
+        </param>
+      </when>
+      <when value="merge_tables">
+        <param name="fn1" type="data" label="fn1" format="data" optional="false" />
+        <param name="fn2" type="data" label="fn2" format="data" optional="false" />
+        <param name="new_column" type="text" value="sum" label="new_column" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="auto" selected="true">auto</option>
+          <option value="comma">comma</option>
+          <option value="tab">tab</option>
+        </param>
+      </when>
+      <when value="histogram_column">
+        <param name="fn" type="data" label="fn" format="data" optional="false" />
+        <param name="sep" type="select" label="sep" optional="false">
+          <option value="auto" selected="true">auto</option>
+          <option value="comma">comma</option>
+          <option value="tab">tab</option>
+        </param>
+        <param name="column" type="text" value="c0" label="column" optional="false" />
+        <param name="weights" type="text" value="c1" label="weights" optional="false" />
+        <param name="binning" type="select" label="binning" optional="false">
+          <option value="linear">linear</option>
+          <option value="logarithmic" selected="true">logarithmic</option>
+        </param>
+        <param name="minval" type="float" value="10000000000.0" label="minval" optional="false" />
+        <param name="maxval" type="float" value="10000000000000.0" label="maxval" optional="false" />
+        <param name="nbins" type="integer" value="15" label="nbins" optional="false" />
+        <param name="xlabel" type="text" value="Energy, eV" label="xlabel" optional="false" />
+        <param name="ylabel" type="text" value="Ncounts" label="ylabel" optional="false" />
+      </when>
+    </conditional>
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; compute_new_column outputfile" name="out_compute_new_column_outputfile" format="auto" from_work_dir="outputfile_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'compute_new_column'</filter>
+    </data>
+    <data label="${tool.name} -&gt; merge_tables outputfile" name="out_merge_tables_outputfile" format="auto" from_work_dir="outputfile_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'merge_tables'</filter>
+    </data>
+    <data label="${tool.name} -&gt; histogram_column histogram_data" name="out_histogram_column_histogram_data" format="auto" from_work_dir="histogram_data_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'histogram_column'</filter>
+    </data>
+    <data label="${tool.name} -&gt; histogram_column histogram_picture" name="out_histogram_column_histogram_picture" format="auto" from_work_dir="histogram_picture_galaxy.output">
+      <filter>C_data_product_['DPselector_'] == 'histogram_column'</filter>
+    </data>
+  </outputs>
+  <tests>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="compute_new_column" />
+        <param name="fn" value="testfile.tsv" />
+        <param name="new_column" value="sum" />
+        <param name="expression" value="c1 __gt__ (c2 + v0 - v1)" />
+        <param name="variables" value="1 2" />
+        <param name="sep" value="auto" />
+        <param name="action" value="add" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="1">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="merge_tables" />
+        <param name="fn1" value="testfile.tsv" />
+        <param name="fn2" value="testfile.tsv" />
+        <param name="new_column" value="sum" />
+        <param name="sep" value="auto" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+    <test expect_num_outputs="2">
+      <conditional name="C_data_product_">
+        <param name="DPselector_" value="histogram_column" />
+        <param name="fn" value="testfile.tsv" />
+        <param name="sep" value="auto" />
+        <param name="column" value="c0" />
+        <param name="weights" value="c1" />
+        <param name="binning" value="logarithmic" />
+        <param name="minval" value="10000000000.0" />
+        <param name="maxval" value="10000000000000.0" />
+        <param name="nbins" value="15" />
+        <param name="xlabel" value="Energy, eV" />
+        <param name="ylabel" value="Ncounts" />
+      </conditional>
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+</tool>
