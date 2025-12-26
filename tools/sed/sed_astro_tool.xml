@@ -1,0 +1,68 @@
+<tool id="sed_astro_tool" name="SED" version="0.0.1+galaxy0" profile="23.0">
+  <requirements>
+    <requirement type="package" version="5.3.4">astropy</requirement>
+    <requirement type="package" version="1.3">gammapy</requirement>
+    <requirement type="package" version="3.10.0">matplotlib</requirement>
+    <requirement type="package" version="0.4.9.post1">astroquery</requirement>
+    <requirement type="package" version="1.15.1">scipy</requirement>
+    <requirement type="package" version="1.2.33">oda-api</requirement>
+    <requirement type="package" version="7.16.6">nbconvert</requirement>
+    <requirement type="package" version="1.21.4">wget</requirement>
+    <requirement type="package" version="1.26.4">numpy</requirement>
+    <requirement type="package" version="2.30.1">iminuit</requirement>
+    <requirement type="package" version="0.70.17">multiprocess</requirement>
+    <!--Requirements string 'nb2workflow[cwl,service,rdf,mmoda]>=1.3.30 
+' can't be converted automatically. Please add the galaxy/conda requirement manually or modify the requirements file!-->
+  </requirements>
+  <command detect_errors="exit_code">python '$__tool_directory__/Multi-instrument_spectrum.py'</command>
+  <configfiles>
+    <inputs name="inputs" filename="inputs.json" data_style="paths" />
+  </configfiles>
+  <inputs>
+    <param name="src_name" type="text" value="Crab" label="src_name" />
+    <param name="RA" type="float" value="83.6325" label="RA (unit: deg)" />
+    <param name="DEC" type="float" value="22.0175" label="DEC (unit: deg)" />
+    <param name="T1" type="text" value="2000-03-06T13:26:48.0" label="T1" />
+    <param name="T2" type="text" value="2024-03-06T15:32:27.0" label="T2" />
+    <param name="do_mwa" type="boolean" checked="true" label="MWA (radio)" />
+    <param name="do_jemx" type="boolean" checked="true" label="INTEGRAL/JEM-X (X-ray)" />
+    <param name="do_isgri" type="boolean" checked="true" label="INTEGRAL/ISGRI (hard X-ray)" />
+    <param name="do_fermi" type="boolean" checked="true" label="Fermi/LAT (gamma-ray)" />
+    <param name="do_magic" type="boolean" checked="true" label="MAGIC (gamma-ray)" />
+    <param name="do_icecube" type="boolean" checked="true" label="IceCube (neutrino)" />
+    <param name="do_auger" type="boolean" checked="true" label="Auger (UHECR)" />
+    <param name="do_hess" type="boolean" checked="true" label="HESS (gamma-ray)" />
+    <param name="do_gaia" type="boolean" checked="true" label="GAIA (visible)" />
+    <param name="do_legacysurvey" type="boolean" checked="true" label="DESI Legacy Survey (visible/infrared)" />
+  </inputs>
+  <outputs>
+    <data label="${tool.name} -&gt; Multi-instrument_spectrum sed_png" name="out_Multi_instrument_spectrum_sed_png" format="auto" from_work_dir="sed_png_galaxy.output" />
+    <data label="${tool.name} -&gt; Multi-instrument_spectrum sed_table" name="out_Multi_instrument_spectrum_sed_table" format="auto" from_work_dir="sed_table_galaxy.output" />
+  </outputs>
+  <tests>
+    <test expect_num_outputs="2">
+      <param name="src_name" value="Crab" />
+      <param name="RA" value="83.6325" />
+      <param name="DEC" value="22.0175" />
+      <param name="T1" value="2000-03-06T13:26:48.0" />
+      <param name="T2" value="2024-03-06T15:32:27.0" />
+      <param name="do_mwa" value="True" />
+      <param name="do_jemx" value="True" />
+      <param name="do_isgri" value="True" />
+      <param name="do_fermi" value="True" />
+      <param name="do_magic" value="True" />
+      <param name="do_icecube" value="True" />
+      <param name="do_auger" value="True" />
+      <param name="do_hess" value="True" />
+      <param name="do_gaia" value="True" />
+      <param name="do_legacysurvey" value="True" />
+      <assert_stdout>
+        <has_text text="*** Job finished successfully ***" />
+      </assert_stdout>
+    </test>
+  </tests>
+  <environment_variables>
+    <environment_variable name="BASEDIR">$__tool_directory__</environment_variable>
+    <environment_variable name="GALAXY_TOOL_DIR">$__tool_directory__</environment_variable>
+  </environment_variables>
+</tool>

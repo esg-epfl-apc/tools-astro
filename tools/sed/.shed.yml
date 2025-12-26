@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: SED
+homepage_url: null
+long_description: SED
+name: sed_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
