@@ -1,0 +1,9 @@
+categories:
+- Astronomy
+description: Tool to plot optical candidates
+homepage_url: null
+long_description: Tool to plot optical candidates of GRBs using Legacy Survey data.
+name: tool_plot_candidates_pos_photoz_astro_tool
+owner: astroteam
+remote_repository_url: https://github.com/esg-epfl-apc/tools-astro/tree/main/tools
+type: unrestricted
