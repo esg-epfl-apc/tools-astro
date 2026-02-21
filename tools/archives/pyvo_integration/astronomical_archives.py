@@ -19,8 +19,10 @@ MAX_ALLOWED_ENTRIES = 100
 MAX_REGISTRIES_TO_SEARCH = 100
 
 ARCHIVES_TIMEOUT_BYPASS = [
-    "https://datalab.noirlab.edu/tap"
+    "https://datalab.noirlab.edu/tap",
+    "http://192.168.1.22:8001/tap"
 ]
+
 
 
 class TimeoutException(Exception):
@@ -127,7 +129,7 @@ class TapArchive:
         self.archive_service = None
         self.tables = None
 
-    @timeout(10)
+    @timeout(1000)
     def get_resources(self,
                       query,
                       number_of_results,
@@ -1272,8 +1274,21 @@ class FileHandler:
 
     @staticmethod
     def write_file_to_output(file, output, write_type="w"):
-        with open(output, write_type) as file_output:
-            file_output.write(file)
+        gz_archive = False
+
+        # checks that the file name is an archive (ie: extension .fits.gz) or not, if so, extract it, and use it
+        if output.endswith('.fits.gz'):
+            gz_archive = True
+
+        if gz_archive:
+            #extract the file ontoa file with the same name, without the .gz extension
+            with gzip.open(output, 'rb') as f_in: 
+                with open(output[:-3], 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+        else:
+            with open(output, write_type) as file_output:
+                file_output.write(file)
+
 
     @staticmethod
     def write_urls_to_output(urls: [], output, access_url="access_url"):
@@ -1281,8 +1296,8 @@ class FileHandler:
             for url in urls:
                 try:
                     file_output.write(str(url[access_url]) + ',')
-                except Exception:
-                    error_message = f"url field {access_url} not found for url"
+                except Exception as e:
+                    error_message = f"url field {access_url} not found for url: {str(url)} , error is {str(e)}"
                     Logger.create_action_log(
                         Logger.ACTION_ERROR,
                         Logger.ACTION_TYPE_WRITE_URL,
@@ -1293,11 +1308,35 @@ class FileHandler:
         dir = os.getcwd()
 
         dir += '/fits'
+        gz_archive = False
 
-        upload_dir = os.path.join(dir, str(index) + '.fits')
+        # chedck that index (the file name) whether it is an archive (ie: extesnion .fits.gz) or not, if so, extract it, and use it
+        if index.endswith('.fits.gz'):
+            gz_archive = True
 
-        with open(upload_dir, "wb") as file_output:
+        Logger.create_action_log(
+                        Logger.ACTION_SUCCESS,
+                        Logger.ACTION_TYPE_DOWNLOAD,
+                        f"=====> write_file_to_subdir index: {index} <=====")
+
+        upload_file = os.path.join(dir, str(index) + '.fits')
+        if gz_archive:
+            upload_file += '.gz'
+
+        Logger.create_action_log(
+                        Logger.ACTION_SUCCESS,
+                        Logger.ACTION_TYPE_DOWNLOAD,
+                        f"=====> write_file_to_subdir upload_file: {upload_file} <=====")
+
+        with open(upload_file, "wb") as file_output:
             file_output.write(file)
+
+        if gz_archive:
+            #extract the file ontoa file with the same name, without the .gz extension
+            with gzip.open(upload_file, 'rb') as f_in: 
+                with open(upload_file[:-3], 'wb') as f_out:
+                    shutil.copyfileobj(f_in, f_out)
+
 
     @staticmethod
     def get_file_name_from_url(url, index=None):
@@ -1312,6 +1351,9 @@ class FileHandler:
                 file_name = url_parts[-2]
         except Exception:
             file_name = 'archive file '
+
+        print(f"=====> File name from url: {file_name} <=====")
+        local_logger.info(f"=====> File name from url: {file_name} <=====")
 
         return file_name
 
@@ -1337,8 +1379,9 @@ class Utils:
 
     @staticmethod
     def is_valid_url(url: str) -> bool:
-        regex_url = re.compile(r'^https?://(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(?::\d+)?(?:/[^\s]*)?$')  # noqa: E501
-        return re.match(regex_url, url) is not None
+        # regex_url = re.compile(r'^https?://(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,6}(?::\d+)?(?:/[^\s]*)?$')  # noqa: E501
+        # return re.match(regex_url, url) is not None
+        return True
 
 
 class Logger:
